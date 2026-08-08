@@ -138,7 +138,13 @@ class DrilldownView(DashboardView):
             elif kind in {"sync", "conflicts"}:
                 if kind == "conflicts":
                     schedule = self.event.wip_schedule
-                    rows = schedule.get_all_talk_warnings() if schedule else []
+                    raw = schedule.get_all_talk_warnings() if schedule else {}
+                    rows = []
+                    for talk, warnings in raw.items():
+                        title = talk.submission.title if talk.submission else str(talk)
+                        for w in warnings:
+                            msg = w.get("message") if isinstance(w, dict) else str(w)
+                            rows.append(f"{title}: {msg}")
                 else:
                     rows = list(PreviewRun.objects.filter(event=self.event))
             else:
