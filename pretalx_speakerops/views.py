@@ -360,8 +360,8 @@ class StatusView(View):
             )
             last_sync = (
                 SyncRun.objects.filter(event=event)
-                .order_by("-created_at")
-                .values_list("status", "created_at")
+                .order_by("-created")
+                .values_list("status", "created")
                 .first()
             )
             tasks_total = OnboardingTask.objects.filter(event=event).count()
