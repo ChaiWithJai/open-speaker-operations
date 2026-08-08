@@ -119,6 +119,28 @@
       "demo_step": "Judge loads the public embed URL and sees released sessions in a responsive card layout.",
       "status": "complete",
       "priority": "P0"
+    },
+    {
+      "id": "P0-accelevents-sync",
+      "competition_requirement": "Idempotent organizer-triggered synchronization with external identities, retries, and reconciliation.",
+      "prd_acceptance_row": "PRD §9.9 synchronization",
+      "decision_records": ["docs/decisions/011-accelevents-sync.md"],
+      "code_paths": ["pretalx_speakerops/integrations/accelevents.py", "pretalx_speakerops/integrations/sync.py", "pretalx_speakerops/models.py"],
+      "tests": ["tests/test_m4.py::test_partial_run_retry_does_not_resend_successful_item", "tests/test_m4.py::test_mock_contract_auth_duplicate_and_bare_integer", "tests/test_m4.py::test_update_then_preview_is_noop_and_stale_preview_is_rejected"],
+      "demo_step": "Judge opens the seeded sync card, sees create/update/no-op items, a failed item, and a successful retry without resending the successful item.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-credential-state",
+      "competition_requirement": "Surface unavailable integration credentials honestly instead of pretending synchronization is connected.",
+      "prd_acceptance_row": "PRD §9.9 integration readiness",
+      "decision_records": ["docs/decisions/011-accelevents-sync.md"],
+      "code_paths": ["pretalx_speakerops/models.py", "pretalx_speakerops/views.py"],
+      "tests": ["tests/test_m4.py::test_mock_contract_auth_duplicate_and_bare_integer"],
+      "demo_step": "Organiser dashboard displays the connection status and credential-blocked state when no credential is configured.",
+      "status": "complete",
+      "priority": "P0"
     }
   ],
   "gaps": [
@@ -128,15 +150,7 @@
       "prd_acceptance_row": "PRD §9.2 CFP builder",
       "status": "gap",
       "shortest_path": "Add a seeded proposal form journey over pretalx questions and answers.",
-      "blocked_by": "M4 integration and post-M3 hardening"
-    },
-    {
-      "id": "P0-accelevents-sync",
-      "competition_requirement": "Idempotent organizer-triggered Accelevents synchronization with external identities and retries.",
-      "prd_acceptance_row": "PRD §9.9 synchronization",
-      "status": "gap",
-      "shortest_path": "Implement the mocked adapter, run/item state machine, and seeded sync proof.",
-      "blocked_by": "M4"
+      "blocked_by": "Post-M4 hardening"
     }
   ]
 }

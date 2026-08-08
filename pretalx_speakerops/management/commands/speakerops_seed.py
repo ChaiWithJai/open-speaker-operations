@@ -13,7 +13,19 @@ from pretalx.submission.models import Review, SubmissionStates
 from ...domain.commands import Command as DomainCommand
 from ...domain.commands import execute
 from ...domain.state import StateMachine, Transition
-from ...models import OnboardingTask, PreviewRun, Resource, ResourceVersion, TaskDefinition
+from ...integrations.sync import fingerprint
+from ...models import (
+    AcceleventsConnection,
+    ExternalIdentity,
+    OnboardingTask,
+    Resource,
+    ResourceVersion,
+    SyncAttempt,
+    SyncItem,
+    SyncPreview,
+    SyncRun,
+    TaskDefinition,
+)
 from ...onboarding.reminders import queue_reminders
 from ...onboarding.services import ensure_acceptance_plan, record_evidence
 from ...program.policy import release_schedule
@@ -198,16 +210,6 @@ class Command(BaseCommand):
                                 slot.end = start + timedelta(minutes=30)
                                 slot.submission.speakers.add(users["speaker"])
                                 slot.save(update_fields=["room", "start", "end", "updated"])
-            PreviewRun.objects.get_or_create(
-                event=event,
-                status="previewed",
-                defaults={
-                    "payload": {
-                        "adapter": "mock",
-                        "items": [{"action": "create", "external_id": "demo-session"}],
-                    }
-                },
-            )
             resource, _ = Resource.objects.get_or_create(
                 event=event, slug="speaker-guide", defaults={"title": "Speaker guide"}
             )
@@ -222,6 +224,164 @@ class Command(BaseCommand):
                 },
             )
             queue_reminders(event, reminder_key="seed-onboarding-reminder")
+            connection, _ = AcceleventsConnection.objects.get_or_create(
+                event=event,
+                defaults={
+                    "base_url": "http://mock-accelevents:9000",
+                    "event_url": event.slug,
+                    "credential_ref": "demo-key",
+                    "status": AcceleventsConnection.STATUS_CONNECTED,
+                },
+            )
+            accepted = event.submissions.filter(state=SubmissionStates.ACCEPTED).first()
+            if accepted:
+                speaker = accepted.speakers.first()
+                payload = {
+                    "firstName": (speaker.name or "Demo").split(" ", 1)[0],
+                    "lastName": (speaker.name or "Speaker").split(" ", 1)[-1],
+                    "email": speaker.email,
+                }
+                digest = fingerprint(payload)
+                ExternalIdentity.objects.get_or_create(
+                    event=event,
+                    local_type="speaker",
+                    local_id=speaker.pk,
+                    defaults={
+                        "external_id": "101",
+                        "request_fingerprint": digest,
+                    },
+                )
+                body = {
+                    "items": [
+                        {
+                            "local_type": "speaker",
+                            "local_id": speaker.pk,
+                            "payload": payload,
+                            "fingerprint": digest,
+                            "action": "noop",
+                            "external_id": "101",
+                        },
+                        {
+                            "local_type": "speaker",
+                            "local_id": speaker.pk + 100000,
+                            "payload": {
+                                **payload,
+                                "email": f"new-{speaker.email}",
+                            },
+                            "fingerprint": fingerprint(
+                                {**payload, "email": f"new-{speaker.email}"}
+                            ),
+                            "action": "create",
+                            "external_id": "",
+                        },
+                        {
+                            "local_type": "session",
+                            "local_id": accepted.pk,
+                            "payload": {"title": f"{accepted.title} updated"},
+                            "fingerprint": fingerprint({"title": f"{accepted.title} updated"}),
+                            "action": "update",
+                            "external_id": "201",
+                        },
+                        {
+                            "local_type": "speaker",
+                            "local_id": speaker.pk + 200000,
+                            "payload": {
+                                **payload,
+                                "email": f"failed-{speaker.email}",
+                            },
+                            "fingerprint": fingerprint(
+                                {**payload, "email": f"failed-{speaker.email}"}
+                            ),
+                            "action": "create",
+                            "external_id": "",
+                        },
+                    ]
+                }
+                ExternalIdentity.objects.get_or_create(
+                    event=event,
+                    local_type="session",
+                    local_id=accepted.pk,
+                    defaults={
+                        "external_id": "201",
+                        "request_fingerprint": body["items"][2]["fingerprint"],
+                    },
+                )
+                sync_preview, _ = SyncPreview.objects.get_or_create(
+                    event=event,
+                    fingerprint=fingerprint(body),
+                    defaults={"payload": body, "status": SyncPreview.EXECUTED},
+                )
+                sync_run, _ = SyncRun.objects.get_or_create(
+                    event=event,
+                    preview=sync_preview,
+                    defaults={
+                        "status": SyncRun.PARTIAL,
+                        "started_at": timezone.now(),
+                        "finished_at": timezone.now(),
+                    },
+                )
+                for item in body["items"]:
+                    status = (
+                        SyncItem.NOOP
+                        if item["action"] == "noop"
+                        else SyncItem.FAILED
+                        if item["local_id"] == speaker.pk + 200000
+                        else SyncItem.SUCCEEDED
+                    )
+                    sync_item, _ = SyncItem.objects.get_or_create(
+                        event=event,
+                        run=sync_run,
+                        local_type=item["local_type"],
+                        local_id=item["local_id"],
+                        defaults={
+                            "action": item["action"],
+                            "payload": item["payload"],
+                            "request_fingerprint": item["fingerprint"],
+                            "status": status,
+                            "external_id": item["external_id"],
+                            "attempts": 2 if status == SyncItem.SUCCEEDED else 1,
+                            "error": (
+                                "Injected demo failure; retry this item."
+                                if status == SyncItem.FAILED
+                                else ""
+                            ),
+                        },
+                    )
+                    if status == SyncItem.SUCCEEDED:
+                        SyncAttempt.objects.get_or_create(
+                            event=event,
+                            item=sync_item,
+                            number=1,
+                            defaults={
+                                "status": "failed",
+                                "error": "Injected demo failure; retry was safe.",
+                                "finished_at": timezone.now(),
+                            },
+                        )
+                        SyncAttempt.objects.get_or_create(
+                            event=event,
+                            item=sync_item,
+                            number=2,
+                            defaults={
+                                "status": "succeeded",
+                                "request_id": "demo-retry-request",
+                                "response": {"external_id": sync_item.external_id},
+                                "finished_at": timezone.now(),
+                            },
+                        )
+                    elif status == SyncItem.FAILED:
+                        SyncAttempt.objects.get_or_create(
+                            event=event,
+                            item=sync_item,
+                            number=1,
+                            defaults={
+                                "status": "failed",
+                                "error": sync_item.error,
+                                "finished_at": timezone.now(),
+                            },
+                        )
+                connection.last_error = ""
+                connection.save(update_fields=["last_error", "updated"])
         self.stdout.write(
             self.style.SUCCESS(
                 "Seeded speakerops-demo. Accounts: chair@example.org, "

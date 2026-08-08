@@ -26,7 +26,7 @@ shows what is not yet demoable and the shortest path to making it so.
 | Conflict-aware release | Complete | Seeded WIP conflicts block release |
 | Public schedule/ICS/embed | Complete | Released-only outputs |
 | CFP builder | Gap | Requires seeded proposal-form journey |
-| Accelevents synchronization | Gap | Requires M4 adapter/run proof |
+| Accelevents synchronization | Complete | Mock contract, identities, retry and reconciliation proof |
 
 ## CI contract
 

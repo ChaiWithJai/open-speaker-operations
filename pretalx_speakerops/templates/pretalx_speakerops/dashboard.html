@@ -6,7 +6,10 @@
   <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'undecided' %}">Undecided proposals: {{ counts.undecided }}</a></li>
   <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'review' %}">Reviewed proposals: {{ counts.reviewed }} / {{ counts.proposals }}</a></li>
   <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'conflicts' %}">Schedule conflicts: {{ counts.conflicts }}</a></li>
-  <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'sync' %}">Accelevents previews: {{ counts.sync }}</a></li>
+  <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'sync' %}">Accelevents runs: {{ counts.sync }}</a> ({{ counts.sync_status }})</li>
 </ul>
-<a href="{% url 'plugins:speakerops:speakerops_preview' event.slug %}">Run Accelevents preview</a>
+<form method="post" action="{% url 'plugins:speakerops:speakerops_sync_preview' event.slug %}">
+  {% csrf_token %}
+  <button type="submit">Run Accelevents preview</button>
+</form>
 {% endblock %}

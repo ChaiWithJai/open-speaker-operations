@@ -47,6 +47,6 @@ def test_golden_path_crosses_plugin_boundaries(event, users, client):
         schedule_release.send(sender=event, schedule=event.wip_schedule, user=users["chair"])
         assert PreviewRun.objects.filter(event=event, status="schedule-released").exists()
         assert client.get(f"/{event.slug}/schedule/").status_code == 200
-        response = client.post(f"/orga/{event.slug}/speaker-operations/preview/")
+        response = client.post(f"/orga/{event.slug}/speaker-operations/sync/preview/")
         assert response.status_code == 200
         assert PreviewRun.objects.filter(event=event).exists()

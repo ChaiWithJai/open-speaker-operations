@@ -8,12 +8,21 @@ from django.utils import timezone
 from django.views.generic import TemplateView, View
 from django_scopes import scope
 from pretalx.event.models import Event
+from pretalx.person.models import User
 from pretalx.submission.models import Submission, SubmissionStates
 
 from .auth import is_speaker, require_event_permission
 from .domain.commands import Command, execute
 from .domain.state import StateMachine, Transition
-from .models import CommandReceipt, OnboardingTask, PreviewRun, Resource
+from .integrations.sync import execute_preview, preview
+from .models import (
+    AcceleventsConnection,
+    CommandReceipt,
+    OnboardingTask,
+    PreviewRun,
+    Resource,
+    SyncRun,
+)
 from .onboarding.reminders import queue_reminders
 from .onboarding.services import record_evidence
 from .program.calendar import released_ical
@@ -91,7 +100,13 @@ class DashboardView(EventContextMixin, TemplateView):
                     "reviewed": proposals.filter(reviews__isnull=False).distinct().count(),
                     "proposals": proposals.count(),
                     "conflicts": conflicts,
-                    "sync": PreviewRun.objects.filter(event=self.event).count(),
+                    "sync": SyncRun.objects.filter(event=self.event).count(),
+                    "sync_status": (
+                        AcceleventsConnection.objects.filter(event=self.event)
+                        .values_list("status", flat=True)
+                        .first()
+                        or "not configured"
+                    ),
                 },
             )
         return context
@@ -228,16 +243,36 @@ class TaskAdminView(EventContextMixin, View):
         return redirect(reverse("plugins:speakerops:speakerops_dashboard", kwargs={"event": event}))
 
 
-class PreviewView(EventContextMixin, TemplateView):
+class SyncPreviewView(EventContextMixin, View):
     permission = "manage"
-    template_name = "pretalx_speakerops/preview.html"
 
     def post(self, request, event):
-        run = PreviewRun.objects.create(
-            event=self.event,
-            status="previewed",
-            payload={"adapter": "mock", "mode": "preview", "items": []},
-        )
+        with scope(event=self.event):
+            speaker_ids = Submission.objects.filter(
+                event=self.event, state=SubmissionStates.ACCEPTED
+            ).values_list("speakers", flat=True)
+            payloads = [
+                (
+                    "speaker",
+                    speaker.pk,
+                    {
+                        "firstName": speaker.name.split(" ", 1)[0],
+                        "lastName": speaker.name.split(" ", 1)[-1],
+                        "email": speaker.email,
+                    },
+                )
+                for speaker in User.objects.filter(pk__in=speaker_ids)
+            ]
+            result = preview(self.event, payloads)
+        return JsonResponse({"id": result.pk, "items": result.payload["items"]})
+
+
+class SyncRunView(EventContextMixin, View):
+    permission = "manage"
+
+    def post(self, request, event, pk):
+        with scope(event=self.event):
+            run = execute_preview(self.event, pk, request.user)
         return JsonResponse({"id": run.pk, "status": run.status})
 
 

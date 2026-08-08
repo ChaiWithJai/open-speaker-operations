@@ -35,6 +35,52 @@ Extend pretalx as a disclosed, license-compliant modular monolith. Use Rails 8 o
 - [Working log](./docs/log/)
 - [Auditable seam decisions](./docs/decisions/)
 
+## Run the seeded judge journey locally
+
+The fastest path uses the existing virtualenv and SQLite:
+
+```bash
+.venv/bin/python -m pretalx migrate
+.venv/bin/python -m pretalx speakerops_seed
+.venv/bin/python -m pretalx runserver 127.0.0.1:8000 --noreload
+```
+
+Demo accounts all use password `speakerops-demo`:
+
+```text
+admin@example.org
+chair@example.org
+reviewer@example.org
+speaker@example.org
+```
+
+Follow this numbered journey:
+
+1. Open the seeded event `speakerops-demo` as the program chair.
+2. Review proposals and inspect the two configured review rounds.
+3. Accept the seeded proposal and open the speaker checklist.
+4. Complete evidence-backed onboarding work; inspect overdue and waived tasks.
+5. Open the organiser dashboard and inspect deliberate room/speaker conflicts.
+6. Attempt release; the server blocks unresolved conflicts.
+7. Resolve the conflicts and release the schedule.
+8. Open the public schedule, ICS endpoint, and responsive embed.
+9. Open the Accelevents sync card and inspect create/update/no-op items,
+   failure state, and retry history.
+
+### Docker stack
+
+For the deployment-shaped local stack:
+
+```bash
+docker compose up --build
+```
+
+This starts Postgres, Redis, pretalx web, a Celery worker, and the standalone
+mock Accelevents service. No cloud, AI, or Accelevents credentials are needed.
+The mock is intentionally not production Accelevents: it implements only the
+captured speaker/session contract, `Key` authentication, duplicate detection,
+and deterministic failure injection for retry demonstrations.
+
 ## Requirements authority
 
 The [canonical competition document](https://docs.google.com/document/d/1rBHJtiNKHv4i43tdf2Rm0sDEYuIcajhmAPoBKR_Az-A/mobilebasic) remains the source of truth for competition requirements. Repository issues provide traceability from those requirements to product, architecture, and implementation decisions.

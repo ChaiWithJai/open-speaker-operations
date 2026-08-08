@@ -5,11 +5,12 @@ from .views import (
     CompleteTaskView,
     DashboardView,
     DrilldownView,
-    PreviewView,
     PublishedEmbedView,
     PublishedIcsView,
     ReminderView,
     ResourceView,
+    SyncPreviewView,
+    SyncRunView,
     TaskAdminView,
 )
 
@@ -27,14 +28,19 @@ urlpatterns = [
         name="speakerops_embed",
     ),
     path(
-        "orga/<slug:event>/speaker-operations/preview/",
-        PreviewView.as_view(),
-        name="speakerops_preview",
-    ),
-    path(
         "orga/<slug:event>/speaker-operations/reminders/",
         ReminderView.as_view(),
         name="speakerops_reminders",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/sync/preview/",
+        SyncPreviewView.as_view(),
+        name="speakerops_sync_preview",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/sync/<int:pk>/run/",
+        SyncRunView.as_view(),
+        name="speakerops_sync_run",
     ),
     path(
         "orga/<slug:event>/speaker-operations/",
