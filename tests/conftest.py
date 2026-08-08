@@ -3,7 +3,7 @@ import uuid
 
 import pytest
 from django.core.management import call_command
-from pretalx.event.models import Event
+from pretalx.event.models import Event, Team
 from pretalx.person.models import User
 
 
@@ -20,13 +20,28 @@ def event(db):
 
 
 @pytest.fixture
-def users(db):
-    return {
+def users(event):
+    users = {
         role: User.objects.create_user(
             email=f"{role}-{uuid.uuid4().hex[:8]}@example.org",
             name=role.title(),
             password="test-password",
-            is_administrator=role == "chair",
         )
         for role in ("chair", "speaker", "reviewer")
     }
+    chair_team = Team.objects.create(
+        organiser=event.organiser,
+        name=f"Chair {event.slug}",
+        can_change_submissions=True,
+        can_change_event_settings=True,
+    )
+    chair_team.limit_events.add(event)
+    chair_team.members.add(users["chair"])
+    reviewer_team = Team.objects.create(
+        organiser=event.organiser,
+        name=f"Reviewer {event.slug}",
+        is_reviewer=True,
+    )
+    reviewer_team.limit_events.add(event)
+    reviewer_team.members.add(users["reviewer"])
+    return users

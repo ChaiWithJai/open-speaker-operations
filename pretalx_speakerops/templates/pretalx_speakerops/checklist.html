@@ -1,14 +1,30 @@
 {% extends "orga/base.html" %}
 {% block content %}
-<h1>What do I need to do next?</h1>
+<main aria-labelledby="checklist-title">
+<h1 id="checklist-title">What do I need to do next?</h1>
 {% for task in tasks %}
 <article>
   <h2>{{ task.definition.name }}</h2>
   <p>Status: {{ task.get_status_display }}</p>
-  <p>Due: {{ task.due_date|default:"No due date" }}</p>
+  <p>Due: {{ task.due_date|default:"No due date" }}{% if task.due_date and task.due_date < today and task.status != "complete" %} (overdue){% endif %}</p>
   <p>{{ task.definition.instructions }}</p>
   <p>Completion criteria: {{ task.definition.completion_criteria }}</p>
-  {% if task.status == "pending" %}<form method="post" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}">{% csrf_token %}<button>Complete acknowledgement</button></form>{% endif %}
+  {% if task.status != "complete" and task.status != "waived" %}
+  <form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}">
+    {% csrf_token %}
+    {% if task.definition.completion_evaluator == "upload" %}
+      <label for="upload-{{ task.pk }}">Upload evidence for {{ task.definition.name }}</label>
+      <input id="upload-{{ task.pk }}" name="upload" type="file" required>
+    {% elif task.definition.completion_evaluator == "acknowledgement" %}
+      <label><input name="response" type="checkbox" value="yes" required> I acknowledge this task.</label>
+    {% else %}
+      <label for="response-{{ task.pk }}">Evidence response</label>
+      <input id="response-{{ task.pk }}" name="response" type="text" required>
+    {% endif %}
+    <button type="submit">Submit evidence</button>
+  </form>
+  {% endif %}
 </article>
 {% empty %}<p>No tasks.</p>{% endfor %}
+</main>
 {% endblock %}

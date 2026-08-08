@@ -3,7 +3,7 @@ from django_scopes import scope
 from pretalx.schedule.signals import schedule_release
 from pretalx.submission.models import SubmissionStates
 
-from pretalx_speakerops.models import OnboardingTask, PreviewRun
+from pretalx_speakerops.models import OnboardingTask, PreviewRun, TaskDefinition
 
 
 @pytest.mark.django_db(transaction=True)
@@ -13,7 +13,10 @@ def test_acceptance_creates_one_task_per_speaker(event, users):
         submission = event.submissions.first()
         submission.speakers.add(users["speaker"])
         submission.accept(person=users["chair"], force=True)
-        expected = submission.speakers.count()
+        expected = (
+            submission.speakers.count()
+            * TaskDefinition.objects.filter(event=event, active=True).count()
+        )
         assert OnboardingTask.objects.filter(event=event, submission=submission).count() == expected
         submission.accept(person=users["chair"], force=True)
         assert OnboardingTask.objects.filter(event=event, submission=submission).count() == expected
@@ -28,7 +31,9 @@ def test_golden_path_crosses_plugin_boundaries(event, users, client):
         submission.state = SubmissionStates.SUBMITTED
         submission.save(update_fields=["state", "updated"])
         submission.accept(person=users["chair"], force=True)
-        task = OnboardingTask.objects.get(submission=submission, speaker=users["speaker"])
+        task = OnboardingTask.objects.get(
+            submission=submission, speaker=users["speaker"], definition__slug="acknowledgement"
+        )
 
         client.force_login(users["speaker"])
         response = client.get(f"/{event.slug}/speaker-operations/checklist/")

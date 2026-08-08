@@ -1,0 +1,7 @@
+{% extends "agenda/base.html" %}
+{% block content %}
+<main aria-labelledby="resource-title">
+  <h1 id="resource-title">{{ resource.title }}</h1>
+  {% if version %}<section>{{ version.body_html|safe }}</section>{% else %}<p>This resource is not published.</p>{% endif %}
+</main>
+{% endblock %}
