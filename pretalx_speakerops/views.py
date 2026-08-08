@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Count, Prefetch, Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -31,7 +30,7 @@ from .models import (
 from .onboarding.reminders import queue_reminders
 from .onboarding.services import record_evidence
 from .program.calendar import released_ical
-from .program.policy import classify_warnings, release_schedule, schedule_slots
+from .program.policy import classify_warnings, release_schedule
 from .program.reviews import configure_review_rounds
 
 TASK_MACHINE = StateMachine(
@@ -93,36 +92,28 @@ class DashboardView(EventContextMixin, TemplateView):
             proposals = Submission.objects.filter(event=self.event)
             schedule = self.event.wip_schedule
             conflicts = len(classify_warnings(schedule)) if schedule else 0
-            active_states = (OnboardingTask.PENDING, OnboardingTask.REOPENED)
-            task_stats = tasks.aggregate(
-                active=Count("pk", filter=Q(status__in=active_states)),
-                overdue=Count("pk", filter=Q(due_date__lt=today, status__in=active_states)),
-                missing_assets=Count(
-                    "pk",
-                    filter=Q(
-                        definition__completion_evaluator="upload",
-                        status__in=active_states,
-                    ),
-                ),
-            )
-            proposal_stats = proposals.aggregate(
-                total=Count("pk", distinct=True),
-                undecided=Count("pk", filter=Q(state=SubmissionStates.SUBMITTED), distinct=True),
-                reviewed=Count("pk", filter=Q(reviews__isnull=False), distinct=True),
-            )
-            sync_error_count = SyncItem.objects.filter(
-                event=self.event, status=SyncItem.FAILED
+            overdue_tasks = tasks.filter(
+                due_date__lt=today,
+                status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
             ).count()
+            review_rows = proposals.filter(reviews__isnull=False).distinct()
+            missing_assets = tasks.filter(
+                definition__completion_evaluator="upload",
+                status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
+            )
+            sync_errors = SyncItem.objects.filter(event=self.event, status=SyncItem.FAILED)
             context.update(
                 event=self.event,
                 counts={
-                    "tasks": task_stats["active"],
-                    "undecided": proposal_stats["undecided"],
-                    "reviewed": proposal_stats["reviewed"],
-                    "proposals": proposal_stats["total"],
+                    "tasks": tasks.filter(
+                        status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED)
+                    ).count(),
+                    "undecided": proposals.filter(state=SubmissionStates.SUBMITTED).count(),
+                    "reviewed": review_rows.count(),
+                    "proposals": proposals.count(),
                     "conflicts": conflicts,
-                    "missing_assets": task_stats["missing_assets"],
-                    "sync": sync_error_count,
+                    "missing_assets": missing_assets.count(),
+                    "sync": sync_errors.count(),
                     "sync_status": (
                         AcceleventsConnection.objects.filter(event=self.event)
                         .values_list("status", flat=True)
@@ -131,15 +122,15 @@ class DashboardView(EventContextMixin, TemplateView):
                     ),
                 },
                 attention={
-                    "overdue": task_stats["overdue"],
+                    "overdue": overdue_tasks,
                     "blocked_release": conflicts > 0,
-                    "sync_errors": sync_error_count,
+                    "sync_errors": sync_errors.count(),
                 },
             )
             return context
 
 
-class DrilldownView(EventContextMixin, TemplateView):
+class DrilldownView(DashboardView):
     template_name = "pretalx_speakerops/drilldown.html"
 
     def get_context_data(self, **kwargs):
@@ -182,7 +173,7 @@ class DrilldownView(EventContextMixin, TemplateView):
                     )
             else:
                 rows = []
-        context.update(event=self.event, kind=kind, rows=rows, today=timezone.localdate())
+        context.update(kind=kind, rows=rows)
         return context
 
 
@@ -226,54 +217,40 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
         queue = Submission.objects.filter(
             event=self.event,
             state=SubmissionStates.SUBMITTED,
-        )
+        ).prefetch_related("assigned_reviewers", "reviews")
         if not self.request.user.has_perm("submission.orga_update_submission", self.event):
             queue = queue.filter(assigned_reviewers=self.request.user)
         return queue.distinct().order_by("title")
 
-    def _submission(self, queue=None):
-        queue = list(self._queue()) if queue is None else queue
+    def _submission(self):
+        queue = self._queue()
         if self.kwargs.get("pk"):
-            requested = int(self.kwargs["pk"])
-            submission = next(
-                (submission for submission in queue if submission.pk == requested), None
-            )
-            if submission is None:
-                raise Http404
-            return submission
-        return queue[0] if queue else None
+            return get_object_or_404(queue, pk=self.kwargs["pk"])
+        return queue.first()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         with scope(event=self.event):
             configure_review_rounds(self.event)
             queue = list(self._queue())
-            submission = self._submission(queue)
+            submission = self._submission()
             review = None
             recommendation = None
             criteria = []
             if submission:
-                review = (
-                    Review.objects.filter(submission=submission, user=self.request.user)
-                    .prefetch_related("scores")
-                    .first()
-                )
+                review = Review.objects.filter(
+                    submission=submission, user=self.request.user
+                ).first()
                 selected = (
                     {score.category_id: score.pk for score in review.scores.all()} if review else {}
                 )
                 criteria = [
                     {
                         "category": category,
-                        "options": category.speakerops_score_options,
+                        "options": list(category.scores.all()),
                         "selected": selected.get(category.pk),
                     }
-                    for category in submission.score_categories.prefetch_related(
-                        Prefetch(
-                            "scores",
-                            queryset=ReviewScore.objects.order_by("value"),
-                            to_attr="speakerops_score_options",
-                        )
-                    )
+                    for category in submission.score_categories.prefetch_related("scores")
                 ]
                 recommendation = ReviewRecommendation.objects.filter(
                     event=self.event,
@@ -342,8 +319,17 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         with scope(event=self.event):
             schedule = self.event.wip_schedule
-            slots = schedule_slots(schedule) if schedule else []
-            warnings = classify_warnings(schedule, slots=slots) if schedule else []
+            slots = (
+                list(
+                    schedule.talks.filter(submission__isnull=False)
+                    .select_related("submission", "room")
+                    .prefetch_related("submission__speakers")
+                    .order_by("start", "room__position")
+                )
+                if schedule
+                else []
+            )
+            warnings = classify_warnings(schedule) if schedule else []
         context.update(
             event=self.event,
             schedule=schedule,
