@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 
+from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.db import transaction
 from django.utils import timezone
@@ -15,6 +16,8 @@ from ...domain.state import StateMachine, Transition
 from ...models import OnboardingTask, PreviewRun, Resource, ResourceVersion, TaskDefinition
 from ...onboarding.reminders import queue_reminders
 from ...onboarding.services import ensure_acceptance_plan, record_evidence
+from ...program.policy import release_schedule
+from ...program.reviews import configure_review_rounds
 
 TASK_MACHINE = StateMachine(
     states=frozenset(
@@ -97,6 +100,7 @@ class Command(BaseCommand):
         )
 
         with scope(event=event):
+            configure_review_rounds(event, second_round=True)
             assigned_review = Review.objects.filter(submission__event=event).first()
             if assigned_review and assigned_review.user_id != users["reviewer"].pk:
                 assigned_review.user = users["reviewer"]
@@ -171,6 +175,29 @@ class Command(BaseCommand):
                     slot.end = start + timedelta(minutes=30)
                     slot.submission.speakers.add(users["speaker"])
                     slot.save(update_fields=["room", "start", "end", "updated"])
+                if not schedule.version and not event.schedules.filter(version="m3-demo").exists():
+                    try:
+                        release_schedule(schedule, "m3-demo", administrator, notify_speakers=False)
+                    except ValidationError:
+                        for index, slot in enumerate(
+                            schedule.talks.filter(submission__isnull=False).order_by("pk")
+                        ):
+                            slot.room = event.rooms.order_by("pk")[index % event.rooms.count()]
+                            slot.start = start + timedelta(hours=2 * index)
+                            slot.end = slot.start + timedelta(minutes=30)
+                            slot.save(update_fields=["room", "start", "end", "updated"])
+                        release_schedule(schedule, "m3-demo", administrator, notify_speakers=False)
+                        demo_wip = event.wip_schedule
+                        wip_conflicts = list(
+                            demo_wip.talks.filter(submission__isnull=False).order_by("pk")[:2]
+                        )
+                        if len(wip_conflicts) == 2:
+                            for slot in wip_conflicts:
+                                slot.room = event.rooms.order_by("pk").first()
+                                slot.start = start
+                                slot.end = start + timedelta(minutes=30)
+                                slot.submission.speakers.add(users["speaker"])
+                                slot.save(update_fields=["room", "start", "end", "updated"])
             PreviewRun.objects.get_or_create(
                 event=event,
                 status="previewed",

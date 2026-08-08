@@ -177,3 +177,21 @@ class ResourceVersion(EventOwnedModel):
                 fields=("resource", "version"), name="speakerops_resource_version"
             )
         ]
+
+
+class ScheduleIcsIdentity(EventOwnedModel):
+    submission = models.ForeignKey(
+        "submission.Submission", on_delete=models.CASCADE, related_name="speakerops_ics"
+    )
+    uid = models.CharField(max_length=300)
+    sequence = models.PositiveIntegerField(default=0)
+    fingerprint = models.CharField(max_length=64)
+    canceled = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "submission"), name="speakerops_ics_event_submission"
+            )
+        ]

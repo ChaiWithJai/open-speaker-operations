@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ event.name }} schedule</title>
+  <style>
+    :root { color-scheme: light; }
+    body { font: 1rem/1.5 system-ui, sans-serif; margin: 0; padding: 1rem; }
+    main { max-width: 72rem; margin: auto; }
+    .schedule { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
+    article { border: 1px solid #bbb; border-radius: .4rem; padding: 1rem; }
+    time { color: #555; }
+  </style>
+</head>
+<body>
+<main aria-labelledby="schedule-title">
+  <h1 id="schedule-title">{{ event.name }} schedule</h1>
+  <div class="schedule">
+  {% for slot in schedule.talks.all %}
+    {% if slot.is_visible %}
+    <article>
+      <h2>{{ slot.submission.title }}</h2>
+      <time datetime="{{ slot.start|date:'c' }}">{{ slot.start }}</time>
+      <p>{{ slot.room.name }}</p>
+    </article>
+    {% endif %}
+  {% endfor %}
+  </div>
+</main>
+</body>
+</html>

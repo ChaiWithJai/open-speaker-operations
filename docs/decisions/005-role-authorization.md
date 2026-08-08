@@ -5,6 +5,12 @@
 Can organiser, chair, reviewer, and speaker access use pretalx's existing
 event-scoped authorization without a parallel role system?
 
+## Goal and architecture depth
+
+The goal is a judgeable role journey with server-side denial, not merely role
+labels in seed data. This is an application-boundary decision: it maps product
+roles onto pretalx's existing permission model without changing upstream auth.
+
 ## Baseline and evidence
 
 Pinned pretalx `2025.2.2` implements `pretalx.event.models.organiser.Team` with
@@ -20,6 +26,18 @@ duplicate team membership, event limits, and permission evaluation and could
 drift from pretalx's review rules. URL-only checks would be bypassable by direct
 requests.
 
+The initial seed created chair and reviewer users without team membership; only
+the administrator could actually reach organiser pages. That failed the role
+journey and was corrected by event-limited teams and explicit surface checks.
+The heuristic is to test each role's allowed and denied URLs, not infer access
+from account names.
+
+## How the choice was made
+
+Installed `Team` fields and permission checks were inspected, then the seed was
+rerun with chair/reviewer memberships and a client matrix asserted both 200 and
+404 outcomes. Reviewer assignment was verified through pretalx `Review.user`.
+
 ## Decision and invariants
 
 Seed real pretalx teams and memberships. SpeakerOps checks pretalx permissions
@@ -33,6 +51,9 @@ An upgrade could rename team flags or permission codenames. Re-audit `Team`,
 the submission rules, and the named codenames before upgrading. No parallel
 role migration is needed; removing the plugin leaves team data usable by
 pretalx.
+
+The cost is dependence on pretalx permission codenames and team semantics; a
+permission rename requires a coordinated plugin update.
 
 ## Automated proof
 

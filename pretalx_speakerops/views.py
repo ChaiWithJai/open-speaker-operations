@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -16,6 +16,7 @@ from .domain.state import StateMachine, Transition
 from .models import CommandReceipt, OnboardingTask, PreviewRun, Resource
 from .onboarding.reminders import queue_reminders
 from .onboarding.services import record_evidence
+from .program.calendar import released_ical
 
 TASK_MACHINE = StateMachine(
     states=frozenset(
@@ -261,3 +262,24 @@ class ResourceView(EventContextMixin, TemplateView):
             )
         context.update(event=self.event, resource=resource, version=version)
         return context
+
+
+class PublishedIcsView(View):
+    def get(self, request, event):
+        event = get_object_or_404(Event, slug=event)
+        with scope(event=event):
+            if not event.current_schedule:
+                raise Http404
+            return HttpResponse(released_ical(event), content_type="text/calendar")
+
+
+class PublishedEmbedView(View):
+    def get(self, request, event):
+        event = get_object_or_404(Event, slug=event)
+        with scope(event=event):
+            if not event.current_schedule:
+                raise Http404
+            return TemplateView.as_view(
+                template_name="pretalx_speakerops/embed.html",
+                extra_context={"event": event, "schedule": event.current_schedule},
+            )(request)

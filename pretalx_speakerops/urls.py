@@ -6,6 +6,8 @@ from .views import (
     DashboardView,
     DrilldownView,
     PreviewView,
+    PublishedEmbedView,
+    PublishedIcsView,
     ReminderView,
     ResourceView,
     TaskAdminView,
@@ -14,6 +16,16 @@ from .views import (
 app_name = "speakerops"
 
 urlpatterns = [
+    path(
+        "<slug:event>/speaker-operations/schedule.ics",
+        PublishedIcsView.as_view(),
+        name="speakerops_ics",
+    ),
+    path(
+        "<slug:event>/speaker-operations/embed/",
+        PublishedEmbedView.as_view(),
+        name="speakerops_embed",
+    ),
     path(
         "orga/<slug:event>/speaker-operations/preview/",
         PreviewView.as_view(),

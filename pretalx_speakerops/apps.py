@@ -11,3 +11,4 @@ class SpeakerOpsConfig(AppConfig):
 
     def ready(self):
         from . import receivers  # noqa: F401
+        from .program import policy  # noqa: F401

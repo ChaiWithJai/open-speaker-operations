@@ -5,6 +5,13 @@
 Where can acceptance create onboarding work without surviving a rolled-back
 acceptance or duplicating work on a retried acceptance?
 
+## Goal and architecture depth
+
+The product goal is a trustworthy acceptance-to-onboarding golden path. This
+is a transaction-boundary decision inside the larger plugin architecture: it
+chooses where the plugin observes upstream state without taking ownership of
+submission state.
+
 ## Baseline and evidence
 
 In pinned pretalx `2025.2.2`, `pretalx/submission/models/submission.py:
@@ -26,6 +33,18 @@ or new post-commit upstream signal is unnecessary because the existing signal
 is sufficient when paired with Django `transaction.on_commit`. Direct polling
 or a job also weakens the commit boundary and adds eventual-consistency delay.
 
+The failed quick approach was a receiver that immediately called
+`ensure_acceptance_plan()`: it looked correct in a happy-path test but created
+rows before the outer transaction committed. The heuristic became “observe
+upstream synchronously, perform plugin side effects only after commit, and make
+the consumer idempotent.”
+
+## How the choice was made
+
+The installed source was read at `_set_state()` and the receiver was exercised
+through acceptance tests with repeated acceptance. The uniqueness constraint
+was then checked against the task count rather than inferred from the callback.
+
 ## Decision and invariants
 
 Use the event-plugin-gated `submission_state_change` receiver, register
@@ -41,6 +60,11 @@ An upgrade could move acceptance away from `Submission.accept()`, change
 `EventPluginSignal` activation. Re-audit all four symbols and the signal test
 before upgrading. Rolling back the plugin leaves upstream submissions intact;
 plugin task rows can be migrated independently.
+
+The cost is that onboarding is eventually visible after acceptance commit and
+tests must exercise transaction callbacks; a fork could put the creation in the
+same core method but would own much more code. Re-audit signal timing and
+receiver activation on upgrade.
 
 ## Automated proof
 
