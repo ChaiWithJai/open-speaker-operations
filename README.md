@@ -1,8 +1,28 @@
 # Open Speaker Operations
 
-Open-source planning and implementation baseline for replacing the speaker and program-management subset of Sessionboard described in the AIE “Kill My SaaS” competition.
+## North star: win with a demoable journey
 
-## Decision
+The goal is to win the competition by rapidly prototyping a fully working,
+demoable speaker/program-management solution aligned to the original
+competition documentation, then iterating until a judge can complete the seeded
+journey. The process is part of the deliverable: decisions, failures, decay,
+and recovery stay visible through git history, logs, tests, and the context
+graph.
+
+**Subordination rule:** demoable journey first. Anything not reachable in the
+seeded judge journey does not count as complete, no matter how elegant the
+architecture is. The protected path is:
+
+```text
+CFP → review → acceptance → onboarding → conflict-aware release
+→ public output → synchronization proof
+```
+
+Open-source planning and implementation baseline for replacing the
+speaker/program-management subset of Sessionboard described in the AIE “Kill
+My SaaS” competition.
+
+## Architecture
 
 Extend pretalx as a disclosed, license-compliant modular monolith. Use Rails 8 only if competition rules prohibit derivative work. Deploy the application and worker to DigitalOcean with PostgreSQL as authority, Cloudflare R2 for objects, and Cloudflare at the edge.
 
@@ -11,6 +31,9 @@ Extend pretalx as a disclosed, license-compliant modular monolith. Use Rails 8 o
 - [Product requirements](./kill-my-saas-prd.md)
 - [Architecture RFC](./rails-monolith-rfc.md)
 - [Implementation plan](./speaker-operations-implementation-plan.md)
+- [Context graph](./docs/context-graph.md)
+- [Working log](./docs/log/)
+- [Auditable seam decisions](./docs/decisions/)
 
 ## Requirements authority
 

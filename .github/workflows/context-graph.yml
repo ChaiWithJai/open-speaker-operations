@@ -1,0 +1,16 @@
+name: Context graph
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  context-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Enforce P0 proof coverage
+        run: python scripts/check_context_graph.py

@@ -1,10 +1,16 @@
 # Decision records
 
-## Goal
+## North star
 
-These records make each extension seam auditable. They explain why SpeakerOps
-uses the cheapest seam that preserves pretalx's invariants, rather than merely
-recording the implementation that happened to be chosen.
+The repository is trying to win the competition by rapidly prototyping a
+fully working, **demoable** solution aligned to the original documentation.
+Anything not reachable in the seeded judge journey does not count as complete.
+The decision series exists to make that work and its decay visible, not to
+reward architecture that never reaches the judge.
+
+These records make each extension seam auditable while serving that journey.
+They explain why SpeakerOps uses the cheapest seam that preserves pretalx's
+invariants, and what debt was accepted to keep the demo moving.
 
 ## Seam preference
 
