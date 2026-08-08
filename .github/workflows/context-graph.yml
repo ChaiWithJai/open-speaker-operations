@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  context-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Enforce P0 proof coverage
+        run: python scripts/check_context_graph.py
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install ".[dev]" pytest pytest-django faker
+      - name: Ruff lint
+        run: ruff check pretalx_speakerops tests mock_accelevents
+      - name: Ruff format
+        run: ruff format --check pretalx_speakerops tests mock_accelevents
+      - name: Tests
+        env:
+          DJANGO_SETTINGS_MODULE: pretalx.common.settings.test_settings
+        run: pytest -q tests
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build deployment image
+        run: docker build -t open-speaker-operations .
+      - name: Build compose services
+        run: docker compose build

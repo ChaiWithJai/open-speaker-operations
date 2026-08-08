@@ -1,0 +1,64 @@
+{% extends "orga/base.html" %}
+{% block content %}
+<h1>{{ kind|title }}</h1>
+<a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">&larr; Back to dashboard</a>
+
+{% if kind == 'tasks' %}
+<table class="table">
+  <thead>
+    <tr><th>Speaker</th><th>Task</th><th>Status</th><th>Due</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td>{{ row.speaker }}</td>
+      <td>{{ row.definition.name }}</td>
+      <td>
+        {% if row.status == 'complete' %}<span class="badge bg-success">{{ row.get_status_display }}</span>
+        {% elif row.status == 'waived' %}<span class="badge bg-warning text-dark">{{ row.get_status_display }}</span>
+        {% elif row.due_date and row.due_date < today %}<span class="badge bg-danger">{{ row.get_status_display }}</span>
+        {% else %}<span class="badge bg-secondary">{{ row.get_status_display }}</span>{% endif %}
+      </td>
+      <td>
+        {% if row.due_date %}
+          {% if row.due_date < today and row.status != 'complete' and row.status != 'waived' %}<span class="text-danger">{{ row.due_date }}</span>
+          {% else %}{{ row.due_date }}{% endif %}
+        {% else %}&mdash;{% endif %}
+      </td>
+      <td><a class="btn btn-sm btn-outline-primary" href="#">View</a></td>
+    </tr>
+    {% empty %}<tr><td colspan="5">Nothing here yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+
+{% elif kind == 'undecided' or kind == 'review' %}
+<table class="table">
+  <thead><tr><th>Code</th><th>Title</th><th>State</th></tr></thead>
+  <tbody>
+    {% for row in rows %}<tr><td>{{ row.code }}</td><td>{{ row.title }}</td><td>{{ row.get_state_display }}</td></tr>
+    {% empty %}<tr><td colspan="3">Nothing here yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+
+{% elif kind == 'conflicts' %}
+<table class="table">
+  <thead><tr><th>Detail</th></tr></thead>
+  <tbody>
+    {% for row in rows %}<tr><td><span class="text-danger">{{ row }}</span></td></tr>
+    {% empty %}<tr><td>Nothing here yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+
+{% elif kind == 'sync' %}
+<table class="table">
+  <thead><tr><th>ID</th><th>Status</th><th>Created</th></tr></thead>
+  <tbody>
+    {% for row in rows %}<tr><td>{{ row.pk }}</td><td>{{ row.status }}</td><td>{{ row.created_at }}</td></tr>
+    {% empty %}<tr><td colspan="3">Nothing here yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+<p>Nothing here yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: speakerops
+      POSTGRES_USER: speakerops
+      POSTGRES_PASSWORD: speakerops
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U speakerops -d speakerops"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+
+  mock-accelevents:
+    build:
+      context: .
+      dockerfile: mock_accelevents/Dockerfile
+    environment:
+      MOCK_ACCELEVENTS_KEY: demo-key
+    ports:
+      - "9001:9000"
+
+  web:
+    build: .
+    environment:
+      PRETALX_CONFIG_FILE: /app/docker/pretalx.cfg
+    command: >
+      sh -c "python -m pretalx migrate &&
+      (python -m pretalx init --noinput || true) &&
+      (python -m pretalx create_test_event --stage schedule --slug speakerops-demo --seed 42 || true) &&
+      python -m pretalx speakerops_seed &&
+      python -m pretalx runserver 0.0.0.0:8000 --noreload"
+    volumes:
+      - pretalx-data:/data
+    ports:
+      - "8001:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mock-accelevents:
+        condition: service_started
+
+  worker:
+    build: .
+    environment:
+      PRETALX_CONFIG_FILE: /app/docker/pretalx.cfg
+      DJANGO_SUPERUSER_EMAIL: admin@example.org
+      DJANGO_SUPERUSER_PASSWORD: speakerops-demo
+      PRETALX_INIT_ORGANISER_NAME: Demo Organiser
+      PRETALX_INIT_ORGANISER_SLUG: demo-organiser
+    command: celery -A pretalx.celery_app:app worker --loglevel=INFO
+    volumes:
+      - pretalx-data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  pretalx-data:

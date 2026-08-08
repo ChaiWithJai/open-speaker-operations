@@ -1,8 +1,28 @@
 # Open Speaker Operations
 
-Open-source planning and implementation baseline for replacing the speaker and program-management subset of Sessionboard described in the AIE “Kill My SaaS” competition.
+## North star: win with a demoable journey
 
-## Decision
+The goal is to win the competition by rapidly prototyping a fully working,
+demoable speaker/program-management solution aligned to the original
+competition documentation, then iterating until a judge can complete the seeded
+journey. The process is part of the deliverable: decisions, failures, decay,
+and recovery stay visible through git history, logs, tests, and the context
+graph.
+
+**Subordination rule:** demoable journey first. Anything not reachable in the
+seeded judge journey does not count as complete, no matter how elegant the
+architecture is. The protected path is:
+
+```text
+CFP → review → acceptance → onboarding → conflict-aware release
+→ public output → synchronization proof
+```
+
+Open-source planning and implementation baseline for replacing the
+speaker/program-management subset of Sessionboard described in the AIE “Kill
+My SaaS” competition.
+
+## Architecture
 
 Extend pretalx as a disclosed, license-compliant modular monolith. Use Rails 8 only if competition rules prohibit derivative work. Deploy the application and worker to DigitalOcean with PostgreSQL as authority, Cloudflare R2 for objects, and Cloudflare at the edge.
 
@@ -11,6 +31,61 @@ Extend pretalx as a disclosed, license-compliant modular monolith. Use Rails 8 o
 - [Product requirements](./kill-my-saas-prd.md)
 - [Architecture RFC](./rails-monolith-rfc.md)
 - [Implementation plan](./speaker-operations-implementation-plan.md)
+- [Context graph](./docs/context-graph.md)
+- [Working log](./docs/log/)
+- [Auditable seam decisions](./docs/decisions/)
+
+## Run the seeded judge journey locally
+
+The fastest clean-clone path uses Python 3.11, `uv`, a local virtualenv and
+SQLite:
+
+```bash
+uv venv --python 3.11 .venv
+uv pip install --python .venv/bin/python -e '.[dev]'
+export PRETALX_CONFIG_FILE="$PWD/docker/pretalx-local.cfg"
+.venv/bin/python -m pretalx migrate
+.venv/bin/python -m pretalx speakerops_seed
+.venv/bin/python -m pretalx runserver 127.0.0.1:8000 --noreload
+```
+
+Demo accounts all use password `speakerops-demo`:
+
+```text
+admin@example.org
+chair@example.org
+reviewer@example.org
+speaker@example.org
+```
+
+Follow this numbered journey:
+
+1. Open the seeded event `speakerops-demo` and the public CFP.
+2. Open the proposal form, inspect the seven AIE field types, save a draft,
+   resume it, and submit the proposal.
+3. As the program chair, review proposals and inspect the two configured review rounds.
+4. Accept the seeded proposal and open the speaker checklist.
+5. Complete evidence-backed onboarding work; inspect overdue and waived tasks.
+6. Open the organiser dashboard and inspect deliberate room/speaker conflicts.
+7. Attempt release; the server blocks unresolved conflicts.
+8. Resolve the conflicts and release the schedule.
+9. Open the public schedule, ICS endpoint, and responsive embed.
+10. Open the Accelevents sync card and inspect create/update/no-op items,
+   failure state, and retry history.
+
+### Docker stack
+
+For the deployment-shaped local stack:
+
+```bash
+docker compose up --build
+```
+
+This starts Postgres, Redis, pretalx web, a Celery worker, and the standalone
+mock Accelevents service. No cloud, AI, or Accelevents credentials are needed.
+The mock is intentionally not production Accelevents: it implements only the
+captured speaker/session contract, `Key` authentication, duplicate detection,
+and deterministic failure injection for retry demonstrations.
 
 ## Requirements authority
 

@@ -1,0 +1,167 @@
+{
+  "north_star": "Win with a fully working seeded judge journey; anything unreachable in that journey is not complete.",
+  "protected_path": [
+    "CFP",
+    "review",
+    "acceptance",
+    "onboarding",
+    "conflict-aware release",
+    "public output",
+    "synchronization proof"
+  ],
+  "requirements": [
+    {
+      "id": "P0-roles",
+      "competition_requirement": "Users hold different roles per event and authorization prevents cross-role access.",
+      "prd_acceptance_row": "PRD §9.1 roles and authorization",
+      "decision_records": ["docs/decisions/005-role-authorization.md"],
+      "code_paths": ["pretalx_speakerops/auth.py", "pretalx_speakerops/views.py"],
+      "tests": ["tests/test_m2.py::test_roles_are_scoped_to_surfaces"],
+      "demo_step": "Seeded chair opens organiser dashboard; reviewer is limited to assigned review; speaker opens own checklist.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-review",
+      "competition_requirement": "Configure criteria, weights and review rounds; chair retains final decision authority.",
+      "prd_acceptance_row": "PRD §9.5 review configuration and decisions",
+      "decision_records": ["docs/decisions/008-review-rounds.md"],
+      "code_paths": ["pretalx_speakerops/program/reviews.py"],
+      "tests": ["tests/test_m3.py::test_review_configuration_has_two_rounds_and_auditable_history"],
+      "demo_step": "Seeded event shows Round 1, Round 2, criteria and an accepted proposal's decision history.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-acceptance",
+      "competition_requirement": "Acceptance creates a speaker-facing onboarding checklist.",
+      "prd_acceptance_row": "PRD §9.6 onboarding plan",
+      "decision_records": ["docs/decisions/002-acceptance-onboarding.md"],
+      "code_paths": ["pretalx_speakerops/receivers.py", "pretalx_speakerops/onboarding/services.py"],
+      "tests": ["tests/test_m1.py::test_acceptance_creates_one_task_per_speaker"],
+      "demo_step": "Chair accepts the proposal; the speaker checklist appears without duplicate tasks.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-evidence",
+      "competition_requirement": "Tasks require profile, response, acknowledgement and restricted asset evidence.",
+      "prd_acceptance_row": "PRD §9.6 onboarding evidence",
+      "decision_records": ["docs/decisions/006-onboarding-evidence.md"],
+      "code_paths": ["pretalx_speakerops/onboarding/services.py", "pretalx_speakerops/views.py"],
+      "tests": ["tests/test_m2.py::test_completion_uses_executor_and_evidence", "tests/test_m2.py::test_upload_evaluator_rejects_unsafe_type"],
+      "demo_step": "Speaker completes acknowledgement and sees overdue/upload work ordered next.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-dashboard",
+      "competition_requirement": "Dashboard counts link to filtered records and reconcile exactly.",
+      "prd_acceptance_row": "PRD §9.7 operational dashboard",
+      "decision_records": ["docs/decisions/004-domain-executor.md"],
+      "code_paths": ["pretalx_speakerops/views.py", "pretalx_speakerops/templates/pretalx_speakerops/dashboard.html"],
+      "tests": ["tests/test_m2.py::test_dashboard_cards_reconcile_to_each_drilldown"],
+      "demo_step": "Chair clicks outstanding tasks and conflicts; card totals equal the visible rows.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-reminders",
+      "competition_requirement": "Queue reusable reminders safely with delivery deduplication.",
+      "prd_acceptance_row": "PRD §9.7 communications",
+      "decision_records": ["docs/decisions/007-reminders-resources.md"],
+      "code_paths": ["pretalx_speakerops/onboarding/reminders.py"],
+      "tests": ["tests/test_m2.py::test_reminder_replay_is_deduplicated"],
+      "demo_step": "Seeded reminder appears in the mail queue and replay does not create another receipt.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-conflicts",
+      "competition_requirement": "Detect speaker and room overlap and block unsafe release.",
+      "prd_acceptance_row": "PRD §9.8 conflict-aware scheduling",
+      "decision_records": ["docs/decisions/009-publication-warning-policy.md"],
+      "code_paths": ["pretalx_speakerops/program/policy.py"],
+      "tests": ["tests/test_m2.py::test_dashboard_conflict_count_reconciles_to_rows", "tests/test_m3.py::test_blocking_schedule_warning_prevents_release"],
+      "demo_step": "Seeded WIP schedule shows blocking conflicts; release is attempted, blocked, then resolved before release.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-publication",
+      "competition_requirement": "Only explicitly published records appear on public schedule surfaces.",
+      "prd_acceptance_row": "PRD §9.8 publication boundary",
+      "decision_records": ["docs/decisions/009-publication-warning-policy.md"],
+      "code_paths": ["pretalx/schedule/services.py", "pretalx_speakerops/program/policy.py", "pretalx_speakerops/views.py"],
+      "tests": ["tests/test_m1.py::test_golden_path_crosses_plugin_boundaries", "tests/test_m3.py::test_published_embed_is_cross_origin_readable_and_released_only"],
+      "demo_step": "After release, the public schedule and embed show the released placement while WIP remains organiser data.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-calendar",
+      "competition_requirement": "Calendar updates retain UID, increment sequence and express cancellation.",
+      "prd_acceptance_row": "PRD §9.8 ICS export",
+      "decision_records": ["docs/decisions/010-ics-and-embed.md"],
+      "code_paths": ["pretalx_speakerops/program/calendar.py"],
+      "tests": ["tests/test_m3.py::test_released_ics_has_stable_uid_and_incrementing_sequence"],
+      "demo_step": "Judge opens the released ICS endpoint and updates a session without creating a duplicate UID.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-embed",
+      "competition_requirement": "Provide responsive accessible event-scoped read-only embeds.",
+      "prd_acceptance_row": "PRD §9.10 public embed",
+      "decision_records": ["docs/decisions/010-ics-and-embed.md"],
+      "code_paths": ["pretalx_speakerops/views.py", "pretalx_speakerops/templates/pretalx_speakerops/embed.html"],
+      "tests": ["tests/test_m3.py::test_published_embed_is_cross_origin_readable_and_released_only"],
+      "demo_step": "Judge loads the public embed URL and sees released sessions in a responsive card layout.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-cfp-builder",
+      "competition_requirement": "Public CFP supports text, long text, select, multiselect, boolean, URL and file fields with requiredness, help text, choices, ordering, category association, and draft/resume.",
+      "prd_acceptance_row": "PRD §9.3 CFP builder",
+      "decision_records": ["docs/decisions/012-cfp-builder.md"],
+      "code_paths": ["pretalx_speakerops/cfp.py", "pretalx_speakerops/management/commands/speakerops_seed.py"],
+      "tests": ["tests/test_cfp.py::test_seeded_cfp_renders_accepts_all_p0_field_types_and_resumes_draft"],
+      "demo_step": "Judge opens the seeded CFP, sees the seven AIE question types, saves a draft, resumes it, and proceeds to review.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-accelevents-sync",
+      "competition_requirement": "Idempotent organizer-triggered synchronization with external identities, retries, and reconciliation.",
+      "prd_acceptance_row": "PRD §9.9 synchronization",
+      "decision_records": ["docs/decisions/011-accelevents-sync.md"],
+      "code_paths": ["pretalx_speakerops/integrations/accelevents.py", "pretalx_speakerops/integrations/sync.py", "pretalx_speakerops/models.py"],
+      "tests": ["tests/test_m4.py::test_partial_run_retry_does_not_resend_successful_item", "tests/test_m4.py::test_mock_contract_auth_duplicate_and_bare_integer", "tests/test_m4.py::test_update_then_preview_is_noop_and_stale_preview_is_rejected"],
+      "demo_step": "Judge opens the seeded sync card, sees create/update/no-op items, a failed item, and a successful retry without resending the successful item.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-credential-state",
+      "competition_requirement": "Surface unavailable integration credentials honestly instead of pretending synchronization is connected.",
+      "prd_acceptance_row": "PRD §9.9 integration readiness",
+      "decision_records": ["docs/decisions/011-accelevents-sync.md"],
+      "code_paths": ["pretalx_speakerops/models.py", "pretalx_speakerops/views.py"],
+      "tests": ["tests/test_m4.py::test_mock_contract_auth_duplicate_and_bare_integer"],
+      "demo_step": "Organiser dashboard displays the connection status and credential-blocked state when no credential is configured.",
+      "status": "complete",
+      "priority": "P0"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "P1-cfp-routing",
+      "competition_requirement": "Conditional visibility and answer-based routing.",
+      "prd_acceptance_row": "PRD §9.3 CFP builder (P1/M5)",
+      "status": "gap",
+      "shortest_path": "Add conditional question visibility and answer routing after the protected P0 journey is stable.",
+      "blocked_by": "P1/M5 scope"
+    }
+  ]
+}
