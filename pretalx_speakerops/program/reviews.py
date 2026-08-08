@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django_scopes import scope
 from pretalx.common.models import ActivityLog
-from pretalx.submission.models import Review, ReviewPhase, ReviewScoreCategory
+from pretalx.submission.models import Review, ReviewPhase, ReviewScore, ReviewScoreCategory
 
 from ..models import TransitionLog
 
@@ -25,6 +25,11 @@ def configure_review_rounds(event, second_round=True):
                 phase.position = position
                 phase.save(update_fields=["position"])
             phases.append(phase)
+        configured_names = {"Program fit", "Speaker value", "Practicality"}
+        for existing in list(event.score_categories.all()):
+            if str(existing.name) == "Score" and str(existing.name) not in configured_names:
+                existing.delete()
+
         criteria = []
         for _position, (name, weight) in enumerate(
             (("Program fit", 2), ("Speaker value", 1), ("Practicality", 1))
@@ -36,6 +41,19 @@ def configure_review_rounds(event, second_round=True):
             if category is None:
                 category = ReviewScoreCategory.objects.create(
                     event=event, name=name, weight=weight, required=True
+                )
+            else:
+                category.weight = weight
+                category.required = True
+                category.active = True
+                category.save(update_fields=["weight", "required", "active", "updated"])
+            for value, label in enumerate(
+                ("Not demonstrated", "Weak", "Adequate", "Strong", "Exceptional"), start=1
+            ):
+                ReviewScore.objects.update_or_create(
+                    category=category,
+                    value=value,
+                    defaults={"label": label},
                 )
             criteria.append(category)
         return phases, criteria

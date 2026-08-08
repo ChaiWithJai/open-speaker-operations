@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -9,24 +10,28 @@ from django.views.generic import TemplateView, View
 from django_scopes import scope
 from pretalx.event.models import Event
 from pretalx.person.models import User
-from pretalx.submission.models import Submission, SubmissionStates
+from pretalx.submission.models import Review, ReviewScore, Submission, SubmissionStates
 
 from .auth import is_speaker, require_event_permission
 from .domain.commands import Command, execute
 from .domain.state import StateMachine, Transition
-from .integrations.sync import execute_preview, preview
+from .integrations.sync import execute_item, execute_preview, preview
 from .models import (
     AcceleventsConnection,
     CommandReceipt,
     OnboardingTask,
     OutboxEvent,
-    PreviewRun,
     Resource,
+    ReviewRecommendation,
+    SyncItem,
+    SyncPreview,
     SyncRun,
 )
 from .onboarding.reminders import queue_reminders
 from .onboarding.services import record_evidence
 from .program.calendar import released_ical
+from .program.policy import classify_warnings, release_schedule
+from .program.reviews import configure_review_rounds
 
 TASK_MACHINE = StateMachine(
     states=frozenset(
@@ -86,11 +91,17 @@ class DashboardView(EventContextMixin, TemplateView):
             tasks = OnboardingTask.objects.filter(event=self.event)
             proposals = Submission.objects.filter(event=self.event)
             schedule = self.event.wip_schedule
-            conflicts = len(schedule.get_all_talk_warnings()) if schedule else 0
+            conflicts = len(classify_warnings(schedule)) if schedule else 0
             overdue_tasks = tasks.filter(
                 due_date__lt=today,
                 status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
             ).count()
+            review_rows = proposals.filter(reviews__isnull=False).distinct()
+            missing_assets = tasks.filter(
+                definition__completion_evaluator="upload",
+                status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
+            )
+            sync_errors = SyncItem.objects.filter(event=self.event, status=SyncItem.FAILED)
             context.update(
                 event=self.event,
                 counts={
@@ -98,10 +109,11 @@ class DashboardView(EventContextMixin, TemplateView):
                         status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED)
                     ).count(),
                     "undecided": proposals.filter(state=SubmissionStates.SUBMITTED).count(),
-                    "reviewed": proposals.filter(reviews__isnull=False).distinct().count(),
+                    "reviewed": review_rows.count(),
                     "proposals": proposals.count(),
                     "conflicts": conflicts,
-                    "sync": SyncRun.objects.filter(event=self.event).count(),
+                    "missing_assets": missing_assets.count(),
+                    "sync": sync_errors.count(),
                     "sync_status": (
                         AcceleventsConnection.objects.filter(event=self.event)
                         .values_list("status", flat=True)
@@ -112,6 +124,7 @@ class DashboardView(EventContextMixin, TemplateView):
                 attention={
                     "overdue": overdue_tasks,
                     "blocked_release": conflicts > 0,
+                    "sync_errors": sync_errors.count(),
                 },
             )
             return context
@@ -140,18 +153,24 @@ class DrilldownView(DashboardView):
                 if not self.request.user.has_perm("submission.orga_update_submission", self.event):
                     review_rows = review_rows.filter(reviews__user=self.request.user)
                 rows = list(review_rows.distinct())
+            elif kind == "missing-assets":
+                rows = list(
+                    OnboardingTask.objects.filter(
+                        event=self.event,
+                        definition__completion_evaluator="upload",
+                        status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
+                    ).select_related("speaker", "definition", "submission")
+                )
             elif kind in {"sync", "conflicts"}:
                 if kind == "conflicts":
                     schedule = self.event.wip_schedule
-                    raw = schedule.get_all_talk_warnings() if schedule else {}
-                    rows = []
-                    for talk, warnings in raw.items():
-                        title = talk.submission.title if talk.submission else str(talk)
-                        for w in warnings:
-                            msg = w.get("message") if isinstance(w, dict) else str(w)
-                            rows.append(f"{title}: {msg}")
+                    rows = classify_warnings(schedule) if schedule else []
                 else:
-                    rows = list(PreviewRun.objects.filter(event=self.event))
+                    rows = list(
+                        SyncItem.objects.filter(event=self.event, status=SyncItem.FAILED)
+                        .select_related("run")
+                        .order_by("-updated")
+                    )
             else:
                 rows = []
         context.update(kind=kind, rows=rows)
@@ -188,6 +207,221 @@ class ChecklistView(EventContextMixin, TemplateView):
         done = len(complete) + len(waived)
         context["progress"] = {"total": total, "done": done}
         return context
+
+
+class ReviewerScoringView(EventContextMixin, TemplateView):
+    permission = "review"
+    template_name = "pretalx_speakerops/reviewer_scoring.html"
+
+    def _queue(self):
+        queue = Submission.objects.filter(
+            event=self.event,
+            state=SubmissionStates.SUBMITTED,
+        ).prefetch_related("assigned_reviewers", "reviews")
+        if not self.request.user.has_perm("submission.orga_update_submission", self.event):
+            queue = queue.filter(assigned_reviewers=self.request.user)
+        return queue.distinct().order_by("title")
+
+    def _submission(self):
+        queue = self._queue()
+        if self.kwargs.get("pk"):
+            return get_object_or_404(queue, pk=self.kwargs["pk"])
+        return queue.first()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        with scope(event=self.event):
+            configure_review_rounds(self.event)
+            queue = list(self._queue())
+            submission = self._submission()
+            review = None
+            recommendation = None
+            criteria = []
+            if submission:
+                review = Review.objects.filter(
+                    submission=submission, user=self.request.user
+                ).first()
+                selected = (
+                    {score.category_id: score.pk for score in review.scores.all()} if review else {}
+                )
+                criteria = [
+                    {
+                        "category": category,
+                        "options": list(category.scores.all()),
+                        "selected": selected.get(category.pk),
+                    }
+                    for category in submission.score_categories.prefetch_related("scores")
+                ]
+                recommendation = ReviewRecommendation.objects.filter(
+                    event=self.event,
+                    submission=submission,
+                    reviewer=self.request.user,
+                ).first()
+        context.update(
+            event=self.event,
+            queue=queue,
+            submission=submission,
+            review=review,
+            criteria=criteria,
+            recommendation=recommendation,
+            recommendation_choices=ReviewRecommendation.CHOICES,
+        )
+        return context
+
+    def post(self, request, event, pk=None):
+        with scope(event=self.event):
+            configure_review_rounds(self.event)
+            submission = self._submission()
+            if not submission:
+                raise Http404
+            review, _ = Review.objects.get_or_create(
+                submission=submission,
+                user=request.user,
+            )
+            chosen_scores = []
+            for category in submission.score_categories:
+                score_pk = request.POST.get(f"score_{category.pk}")
+                if score_pk:
+                    chosen_scores.append(
+                        get_object_or_404(ReviewScore, pk=score_pk, category=category)
+                    )
+            review.text = request.POST.get("comments", "").strip()
+            review.save(update_score=False)
+            review.scores.set(chosen_scores)
+            review.save()
+            recommendation_value = request.POST.get("recommendation", ReviewRecommendation.HOLD)
+            if recommendation_value not in dict(ReviewRecommendation.CHOICES):
+                recommendation_value = ReviewRecommendation.HOLD
+            ReviewRecommendation.objects.update_or_create(
+                event=self.event,
+                submission=submission,
+                reviewer=request.user,
+                defaults={"recommendation": recommendation_value},
+            )
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse(
+                {"saved": True, "score": review.display_score, "updated": timezone.now()}
+            )
+        messages.success(request, "Review saved.")
+        return redirect(
+            reverse(
+                "plugins:speakerops:speakerops_review",
+                kwargs={"event": event, "pk": submission.pk},
+            )
+        )
+
+
+class AgendaReleaseView(EventContextMixin, TemplateView):
+    permission = "manage"
+    template_name = "pretalx_speakerops/agenda_release.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        with scope(event=self.event):
+            schedule = self.event.wip_schedule
+            slots = (
+                list(
+                    schedule.talks.filter(submission__isnull=False)
+                    .select_related("submission", "room")
+                    .prefetch_related("submission__speakers")
+                    .order_by("start", "room__position")
+                )
+                if schedule
+                else []
+            )
+            warnings = classify_warnings(schedule) if schedule else []
+        context.update(
+            event=self.event,
+            schedule=schedule,
+            slots=slots,
+            warnings=warnings,
+            blocking=[warning for warning in warnings if warning["blocking"]],
+        )
+        return context
+
+    def post(self, request, event):
+        if request.POST.get("confirm_release") != "yes":
+            messages.error(request, "Confirm the public schedule release first.")
+            return redirect(request.path)
+        with scope(event=self.event):
+            schedule = self.event.wip_schedule
+            try:
+                release_schedule(
+                    schedule,
+                    request.POST.get("name", "SpeakerOps release").strip() or "SpeakerOps release",
+                    request.user,
+                    notify_speakers=False,
+                )
+            except ValidationError as error:
+                messages.error(request, "; ".join(error.messages))
+            else:
+                messages.success(request, "Schedule released.")
+        return redirect(request.path)
+
+
+def _accepted_speaker_payloads(event):
+    speaker_ids = Submission.objects.filter(
+        event=event, state=SubmissionStates.ACCEPTED
+    ).values_list("speakers", flat=True)
+    return [
+        (
+            "speaker",
+            speaker.pk,
+            {
+                "firstName": (speaker.name or "Speaker").split(" ", 1)[0],
+                "lastName": (speaker.name or "Speaker").split(" ", 1)[-1],
+                "email": speaker.email,
+            },
+        )
+        for speaker in User.objects.filter(pk__in=speaker_ids)
+    ]
+
+
+class SyncConsoleView(EventContextMixin, TemplateView):
+    permission = "manage"
+    template_name = "pretalx_speakerops/sync_console.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        with scope(event=self.event):
+            connection = AcceleventsConnection.objects.filter(event=self.event).first()
+            previews = list(
+                SyncPreview.objects.filter(event=self.event).order_by("-created_at")[:5]
+            )
+            runs = list(
+                SyncRun.objects.filter(event=self.event)
+                .select_related("preview")
+                .prefetch_related("items__attempt_history")
+                .order_by("-created")[:10]
+            )
+        context.update(event=self.event, connection=connection, previews=previews, runs=runs)
+        return context
+
+    def post(self, request, event):
+        action = request.POST.get("action")
+        with scope(event=self.event):
+            if action == "preview":
+                preview(self.event, _accepted_speaker_payloads(self.event))
+                messages.success(request, "Synchronization preview created.")
+            elif action == "run" and request.POST.get("confirm_sync") == "yes":
+                try:
+                    execute_preview(self.event, request.POST["preview_id"], request.user)
+                except (ValueError, KeyError) as error:
+                    messages.error(request, str(error))
+                else:
+                    messages.success(request, "Synchronization run created.")
+            elif action == "retry" and request.POST.get("confirm_sync") == "yes":
+                item = get_object_or_404(
+                    SyncItem,
+                    pk=request.POST.get("item_id"),
+                    event=self.event,
+                    status=SyncItem.FAILED,
+                )
+                execute_item(item, request.user)
+                messages.success(request, "Failed item retried.")
+            else:
+                messages.error(request, "Choose an action and confirm external writes.")
+        return redirect(request.path)
 
 
 class CompleteTaskView(EventContextMixin, View):
@@ -275,22 +509,7 @@ class SyncPreviewView(EventContextMixin, View):
 
     def post(self, request, event):
         with scope(event=self.event):
-            speaker_ids = Submission.objects.filter(
-                event=self.event, state=SubmissionStates.ACCEPTED
-            ).values_list("speakers", flat=True)
-            payloads = [
-                (
-                    "speaker",
-                    speaker.pk,
-                    {
-                        "firstName": speaker.name.split(" ", 1)[0],
-                        "lastName": speaker.name.split(" ", 1)[-1],
-                        "email": speaker.email,
-                    },
-                )
-                for speaker in User.objects.filter(pk__in=speaker_ids)
-            ]
-            result = preview(self.event, payloads)
+            result = preview(self.event, _accepted_speaker_payloads(self.event))
         return JsonResponse({"id": result.pk, "items": result.payload["items"]})
 
 
@@ -336,16 +555,45 @@ class PublishedIcsView(View):
             return HttpResponse(released_ical(event), content_type="text/calendar")
 
 
-class PublishedEmbedView(View):
+class PublishedScheduleMixin:
+    template_name = "pretalx_speakerops/embed.html"
+
     def get(self, request, event):
         event = get_object_or_404(Event, slug=event)
         with scope(event=event):
-            if not event.current_schedule:
+            schedule = event.current_schedule
+            if not schedule:
                 raise Http404
-            return TemplateView.as_view(
-                template_name="pretalx_speakerops/embed.html",
-                extra_context={"event": event, "schedule": event.current_schedule},
-            )(request)
+            slots = list(
+                schedule.talks.filter(is_visible=True, submission__isnull=False)
+                .select_related("submission", "room")
+                .prefetch_related("submission__speakers")
+                .order_by("start", "room__position")
+            )
+            speakers = []
+            seen = set()
+            for slot in slots:
+                for speaker in slot.submission.speakers.all():
+                    if speaker.pk not in seen:
+                        seen.add(speaker.pk)
+                        speakers.append(speaker)
+        return TemplateView.as_view(
+            template_name=self.template_name,
+            extra_context={
+                "event": event,
+                "schedule": schedule,
+                "slots": slots,
+                "speakers": speakers,
+            },
+        )(request)
+
+
+class PublishedEmbedView(PublishedScheduleMixin, View):
+    pass
+
+
+class PublishedGalleryView(PublishedScheduleMixin, View):
+    template_name = "pretalx_speakerops/gallery.html"
 
 
 class StatusView(View):

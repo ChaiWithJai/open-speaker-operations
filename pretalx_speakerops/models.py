@@ -300,3 +300,38 @@ class SyncAttempt(EventOwnedModel):
     error = models.TextField(blank=True)
     started_at = models.DateTimeField(default=timezone.now)
     finished_at = models.DateTimeField(null=True, blank=True)
+
+
+class ReviewRecommendation(EventOwnedModel):
+    """A reviewer's explicit recommendation, separate from chair authority."""
+
+    STRONG_ACCEPT = "strong_accept"
+    ACCEPT = "accept"
+    HOLD = "hold"
+    REJECT = "reject"
+    CHOICES = (
+        (STRONG_ACCEPT, "Strong accept"),
+        (ACCEPT, "Accept"),
+        (HOLD, "Discuss"),
+        (REJECT, "Reject"),
+    )
+
+    submission = models.ForeignKey(
+        "submission.Submission",
+        on_delete=models.CASCADE,
+        related_name="speakerops_recommendations",
+    )
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="speakerops_recommendations",
+    )
+    recommendation = models.CharField(max_length=24, choices=CHOICES, default=HOLD)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "submission", "reviewer"),
+                name="speakerops_recommendation_event_submission_reviewer",
+            )
+        ]

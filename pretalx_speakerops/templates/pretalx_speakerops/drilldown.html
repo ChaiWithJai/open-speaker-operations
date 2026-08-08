@@ -1,9 +1,12 @@
 {% extends "orga/base.html" %}
+{% load static %}
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
 {% block content %}
+<main class="speakerops">
 <h1>{{ kind|title }}</h1>
 <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">&larr; Back to dashboard</a>
 
-{% if kind == 'tasks' %}
+{% if kind == 'tasks' or kind == 'missing-assets' %}
 <table class="table">
   <thead>
     <tr><th>Speaker</th><th>Task</th><th>Status</th><th>Due</th><th></th></tr>
@@ -25,7 +28,7 @@
           {% else %}{{ row.due_date }}{% endif %}
         {% else %}&mdash;{% endif %}
       </td>
-      <td><a class="btn btn-sm btn-outline-primary" href="#">View</a></td>
+      <td>{% if row.submission %}{{ row.submission.title }}{% else %}—{% endif %}</td>
     </tr>
     {% empty %}<tr><td colspan="5">Nothing here yet.</td></tr>{% endfor %}
   </tbody>
@@ -44,21 +47,22 @@
 <table class="table">
   <thead><tr><th>Detail</th></tr></thead>
   <tbody>
-    {% for row in rows %}<tr><td><span class="text-danger">{{ row }}</span></td></tr>
+    {% for row in rows %}<tr><td><span class="text-danger">{{ row.message }}</span></td></tr>
     {% empty %}<tr><td>Nothing here yet.</td></tr>{% endfor %}
   </tbody>
 </table>
 
 {% elif kind == 'sync' %}
 <table class="table">
-  <thead><tr><th>ID</th><th>Status</th><th>Created</th></tr></thead>
+  <thead><tr><th>Record</th><th>Status</th><th>Error</th><th>Attempts</th></tr></thead>
   <tbody>
-    {% for row in rows %}<tr><td>{{ row.pk }}</td><td>{{ row.status }}</td><td>{{ row.created_at }}</td></tr>
-    {% empty %}<tr><td colspan="3">Nothing here yet.</td></tr>{% endfor %}
+    {% for row in rows %}<tr><td>{{ row.local_type }} #{{ row.local_id }}</td><td>{{ row.status }}</td><td>{{ row.error }}</td><td>{{ row.attempts }}</td></tr>
+    {% empty %}<tr><td colspan="4">Nothing here yet.</td></tr>{% endfor %}
   </tbody>
 </table>
 
 {% else %}
 <p>Nothing here yet.</p>
 {% endif %}
+</main>
 {% endblock %}
