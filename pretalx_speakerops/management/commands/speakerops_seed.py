@@ -119,7 +119,11 @@ class Command(BaseCommand):
             if assigned_review and assigned_review.user_id != users["reviewer"].pk:
                 assigned_review.user = users["reviewer"]
                 assigned_review.save(update_fields=["user", "updated"])
-            submission = event.submissions.filter(state=SubmissionStates.ACCEPTED).first()
+            submission = (
+                event.submissions.exclude(state__in=(SubmissionStates.REJECTED, SubmissionStates.WITHDRAWN))
+                .order_by("pk")
+                .first()
+            )
             if submission:
                 submission.speakers.add(users["speaker"])
                 ensure_acceptance_plan(submission)

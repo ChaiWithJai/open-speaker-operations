@@ -164,12 +164,28 @@ class ChecklistView(EventContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["event"] = self.event
         with scope(event=self.event):
-            context["tasks"] = list(
+            tasks = list(
                 OnboardingTask.objects.filter(event=self.event, speaker=self.request.user)
                 .select_related("definition", "submission")
                 .order_by("status", "due_date", "definition__position", "id")
             )
-        context["today"] = timezone.localdate()
+        today = timezone.localdate()
+        pending, complete, waived = [], [], []
+        for t in tasks:
+            if t.status == OnboardingTask.COMPLETE:
+                complete.append(t)
+            elif t.status == OnboardingTask.WAIVED:
+                waived.append(t)
+            else:
+                pending.append(t)
+        context["tasks"] = tasks
+        context["pending"] = pending
+        context["complete"] = complete
+        context["waived"] = waived
+        context["today"] = today
+        total = len(tasks)
+        done = len(complete) + len(waived)
+        context["progress"] = {"total": total, "done": done}
         return context
 
 
