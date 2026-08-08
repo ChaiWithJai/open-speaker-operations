@@ -81,15 +81,15 @@ class DashboardView(EventContextMixin, TemplateView):
     def get_context_data(self, **kwargs):
         with scope(event=self.event):
             context = super().get_context_data(**kwargs)
+            today = timezone.localdate()
             tasks = OnboardingTask.objects.filter(event=self.event)
-            task_type = self.request.GET.get("task_type")
-            if task_type:
-                tasks = tasks.filter(definition__task_type=task_type)
-            if self.request.GET.get("overdue") == "1":
-                tasks = tasks.filter(due_date__lt=timezone.localdate())
             proposals = Submission.objects.filter(event=self.event)
             schedule = self.event.wip_schedule
             conflicts = len(schedule.get_all_talk_warnings()) if schedule else 0
+            overdue_tasks = tasks.filter(
+                due_date__lt=today,
+                status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
+            ).count()
             context.update(
                 event=self.event,
                 counts={
@@ -108,8 +108,12 @@ class DashboardView(EventContextMixin, TemplateView):
                         or "not configured"
                     ),
                 },
+                attention={
+                    "overdue": overdue_tasks,
+                    "blocked_release": conflicts > 0,
+                },
             )
-        return context
+            return context
 
 
 class DrilldownView(DashboardView):
