@@ -1,0 +1,12 @@
+# Decision: Plugin foundation
+- Requirement and acceptance ID: M0/M1 foundation
+- Baseline behavior: Depend on upstream pretalx from PyPI.
+- DeepWiki pages consulted: None for implementation claims.
+- Pinned source files and tests verified: `pretalx/settings.py` entry-point loading; `pretalx/urls.py` plugin URL loading; `pretalx/common/plugins.py` metadata discovery; `pretalx/event/models/event.py` plugin activation.
+- Missing behavior: Product-owned aggregates and operational workflow.
+- Alternatives considered: Vendored fork; direct core patch.
+- Chosen seam: plugin-owned models/views/jobs/templates and signals.
+- Invariants affected: Event scope is enforced through plugin `event` foreign keys and request checks.
+- Migration and rollback: Plugin migrations are independent; upstream remains unmodified.
+- Security/license impact: Repository remains AGPL-3.0; pretalx 2025.2.2 is an unmodified PyPI dependency and this repository is a derivative-adjacent plugin, not a fork.
+- Automated acceptance proof: Plugin entry point and event-scoped dashboard test.

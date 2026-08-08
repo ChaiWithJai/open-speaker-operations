@@ -1,0 +1,12 @@
+# Decision: Speaker checklist surface
+- Requirement and acceptance ID: M1 speaker next-action checklist
+- Baseline behavior: Installed pretalx has no speaker-area or CfP navigation injection signal.
+- DeepWiki pages consulted: None for implementation claims.
+- Pinned source files and tests verified: `pretalx/orga/signals.py` contains `nav_event`, `nav_global`, `nav_event_settings`, and `speaker_form`; no speaker navigation signal; `pretalx/agenda/urls.py` provides event-scoped public routes.
+- Missing behavior: A speaker navigation injection point.
+- Alternatives considered: Core patch; template override.
+- Chosen seam: Public event-scoped URL `<event>/speaker-operations/checklist/`, avoiding pretalx's existing `<event>/speaker/<code>/` route, and linked from acceptance mail/dashboard in later slices.
+- Invariants affected: View permits only authenticated users who are speakers on that event.
+- Migration and rollback: URL/view/template are plugin-owned.
+- Security/license impact: Server-side event and speaker membership checks; no core changes.
+- Automated acceptance proof: Speaker client can view and complete only their own task.

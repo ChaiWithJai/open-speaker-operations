@@ -1,0 +1,12 @@
+# Decision: Acceptance onboarding side effect
+- Requirement and acceptance ID: M1 acceptance creates onboarding work
+- Baseline behavior: `pretalx/submission/signals.py:submission_state_change` emits after `Submission._set_state()`.
+- DeepWiki pages consulted: None for implementation claims.
+- Pinned source files and tests verified: `pretalx/submission/models/submission.py:Submission.accept`, `Submission.reject`, `Submission._set_state`; `pretalx/common/signals.py:EventPluginSignal`.
+- Missing behavior: Onboarding task definitions and instances.
+- Alternatives considered: Core patch; direct `Submission.save` override.
+- Chosen seam: plugin signal receiver plus `transaction.on_commit`.
+- Invariants affected: pretalx owns submission state; plugin only creates event-scoped onboarding rows.
+- Migration and rollback: Plugin-owned tables can be migrated or removed independently.
+- Security/license impact: Receiver is active only for enabled events through `EventPluginSignal`.
+- Automated acceptance proof: Replay acceptance produces one task per speaker/definition.

@@ -1,0 +1,12 @@
+# Decision: Plugin domain executor
+- Requirement and acceptance ID: M1 plugin-owned lifecycle spine
+- Baseline behavior: pretalx owns submission and schedule-release transitions.
+- DeepWiki pages consulted: None for implementation claims.
+- Pinned source files and tests verified: `pretalx/submission/models/submission.py:Submission.accept/reject`; `pretalx/schedule/services.py` release service; `pretalx/schedule/signals.py:schedule_release`.
+- Missing behavior: Idempotent plugin aggregate commands, transition logs, outbox, and receipts.
+- Alternatives considered: Direct model mutation; signals for all plugin state.
+- Chosen seam: Plugin-owned models and `domain.commands.execute`.
+- Invariants affected: Atomic lock, event scope, optimistic version, declarative transition validation, receipt replay.
+- Migration and rollback: Plugin migration only.
+- Security/license impact: Actor authentication and event ownership are checked before mutation.
+- Automated acceptance proof: Transition-table and replay tests.
