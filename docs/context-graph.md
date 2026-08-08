@@ -25,7 +25,7 @@ shows what is not yet demoable and the shortest path to making it so.
 | Evidence and reminders | Complete | Speaker checklist and queue dedupe |
 | Conflict-aware release | Complete | Seeded WIP conflicts block release |
 | Public schedule/ICS/embed | Complete | Released-only outputs |
-| CFP builder | Gap | Requires seeded proposal-form journey |
+| CFP builder | Complete | Seeded AIE form covers all P0 field types and draft/resume |
 | Accelevents synchronization | Complete | Mock contract, identities, retry and reconciliation proof |
 
 ## CI contract

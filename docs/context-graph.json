@@ -121,6 +121,17 @@
       "priority": "P0"
     },
     {
+      "id": "P0-cfp-builder",
+      "competition_requirement": "Public CFP supports text, long text, select, multiselect, boolean, URL and file fields with requiredness, help text, choices, ordering, category association, and draft/resume.",
+      "prd_acceptance_row": "PRD §9.3 CFP builder",
+      "decision_records": ["docs/decisions/012-cfp-builder.md"],
+      "code_paths": ["pretalx_speakerops/cfp.py", "pretalx_speakerops/management/commands/speakerops_seed.py"],
+      "tests": ["tests/test_cfp.py::test_seeded_cfp_renders_accepts_all_p0_field_types_and_resumes_draft"],
+      "demo_step": "Judge opens the seeded CFP, sees the seven AIE question types, saves a draft, resumes it, and proceeds to review.",
+      "status": "complete",
+      "priority": "P0"
+    },
+    {
       "id": "P0-accelevents-sync",
       "competition_requirement": "Idempotent organizer-triggered synchronization with external identities, retries, and reconciliation.",
       "prd_acceptance_row": "PRD §9.9 synchronization",
@@ -145,12 +156,12 @@
   ],
   "gaps": [
     {
-      "id": "P0-cfp-builder",
-      "competition_requirement": "Rich configurable CFP fields, draft/resume and conditional routing.",
-      "prd_acceptance_row": "PRD §9.2 CFP builder",
+      "id": "P1-cfp-routing",
+      "competition_requirement": "Conditional visibility and answer-based routing.",
+      "prd_acceptance_row": "PRD §9.3 CFP builder (P1/M5)",
       "status": "gap",
-      "shortest_path": "Add a seeded proposal form journey over pretalx questions and answers.",
-      "blocked_by": "Post-M4 hardening"
+      "shortest_path": "Add conditional question visibility and answer routing after the protected P0 journey is stable.",
+      "blocked_by": "P1/M5 scope"
     }
   ]
 }

@@ -37,9 +37,13 @@ Extend pretalx as a disclosed, license-compliant modular monolith. Use Rails 8 o
 
 ## Run the seeded judge journey locally
 
-The fastest path uses the existing virtualenv and SQLite:
+The fastest clean-clone path uses Python 3.11, `uv`, a local virtualenv and
+SQLite:
 
 ```bash
+uv venv --python 3.11 .venv
+uv pip install --python .venv/bin/python -e '.[dev]'
+export PRETALX_CONFIG_FILE="$PWD/docker/pretalx-local.cfg"
 .venv/bin/python -m pretalx migrate
 .venv/bin/python -m pretalx speakerops_seed
 .venv/bin/python -m pretalx runserver 127.0.0.1:8000 --noreload
@@ -56,15 +60,17 @@ speaker@example.org
 
 Follow this numbered journey:
 
-1. Open the seeded event `speakerops-demo` as the program chair.
-2. Review proposals and inspect the two configured review rounds.
-3. Accept the seeded proposal and open the speaker checklist.
-4. Complete evidence-backed onboarding work; inspect overdue and waived tasks.
-5. Open the organiser dashboard and inspect deliberate room/speaker conflicts.
-6. Attempt release; the server blocks unresolved conflicts.
-7. Resolve the conflicts and release the schedule.
-8. Open the public schedule, ICS endpoint, and responsive embed.
-9. Open the Accelevents sync card and inspect create/update/no-op items,
+1. Open the seeded event `speakerops-demo` and the public CFP.
+2. Open the proposal form, inspect the seven AIE field types, save a draft,
+   resume it, and submit the proposal.
+3. As the program chair, review proposals and inspect the two configured review rounds.
+4. Accept the seeded proposal and open the speaker checklist.
+5. Complete evidence-backed onboarding work; inspect overdue and waived tasks.
+6. Open the organiser dashboard and inspect deliberate room/speaker conflicts.
+7. Attempt release; the server blocks unresolved conflicts.
+8. Resolve the conflicts and release the schedule.
+9. Open the public schedule, ICS endpoint, and responsive embed.
+10. Open the Accelevents sync card and inspect create/update/no-op items,
    failure state, and retry history.
 
 ### Docker stack

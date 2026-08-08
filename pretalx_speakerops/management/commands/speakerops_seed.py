@@ -10,6 +10,7 @@ from pretalx.person.models import User
 from pretalx.schedule.models import TalkSlot
 from pretalx.submission.models import Review, SubmissionStates
 
+from ...cfp import configure_demo_cfp
 from ...domain.commands import Command as DomainCommand
 from ...domain.commands import execute
 from ...domain.state import StateMachine, Transition
@@ -112,6 +113,7 @@ class Command(BaseCommand):
         )
 
         with scope(event=event):
+            configure_demo_cfp(event)
             configure_review_rounds(event, second_round=True)
             assigned_review = Review.objects.filter(submission__event=event).first()
             if assigned_review and assigned_review.user_id != users["reviewer"].pk:

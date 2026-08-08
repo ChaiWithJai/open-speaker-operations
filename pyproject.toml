@@ -9,7 +9,15 @@ requires-python = ">=3.11"
 dependencies = ["pretalx==2025.2.2"]
 
 [project.optional-dependencies]
-dev = ["bleach", "drf-spectacular", "ruff"]
+dev = [
+    "bleach",
+    "celery",
+    "drf-spectacular",
+    "Faker",
+    "freezegun",
+    "redis",
+    "ruff",
+]
 
 [project.entry-points."pretalx.plugin"]
 speakerops = "pretalx_speakerops"

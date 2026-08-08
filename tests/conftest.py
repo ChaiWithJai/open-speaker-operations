@@ -6,6 +6,8 @@ from django.core.management import call_command
 from pretalx.event.models import Event, Team
 from pretalx.person.models import User
 
+from pretalx_speakerops.cfp import configure_demo_cfp
+
 
 @pytest.fixture
 def event(db):
@@ -16,7 +18,9 @@ def event(db):
     call_command("init", interactive=False, verbosity=0)
     slug = f"test-{uuid.uuid4().hex[:8]}"
     call_command("create_test_event", slug=slug, stage="schedule", seed=7, verbosity=0)
-    return Event.objects.get(slug=slug)
+    event = Event.objects.get(slug=slug)
+    configure_demo_cfp(event)
+    return event
 
 
 @pytest.fixture
