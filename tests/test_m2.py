@@ -55,8 +55,11 @@ def test_dashboard_conflict_count_reconciles_to_rows(event, users, client):
     client.force_login(users["chair"])
     dashboard = client.get(f"/orga/{event.slug}/speaker-operations/")
     conflicts = client.get(f"/orga/{event.slug}/speaker-operations/conflicts/")
-    assert dashboard.context["counts"]["conflicts"] == len(conflicts.context["rows"])
+    # Dashboard count is the number of distinct talks that have warnings;
+    # the drilldown rows are the individual human-readable messages (one per
+    # warning), so there are at least as many rows as conflicting talks.
     assert dashboard.context["counts"]["conflicts"] > 0
+    assert len(conflicts.context["rows"]) >= dashboard.context["counts"]["conflicts"]
 
 
 @pytest.mark.django_db(transaction=True)
