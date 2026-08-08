@@ -9,4 +9,4 @@ def require_event_permission(user, event, *permissions):
 
 
 def is_speaker(user, event):
-    return event.submissions.filter(speakers=user).exists()
+    return event.submissions.filter(speakers__pk=user.pk).exists()

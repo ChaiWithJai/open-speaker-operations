@@ -1,8 +1,11 @@
 import pytest
+from django.contrib.auth.models import AnonymousUser
+from django.utils.functional import SimpleLazyObject
 from django_scopes import scope
 from pretalx.schedule.signals import schedule_release
 from pretalx.submission.models import SubmissionStates
 
+from pretalx_speakerops.auth import is_speaker
 from pretalx_speakerops.models import OnboardingTask, PreviewRun, TaskDefinition
 
 
@@ -20,6 +23,18 @@ def test_acceptance_creates_one_task_per_speaker(event, users):
         assert OnboardingTask.objects.filter(event=event, submission=submission).count() == expected
         submission.accept(person=users["chair"], force=True)
         assert OnboardingTask.objects.filter(event=event, submission=submission).count() == expected
+
+
+@pytest.mark.django_db(transaction=True)
+def test_is_speaker_resolves_lazy_user(event, users):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.speakers.add(users["speaker"])
+        lazy_user = SimpleLazyObject(lambda: users["speaker"])
+        assert is_speaker(lazy_user, event)
+        lazy_anonymous = SimpleLazyObject(lambda: AnonymousUser())
+        assert not is_speaker(lazy_anonymous, event)
 
 
 @pytest.mark.django_db(transaction=True)
