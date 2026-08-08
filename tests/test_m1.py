@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import AnonymousUser
+from django.urls import reverse
 from django.utils.functional import SimpleLazyObject
 from django_scopes import scope
 from pretalx.schedule.signals import schedule_release
@@ -65,3 +66,16 @@ def test_golden_path_crosses_plugin_boundaries(event, users, client):
         response = client.post(f"/orga/{event.slug}/speaker-operations/sync/preview/")
         assert response.status_code == 200
         assert PreviewRun.objects.filter(event=event).exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_status_endpoint(event, users, client):
+    url = reverse("plugins:speakerops:speakerops_status", kwargs={"event": event.slug})
+    response = client.get(url)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["event"] == event.slug
+    assert "outbox_backlog" in data
+    assert "sync_connection" in data
+    assert "onboarding_total" in data
+    assert "onboarding_done" in data
