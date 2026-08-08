@@ -1,12 +1,42 @@
 # Decision: Plugin domain executor
-- Requirement and acceptance ID: M1 plugin-owned lifecycle spine
-- Baseline behavior: pretalx owns submission and schedule-release transitions.
-- DeepWiki pages consulted: None for implementation claims.
-- Pinned source files and tests verified: `pretalx/submission/models/submission.py:Submission.accept/reject`; `pretalx/schedule/services.py` release service; `pretalx/schedule/signals.py:schedule_release`.
-- Missing behavior: Idempotent plugin aggregate commands, transition logs, outbox, and receipts.
-- Alternatives considered: Direct model mutation; signals for all plugin state.
-- Chosen seam: Plugin-owned models and `domain.commands.execute`.
-- Invariants affected: Atomic lock, event scope, optimistic version, declarative transition validation, receipt replay.
-- Migration and rollback: Plugin migration only.
-- Security/license impact: Actor authentication and event ownership are checked before mutation.
-- Automated acceptance proof: Transition-table and replay tests.
+
+## Question
+
+How can plugin-owned lifecycle mutations share locking, authorization,
+idempotency, transition validation, and post-commit effects?
+
+## Baseline and evidence
+
+Pinned pretalx owns submission transitions through
+`pretalx/submission/models/submission.py:Submission.accept/reject` and schedule
+publication through `pretalx/schedule/services.py`, which emits
+`pretalx/schedule/signals.py:schedule_release`. Those APIs are not a generic
+executor for plugin-owned aggregates.
+
+## Cheaper seams rejected
+
+Direct model writes in views or jobs bypass version checks, transition logs,
+receipts, and outbox effects. A signal-only design cannot provide one atomic
+authorization/lock boundary for synchronous commands. Patching pretalx core
+would still not govern plugin-owned rows and would create an unnecessary fork.
+
+## Decision and invariants
+
+Use plugin-owned `domain.commands.execute()` with `transaction.atomic`,
+`select_for_update`, event ownership, version checks, table-driven transitions,
+`CommandReceipt`, `TransitionLog`, `OutboxEvent`, and `transaction.on_commit`.
+Controllers and seed actions call this executor for plugin state changes.
+
+## Upgrade, rollback, and security impact
+
+An upgrade could change Django transaction behavior or pretalx model ownership
+assumptions, but the executor's aggregate models are plugin-owned. Re-audit
+pretalx submission/schedule ownership before routing any upstream state through
+it. Rollback requires plugin migrations only; receipt and log data are
+append-only audit records.
+
+## Automated proof
+
+`tests/test_domain.py::test_executor_is_idempotent` and
+`tests/test_m2.py::test_completion_uses_executor_and_evidence` prove replay,
+locking/version behavior, transition logs, and plugin task mutation routing.

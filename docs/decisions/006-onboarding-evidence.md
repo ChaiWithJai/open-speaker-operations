@@ -1,19 +1,40 @@
-# Onboarding evidence evaluators
+# Decision: Onboarding evidence evaluators
 
-## Context
+## Question
 
-M2 requires task completion to represent evidence rather than a button click.
-Pretalx already stores speaker profiles and question answers, and its file
-fields use the configured Django storage.
+How can task completion represent verifiable evidence while reusing pretalx
+profile, answer, and storage models?
 
-## Decision
+## Baseline and evidence
 
-Task definitions declare an evaluator key and JSON configuration. The initial
-evaluators are profile fields, question answers, acknowledgements, and
-restricted uploads. Upload validation applies allowlisted extensions and byte
-limits before writing through Django's configured `FileField` storage.
+Pinned pretalx stores speaker biography in
+`pretalx/person/models/profile.py:SpeakerProfile`, answers and uploads in
+`pretalx/submission/models/question.py:Answer`, and file bytes through Django
+`FileField` storage. Those are real upstream evidence sources, not a new
+parallel profile system.
 
-## Consequences
+## Cheaper seams rejected
 
-Adding a task type does not require changing task instances. The evaluator
-registry remains plugin-owned and can later be expanded with richer forms.
+A boolean completion flag cannot prove a profile, answer, or upload exists.
+Hand-written per-type model fields would make every new task type a migration.
+Public file URLs would bypass pretalx's configured storage and authorization.
+
+## Decision and invariants
+
+Task definitions declare an evaluator key and JSON configuration. Evaluators
+check profile fields, question answers, explicit acknowledgements, and
+allowlisted uploads. Upload size/type checks run before writing through the
+configured Django storage; task evidence is event- and speaker-scoped.
+
+## Upgrade, rollback, and security impact
+
+An upgrade could rename `SpeakerProfile`, `Answer`, or change file-storage
+semantics. Re-audit those models and their tests before upgrading. Plugin
+evidence rows can be rolled back independently; uploaded bytes must be removed
+according to configured storage retention policy.
+
+## Automated proof
+
+`tests/test_m2.py::test_completion_uses_executor_and_evidence`,
+`test_upload_evaluator_rejects_unsafe_type`, and
+`test_resources_sanitize_and_only_publish_visible` cover evidence and safety.
