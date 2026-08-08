@@ -1,0 +1,6 @@
+{% extends "orga/base.html" %}
+{% block content %}
+<h1>{{ kind|title }}</h1>
+<p>Rows: {{ rows|length }}</p>
+<ul>{% for row in rows %}<li>{{ row }}</li>{% empty %}<li>No rows.</li>{% endfor %}</ul>
+{% endblock %}

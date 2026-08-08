@@ -1,0 +1,12 @@
+{% extends "orga/base.html" %}
+{% block content %}
+<h1>Speaker Operations</h1>
+<ul>
+  <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'tasks' %}">Outstanding onboarding: {{ counts.tasks }}</a></li>
+  <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'undecided' %}">Undecided proposals: {{ counts.undecided }}</a></li>
+  <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'review' %}">Reviewed proposals: {{ counts.reviewed }} / {{ counts.proposals }}</a></li>
+  <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'conflicts' %}">Schedule conflicts: {{ counts.conflicts }}</a></li>
+  <li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'sync' %}">Accelevents previews: {{ counts.sync }}</a></li>
+</ul>
+<a href="{% url 'plugins:speakerops:speakerops_preview' event.slug %}">Run Accelevents preview</a>
+{% endblock %}

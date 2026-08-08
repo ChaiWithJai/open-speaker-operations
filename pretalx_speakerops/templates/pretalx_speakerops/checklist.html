@@ -1,0 +1,14 @@
+{% extends "orga/base.html" %}
+{% block content %}
+<h1>What do I need to do next?</h1>
+{% for task in tasks %}
+<article>
+  <h2>{{ task.definition.name }}</h2>
+  <p>Status: {{ task.get_status_display }}</p>
+  <p>Due: {{ task.due_date|default:"No due date" }}</p>
+  <p>{{ task.definition.instructions }}</p>
+  <p>Completion criteria: {{ task.definition.completion_criteria }}</p>
+  {% if task.status == "pending" %}<form method="post" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}">{% csrf_token %}<button>Complete acknowledgement</button></form>{% endif %}
+</article>
+{% empty %}<p>No tasks.</p>{% endfor %}
+{% endblock %}
