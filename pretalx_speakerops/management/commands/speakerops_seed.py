@@ -120,7 +120,12 @@ class Command(BaseCommand):
                 assigned_review.user = users["reviewer"]
                 assigned_review.save(update_fields=["user", "updated"])
             submission = (
-                event.submissions.exclude(state__in=(SubmissionStates.REJECTED, SubmissionStates.WITHDRAWN))
+                event.submissions.exclude(
+                    state__in=(
+                        SubmissionStates.REJECTED,
+                        SubmissionStates.WITHDRAWN,
+                    )
+                )
                 .order_by("pk")
                 .first()
             )
