@@ -7,7 +7,7 @@ from django_scopes import scope
 from pretalx.event.models import Event, Team
 from pretalx.person.models import User
 from pretalx.schedule.models import TalkSlot
-from pretalx.submission.models import SubmissionStates
+from pretalx.submission.models import Review, SubmissionStates
 
 from ...domain.commands import Command as DomainCommand
 from ...domain.commands import execute
@@ -97,6 +97,10 @@ class Command(BaseCommand):
         )
 
         with scope(event=event):
+            assigned_review = Review.objects.filter(submission__event=event).first()
+            if assigned_review and assigned_review.user_id != users["reviewer"].pk:
+                assigned_review.user = users["reviewer"]
+                assigned_review.save(update_fields=["user", "updated"])
             submission = event.submissions.filter(state=SubmissionStates.ACCEPTED).first()
             if submission:
                 submission.speakers.add(users["speaker"])

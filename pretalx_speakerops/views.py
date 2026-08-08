@@ -115,9 +115,10 @@ class DrilldownView(DashboardView):
                     Submission.objects.filter(event=self.event, state=SubmissionStates.SUBMITTED)
                 )
             elif kind == "review":
-                rows = list(
-                    Submission.objects.filter(event=self.event, reviews__isnull=False).distinct()
-                )
+                review_rows = Submission.objects.filter(event=self.event, reviews__isnull=False)
+                if not self.request.user.has_perm("submission.orga_update_submission", self.event):
+                    review_rows = review_rows.filter(reviews__user=self.request.user)
+                rows = list(review_rows.distinct())
             elif kind in {"sync", "conflicts"}:
                 if kind == "conflicts":
                     schedule = self.event.wip_schedule
