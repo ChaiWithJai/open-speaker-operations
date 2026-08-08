@@ -13,14 +13,19 @@
     <tr>
       <td>{{ row.speaker }}</td>
       <td>{{ row.definition.name }}</td>
-      <td>{{ row.get_status_display }}</td>
+      <td>
+        {% if row.status == 'complete' %}<span class="badge bg-success">{{ row.get_status_display }}</span>
+        {% elif row.status == 'waived' %}<span class="badge bg-warning text-dark">{{ row.get_status_display }}</span>
+        {% elif row.due_date and row.due_date < today %}<span class="badge bg-danger">{{ row.get_status_display }}</span>
+        {% else %}<span class="badge bg-secondary">{{ row.get_status_display }}</span>{% endif %}
+      </td>
       <td>
         {% if row.due_date %}
           {% if row.due_date < today and row.status != 'complete' and row.status != 'waived' %}<span class="text-danger">{{ row.due_date }}</span>
           {% else %}{{ row.due_date }}{% endif %}
         {% else %}&mdash;{% endif %}
       </td>
-      <td><a href="#">View</a></td>
+      <td><a class="btn btn-sm btn-outline-primary" href="#">View</a></td>
     </tr>
     {% empty %}<tr><td colspan="5">Nothing here yet.</td></tr>{% endfor %}
   </tbody>

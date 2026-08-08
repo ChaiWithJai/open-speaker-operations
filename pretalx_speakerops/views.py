@@ -19,6 +19,7 @@ from .models import (
     AcceleventsConnection,
     CommandReceipt,
     OnboardingTask,
+    OutboxEvent,
     PreviewRun,
     Resource,
     SyncRun,
@@ -311,17 +312,18 @@ class ReminderView(EventContextMixin, View):
         return JsonResponse({"queued": queued, "reminder_key": key})
 
 
-class ResourceView(EventContextMixin, TemplateView):
+class ResourceView(TemplateView):
     template_name = "pretalx_speakerops/resource.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        with scope(event=self.event):
-            resource = get_object_or_404(Resource, event=self.event, slug=self.kwargs["resource"])
+        event = get_object_or_404(Event, slug=self.kwargs["event"])
+        with scope(event=event):
+            resource = get_object_or_404(Resource, event=event, slug=self.kwargs["resource"])
             version = (
                 resource.versions.filter(published_at__isnull=False).order_by("-version").first()
             )
-        context.update(event=self.event, resource=resource, version=version)
+        context.update(event=event, resource=resource, version=version)
         return context
 
 
@@ -344,3 +346,33 @@ class PublishedEmbedView(View):
                 template_name="pretalx_speakerops/embed.html",
                 extra_context={"event": event, "schedule": event.current_schedule},
             )(request)
+
+
+class StatusView(View):
+    def get(self, request, event):
+        event = get_object_or_404(Event, slug=event)
+        with scope(event=event):
+            outbox_backlog = OutboxEvent.objects.filter(event=event, processed__isnull=True).count()
+            sync_connection = (
+                AcceleventsConnection.objects.filter(event=event)
+                .values_list("status", flat=True)
+                .first()
+            )
+            last_sync = (
+                SyncRun.objects.filter(event=event).order_by("-created_at").values_list("status", "created_at").first()
+            )
+            tasks_total = OnboardingTask.objects.filter(event=event).count()
+            tasks_done = OnboardingTask.objects.filter(
+                event=event, status__in=(OnboardingTask.COMPLETE, OnboardingTask.WAIVED)
+            ).count()
+        return JsonResponse(
+            {
+                "event": event.slug,
+                "outbox_backlog": outbox_backlog,
+                "sync_connection": sync_connection or "not configured",
+                "last_sync_status": last_sync[0] if last_sync else None,
+                "last_sync_at": last_sync[1].isoformat() if last_sync else None,
+                "onboarding_total": tasks_total,
+                "onboarding_done": tasks_done,
+            }
+        )

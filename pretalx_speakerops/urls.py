@@ -9,6 +9,7 @@ from .views import (
     PublishedIcsView,
     ReminderView,
     ResourceView,
+    StatusView,
     SyncPreviewView,
     SyncRunView,
     TaskAdminView,
@@ -71,5 +72,10 @@ urlpatterns = [
         "orga/<slug:event>/speaker-operations/tasks/<int:pk>/<slug:action>/",
         TaskAdminView.as_view(),
         name="speakerops_task_admin",
+    ),
+    path(
+        "<slug:event>/speaker-operations/status.json",
+        StatusView.as_view(),
+        name="speakerops_status",
     ),
 ]

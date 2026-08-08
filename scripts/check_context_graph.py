@@ -19,12 +19,32 @@ def main():
                     failures.append(f"{requirement['id']}: missing test path {test}")
                 elif f"def {test_name}(" not in (root / test_path).read_text():
                     failures.append(f"{requirement['id']}: missing test function {test}")
+
+    failures.extend(check_observability(root))
+
     if failures:
         raise SystemExit("Context graph gate failed:\n" + "\n".join(failures))
     print(
         f"Context graph gate passed: {len(graph['requirements'])} requirements; "
         f"{len(graph['gaps'])} explicit gaps."
     )
+
+
+def check_observability(root):
+    """Agent-facing health/observability must exist or it silently decays."""
+    failures = []
+    urls = (root / "pretalx_speakerops" / "urls.py").read_text()
+    views = (root / "pretalx_speakerops" / "views.py").read_text()
+    admin = (root / "pretalx_speakerops" / "admin.py").read_text()
+    if "StatusView" not in views:
+        failures.append("observability: StatusView missing from views.py")
+    if "speakerops_status" not in urls:
+        failures.append("observability: speakerops_status url missing from urls.py")
+    models = (root / "pretalx_speakerops" / "models.py").read_text()
+    for model in ("OnboardingTask", "SyncRun", "OutboxEvent"):
+        if f"class {model}" in models and f"@admin.register({model})" not in admin:
+            failures.append(f"observability: {model} not registered in admin.py")
+    return failures
 
 
 if __name__ == "__main__":
