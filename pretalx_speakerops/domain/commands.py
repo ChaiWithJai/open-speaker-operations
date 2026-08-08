@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from django.db import transaction
 from django.utils import timezone
+from django_scopes import scope
 
 from ..models import CommandReceipt, OutboxEvent, TransitionLog
 from .state import StateMachine, TransitionError
@@ -63,11 +64,12 @@ def execute(command: Command, actor, key: str, expected_version: int | None = No
             aggregate_id=aggregate.pk,
             result={"id": aggregate.pk, "status": aggregate.status},
         )
-        transaction.on_commit(lambda: dispatch_outbox(outbox.pk))
+        transaction.on_commit(lambda: dispatch_outbox(command.event, outbox.pk))
         return aggregate, False
 
 
-def dispatch_outbox(outbox_id: int) -> None:
-    OutboxEvent.objects.filter(pk=outbox_id, processed__isnull=True).update(
-        processed=timezone.now()
-    )
+def dispatch_outbox(event, outbox_id: int) -> None:
+    with scope(event=event):
+        OutboxEvent.objects.filter(pk=outbox_id, processed__isnull=True).update(
+            processed=timezone.now()
+        )
