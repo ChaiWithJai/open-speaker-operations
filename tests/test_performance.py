@@ -1,11 +1,15 @@
 from datetime import timedelta
+from unittest.mock import patch
 
 import pytest
+from django.core.cache import cache
+from django.test import override_settings
 from django.utils import timezone
 from django_scopes import scope
 from pretalx.submission.models import ReviewScore, ReviewScoreCategory, SubmissionStates
 
 from pretalx_speakerops.program.reviews import configure_review_rounds
+from pretalx_speakerops.views import DashboardView
 
 
 @pytest.mark.django_db(transaction=True)
@@ -33,8 +37,31 @@ def test_chair_views_stay_within_query_budget(
     client.force_login(users["chair"])
     url = path.format(event=event.slug)
     client.get(url)
+    if path.endswith("speaker-operations/"):
+        cache.delete(f"speakerops:dashboard:{event.pk}")
     with django_assert_max_num_queries(budget):
         assert client.get(url).status_code == 200
+
+
+@pytest.mark.django_db(transaction=True)
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}})
+def test_dashboard_reuses_only_the_event_snapshot(
+    event, users, client, django_assert_max_num_queries
+):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+    client.force_login(users["chair"])
+    url = f"/orga/{event.slug}/speaker-operations/"
+    cache.delete(f"speakerops:dashboard:{event.pk}")
+    first = client.get(url)
+    assert first.status_code == 200
+    with (
+        patch.object(DashboardView, "_snapshot", side_effect=AssertionError("cache miss")),
+        django_assert_max_num_queries(30),
+    ):
+        second = client.get(url)
+    assert second.status_code == 200
+    assert second.context["counts"] == first.context["counts"]
 
 
 @pytest.mark.django_db(transaction=True)
