@@ -1,0 +1,9 @@
+<div id="evidence-{{ evidence.pk }}" aria-label="Comments on file version {{ evidence.version }}">
+  {% for comment in evidence.comments.all %}<p><strong>{{ comment.author|default:"Former user" }}</strong> · <time datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M j, Y, P" }}</time><br>{{ comment.body }}</p>{% empty %}<p class="speakerops__muted">No comments yet.</p>{% endfor %}
+  <form method="post" action="{% url 'plugins:speakerops:speakerops_speaker_evidence_comment' event.slug evidence.pk %}">
+    {% csrf_token %}
+    <label for="speaker-comment-{{ evidence.pk }}">Comment on v{{ evidence.version }}</label>
+    <input class="form-control" id="speaker-comment-{{ evidence.pk }}" name="body" required>
+    <button class="btn btn-sm btn-outline-secondary" type="submit">Post comment</button>
+  </form>
+</div>

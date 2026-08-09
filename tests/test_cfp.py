@@ -27,6 +27,9 @@ def test_seeded_cfp_renders_accepts_all_p0_field_types_and_resumes_draft(event, 
 
     with scope(event=event):
         submission_type = event.cfp.default_type
+        questions = list(
+            event.questions.filter(submission_types=submission_type).order_by("position")
+        )
         draft = Submission.objects.create(
             event=event,
             title="AIE draft",
@@ -76,8 +79,11 @@ def test_seeded_cfp_renders_accepts_all_p0_field_types_and_resumes_draft(event, 
         )
         assert form.is_valid(), form.errors
         form.save()
-        assert Answer.objects.filter(submission=draft).count() == 7
+        assert Answer.objects.filter(submission=draft).count() == len(questions)
         resumed = QuestionsForm(event=event, submission=draft, target="submission")
-        assert resumed.fields[f"question_{questions[2].pk}"].initial == (
+        abstract_question = next(
+            question for question in questions if str(question.question) == "Session abstract"
+        )
+        assert resumed.fields[f"question_{abstract_question.pk}"].initial == (
             "A sufficiently long AIE abstract for validation."
         )

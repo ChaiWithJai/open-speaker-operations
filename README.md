@@ -24,18 +24,25 @@ My SaaS” competition.
 
 ## Architecture
 
-Extend pretalx as a disclosed, license-compliant modular monolith. Use Rails 8 only if competition rules prohibit derivative work. Deploy the application and worker to DigitalOcean with PostgreSQL as authority, Cloudflare R2 for objects, and Cloudflare at the edge.
+Speaker Operations is an installed Pretalx plugin and a disclosed,
+license-compliant modular monolith. PostgreSQL is authoritative; Redis supports
+cache and queue work; external writes pass through explicit integration
+adapters. See the [current architecture map](./docs/architecture.md) for the
+actual module and process boundaries.
 
 ## Documents
 
-- [Product requirements](./kill-my-saas-prd.md)
-- [Architecture RFC](./rails-monolith-rfc.md)
-- [Implementation plan](./speaker-operations-implementation-plan.md)
+- [Documentation index and authority](./docs/README.md)
+- [Current architecture](./docs/architecture.md)
+- [Repository map and artifact policy](./docs/repository-map.md)
 - [Context graph](./docs/context-graph.md)
-- [Working log](./docs/log/)
 - [Auditable seam decisions](./docs/decisions/)
 - [Contributing and production workflow](./CONTRIBUTING.md)
 - [DigitalOcean deployment runbook](./docs/digitalocean.md)
+- [Operator recovery and credential handoff](./docs/operator-handoff.md)
+
+Superseded product, Rails, and implementation plans are retained under
+`docs/archive/` for provenance and are not current instructions.
 
 ## Run the seeded judge journey locally
 

@@ -69,8 +69,16 @@ curl --fail --silent --show-error https://loop.dharmicdata.org/ >/dev/null
 curl --fail --silent --show-error https://loop.dharmicdata.org/speakerops-demo/cfp >/dev/null
 ```
 
-Also exercise the speaker, reviewer, chair, agenda, and synchronization journeys
-in a real browser and confirm that no first-party static assets fail.
+Run the read-only protected smoke across all judged roles and public outputs:
+
+```sh
+SPEAKEROPS_SMOKE_PASSWORD='read-from-secure-prompt' \
+  python3 smoke_journey.py --base-url https://loop.dharmicdata.org
+```
+
+This verifies speaker, reviewer, chair, sync, embed, and mobile-gallery surfaces.
+Real-browser acceptance and first-party static asset checks remain additional
+release evidence, not substitutes for the protected HTTP journey.
 
 ## Measured demo sizing
 
@@ -103,13 +111,15 @@ added.
 
 ## Back up and restore
 
-Create a database backup before upgrades:
+Pre-deploy dumps remain mandatory. Nightly backup adds the configured media
+volume, checksums, manifest, and bounded retention:
 
 ```sh
 cd /opt/open-speaker-operations
 umask 077
 docker compose --project-name speakerops exec -T postgres \
   pg_dump -U speakerops -d speakerops -Fc > speakerops.dump
+./backup-nightly.sh --app-dir /opt/open-speaker-operations --project speakerops
 ```
 
 Restore into a stopped web/worker pair after confirming the target database:
@@ -125,6 +135,11 @@ docker compose --project-name speakerops up -d --wait
 The `pretalx-data` volume contains uploaded media and generated assets and should
 be copied with the database backup for a durable environment.
 
+Use `verify-restore.sh` for the required isolated restore drill. It creates a
+temporary database, media volume, and loopback-only web container without
+stopping the deployed services, runs the protected smoke, and cleans up exact
+temporary resources. It defaults to dry-run and requires `--yes` to execute.
+
 ## Roll back
 
 Prefer the manual GitHub workflow with the previous verified commit SHA. If
@@ -137,3 +152,7 @@ container or public-URL verification fails. It does not automatically restore a
 database because reversing migrations without an operator decision can destroy
 data. Use the timestamped pre-deploy dump and the restore procedure above when
 the incident requires data rollback.
+
+Use `drill-image-rollback.sh` for the controlled previous-image-and-return test.
+See [operator-handoff.md](./operator-handoff.md) for timer installation,
+retention proof, restore evidence, rollback supervision, and credential rotation.

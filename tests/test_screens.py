@@ -6,7 +6,7 @@ from django_scopes import scope
 from pretalx.person.models import SpeakerProfile
 from pretalx.submission.models import Review, SubmissionStates
 
-from pretalx_speakerops.cfp import configure_demo_cfp
+from pretalx_speakerops.cfp import SESSION_FORMATS, configure_demo_cfp
 from pretalx_speakerops.models import (
     OnboardingTask,
     ReviewRecommendation,
@@ -70,6 +70,46 @@ def test_dashboard_has_all_six_prd_counts_and_exact_drilldowns(event, users, cli
 
 
 @pytest.mark.django_db(transaction=True)
+def test_dashboard_lifecycle_reconciles_every_stage_and_names_exception_owners(
+    event, users, client
+):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.state = SubmissionStates.SUBMITTED
+        submission.save(update_fields=["state", "updated"])
+        submission.assigned_reviewers.add(users["reviewer"])
+        Review.objects.update_or_create(
+            submission=submission,
+            user=users["reviewer"],
+            defaults={"text": "Reviewed but deliberately left for a chair decision."},
+        )
+    client.force_login(users["chair"])
+    dashboard = client.get(f"/orga/{event.slug}/speaker-operations/")
+    assert dashboard.status_code == 200
+    stages = dashboard.context["lifecycle"]
+    assert [stage["key"] for stage in stages] == [
+        "submitted",
+        "reviewed",
+        "decided",
+        "onboarded",
+        "scheduled",
+        "published",
+        "synchronized",
+    ]
+    assert all(stage["denominator"] == stages[0]["count"] for stage in stages)
+    for stage in stages:
+        drilldown = client.get(stage["url"])
+        assert drilldown.status_code == 200
+        assert stage["count"] == len(drilldown.context["rows"])
+        assert stage["explanation"]
+    body = dashboard.content.decode()
+    assert "without a recorded decision" in body
+    assert "Owner: Program chair" in body
+    assert "What changed and recovered" in body
+
+
+@pytest.mark.django_db(transaction=True)
 def test_reviewer_screen_saves_scores_comments_and_recommendation(event, users, client):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")
@@ -98,6 +138,84 @@ def test_reviewer_screen_saves_scores_comments_and_recommendation(event, users, 
             ).recommendation
             == ReviewRecommendation.STRONG_ACCEPT
         )
+
+
+@pytest.mark.django_db(transaction=True)
+def test_reviewer_rejects_stale_revision_and_exposes_keyboard_continuity(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submissions = list(event.submissions.all()[:2])
+        if len(submissions) == 1:
+            submissions.append(
+                event.submissions.create(
+                    title="Second assigned proposal",
+                    abstract="Enough detail for the reviewer continuity test.",
+                    description="A second proposal makes Save and next meaningful.",
+                    submission_type=submissions[0].submission_type,
+                    track=submissions[0].track,
+                )
+            )
+        for submission in submissions:
+            submission.state = SubmissionStates.SUBMITTED
+            submission.save(update_fields=["state", "updated"])
+            submission.assigned_reviewers.add(users["reviewer"])
+        _, criteria = configure_review_rounds(event)
+        payload = {
+            f"score_{criterion.pk}": criterion.scores.order_by("value").last().pk
+            for criterion in criteria
+        }
+    client.force_login(users["reviewer"])
+    url = f"/orga/{event.slug}/speaker-operations/reviewer/{submissions[0].pk}/"
+    screen = client.get(url)
+    assert len(screen.context["queue"]) == 2
+    assert screen.context["next_submission"] is not None
+    assert b"Save" in screen.content and b"next" in screen.content
+    assert b"Alt+S" in screen.content
+    assert b"Retry save" in screen.content
+
+    newest = {
+        **payload,
+        "comments": "Newest authoritative review",
+        "recommendation": "strong_accept",
+        "save_session": "browser-session",
+        "client_revision": "2",
+    }
+    assert client.post(url, newest, HTTP_X_REQUESTED_WITH="XMLHttpRequest").status_code == 200
+    stale = {
+        **payload,
+        "comments": "Stale response must not win",
+        "recommendation": "reject",
+        "save_session": "browser-session",
+        "client_revision": "1",
+    }
+    response = client.post(url, stale, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+    assert response.status_code == 200
+    assert response.json()["stale"] is True
+    with scope(event=event):
+        review = Review.objects.get(submission=submissions[0], user=users["reviewer"])
+        recommendation = ReviewRecommendation.objects.get(
+            submission=submissions[0], reviewer=users["reviewer"]
+        )
+    assert review.text == "Newest authoritative review"
+    assert recommendation.recommendation == ReviewRecommendation.STRONG_ACCEPT
+    assert recommendation.client_revision == 2
+
+    cross_tab = {
+        **payload,
+        "comments": "A different tab must not overwrite the saved review",
+        "recommendation": "reject",
+        "save_session": "other-browser-session",
+        "client_revision": "1",
+        "save_version": "0",
+    }
+    response = client.post(url, cross_tab, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+    assert response.status_code == 409
+    assert response.json()["conflict"] is True
+    with scope(event=event):
+        review.refresh_from_db()
+        recommendation.refresh_from_db()
+    assert review.text == "Newest authoritative review"
+    assert recommendation.recommendation == ReviewRecommendation.STRONG_ACCEPT
 
 
 @pytest.mark.django_db(transaction=True)
@@ -202,6 +320,17 @@ def test_cfp_format_and_interest_options_are_distinct(event):
             }
             for question in questions
         }
-    assert values["Session format"] == {"Main stage", "Workshop", "Roundtable"}
+        formats = {
+            str(submission_type.name)
+            for submission_type in event.submission_types.filter(
+                name__in=[name for name, _duration in SESSION_FORMATS]
+            )
+        }
+    assert formats == {
+        "Workshop",
+        "Stage Talk",
+        "Lightning Talk",
+        "Online Talk",
+    }
     assert "AI engineering" in values["Audience interests"]
-    assert values["Session format"].isdisjoint(values["Audience interests"])
+    assert formats.isdisjoint(values["Audience interests"])

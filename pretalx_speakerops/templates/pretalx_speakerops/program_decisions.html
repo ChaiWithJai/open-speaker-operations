@@ -1,0 +1,53 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="speakerops" aria-labelledby="decisions-title">
+  <header class="speakerops__header">
+    <div><p class="speakerops__eyebrow">Chair control</p><h1 id="decisions-title">Program decisions and waves</h1><p>Reviewer recommendations are inputs. Only these explicit chair actions change proposal state or notify speakers.</p></div>
+  </header>
+
+  <section class="speakerops__grid" aria-label="Acceptance waves">
+    {% for wave in waves %}
+    <article class="speakerops-card">
+      <p class="speakerops__eyebrow">{{ wave.decision_at|date:"M j, Y, P" }}</p>
+      <h2>{{ wave.name }}</h2>
+      <p>{{ wave.decision_count }} staged decision{{ wave.decision_count|pluralize }}</p>
+      <form method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="release_wave"><input type="hidden" name="wave" value="{{ wave.pk }}">
+        <label class="speakerops-check"><input type="checkbox" name="confirm" value="yes" required> Confirm native acceptance and speaker notifications</label>
+        <button class="btn btn-primary" type="submit">Release {{ wave.name }}</button>
+      </form>
+    </article>
+    {% empty %}<div class="speakerops-empty"><h2>No waves configured</h2><p>Configure the AIE CFP before staging decisions.</p></div>{% endfor %}
+  </section>
+
+  <section aria-labelledby="staged-title">
+    <h2 id="staged-title">Staged decisions</h2>
+    <div class="speakerops-table-wrap"><table class="speakerops-table">
+      <thead><tr><th>Proposal</th><th>Decision</th><th>Wave</th><th>Chair</th><th>Applied</th><th>Note</th></tr></thead>
+      <tbody>{% for decision in decisions %}<tr>
+        <td data-label="Proposal">{{ decision.submission.title }}</td><td data-label="Decision">{{ decision.get_status_display }}</td><td data-label="Wave">{{ decision.wave.name|default:"—" }}</td><td data-label="Chair">{{ decision.decided_by.get_display_name|default:"—" }}</td><td data-label="Applied">{% if decision.applied_at %}{{ decision.applied_at|date:"M j, Y, P" }} by {{ decision.applied_by.get_display_name|default:"system" }}{% else %}Staged{% endif %}</td><td data-label="Note">{{ decision.rationale|default:"—" }}</td>
+      </tr>{% empty %}<tr><td colspan="6">No decisions staged.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="review-results-title">
+    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Human review evidence</p><h2 id="review-results-title">Weighted review results</h2></div><div class="speakerops__actions"><a href="?sort=desc#review-results-title">Highest first</a><a href="?sort=asc#review-results-title">Lowest first</a><a href="?export=csv">Export CSV</a></div></div>
+    <p>Scores are normalized against the configured criterion weights, then averaged across completed human reviews. They inform—not determine—the chair's decision.</p>
+    <div class="speakerops-table-wrap"><table class="speakerops-table">
+      <thead><tr><th>Proposal</th><th>Weighted average</th><th>Completed reviews</th><th>Evidence</th></tr></thead>
+      <tbody>{% for result in review_results %}<tr><td data-label="Proposal"><a href="{% url 'plugins:speakerops:speakerops_review' event.slug result.submission.pk %}">{{ result.submission.title }}</a></td><td data-label="Weighted average">{{ result.aggregate|default_if_none:"—" }}</td><td data-label="Completed reviews">{{ result.review_count }}</td><td data-label="Evidence">{% for review in result.reviews %}{{ review.user.get_display_name }}: {{ review.display_score }}{% if not forloop.last %}; {% endif %}{% endfor %}</td></tr>{% empty %}<tr><td colspan="4">No completed reviews yet.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+
+  <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="reject-title">
+    <div><h2 id="reject-title">Finalize staged rejections</h2><p>Waitlisted proposals remain submitted. This action changes only staged rejections and sends native notifications.</p></div>
+    <form method="post">{% csrf_token %}<input type="hidden" name="action" value="finalize_rejections"><label class="speakerops-check"><input type="checkbox" name="confirm" value="yes" required> Confirm rejections and notifications</label><button class="btn btn-danger" type="submit">Finalize rejections</button></form>
+  </section>
+</div>
+{% endblock content %}

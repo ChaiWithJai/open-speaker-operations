@@ -53,5 +53,5 @@ public endpoints; CORS is intentionally limited to the read-only output.
 
 ## Automated proof
 
-`tests/test_m3.py::test_released_ics_has_stable_uid_and_incrementing_sequence`
+`tests/test_schedule_publication.py::test_released_ics_has_stable_uid_and_incrementing_sequence`
 and `test_published_embed_is_cross_origin_readable_and_released_only`.

@@ -10,5 +10,15 @@ class SpeakerOpsConfig(AppConfig):
     PretalxPluginMeta = PretalxPluginMeta
 
     def ready(self):
-        from . import receivers  # noqa: F401
+        from pretalx.cfp.flow import QuestionsStep
+
+        from . import (
+            receivers,  # noqa: F401
+            tasks,  # noqa: F401
+        )
+        from .cfp import SpeakerOpsQuestionsForm
         from .program import policy  # noqa: F401
+
+        # Keep pretalx's mature CFP flow and replace only its questions form class.
+        # The subclass is a no-op for events without this plugin or persisted rules.
+        QuestionsStep.form_class = SpeakerOpsQuestionsForm

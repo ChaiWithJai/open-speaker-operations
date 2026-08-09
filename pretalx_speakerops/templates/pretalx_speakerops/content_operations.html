@@ -1,0 +1,101 @@
+{% extends "orga/base.html" %}
+{% load static %}
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+{% block content %}
+<main class="speakerops" aria-labelledby="content-title">
+  <h1 id="content-title">Content operations</h1>
+  <p><a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">&larr; Back to dashboard</a></p>
+
+  <section class="speakerops-panel" id="new-file-request" aria-labelledby="file-request-title">
+    <div>
+      <h2 id="file-request-title">Create a file request</h2>
+      <p>Define the deliverable once, set its due date, and assign it to one or more event speakers.</p>
+    </div>
+    <form method="post" action="{% url 'plugins:speakerops:speakerops_create_file_request' event.slug %}">
+      {% csrf_token %}
+      <label for="request-name">Request name</label>
+      <input class="form-control" id="request-name" name="name" required placeholder="Final slide deck">
+      <label for="request-instructions">Instructions</label>
+      <textarea class="form-control" id="request-instructions" name="instructions" required rows="3" placeholder="Upload the final deck used on stage."></textarea>
+      <label for="request-rules">File rules and completion criteria</label>
+      <input class="form-control" id="request-rules" name="completion_criteria" required placeholder="PDF or PPTX, maximum 25 MB">
+      <label for="request-extensions">Allowed extensions (operator note)</label>
+      <input class="form-control" id="request-extensions" name="extensions" placeholder=".pdf,.pptx" aria-describedby="request-extensions-help">
+      <p class="speakerops__muted" id="request-extensions-help">Supported: PDF, PPTX, JPG, JPEG, and PNG. Defaults to PDF and PPTX.</p>
+      <label for="request-due">Due date</label>
+      <input class="form-control" id="request-due" name="due_date" type="date" required>
+      <fieldset>
+        <legend>Assign to speakers</legend>
+        {% for speaker in speakers %}<label class="speakerops-check"><input type="checkbox" name="speakers" value="{{ speaker.pk }}"> {{ speaker.get_display_name }}{% if speaker.email %} · {{ speaker.email }}{% endif %}</label>{% empty %}<p>No speakers are attached to event submissions.</p>{% endfor %}
+      </fieldset>
+      <button class="btn btn-primary" type="submit">Create and assign file request</button>
+    </form>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="publication-title">
+    <div>
+      <h2 id="publication-title">Session publication approval</h2>
+      <p>Sessions not yet placed in this workflow retain the released schedule's existing visibility. Once a session enters review, only Approved content is public in Speaker Operations widgets.</p>
+    </div>
+    <div class="table-responsive"><table class="table"><thead><tr><th>Session</th><th>Speakers</th><th>Approval</th><th>Public now</th><th>Decision</th></tr></thead><tbody>
+      {% for row in publication_rows %}<tr id="session-{{ row.submission.pk }}"><td>{{ row.submission.title }}</td><td>{% for speaker in row.submission.speakers.all %}{{ speaker.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td><td>{% if row.approval %}{{ row.approval.get_status_display }}{% else %}Released schedule (not gated){% endif %}{% if row.approval.note %}<br><small>{{ row.approval.note }}</small>{% endif %}</td><td>{% if row.public %}Yes{% else %}<strong>No</strong>{% endif %}</td><td>
+        <form method="post" action="{% url 'plugins:speakerops:speakerops_session_publication_approval' event.slug row.submission.pk %}">{% csrf_token %}
+          <label class="speakerops-visually-hidden" for="approval-{{ row.submission.pk }}">Publication approval for {{ row.submission.title }}</label>
+          <select id="approval-{{ row.submission.pk }}" name="status"><option value="pending">Pending approval</option><option value="approved">Approved for publication</option><option value="changes_requested">Changes requested</option></select>
+          <label class="speakerops-visually-hidden" for="approval-note-{{ row.submission.pk }}">Decision note</label>
+          <input id="approval-note-{{ row.submission.pk }}" name="note" placeholder="Decision note">
+          <button class="btn btn-sm btn-outline-primary" type="submit">Save approval</button>
+        </form>
+      </td></tr>{% empty %}<tr><td colspan="5">No sessions are available.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="revision-title">
+    <div><h2 id="revision-title">Content editor and revision history</h2><p>Every save captures the previous values, editor, and time. Restoring also captures the version it replaces, so rollback never destroys history.</p></div>
+    {% for row in publication_rows %}<article id="session-content-{{ row.submission.pk }}">
+      <h3>{{ row.submission.title }}</h3>
+      <form method="post" action="{% url 'plugins:speakerops:speakerops_session_content_edit' event.slug row.submission.pk %}">{% csrf_token %}
+        <label for="session-title-{{ row.submission.pk }}">Session title</label><input class="form-control" id="session-title-{{ row.submission.pk }}" name="title" value="{{ row.submission.title }}" required>
+        <label for="session-abstract-{{ row.submission.pk }}">Abstract</label><textarea class="form-control" id="session-abstract-{{ row.submission.pk }}" name="abstract" rows="4">{{ row.submission.abstract }}</textarea>
+        <button class="btn btn-sm btn-outline-primary" type="submit">Save session content</button>
+      </form>
+      {% if row.submission.speakerops_revisions %}<details><summary>Session revision history ({{ row.submission.speakerops_revisions|length }})</summary><ol>{% for revision in row.submission.speakerops_revisions %}<li><strong>{{ revision.label }}</strong> · {{ revision.actor|default:"System" }} · <time datetime="{{ revision.created_at|date:'c' }}">{{ revision.created_at|date:"M j, Y, P" }}</time><p>{{ revision.snapshot.abstract|truncatechars:180 }}</p><form method="post" action="{% url 'plugins:speakerops:speakerops_content_revision_restore' event.slug revision.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Restore this session version</button></form></li>{% endfor %}</ol></details>{% endif %}
+      {% for speaker in row.submission.speakers.all %}<div id="speaker-content-{{ speaker.pk }}">
+        <form method="post" action="{% url 'plugins:speakerops:speakerops_speaker_content_edit' event.slug speaker.pk %}">{% csrf_token %}<label for="speaker-bio-{{ row.submission.pk }}-{{ speaker.pk }}">Biography for {{ speaker.get_display_name }}</label><textarea class="form-control" id="speaker-bio-{{ row.submission.pk }}-{{ speaker.pk }}" name="biography" rows="3">{{ speaker.speakerops_biography }}</textarea><button class="btn btn-sm btn-outline-primary" type="submit">Save speaker biography</button></form>
+        {% if speaker.speakerops_revisions %}<details><summary>Biography revision history ({{ speaker.speakerops_revisions|length }})</summary><ol>{% for revision in speaker.speakerops_revisions %}<li>{{ revision.actor|default:"System" }} · <time datetime="{{ revision.created_at|date:'c' }}">{{ revision.created_at|date:"M j, Y, P" }}</time><p>{{ revision.snapshot.biography|truncatechars:180 }}</p><form method="post" action="{% url 'plugins:speakerops:speakerops_content_revision_restore' event.slug revision.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Restore this biography</button></form></li>{% endfor %}</ol></details>{% endif %}
+      </div>{% endfor %}
+    </article>{% empty %}<p>No session content is available.</p>{% endfor %}
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="deliverables-title">
+    <div>
+      <h2 id="deliverables-title">Deliverable library</h2>
+      <p>Download any version, discuss it with the speaker, approve it, or export the latest selected versions as one ZIP.</p>
+    </div>
+    <form method="get" aria-label="Filter deliverables">
+      <label for="deliverable-speaker">Speaker</label><select id="deliverable-speaker" name="speaker"><option value="">All speakers</option>{% for speaker in speakers %}<option value="{{ speaker.pk }}"{% if selected_speaker == speaker.pk|stringformat:'s' %} selected{% endif %}>{{ speaker.get_display_name }}</option>{% endfor %}</select>
+      <label for="deliverable-request">File request</label><select id="deliverable-request" name="request"><option value="">All requests</option>{% for request in file_requests %}<option value="{{ request.pk }}"{% if selected_request == request.pk|stringformat:'s' %} selected{% endif %}>{{ request.name }}</option>{% endfor %}</select>
+      <label for="deliverable-status">Review status</label><select id="deliverable-status" name="status"><option value="">All statuses</option><option value="missing"{% if selected_status == 'missing' %} selected{% endif %}>Missing upload</option>{% for value, label in review_statuses %}<option value="{{ value }}"{% if selected_status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      <button class="btn btn-outline-primary" type="submit">Apply filters</button> <a href="{% url 'plugins:speakerops:speakerops_content_operations' event.slug %}#deliverables-title">Clear filters</a>
+    </form>
+    <form id="zip-form" method="post" action="{% url 'plugins:speakerops:speakerops_latest_evidence_zip' event.slug %}">{% csrf_token %}</form>
+      <ul class="speakerops-list">
+      {% for task in rows %}<li id="task-{{ task.pk }}">
+        <label><input type="checkbox" name="tasks" value="{{ task.pk }}" form="zip-form"> <strong>{{ task.definition.name }} · {{ task.speaker }}</strong></label>
+        <span>{% if task.submission %}{{ task.submission.title }} · {% endif %}{{ task.speaker.email }}</span>
+        <ol>{% for evidence in task.speakerops_evidence_items %}<li id="evidence-{{ evidence.pk }}">
+          <strong>v{{ evidence.version }} · <a href="{% url 'plugins:speakerops:speakerops_evidence_download' event.slug evidence.pk %}">Download {{ evidence.upload.name|cut:"speakerops/evidence/" }}</a></strong>
+          <span>{{ evidence.created_at|date:"M j, Y, P" }} · {{ evidence.get_review_status_display }}{% if evidence.reviewed_by %} by {{ evidence.reviewed_by }}{% endif %}</span>
+          {% if evidence.review_note %}<p><strong>Review note:</strong> {{ evidence.review_note }}</p>{% endif %}
+          <div aria-label="Comments on version {{ evidence.version }}">
+            {% for comment in evidence.comments.all %}<p><strong>{{ comment.author|default:"Former user" }}</strong> · <time datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M j, Y, P" }}</time><br>{{ comment.body }}</p>{% empty %}<p>No comments yet.</p>{% endfor %}
+          </div>
+          <form method="post" action="{% url 'plugins:speakerops:speakerops_organiser_evidence_comment' event.slug evidence.pk %}">{% csrf_token %}<label for="comment-{{ evidence.pk }}">Comment on v{{ evidence.version }}</label><input id="comment-{{ evidence.pk }}" name="body" required><button class="btn btn-sm btn-outline-secondary" type="submit">Post comment</button></form>
+          {% if evidence.review_status == 'pending' %}<div class="speakerops__actions"><form method="post" action="{% url 'plugins:speakerops:speakerops_evidence_admin' event.slug evidence.pk 'approve' %}">{% csrf_token %}<label for="approve-note-{{ evidence.pk }}" class="speakerops-visually-hidden">Approval note for version {{ evidence.version }}</label><input id="approve-note-{{ evidence.pk }}" name="review_note" placeholder="Optional approval note"><button class="btn btn-primary" type="submit">Approve version {{ evidence.version }}</button></form><form method="post" action="{% url 'plugins:speakerops:speakerops_evidence_admin' event.slug evidence.pk 'request-changes' %}">{% csrf_token %}<label for="change-note-{{ evidence.pk }}">Required change</label><input id="change-note-{{ evidence.pk }}" name="review_note" required><button class="btn btn-outline-primary" type="submit">Request changes</button></form></div>{% endif %}
+        </li>{% empty %}<li><strong>Missing upload</strong> · due {{ task.due_date|default:"not set" }}</li>{% endfor %}</ol>
+      </li>{% empty %}<li>No uploaded content awaits review.</li>{% endfor %}
+      </ul>
+      {% if rows %}<button class="btn btn-primary" type="submit" form="zip-form">Download latest selected versions (.zip)</button>{% endif %}
+  </section>
+</main>
+{% endblock content %}

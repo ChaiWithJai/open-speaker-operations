@@ -1,0 +1,94 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+{% block content %}
+<div class="speakerops" aria-labelledby="crm-title">
+  {% include "pretalx_speakerops/includes/role_navigation.html" %}
+  <header class="speakerops__header">
+    <div><p class="speakerops__eyebrow">Organization speaker CRM</p><h1 id="crm-title">Contacts, sourcing &amp; continuity</h1><p>{{ event.organiser.name }} owns this reusable directory. Historical source records remain immutable evidence beside these operator-owned contact fields.</p></div>
+    <span class="speakerops-status"><strong>{{ total_contacts }}</strong> active contacts</span>
+  </header>
+
+  <section class="speakerops__grid" aria-label="CRM dashboard metrics">
+    <article class="speakerops-panel"><p class="speakerops__eyebrow">Directory</p><h2>{{ total_contacts }}</h2><p>active contacts</p></article>
+    <article class="speakerops-panel"><p class="speakerops__eyebrow">Event reuse</p><h2>{{ linked_count }}</h2><p>contact-to-event handoffs</p></article>
+    <article class="speakerops-panel"><p class="speakerops__eyebrow">Outreach</p><h2>{{ outreach_count }}</h2><p>personalized messages logged</p></article>
+    <article class="speakerops-panel"><p class="speakerops__eyebrow">Duplicate review</p><h2>{{ duplicate_groups|length }}</h2><p>same-email groups requiring a decision</p></article>
+  </section>
+  <section class="speakerops-panel" aria-labelledby="crm-analytics-title"><h2 id="crm-analytics-title">Top companies</h2><p>Click a company to drill into its contacts.</p><ul>{% for item in top_companies %}<li><a href="{{ request.path }}?company={{ item.company|urlencode }}">{{ item.company }}</a> · {{ item.total }} contact{{ item.total|pluralize }}</li>{% empty %}<li>Add company data to populate this organization-wide analytic.</li>{% endfor %}</ul></section>
+
+  <section class="speakerops-panel" aria-labelledby="crm-filter-title">
+    <h2 id="crm-filter-title">Search and filter contacts</h2>
+    <form method="get" role="search">
+      <label for="crm-q">Name, email, company, or title</label><input class="form-control" id="crm-q" name="q" value="{{ filters.q }}">
+      <label for="crm-company">Company</label><select class="form-control" id="crm-company" name="company"><option value="">All companies</option>{% for value in companies %}<option{% if filters.company == value %} selected{% endif %}>{{ value }}</option>{% endfor %}</select>
+      <label for="crm-title-filter">Job title</label><select class="form-control" id="crm-title-filter" name="job_title"><option value="">All titles</option>{% for value in job_titles %}<option{% if filters.job_title == value %} selected{% endif %}>{{ value }}</option>{% endfor %}</select>
+      <label for="crm-tag">Tag</label><input class="form-control" id="crm-tag" name="tag" value="{{ filters.tag }}">
+      <label for="crm-stage">Pipeline stage</label><select class="form-control" id="crm-stage" name="stage"><option value="">All stages</option>{% for value,label in stage_choices %}<option value="{{ value }}"{% if filters.stage == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      <label for="crm-segment">Saved segment</label><select class="form-control" id="crm-segment" name="segment"><option value="">All segments</option>{% for segment in segments %}<option value="{{ segment.pk }}"{% if filters.segment == segment.pk|stringformat:'s' %} selected{% endif %}>{{ segment.name }} ({{ segment.contact_count }})</option>{% endfor %}</select>
+      <button class="btn btn-primary" type="submit">Apply filters</button> <a href="{% url 'plugins:speakerops:speakerops_crm' event.slug %}">Clear filters</a>
+    </form>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="crm-add-title">
+    <h2 id="crm-add-title">Add a contact</h2>
+    <form method="post">{% csrf_token %}<input type="hidden" name="action" value="save_contact">
+      <label for="contact-name">Name</label><input class="form-control" id="contact-name" name="name" required>
+      <label for="contact-email">Email</label><input class="form-control" id="contact-email" name="email" type="email">
+      <label for="contact-company">Company</label><input class="form-control" id="contact-company" name="company">
+      <label for="contact-job">Job title</label><input class="form-control" id="contact-job" name="job_title">
+      <label for="contact-headshot">Headshot URL</label><input class="form-control" id="contact-headshot" name="headshot_url" type="url">
+      <label for="contact-bio">Biography</label><textarea class="form-control" id="contact-bio" name="biography"></textarea>
+      <label for="contact-tags">Tags <small>comma separated</small></label><input class="form-control" id="contact-tags" name="tags">
+      <label for="contact-notes">Private notes</label><textarea class="form-control" id="contact-notes" name="internal_notes"></textarea>
+      <button class="btn btn-primary" type="submit">Save contact</button>
+    </form>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="crm-import-title">
+    <h2 id="crm-import-title">Import contact CSV</h2>
+    <p>Use a header row. Common headers are mapped automatically; optional mapping inputs let operators name a different source column. The whole import is validated before any row is saved.</p>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}<input type="hidden" name="action" value="import_csv">
+      <label for="crm-csv">CSV file</label><input class="form-control" id="crm-csv" name="csv_file" type="file" accept=".csv,text/csv" required>
+      <details><summary>Custom column mapping</summary>{% for field in crm_import_fields %}<label for="map-{{ field }}">{{ field|title }} source column</label><input class="form-control" id="map-{{ field }}" name="map_{{ field }}" placeholder="Auto-detect">{% endfor %}</details>
+      <button class="btn btn-primary" type="submit">Validate and import</button>
+    </form>
+  </section>
+
+  {% if duplicate_groups %}<section class="speakerops-panel" aria-labelledby="crm-duplicates-title"><h2 id="crm-duplicates-title">Duplicate review</h2><p>No duplicate is merged automatically. Compare the visible records and choose the primary explicitly.</p>
+    {% for group in duplicate_groups %}<form method="post" class="speakerops-task">{% csrf_token %}<input type="hidden" name="action" value="merge"><p>{% for contact in group %}<strong>{{ contact.name }}</strong> · {{ contact.email }} · {{ contact.company|default:"No company" }} · {{ contact.job_title|default:"No title" }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</p>
+      <label for="primary-{{ forloop.counter }}">Primary contact</label><select class="form-control" id="primary-{{ forloop.counter }}" name="primary_id">{% for contact in group %}<option value="{{ contact.pk }}">{{ contact.name }} · {{ contact.company }}</option>{% endfor %}</select>
+      <label for="duplicate-{{ forloop.counter }}">Merge this duplicate</label><select class="form-control" id="duplicate-{{ forloop.counter }}" name="duplicate_id">{% for contact in group reversed %}<option value="{{ contact.pk }}">{{ contact.name }} · {{ contact.company }}</option>{% endfor %}</select>
+      <button class="btn btn-secondary" type="submit">Merge into primary</button></form>{% endfor %}
+  </section>{% endif %}
+
+  <section class="speakerops-panel" aria-labelledby="crm-pipeline-title"><p class="speakerops__eyebrow">Sourcing pipeline</p><h2 id="crm-pipeline-title">Open to confirmed or declined</h2><p>Every new or imported contact begins as a prospect. Move a card below; every transition and note is timestamped and retained.</p><div class="speakerops__grid">{% for column in pipeline_columns %}<section aria-labelledby="pipeline-{{ column.value }}"><h3 id="pipeline-{{ column.value }}">{{ column.label }}</h3><p>{{ column.contacts|length }} contact{{ column.contacts|length|pluralize }}</p><ul>{% for contact in column.contacts %}<li><a href="#crm-contact-{{ contact.pk }}">{{ contact.name }}</a>{% if contact.company %}<br><small>{{ contact.company }}</small>{% endif %}</li>{% empty %}<li>No contacts</li>{% endfor %}</ul></section>{% endfor %}</div></section>
+
+  <section aria-labelledby="crm-directory-title">
+    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Organization directory</p><h2 id="crm-directory-title">{{ result_count }} matching contacts</h2></div></div>
+    <div class="speakerops-stack">
+    {% for contact in contacts %}<details class="speakerops-task" id="crm-contact-{{ contact.pk }}">
+      <summary><strong>{{ contact.name }}</strong> · {{ contact.email|default:"No email" }} · {{ contact.job_title|default:"No title" }}{% if contact.company %} at {{ contact.company }}{% endif %} · <span class="speakerops-badge">{{ contact.pipeline_card.get_stage_display }}</span></summary>
+      {% if contact.headshot_url %}<img src="{{ contact.headshot_url }}" alt="{{ contact.name }} headshot" width="96" height="96">{% endif %}
+      <p>{{ contact.biography|default:"No biography yet." }}</p><p><strong>Tags:</strong> {{ contact.tags|join:", "|default:"None" }}</p><p><strong>Private notes:</strong> {{ contact.internal_notes|default:"None" }}</p>
+      {% if contact.source_speaker %}<p><strong>Sourced history linked:</strong> {{ contact.source_speaker.name }}. CRM edits do not change the sourced biography or credits.</p>{% endif %}
+      <details><summary>Edit CRM profile</summary><form method="post">{% csrf_token %}<input type="hidden" name="action" value="save_contact"><input type="hidden" name="contact_id" value="{{ contact.pk }}"><label for="edit-name-{{ contact.pk }}">Name</label><input class="form-control" id="edit-name-{{ contact.pk }}" name="name" value="{{ contact.name }}" required><label for="edit-email-{{ contact.pk }}">Email</label><input class="form-control" id="edit-email-{{ contact.pk }}" name="email" type="email" value="{{ contact.email }}"><label for="edit-company-{{ contact.pk }}">Company</label><input class="form-control" id="edit-company-{{ contact.pk }}" name="company" value="{{ contact.company }}"><label for="edit-title-{{ contact.pk }}">Job title</label><input class="form-control" id="edit-title-{{ contact.pk }}" name="job_title" value="{{ contact.job_title }}"><label for="edit-headshot-{{ contact.pk }}">Headshot URL</label><input class="form-control" id="edit-headshot-{{ contact.pk }}" name="headshot_url" type="url" value="{{ contact.headshot_url }}"><label for="edit-bio-{{ contact.pk }}">Biography</label><textarea class="form-control" id="edit-bio-{{ contact.pk }}" name="biography">{{ contact.biography }}</textarea><label for="edit-tags-{{ contact.pk }}">Tags</label><input class="form-control" id="edit-tags-{{ contact.pk }}" name="tags" value="{{ contact.tags|join:', ' }}"><label for="edit-notes-{{ contact.pk }}">Private notes</label><textarea class="form-control" id="edit-notes-{{ contact.pk }}" name="internal_notes">{{ contact.internal_notes }}</textarea><button class="btn btn-primary" type="submit">Save profile</button></form></details>
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="move_stage"><input type="hidden" name="contact_id" value="{{ contact.pk }}"><label for="stage-{{ contact.pk }}">Sourcing stage</label><select class="form-control" id="stage-{{ contact.pk }}" name="stage">{% for value,label in stage_choices %}<option value="{{ value }}"{% if contact.pipeline_card.stage == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select><label for="stage-note-{{ contact.pk }}">Transition note</label><input class="form-control" id="stage-note-{{ contact.pk }}" name="note"><button class="btn btn-secondary" type="submit">Move and record history</button></form>
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="add_to_event"><input type="hidden" name="contact_id" value="{{ contact.pk }}"><label for="target-event-{{ contact.pk }}">Add to event</label><select class="form-control" id="target-event-{{ contact.pk }}" name="target_event">{% for target in organiser_events %}<option value="{{ target.pk }}"{% if target.pk == event.pk %} selected{% endif %}>{{ target.name }} · {{ target.date_from }}</option>{% endfor %}</select><button class="btn btn-primary" type="submit">Add without re-entry</button></form>
+      <details><summary>Connected events and communications</summary><h3>Events</h3><ul>{% for link in contact.event_links.all %}<li>{{ link.event.name }} · added {{ link.added_at }}</li>{% empty %}<li>No event handoffs yet.</li>{% endfor %}</ul><h3>Outreach</h3><ul>{% for item in contact.outreach.all %}<li>{{ item.logged_at }} · {{ item.subject }}</li>{% empty %}<li>No outreach yet.</li>{% endfor %}</ul></details>
+      <details><summary>Stage history and notes</summary><ol>{% for item in contact.pipeline_card.history.all %}<li>{{ item.changed_at }} · {{ item.from_stage|default:"Created" }} → {{ item.get_to_stage_display }}{% if item.actor %} by {{ item.actor.get_display_name }}{% endif %}{% if item.note %} · {{ item.note }}{% endif %}</li>{% empty %}<li>No transitions recorded yet.</li>{% endfor %}</ol></details>
+    </details>{% empty %}<div class="speakerops-empty"><p>No contacts match. Clear filters or import a CSV.</p></div>{% endfor %}
+    </div>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="crm-bulk-title"><h2 id="crm-bulk-title">Segments and selected outreach</h2><p>Select the exact contacts once, then save a reusable list or log a personalized operator-approved message. Logging does not send email.</p>
+    <form method="post">{% csrf_token %}<fieldset><legend>Select contacts</legend>{% for contact in contacts %}<label class="speakerops-check"><input type="checkbox" name="contacts" value="{{ contact.pk }}"> {{ contact.name }} · {{ contact.email }}</label>{% empty %}<p>No contacts available.</p>{% endfor %}</fieldset>
+      <label for="segment-name">Saved segment name</label><input class="form-control" id="segment-name" name="segment_name"><button class="btn btn-secondary" name="action" value="save_segment" type="submit">Save selected segment</button>
+      <hr><label for="outreach-subject">Outreach subject</label><input class="form-control" id="outreach-subject" name="subject" placeholder="Invitation for {{ event.name }}"><label for="outreach-body">Message</label><textarea class="form-control" id="outreach-body" name="body" placeholder="Hi {% templatetag openvariable %} name {% templatetag closevariable %}, …"></textarea><p>Merge fields: <code>{% templatetag openvariable %} name {% templatetag closevariable %}</code>, <code>{% templatetag openvariable %} company {% templatetag closevariable %}</code>, <code>{% templatetag openvariable %} job_title {% templatetag closevariable %}</code>, <code>{% templatetag openvariable %} event {% templatetag closevariable %}</code>.</p><button class="btn btn-primary" name="action" value="log_outreach" type="submit">Log personalized outreach</button>
+    </form>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="crm-outreach-title"><h2 id="crm-outreach-title">Recent outreach log</h2><ol>{% for item in recent_outreach %}<li><strong>{{ item.contact.name }}</strong> · {{ item.subject }} · {{ item.logged_at }}{% if item.actor %} · {{ item.actor.get_display_name }}{% endif %}<details><summary>Rendered message</summary><p>{{ item.rendered_body|linebreaksbr }}</p></details></li>{% empty %}<li>No outreach logged.</li>{% endfor %}</ol></section>
+</div>
+{% endblock content %}

@@ -1,0 +1,125 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="speakerops speakerops-memory" aria-labelledby="memory-title">
+  <header class="speakerops__header">
+    <div>
+      <p class="speakerops__eyebrow">Conference memory</p>
+      <h1 id="memory-title">What has this community already heard?</h1>
+      <p>Search sourced programs before routing proposals, assembling a track, or inviting a speaker back.</p>
+    </div>
+    <span class="speakerops-status"><strong>{{ historical_talk_count }}</strong> sourced talks</span>
+  </header>
+
+  <form method="get" role="search" class="speakerops-memory__search">
+    <label for="memory-query">Talk, speaker, topic, format, track, or edition</label>
+    <input class="form-control" id="memory-query" name="q" value="{{ query }}">
+    <label for="memory-series">Conference</label>
+    <select class="form-control" id="memory-series" name="series">
+      <option value="">All conference families</option>
+      {% for item in conference_series %}<option value="{{ item.slug }}"{% if selected_series == item.slug %} selected{% endif %}>{{ item.name }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-primary" type="submit">Search memory</button>
+  </form>
+
+  <section class="speakerops-panel" aria-labelledby="memory-signals-title">
+    <p class="speakerops__eyebrow">AIE decision support · evidence, not a score</p>
+    <h2 id="memory-signals-title">How this evidence compares</h2>
+    <p>These counts describe sourced programs matching the current search. They do not rank a proposal, infer missing labels, or replace reviewer and chair judgment.</p>
+    <div class="speakerops__grid speakerops-memory__signals">
+      <article>
+        <h3>AI Engineer precedent</h3>
+        <p><strong>{{ memory_insights.aie.talks }}</strong> talks across <strong>{{ memory_insights.aie.editions }}</strong> editions.</p>
+        <p>Most recent dated evidence: {{ memory_insights.aie.latest|date:"M j, Y"|default:"Not available" }}.</p>
+      </article>
+      <article>
+        <h3>Peer precedent</h3>
+        <p><strong>{{ memory_insights.peers.talks }}</strong> talks across <strong>{{ memory_insights.peers.editions }}</strong> editions.</p>
+        <p>Most recent dated evidence: {{ memory_insights.peers.latest|date:"M j, Y"|default:"Not available" }}.</p>
+      </article>
+      <article>
+        <h3>Evidence limits</h3>
+        <p>{{ memory_insights.aie_missing_format }} matching AIE talks lack a published format; {{ memory_insights.aie_missing_track }} lack a published track.</p>
+        {% if query and not memory_insights.aie.talks %}<p><strong>Potential AIE whitespace:</strong> no title, abstract, track, topic, or speaker match was found. Verify synonyms and editorial context before treating this as novel.</p>{% endif %}
+      </article>
+    </div>
+
+    <div class="speakerops-memory__comparisons">
+      <div>
+        <h3>Format saturation</h3>
+        <table><thead><tr><th>Published label</th><th>AIE</th><th>Peers</th></tr></thead><tbody>
+        {% for row in memory_insights.formats %}<tr><td>{{ row.label }}</td><td>{{ row.aie }}</td><td>{{ row.peers }}</td></tr>{% empty %}<tr><td colspan="3">No published format evidence matches.</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+      <div>
+        <h3>Track saturation</h3>
+        <table><thead><tr><th>Published label</th><th>AIE</th><th>Peers</th></tr></thead><tbody>
+        {% for row in memory_insights.tracks %}<tr><td>{{ row.label }}</td><td>{{ row.aie }}</td><td>{{ row.peers }}</td></tr>{% empty %}<tr><td colspan="3">No published track evidence matches.</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+      <div>
+        <h3>Topic saturation</h3>
+        <table><thead><tr><th>Published topic</th><th>AIE</th><th>Peers</th></tr></thead><tbody>
+        {% for row in memory_insights.topics %}<tr><td>{{ row.label }}</td><td>{{ row.aie }}</td><td>{{ row.peers }}</td></tr>{% empty %}<tr><td colspan="3">No published topic evidence matches.</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+    </div>
+
+    <h3>Returning-speaker cadence in matching AIE evidence</h3>
+    <ul class="speakerops-memory__returning">
+      {% for speaker in memory_insights.returning_speakers %}<li><strong>{{ speaker.name }}</strong> · {{ speaker.appearance_count }} talks across {{ speaker.edition_count }} editions · latest {{ speaker.latest_appearance|date:"Y"|default:"undated" }}</li>{% empty %}<li>No speaker appears in two or more matching AIE editions.</li>{% endfor %}
+    </ul>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="coverage-title">
+    <p class="speakerops__eyebrow">Provenance and confidence</p>
+    <h2 id="coverage-title">What “full known backfill” means</h2>
+    <p>Label coverage measures only source-published format and track fields. Declared gaps and empty editions stay visible; they are not filled with guesses or counted as evidence.</p>
+    {% for series in coverage_series %}
+      <details class="speakerops-memory__coverage">
+        <summary><strong>{{ series.name }}</strong> · {{ series.speakerops_talk_count }} talks · {% if series.speakerops_label_coverage is not None %}{{ series.speakerops_label_coverage }}% format/track labels{% else %}no talk labels{% endif %} · checked {{ series.speakerops_last_checked|date:"M j, Y"|default:"not available" }}</summary>
+        <p>{{ series.speakerops_declared_gaps }} declared source gaps; {{ series.speakerops_empty_editions }} editions with no recovered talks; {{ series.speakerops_missing_format }} talks without published format; {{ series.speakerops_missing_track }} without published track. <a href="{{ series.website }}">Official family source</a>.</p>
+        {% if series.source_policy.known_gaps %}<h3>Declared source gaps</h3><ul class="speakerops-list">{% for gap in series.source_policy.known_gaps %}<li><strong>{{ gap.item }}</strong><span>{{ gap.reason }}{% if gap.source_url %} · <a href="{{ gap.source_url }}">Gap evidence</a>{% endif %}</span></li>{% endfor %}</ul>{% endif %}
+        <div class="speakerops-table-scroll" tabindex="0" role="region" aria-label="{{ series.name }} edition coverage">
+          <table>
+            <thead><tr><th>Edition</th><th>Talks</th><th>Label coverage</th><th>Missing format</th><th>Missing track</th><th>Checked</th></tr></thead>
+            <tbody>{% for edition in series.speakerops_editions %}<tr><td><a href="{{ edition.source_url }}">{{ edition.name }}</a></td><td>{{ edition.talk_count }}</td><td>{% if edition.speakerops_label_coverage is not None %}{{ edition.speakerops_label_coverage }}%{% else %}No talks recovered{% endif %}</td><td>{{ edition.missing_format_count }}</td><td>{{ edition.missing_track_count }}</td><td>{{ edition.speakerops_last_checked|date:"M j, Y" }}</td></tr>{% endfor %}</tbody>
+          </table>
+        </div>
+      </details>
+    {% endfor %}
+  </section>
+
+  <section aria-live="polite" aria-label="Conference history results">
+    <p><strong>{{ result_count }}</strong> matching sourced talk{{ result_count|pluralize }}{% if page_obj.paginator.num_pages > 1 %}; page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}{% endif %}.</p>
+    {% for talk in historical_talks %}
+      <article class="speakerops-memory__talk">
+        <p class="speakerops__eyebrow">{{ talk.edition.series.name }} · {{ talk.edition.name }}</p>
+        <h2><a href="{{ talk.source_url }}">{{ talk.title }}</a></h2>
+        <p>{% for credit in talk.credits.all %}<a href="{% url 'plugins:speakerops:speakerops_conference_speaker' event.slug credit.speaker.pk %}">{{ credit.name_at_source }}</a> <small><a href="{{ credit.source_url }}">source</a></small>{% if not forloop.last %}, {% endif %}{% empty %}Speaker not available from source{% endfor %}</p>
+        <dl>
+          <div><dt>Format</dt><dd>{{ talk.session_format|default:"Not labeled" }}</dd></div>
+          <div><dt>Track</dt><dd>{{ talk.track|default:"Not labeled" }}</dd></div>
+          <div><dt>Level</dt><dd>{{ talk.level|default:"Not published" }}</dd></div>
+          <div><dt>Topics</dt><dd>{{ talk.topics|join:", "|default:"Not published" }}</dd></div>
+          <div><dt>Source checked</dt><dd>{{ talk.source_updated_at|date:"M j, Y" }}</dd></div>
+        </dl>
+      </article>
+    {% empty %}
+      <div class="speakerops-empty"><h2>No sourced talks match</h2><p>Change the search, or import another provenance-backed history document.</p></div>
+    {% endfor %}
+  </section>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav aria-label="Conference memory result pages">
+    {% if page_obj.has_previous %}<a class="btn btn-secondary" href="?q={{ query|urlencode }}&amp;series={{ selected_series|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+    {% if page_obj.has_next %}<a class="btn btn-secondary" href="?q={{ query|urlencode }}&amp;series={{ selected_series|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endblock content %}

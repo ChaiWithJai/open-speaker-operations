@@ -23,6 +23,12 @@ if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
   python -m pretalx collectstatic --noinput
 fi
 
+# pretalx's schedule editor is a Vite application whose compiled assets are not
+# part of the Python package's collectstatic inputs. The image builds them in a
+# separate Node stage; install them for normal and isolated-restore containers.
+mkdir -p /data/static
+cp -a /app/schedule-static/. /data/static/
+
 if [ "${SEED_DEMO:-true}" = "true" ]; then
   echo "Seeding deterministic demo data..."
   python -m pretalx speakerops_seed

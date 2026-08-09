@@ -16,14 +16,14 @@
       <h1 id="review-title">Score assigned proposals</h1>
       <p>Keyboard-first scoring with draft-safe autosave.</p>
     </div>
-    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}">Review queue</a>
+    <div class="speakerops__actions"><a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_round_review_queue' event.slug %}">Round reviews</a><a class="btn btn-link" data-review-nav href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}">Review queue</a></div>
   </header>
 
   <div class="speakerops-review-layout">
     <aside class="speakerops-queue" aria-label="Assigned proposals">
       <h2>Queue <span>{{ queue|length }}</span></h2>
       {% for proposal in queue %}
-      <a href="{% url 'plugins:speakerops:speakerops_review' event.slug proposal.pk %}"{% if submission.pk == proposal.pk %} aria-current="page"{% endif %}>
+      <a data-review-nav href="{% url 'plugins:speakerops:speakerops_review' event.slug proposal.pk %}"{% if submission.pk == proposal.pk %} aria-current="page"{% endif %}>
         <small>{{ proposal.code }}</small><strong>{{ proposal.title }}</strong>
       </a>
       {% empty %}<p>No assigned proposals are awaiting review.</p>{% endfor %}
@@ -32,15 +32,27 @@
     {% if submission %}
     <form class="speakerops-review-form" method="post" data-review-autosave>
       {% csrf_token %}
+      <input type="hidden" name="save_session" data-save-session>
+      <input type="hidden" name="client_revision" value="0" data-save-revision>
+      <input type="hidden" name="save_version" value="{% if recommendation %}{{ recommendation.save_version }}{% else %}0{% endif %}" data-save-version>
       <div class="speakerops-review-form__title">
         <div><p class="speakerops__eyebrow">{{ submission.code }}</p><h2>{{ submission.title }}</h2></div>
-        <span data-save-state aria-live="polite">All changes saved</span>
+        <span data-save-state role="status" aria-live="polite">All changes saved</span>
       </div>
       <section class="speakerops-proposal-copy">
         <h3>Abstract</h3>
         <p>{{ submission.abstract }}</p>
         {% if submission.description %}<h3>Description</h3><p>{{ submission.description }}</p>{% endif %}
       </section>
+
+      {% if historical_matches %}
+      <section class="speakerops-review-memory" aria-labelledby="review-memory-title">
+        <p class="speakerops__eyebrow">Conference memory · evidence, not a score</p>
+        <h3 id="review-memory-title">Related sessions in sourced programs</h3>
+        <ul>{% for talk in historical_matches %}<li><a href="{{ talk.source_url }}">{{ talk.title }}</a> <span>· {{ talk.edition.series.name }} {{ talk.edition.name }} · {{ talk.speakerops_match_reason }}</span></li>{% endfor %}</ul>
+        <p><a href="{% url 'plugins:speakerops:speakerops_conference_memory' event.slug %}?q={{ submission.title|urlencode }}">Search the full conference memory</a></p>
+      </section>
+      {% endif %}
 
       <section aria-labelledby="rubric-title">
         <h3 id="rubric-title">Rubric</h3>
@@ -68,8 +80,36 @@
         <label><input type="radio" name="recommendation" value="{{ value }}"{% if recommendation.recommendation == value %} checked{% endif %}> {{ label }}</label>
         {% endfor %}
       </fieldset>
-      <button type="submit" class="btn btn-primary">Save review</button>
+      <div class="speakerops-review-actions">
+        <button type="submit" class="btn btn-outline-primary">Save review <span aria-hidden="true">(Alt+S)</span></button>
+        {% if next_submission %}<button type="button" class="btn btn-primary" data-save-next data-next-url="{% url 'plugins:speakerops:speakerops_review' event.slug next_submission.pk %}">Save &amp; next <span aria-hidden="true">(Alt+N)</span></button>{% endif %}
+        <button type="button" class="btn btn-link" data-save-retry hidden>Retry save</button>
+      </div>
     </form>
+    {% if can_decide %}
+    <form class="speakerops-panel speakerops-program-decision" method="post" aria-labelledby="program-decision-title">
+      {% csrf_token %}
+      <input type="hidden" name="decision_action" value="stage">
+      <div>
+        <p class="speakerops__eyebrow">Chair authority</p>
+        <h3 id="program-decision-title">Stage program decision</h3>
+        <p>Staging records the decision and wave. It does not notify the speaker or change the native proposal state.</p>
+      </div>
+      <label for="program-decision">Decision</label>
+      <select class="form-control" id="program-decision" name="program_decision" required>
+        <option value="">Choose…</option>
+        {% for value, label in program_decision_choices %}<option value="{{ value }}"{% if program_decision.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+      <label for="acceptance-wave">Acceptance wave</label>
+      <select class="form-control" id="acceptance-wave" name="wave">
+        <option value="">Not assigned</option>
+        {% for wave in acceptance_waves %}<option value="{{ wave.pk }}"{% if program_decision.wave_id == wave.pk %} selected{% endif %}>{{ wave.name }} · {{ wave.decision_at|date:"M j, Y, P" }}</option>{% endfor %}
+      </select>
+      <label for="decision-rationale">Chair note</label>
+      <textarea class="form-control" id="decision-rationale" name="decision_rationale" rows="3">{{ program_decision.rationale }}</textarea>
+      <button class="btn btn-primary" type="submit">Stage decision</button>
+    </form>
+    {% endif %}
     {% else %}
     <section class="speakerops-empty"><h2>Queue complete</h2><p>There are no assigned proposals awaiting review.</p></section>
     {% endif %}

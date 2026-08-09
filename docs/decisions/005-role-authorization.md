@@ -57,5 +57,5 @@ permission rename requires a coordinated plugin update.
 
 ## Automated proof
 
-`tests/test_m2.py::test_roles_are_scoped_to_surfaces` proves allowed and denied
+`tests/test_onboarding_operations.py::test_roles_are_scoped_to_surfaces` proves allowed and denied
 organiser, reviewer, preview, reminder, and speaker access.

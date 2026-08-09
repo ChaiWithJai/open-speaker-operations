@@ -50,26 +50,54 @@ def classify_warnings(schedule, *, slots=None):
             if talk.room_id and talk.room_id == competitor.room_id:
                 resource = f"room {talk.room.name}"
                 classified.append(
-                    _warning_row(talk, competitor, "room", title, competing_title, resource)
+                    _warning_row(
+                        talk,
+                        competitor,
+                        "room",
+                        title,
+                        competing_title,
+                        resource,
+                        talk.room_id,
+                    )
                 )
             shared = set(speakers_by_slot[talk.pk]) & set(speakers_by_slot[competitor.pk])
             for speaker_id in sorted(shared):
                 speaker = speakers_by_slot[talk.pk][speaker_id]
                 resource = f"speaker {speaker.get_display_name()}"
                 classified.append(
-                    _warning_row(talk, competitor, "speaker", title, competing_title, resource)
+                    _warning_row(
+                        talk,
+                        competitor,
+                        "speaker",
+                        title,
+                        competing_title,
+                        resource,
+                        speaker_id,
+                    )
                 )
     return classified
 
 
-def _warning_row(talk, competitor, category, title, competing_title, resource):
-    message = f"{title} conflicts with {competing_title} ({resource})."
+def _warning_row(talk, competitor, category, title, competing_title, resource, resource_id):
+    talk_room = str(talk.room.name) if talk.room_id else "Unplaced"
+    competitor_room = str(competitor.room.name) if competitor.room_id else "Unplaced"
+    talk_time = f"{talk.start:%Y-%m-%d %H:%M}–{talk.end:%H:%M}"
+    competitor_time = f"{competitor.start:%Y-%m-%d %H:%M}–{competitor.end:%H:%M}"
+    message = (
+        f"{title} ({talk_time}, {talk_room}) conflicts with "
+        f"{competing_title} ({competitor_time}, {competitor_room}); shared {resource}."
+    )
     return {
         "talk": talk,
         "warning": {"type": category, "message": message},
         "category": category,
         "message": message,
         "competitor": competitor,
+        "conflict_key": f"{category}:{talk.pk}:{competitor.pk}:{resource_id}",
+        "resource": resource,
+        "resource_name": resource.removeprefix(f"{category} "),
+        "talk_room": talk_room,
+        "competitor_room": competitor_room,
         "blocking": category in POLICY.blocking_categories,
     }
 

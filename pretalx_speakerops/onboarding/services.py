@@ -1,6 +1,9 @@
 from datetime import timedelta
+from zipfile import BadZipFile, ZipFile
 
+from django.conf import settings
 from django.utils import timezone
+from django.utils.module_loading import import_string
 from django_scopes import scope
 
 from ..models import OnboardingTask, OnboardingTemplate, TaskDefinition, TaskEvidence
@@ -52,6 +55,80 @@ DEFAULT_DEFINITIONS = (
         "A PDF no larger than 10 MB has been uploaded.",
     ),
 )
+
+UPLOAD_TYPES = {
+    "pdf": {
+        "mime_types": {"application/pdf"},
+        "signature": lambda header: header.startswith(b"%PDF-"),
+    },
+    "pptx": {
+        "mime_types": {"application/vnd.openxmlformats-officedocument.presentationml.presentation"},
+        "signature": lambda header: header.startswith(b"PK\x03\x04"),
+    },
+    "jpg": {
+        "mime_types": {"image/jpeg", "image/pjpeg"},
+        "signature": lambda header: header.startswith(b"\xff\xd8\xff"),
+    },
+    "jpeg": {
+        "mime_types": {"image/jpeg", "image/pjpeg"},
+        "signature": lambda header: header.startswith(b"\xff\xd8\xff"),
+    },
+    "png": {
+        "mime_types": {"image/png"},
+        "signature": lambda header: header.startswith(b"\x89PNG\r\n\x1a\n"),
+    },
+}
+
+
+def _validate_upload(upload, config):
+    suffix = upload.name.lower().rsplit(".", 1)[-1] if "." in upload.name else ""
+    allowed = [item.lstrip(".").lower() for item in config.get("extensions", [])]
+    if allowed and suffix not in allowed:
+        raise ValueError(f"Unsupported file extension. Choose: {', '.join(allowed).upper()}.")
+    if upload.size > config.get("max_size", 20_000_000):
+        limit_mb = config.get("max_size", 20_000_000) / 1_000_000
+        raise ValueError(f"Upload exceeds the {limit_mb:g} MB size limit.")
+    expected = UPLOAD_TYPES.get(suffix)
+    if not expected:
+        raise ValueError("This upload format has no content validator configured.")
+    content_type = (getattr(upload, "content_type", "") or "").lower().split(";", 1)[0]
+    if content_type not in expected["mime_types"]:
+        raise ValueError(
+            f"The browser reported {content_type or 'no MIME type'}, which does not match "
+            f"the .{suffix} file extension."
+        )
+    position = upload.tell()
+    try:
+        upload.seek(0)
+        header = upload.read(16)
+        if not expected["signature"](header):
+            raise ValueError(
+                f"The file contents do not match the .{suffix} file extension and MIME type."
+            )
+        if suffix == "pptx":
+            upload.seek(0)
+            try:
+                with ZipFile(upload) as archive:
+                    names = set(archive.namelist())
+            except (BadZipFile, OSError):
+                raise ValueError("The PowerPoint file is not a valid PPTX archive.") from None
+            required_members = {"[Content_Types].xml", "ppt/presentation.xml"}
+            if not required_members.issubset(names):
+                raise ValueError("The PowerPoint archive is missing required PPTX content.")
+    finally:
+        upload.seek(position)
+
+    scanner_path = getattr(settings, "SPEAKEROPS_UPLOAD_SCANNER", "")
+    if scanner_path:
+        upload.seek(0)
+        try:
+            import_string(scanner_path)(
+                upload=upload,
+                filename=upload.name,
+                content_type=content_type,
+            )
+        finally:
+            upload.seek(position)
 
 
 def get_or_create_default_template(event):
@@ -150,13 +227,17 @@ def record_evidence(task, speaker, kind, value=None, upload=None):
         profile, _ = SpeakerProfile.objects.get_or_create(event=task.event, user=speaker)
         setattr(profile, field, response)
         profile.save(update_fields=[field, "updated"])
+    if kind == "upload" and not upload:
+        raise ValueError("Choose a file before submitting this task.")
     if upload:
-        suffix = upload.name.lower().rsplit(".", 1)[-1]
-        allowed = [item.lstrip(".").lower() for item in config.get("extensions", [])]
-        if allowed and suffix not in allowed:
-            raise ValueError("Unsupported upload type")
-        if upload.size > config.get("max_size", 20_000_000):
-            raise ValueError("Upload exceeds the size limit")
+        _validate_upload(upload, config)
+    latest_version = (
+        TaskEvidence.objects.filter(task=task)
+        .order_by("-version")
+        .values_list("version", flat=True)
+        .first()
+        or 0
+    )
     evidence = TaskEvidence.objects.create(
         event=task.event,
         task=task,
@@ -166,6 +247,8 @@ def record_evidence(task, speaker, kind, value=None, upload=None):
         upload=upload,
         content_type=getattr(upload, "content_type", "") if upload else "",
         size=getattr(upload, "size", None),
+        version=latest_version + 1,
+        review_status=TaskEvidence.PENDING if upload else TaskEvidence.APPROVED,
     )
     if kind == "acknowledgement":
         task.evidence = {**task.evidence, "acknowledged_at": timezone.now().isoformat()}

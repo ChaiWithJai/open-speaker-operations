@@ -62,5 +62,5 @@ schedule state. Those remain upstream domain calls.
 ## Automated proof
 
 `tests/test_domain.py::test_executor_is_idempotent` and
-`tests/test_m2.py::test_completion_uses_executor_and_evidence` prove replay,
+`tests/test_onboarding_operations.py::test_completion_uses_executor_and_evidence` prove replay,
 locking/version behavior, transition logs, and plugin task mutation routing.

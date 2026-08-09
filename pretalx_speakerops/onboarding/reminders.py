@@ -28,13 +28,16 @@ def queue_reminders(event, tasks=None, reminder_key="onboarding-due"):
             )
             if not created:
                 continue
+            context_kwargs = {"submission": task.submission} if task.submission else {}
             mail = template.to_mail(
                 task.speaker,
                 event,
-                context_kwargs={"submission": task.submission},
+                context_kwargs=context_kwargs,
                 context={
                     "task_name": task.definition.name,
-                    "submission_title": task.submission.title,
+                    "submission_title": (
+                        task.submission.title if task.submission else "your speaker action list"
+                    ),
                 },
             )
             receipt.queued_mail_id = mail.pk

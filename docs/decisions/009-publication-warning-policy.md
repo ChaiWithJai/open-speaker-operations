@@ -52,5 +52,5 @@ pretalx's released `current_schedule`; WIP remains organiser-only.
 
 ## Automated proof
 
-`tests/test_m3.py::test_blocking_schedule_warning_prevents_release` and
-`tests/test_m2.py::test_dashboard_conflict_count_reconciles_to_rows`.
+`tests/test_schedule_publication.py::test_blocking_schedule_warning_prevents_release` and
+`tests/test_onboarding_operations.py::test_dashboard_conflict_count_reconciles_to_rows`.

@@ -12,14 +12,83 @@
     <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to operations</a>
   </header>
 
+  {% if gate_feedback %}
+  <section class="{% if gate_feedback.cleared %}speakerops__success{% else %}speakerops__alert{% endif %}" role="status" aria-live="polite">
+    <strong>{{ gate_feedback.title }}</strong> {{ gate_feedback.message }}
+  </section>
+  {% endif %}
+
   {% if blocking %}
-  <section class="speakerops__alert" aria-labelledby="blocked-title">
+  <section class="speakerops__alert" id="conflicts" aria-labelledby="blocked-title">
     <h2 id="blocked-title">Release blocked · {{ blocking|length }} conflict{{ blocking|length|pluralize }}</h2>
-    <ul>{% for item in blocking %}<li><a href="#slot-{{ item.talk.pk }}">{{ item.message }}</a></li>{% endfor %}</ul>
-    <p><a class="btn btn-outline-primary" href="/orga/{{ event.slug }}/schedule/">Open schedule editor</a></p>
+    <p>Open the relevant native session editor, save the change there, then return to this tab and recheck the server-authoritative gate.</p>
+    <div class="speakerops-table-wrap" role="region" aria-labelledby="conflict-table-title" tabindex="0">
+      <table class="speakerops-table">
+        <caption class="speakerops-visually-hidden" id="conflict-table-title">Blocking schedule conflicts and resolution actions</caption>
+        <thead><tr><th scope="col">Sessions</th><th scope="col">Shared resource</th><th scope="col">Resolve</th></tr></thead>
+        <tbody>
+        {% for item in blocking %}
+          <tr id="conflict-{{ item.conflict_key }}">
+            <td data-label="Sessions">
+              <a href="#slot-{{ item.talk.pk }}"><strong>{{ item.talk.submission.title }}</strong></a><br>
+              {{ item.talk.start|date:"D, M j · H:i" }}–{{ item.talk.end|time:"H:i" }} · {{ item.talk_room }}<br>
+              <span aria-hidden="true">↔</span><span class="speakerops-visually-hidden">conflicts with</span><br>
+              <a href="#slot-{{ item.competitor.pk }}"><strong>{{ item.competitor.submission.title }}</strong></a><br>
+              {{ item.competitor.start|date:"D, M j · H:i" }}–{{ item.competitor.end|time:"H:i" }} · {{ item.competitor_room }}
+            </td>
+            <td data-label="Shared resource"><strong>{{ item.category|title }}</strong><br>{{ item.resource_name }}</td>
+            <td data-label="Resolve">
+              <a class="btn btn-primary" href="{{ item.resolve_url }}" target="_blank" rel="noopener">Resolve {{ item.talk.submission.code }} <span class="speakerops-visually-hidden">in the native schedule editor (opens in a new tab)</span></a><br>
+              <a href="{{ item.competitor_resolve_url }}" target="_blank" rel="noopener">Edit {{ item.competitor.submission.code }} instead <span class="speakerops-visually-hidden">(opens in a new tab)</span></a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p><a class="btn btn-outline-primary" href="?recheck=1#conflicts">Recheck conflicts</a> <a class="btn btn-link" href="/orga/{{ event.slug }}/schedule/">Open full schedule editor</a></p>
   </section>
   {% else %}
   <section class="speakerops__success"><strong>Release gate clear.</strong> No blocking room or speaker conflicts.</section>
+  {% endif %}
+
+  <section class="speakerops-panel" aria-labelledby="agenda-assist-title">
+    <div>
+      <p class="speakerops__eyebrow">Operator-controlled assistance</p>
+      <h2 id="agenda-assist-title">AI Agenda assist</h2>
+      <p>Generate a deterministic proposal from event dates, rooms, session durations and speaker conflicts. Nothing moves until the chair reviews and confirms it.</p>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="preview_assisted_schedule">
+      <button class="btn btn-outline-primary" type="submit">Generate conflict-free proposal</button>
+    </form>
+  </section>
+
+  {% if proposed_placements %}
+  <section class="speakerops-panel" aria-labelledby="proposal-title">
+    <div>
+      <h2 id="proposal-title">Proposed agenda · {{ proposed_placements|length }} sessions</h2>
+      <p>Review the complete placement plan. The solver does not rank, accept or reject content.</p>
+    </div>
+    <div class="speakerops-table-wrap" role="region" aria-labelledby="proposal-title" tabindex="0">
+      <table class="speakerops-table">
+        <thead><tr><th scope="col">Session</th><th scope="col">Proposed time</th><th scope="col">Room</th><th scope="col">Change</th></tr></thead>
+        <tbody>{% for placement in proposed_placements %}<tr>
+          <td data-label="Session">{{ placement.slot.submission.title }}</td>
+          <td data-label="Proposed time">{{ placement.start|date:"D, M j · H:i" }}–{{ placement.end|time:"H:i" }}</td>
+          <td data-label="Room">{{ placement.room.name }}</td>
+          <td data-label="Change">{% if placement.changed %}Move{% else %}Keep{% endif %}</td>
+        </tr>{% endfor %}</tbody>
+      </table>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="apply_assisted_schedule">
+      <label class="speakerops-check"><input type="checkbox" name="confirm_assisted_schedule" value="yes" required> I reviewed this proposal and authorize these placements.</label>
+      <button class="btn btn-primary" type="submit">Apply proposed agenda</button>
+    </form>
+  </section>
   {% endif %}
 
   <div class="speakerops-table-wrap" role="region" aria-labelledby="agenda-table-title" tabindex="0">

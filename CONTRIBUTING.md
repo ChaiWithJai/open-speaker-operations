@@ -50,12 +50,15 @@ make check
 ```
 
 This runs:
-- `ruff format --check` — formatting
-- `ruff check` — linting
-- `pytest -q tests` — functional tests
-- `python scripts/check_context_graph.py` — requirement coverage gate
+- `uv run ruff format --check` — formatting
+- `uv run ruff check` — linting
+- `uv run python tools/check_repository_contract.py` — repository layout and generated-artifact policy
+- `DJANGO_SETTINGS_MODULE=pretalx.common.settings.test_settings uv run pytest -q tests` — functional and query-budget tests
+- `uv run python tools/check_context_graph.py` — requirement coverage gate
+- syntax checks for JavaScript, Python operations tooling, and recovery shell scripts
+- `tools/ci-compose-smoke.sh` — clean-volume production-shaped Docker smoke
 
-CI invokes the same `make check`.
+CI invokes the same `make check`. Use `make check-python` while iterating when a Docker rebuild is not relevant; it is a subset, not the release gate.
 
 ## Architecture
 
@@ -66,9 +69,30 @@ Pretalx plugin (`pretalx_speakerops`) extending unmodified `pretalx==2025.2.2`:
 - **Models** own persistence and invariants
 - **Receivers** observe pretalx signals and defer side effects via `transaction.on_commit`
 
+Read [the architecture map](./docs/architecture.md) before adding a new
+workflow. Follow `view → service/domain → model or integration → audit/outbox`.
+New capabilities belong in named modules; do not add another unrelated concern
+to `views.py` or `models.py`. GET requests never perform configuration or
+workflow writes.
+
+The [repository map](./docs/repository-map.md) is the placement authority:
+deployment/recovery assets live in `deploy/`, contributor-only commands in
+`tools/`, and tests use behavior/capability names rather than milestone names.
+
+## Migrations
+
+1. Change models and generate the migration with Pretalx's Django environment.
+2. Inspect the migration; never accept an accidental field drop or rename.
+3. Prefer additive schema changes. A destructive/data migration needs an ADR,
+   an explicit reverse/recovery plan, and backup/restore evidence.
+4. Run `python -m pretalx makemigrations --check --dry-run`, the full test suite,
+   and the clean-volume Compose smoke.
+5. Do not edit an already deployed migration; add the next numbered migration.
+
 ## Repository conventions
 
 - Do not commit generated state (`.pytest_cache/`, `.ruff_cache/`, `.venv/`, `__pycache__/`, `*.egg-info/`, screenshots, profiling output, database dumps)
+- Do not commit browser state/traces, coverage/build directories, local SQLite files, or backup snapshots; `make repository-contract` enforces tracked-path policy
 - GET requests must not perform configuration writes
 - Every implementation-critical claim needs a pinned upstream source and tests
 - `docs/decisions/` records *why* seams were chosen; `docs/log/` records dead ends and corrections
@@ -77,4 +101,7 @@ Pretalx plugin (`pretalx_speakerops`) extending unmodified `pretalx==2025.2.2`:
 
 - Behavior-preserving unless the PR description argues otherwise
 - New surfaces have tests; fixes regressions first
+- Name the affected capability, migration/recovery impact, authorization boundary, and acceptance evidence in the PR description
+- Include browser/performance evidence when the changed surface can affect rendering or request cost
+- Never commit secrets, local evidence artifacts, or generated screenshots to make a check pass
 - `make check` passes locally before pushing

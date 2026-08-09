@@ -1,0 +1,54 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="speakerops" aria-labelledby="routing-title">
+  <header class="speakerops__header">
+    <div>
+      <p class="speakerops__eyebrow">CFP policy</p>
+      <h1 id="routing-title">Conditional questions &amp; reviewer routing</h1>
+      <p>Configure what speakers see and route each submitted category to one accountable reviewer pool.</p>
+    </div>
+    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to operations</a>
+  </header>
+
+  <section class="speakerops-panel" aria-labelledby="rule-title">
+    <div>
+      <h2 id="rule-title">Visibility rule</h2>
+      <p>When the selected answer matches, the target question is shown. The same rule is enforced on the server.</p>
+      {% if rules %}<p>{% for rule in rules %}<a href="?rule={{ rule.pk }}">{{ rule.name }}</a>{% if not forloop.last %} · {% endif %}{% endfor %}</p>{% endif %}
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save_rule">
+      {% if selected_rule %}<input type="hidden" name="rule_id" value="{{ selected_rule.pk }}">{% endif %}
+      {{ rule_form.as_p }}
+      <button class="btn btn-primary" type="submit">Save visibility rule</button>
+    </form>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="pool-title">
+    <div>
+      <h2 id="pool-title">Reviewer pools</h2>
+      <p>Every category can belong to exactly one pool. Submissions are assigned to that pool’s reviewers after server validation.</p>
+      {% if pools %}
+      <ul>
+        {% for pool in pools %}
+        <li><a href="?pool={{ pool.pk }}">{{ pool.name }}</a> — {% for mapping in pool.track_mappings.all %}{{ mapping.track.name }}{% if not forloop.last %}, {% endif %}{% empty %}No categories{% endfor %}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save_pool">
+      {{ pool_form.as_p }}
+      <button class="btn btn-primary" type="submit">{% if selected_pool %}Update reviewer pool{% else %}Create reviewer pool{% endif %}</button>
+    </form>
+  </section>
+</div>
+{% endblock content %}

@@ -1,0 +1,1561 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-09T12:00:00Z",
+  "series": [
+    {
+      "slug": "jsconf-belgium",
+      "name": "JSConf Belgium",
+      "website": "https://www.jsconf.be/",
+      "source_policy": {
+        "authority": "official-archive",
+        "scope": "complete-recoverable-official-program-records",
+        "retrieved_at": "2026-08-09T12:00:00Z",
+        "known_gaps": [
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "Flux +React",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "Node.js on Azure",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "Angular",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "Meteor",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "IoT",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "ECMA 6 & 7",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "Publish your HTML5 app",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "AnySurfer",
+            "reason": "The official session attribution identifies only the AnySurfer organization, not an individual speaker; omitted rather than treating an organization as a person.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "Realtime node.js app",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2015",
+            "item": "Cody CMS",
+            "reason": "The official page lists the session and a separate speaker roster but does not encode an individual speaker-to-session relationship; omitted rather than inferred.",
+            "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2016",
+            "item": "One TBC schedule slot",
+            "reason": "The official schedule contains no title or speaker, so it is excluded as schedule furniture.",
+            "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/"
+          },
+          {
+            "scope": "JSConf Belgium 2018",
+            "item": "Talk titles and speaker-to-talk attribution",
+            "reason": "The archived official edition page verifies dates and links to schedule/session routes, but no recoverable 2018 snapshot of those routes was discoverable.",
+            "source_url": "https://web.archive.org/web/20181120203612id_/https://www.jsconf.be/en"
+          }
+        ]
+      },
+      "editions": [
+        {
+          "external_key": "belgium-2014",
+          "name": "JSConf Belgium 2014",
+          "date_from": "2014-03-20",
+          "date_to": "2014-03-20",
+          "location": "Bruges, Belgium",
+          "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "advanced-javascript-927c3b41",
+              "title": "Advanced JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tim Coppieters",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Tom Van Cutsem",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "server-side-javascript-d872242e",
+              "title": "Server side Javascript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Johan Coppieters",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "a-javascript-multi-language-cms-31eca0b2",
+              "title": "A JavaScript multi-language CMS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Johan Coppieters",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "internet-of-things-9a5f2bfb",
+              "title": "Internet of Things",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Bart Strubbe",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20140704234312id_/http://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "belgium-2015",
+          "name": "JSConf Belgium 2015",
+          "date_from": "2015-04-23",
+          "date_to": "2015-04-23",
+          "location": "Bruges, Belgium",
+          "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "angular-showcase-33861346",
+              "title": "Angular Showcase",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Vic Rau",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Jeroen Verfallie",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20150509171704id_/http://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "belgium-2016",
+          "name": "JSConf Belgium 2016",
+          "date_from": "2016-05-03",
+          "date_to": "2016-05-03",
+          "location": "Bruges, Belgium",
+          "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "hands-on-espruino-ce5453f5",
+              "title": "Hands-on Espruino",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Gordon Williams",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nodebots-1ced9c57",
+              "title": "Nodebots",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Markus Leutwyler",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sencha-ext-js-appcamp-7d50c22c",
+              "title": "Sencha Ext JS AppCamp",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Shikhir Singh",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "you-don-t-need-an-app-for-that-7a21b483",
+              "title": "You don't need an app for that!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jill VandenDriessche",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "control-flow-goodness-in-es6-and-es7-c3d54d88",
+              "title": "Control flow goodness in ES6 and ES7",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tom Van Cutsem",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "data-fetching-in-react-ba837d47",
+              "title": "Data Fetching in React",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Forbes Lindesay",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "understanding-typescript-0f6ebb40",
+              "title": "Understanding TypeScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nick Trogh",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "building-serverless-javascript-applications-d57d0871",
+              "title": "Building \"Serverless\" Javascript Applications",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Steve Faulkner",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mis-understanding-v8-performance-dcfc2199",
+              "title": "(Mis) Understanding V8 Performance",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Toon Verwaest",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "let-s-dive-into-a-virtual-world-together-0a114a1b",
+              "title": "Let's dive into a virtual world - together",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Martin Naumann",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "offline-is-the-new-black-c1fdfed9",
+              "title": "Offline is the new Black",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Max Stoiber",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "exploring-the-continuum-between-web-apps-and-react-native-8b11f7fc",
+              "title": "Exploring the continuum between web apps and React Native",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Martijn Walraven",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "why-and-how-we-moved-from-angular-to-react-f0854a16",
+              "title": "Why and how we moved from Angular to React.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Vic Rau",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Jeroen Verfallie",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-meets-espruino-c642a316",
+              "title": "JavaScript meets Espruino",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Gordon Williams",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "building-bridges-7807d376",
+              "title": "Building Bridges",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Wouter Verweirder",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20160421191650id_/https://jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "belgium-2017",
+          "name": "JSConf Belgium 2017",
+          "date_from": "2017-06-29",
+          "date_to": "2017-06-29",
+          "location": "Bruges, Belgium",
+          "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "making-an-app-with-angular-4-and-ionic-3-f86897e3",
+              "title": "Making an app with Angular 4 and Ionic 3",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Johan Coppieters",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Olivier Overstraete",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sensing-the-world-through-javascript-b902bd56",
+              "title": "Sensing the world through JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Koen Koreman",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sockets-and-droids-1b62f5b3",
+              "title": "Sockets and Droids",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jill VandenDriessche",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "building-a-simple-2048-clone-with-react-e714de90",
+              "title": "Building a simple 2048 clone with React",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Adam Gyulavari",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Denes Pal",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "keynote-session-choosing-the-webs-future-9d3f237d",
+              "title": "Keynote session: Choosing the Web’s future",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Peter-Paul Koch",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "reactive-programming-by-example-de4afd6d",
+              "title": "Reactive Programming By Example",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Lander Verhack",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tierless-javascript-60aa8dad",
+              "title": "Tierless JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Laure Philips",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "you-use-content-security-policy-don-a0e0bad7",
+              "title": "You use Content Security Policy, don",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kacper Sokolowski",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-era-of-module-bundlers-5afe6756",
+              "title": "The Era of Module Bundlers",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Arun Dsouza",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "from-documents-to-dialogues-scripting-the-conversational-web-using-chatbots-1f285a5f",
+              "title": "From Documents to Dialogues: scripting the Conversational Web using Chatbots",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tom Van Cutsem",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "how-javascript-and-ai-can-save-your-life-86caf4be",
+              "title": "How JavaScript and AI can save your life",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nick Trogh",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "finally-enterprise-javascript-is-easy-9a44a517",
+              "title": "Finally, Enterprise JavaScript is easy!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Geertjan Wielenga",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "write-history-keep-a-diary-344a980a",
+              "title": "Write history, keep a diary",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jachim Coudenys",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "coffee-js-how-i-hacked-my-coffee-machine-using-javascript-dfe56a8e",
+              "title": "Coffee.js? How I hacked my coffee machine using JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dominik Kundel",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20171020100148id_/https://www.jsconf.be/en/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "belgium-2018",
+          "name": "JSConf Belgium 2018",
+          "date_from": "2018-05-29",
+          "date_to": "2018-05-30",
+          "location": "Bruges, Belgium",
+          "source_url": "https://web.archive.org/web/20181120203612id_/https://www.jsconf.be/en",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": []
+        },
+        {
+          "external_key": "belgium-2019",
+          "name": "JSConf Belgium 2019",
+          "date_from": "2019-06-20",
+          "date_to": "2019-06-21",
+          "location": "Bruges, Belgium",
+          "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "to-all-the-code-i-ve-loved-before-de68491c",
+              "title": "To all the code I've loved before",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yuraima Estevez",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Olivier Steufken",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Victor Bury",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Johan Peeters",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Milenko Vorkapic",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Alex Dos Santos",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Dimitri Casier",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Jamie Maria Schouren",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Rakhi Sharma",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Sille Van Landschoot",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Tom Van Cutsem",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Lander Verhack",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Willian Martins da Silva",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Diedrik De Mits",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Haroen Viaene",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Lieven Doclo",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Martijn Werbrouck",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Matthias Goderis",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Sara Vieira",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Tim Doherty",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Rafał Rumanek",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Henrique Ramos Limas",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Geertjan Wielenga",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Sam Bellen",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Tim De Pauw",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Alessandro Polidori",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Nick Trogh",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "to-all-the-code-i-ve-loved-before-dd72bb8a",
+              "title": "To all the code I've loved before",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yuraima Estevez",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "get-blazing-fast-at-coding-react-and-typescript-8e071473",
+              "title": "Get blazing fast at coding - React and TypeScript",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Olivier Steufken",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Victor Bury",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "access-control-in-idiomatic-react-e4e0dff0",
+              "title": "Access control in idiomatic React",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Johan Peeters",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "intro-to-react-hooks-322ddbc5",
+              "title": "Intro to React Hooks",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Milenko Vorkapic",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Alex Dos Santos",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "introduction-to-vue-js-8b314e6b",
+              "title": "Introduction to Vue.js",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dimitri Casier",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-search-for-app-iness-progressive-web-apps-112e5b66",
+              "title": "The search for App-iness : Progressive Web Apps",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jamie Maria Schouren",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "understanding-browsers-behavior-26c5cfd2",
+              "title": "Understanding Browsers Behavior!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Rakhi Sharma",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-on-the-internet-of-things-3bd012b1",
+              "title": "JavaScript on the Internet of Things",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sille Van Landschoot",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "browsing-npm-packages-more-effectively-with-code-compass-7dbc729d",
+              "title": "Browsing NPM packages more effectively with Code Compass",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tom Van Cutsem",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "machine-learning-for-web-developers-bca7865a",
+              "title": "Machine learning for web developers",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Lander Verhack",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "back-to-the-future-of-js-ii-beyond-what-we-can-foresee-c99d7d6a",
+              "title": "Back to the future of JS II: Beyond what we can foresee",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Willian Martins da Silva",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "contributing-your-time-and-effort-to-open-source-software-af082e8f",
+              "title": "Contributing your time and effort to Open Source Software",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Diedrik De Mits",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "don-t-make-component-abstract-art-531957a1",
+              "title": "Don't make component abstract art",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Haroen Viaene",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "automating-your-nodejs-software-delivery-47f264cf",
+              "title": "Automating your NodeJS software delivery",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Lieven Doclo",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "taking-your-angular-application-to-the-next-level-096c990c",
+              "title": "Taking your Angular application to the next level",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Martijn Werbrouck",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Matthias Goderis",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "building-dumb-sh-t-559e1302",
+              "title": "Building dumb sh*t",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sara Vieira",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tdcd-test-driven-component-development-f9e21929",
+              "title": "TDCD: Test Driven Component Development",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tim Doherty",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "from-120-to-800-mb-of-ram-usage-in-5-minutes-a-story-of-plugging-memory-leaks-68514101",
+              "title": "From 120 to 800 MB of RAM usage in 5 minutes. A story of plugging memory leaks.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Rafał Rumanek",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "let-s-compose-web-components-22cc4d70",
+              "title": "Let's compose Web components",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Henrique Ramos Limas",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "2nd-generation-javascript-frameworks-libraries-d725d739",
+              "title": "2nd Generation JavaScript Frameworks & Libraries",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Geertjan Wielenga",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "passwords-are-so-1990-0b4c1abf",
+              "title": "Passwords are so 1990",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sam Bellen",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "scaling-javascript-to-video-ad-tech-8299270d",
+              "title": "Scaling JavaScript to Video Ad Tech",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tim De Pauw",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "making-react-applications-work-for-everyone-7093050f",
+              "title": "Making React applications work for everyone",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yuraima Estevez",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-webrtc-make-js-audio-video-phone-calls-from-your-web-app-9efbe5c3",
+              "title": "Javascript WebRTC: make JS Audio & Video Phone calls from your Web App",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Alessandro Polidori",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "transforming-your-hand-drawings-into-html-with-ai-bdabedff",
+              "title": "Transforming your hand drawings into HTML with AI",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nick Trogh",
+                  "biography": "",
+                  "source_url": "https://web.archive.org/web/20190720025720id_/https://www.jsconf.be/en/sessions-workshops",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

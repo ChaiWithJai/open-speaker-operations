@@ -72,5 +72,5 @@ derivative-adjacent relationship and preserves upstream licensing.
 
 ## Automated proof
 
-`tests/test_m1.py::test_golden_path_crosses_plugin_boundaries` boots the plugin
+`tests/test_acceptance_journey.py::test_golden_path_crosses_plugin_boundaries` boots the plugin
 through Django and crosses its URL, receiver, model, and template boundaries.

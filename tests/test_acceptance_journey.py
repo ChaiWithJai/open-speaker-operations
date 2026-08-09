@@ -1,0 +1,81 @@
+import pytest
+from django.contrib.auth.models import AnonymousUser
+from django.urls import reverse
+from django.utils.functional import SimpleLazyObject
+from django_scopes import scope
+from pretalx.schedule.signals import schedule_release
+from pretalx.submission.models import SubmissionStates
+
+from pretalx_speakerops.auth import is_speaker
+from pretalx_speakerops.models import OnboardingTask, PreviewRun, TaskDefinition
+
+
+@pytest.mark.django_db(transaction=True)
+def test_acceptance_creates_one_task_per_speaker(event, users):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.speakers.add(users["speaker"])
+        submission.accept(person=users["chair"], force=True)
+        expected = (
+            submission.speakers.count()
+            * TaskDefinition.objects.filter(event=event, active=True).count()
+        )
+        assert OnboardingTask.objects.filter(event=event, submission=submission).count() == expected
+        submission.accept(person=users["chair"], force=True)
+        assert OnboardingTask.objects.filter(event=event, submission=submission).count() == expected
+
+
+@pytest.mark.django_db(transaction=True)
+def test_is_speaker_resolves_lazy_user(event, users):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.speakers.add(users["speaker"])
+        lazy_user = SimpleLazyObject(lambda: users["speaker"])
+        assert is_speaker(lazy_user, event)
+        lazy_anonymous = SimpleLazyObject(lambda: AnonymousUser())
+        assert not is_speaker(lazy_anonymous, event)
+
+
+@pytest.mark.django_db(transaction=True)
+def test_golden_path_crosses_plugin_boundaries(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.speakers.add(users["speaker"])
+        submission.state = SubmissionStates.SUBMITTED
+        submission.save(update_fields=["state", "updated"])
+        submission.accept(person=users["chair"], force=True)
+        task = OnboardingTask.objects.get(
+            submission=submission, speaker=users["speaker"], definition__slug="acknowledgement"
+        )
+
+        client.force_login(users["speaker"])
+        response = client.get(f"/{event.slug}/speaker-operations/checklist/")
+        assert response.status_code == 200
+        response = client.post(f"/{event.slug}/speaker-operations/checklist/{task.pk}/complete/")
+        assert response.status_code == 302
+        task.refresh_from_db()
+        assert task.status == OnboardingTask.COMPLETE
+
+        client.force_login(users["chair"])
+        schedule_release.send(sender=event, schedule=event.wip_schedule, user=users["chair"])
+        assert PreviewRun.objects.filter(event=event, status="schedule-released").exists()
+        assert client.get(f"/{event.slug}/schedule/").status_code == 200
+        response = client.post(f"/orga/{event.slug}/speaker-operations/sync/preview/")
+        assert response.status_code == 200
+        assert PreviewRun.objects.filter(event=event).exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_status_endpoint(event, users, client):
+    url = reverse("plugins:speakerops:speakerops_status", kwargs={"event": event.slug})
+    response = client.get(url)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["event"] == event.slug
+    assert "outbox_backlog" in data
+    assert "sync_connection" in data
+    assert "onboarding_total" in data
+    assert "onboarding_done" in data

@@ -1,0 +1,24 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+{% block content %}
+<div class="speakerops" aria-labelledby="speaker-import-title">
+  {% include "pretalx_speakerops/includes/role_navigation.html" %}
+  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Speaker roster</p><h1 id="speaker-import-title">Import speakers from CSV</h1><p>Preview the file, map its columns, and validate every row before anything is written.</p></div><a href="{% url 'plugins:speakerops:speakerops_speakers' event.slug %}">&larr; Back to speaker operations</a></header>
+  {% if not preview %}
+  <section class="speakerops-panel"><form method="post" enctype="multipart/form-data">{% csrf_token %}<input type="hidden" name="action" value="preview"><label for="speaker-csv">UTF-8 CSV file</label><input class="form-control" id="speaker-csv" name="csv_file" type="file" accept=".csv,text/csv" required><p>Maximum 500 rows and 1 MB. No accounts or profiles are changed until the mapped preview is confirmed.</p><button class="btn btn-primary" type="submit">Preview and map columns</button></form></section>
+  {% else %}
+  <section class="speakerops-panel" aria-labelledby="mapping-title"><form method="post">{% csrf_token %}<input type="hidden" name="action" value="import"><input type="hidden" name="token" value="{{ token }}"><h2 id="mapping-title">Map {{ row_count }} row{{ row_count|pluralize }}</h2>
+    <label for="map-name">Speaker name</label><select class="form-control" id="map-name" name="map_name" required><option value="">Choose column</option>{% for header in headers %}<option value="{{ header }}"{% if guesses.name == header %} selected{% endif %}>{{ header }}</option>{% endfor %}</select>
+    <label for="map-email">Email</label><select class="form-control" id="map-email" name="map_email" required><option value="">Choose column</option>{% for header in headers %}<option value="{{ header }}"{% if guesses.email == header %} selected{% endif %}>{{ header }}</option>{% endfor %}</select>
+    <label for="map-status">Workflow status (optional)</label><select class="form-control" id="map-status" name="map_workflow_status"><option value="">Do not import</option>{% for header in headers %}<option value="{{ header }}"{% if guesses.workflow_status == header %} selected{% endif %}>{{ header }}</option>{% endfor %}</select>
+    <label for="map-travel">Travel preferences (optional)</label><select class="form-control" id="map-travel" name="map_travel_preferences"><option value="">Do not import</option>{% for header in headers %}<option value="{{ header }}"{% if guesses.travel_preferences == header %} selected{% endif %}>{{ header }}</option>{% endfor %}</select>
+    <label for="map-dietary">Dietary requirements (optional)</label><select class="form-control" id="map-dietary" name="map_dietary_requirements"><option value="">Do not import</option>{% for header in headers %}<option value="{{ header }}"{% if guesses.dietary_requirements == header %} selected{% endif %}>{{ header }}</option>{% endfor %}</select>
+    <label for="map-accessibility">Accessibility requirements (optional)</label><select class="form-control" id="map-accessibility" name="map_accessibility_requirements"><option value="">Do not import</option>{% for header in headers %}<option value="{{ header }}"{% if guesses.accessibility_requirements == header %} selected{% endif %}>{{ header }}</option>{% endfor %}</select>
+    <h3>First {{ rows|length }} row{{ rows|length|pluralize }}</h3><div class="speakerops-table-wrap"><table class="speakerops-table"><thead><tr>{% for header in headers %}<th scope="col">{{ header }}</th>{% endfor %}</tr></thead><tbody>{% for row in rows %}<tr>{% for value in row.values %}<td>{{ value }}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div>
+    <button class="btn btn-primary" type="submit">Validate and import {{ row_count }} speakers</button>
+  </form></section>
+  {% endif %}
+</div>
+{% endblock content %}

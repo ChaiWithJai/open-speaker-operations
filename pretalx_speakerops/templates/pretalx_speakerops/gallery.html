@@ -10,7 +10,7 @@
   </style>
 </head>
 <body><main aria-labelledby="gallery-title">
-  <header><div><small>Published program</small><h1 id="gallery-title">Meet the speakers</h1></div><a href="{% url 'plugins:speakerops:speakerops_embed' event.slug %}">View schedule</a></header>
+  <header><div><small>Published program</small><h1 id="gallery-title">Meet the speakers</h1></div><a href="{% url 'plugins:speakerops:speakerops_public_widget' event.slug 'gallery' %}">Open searchable speaker gallery</a></header>
   <div class="gallery">
   {% for card in speaker_cards %}<article><div class="avatar" aria-hidden="true">{{ card.speaker.name|first|upper }}</div><h2>{{ card.speaker.get_display_name }}</h2>{% for session in card.sessions %}<p class="muted">{{ session.title }}</p>{% endfor %}</article>
   {% empty %}<p>No published speakers yet.</p>{% endfor %}

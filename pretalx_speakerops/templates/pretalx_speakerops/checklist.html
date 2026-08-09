@@ -4,15 +4,21 @@
 {% block cfp_stylesheets %}{{ block.super }}
 <link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
 {% endblock cfp_stylesheets %}
+{% block scripts %}{{ block.super }}
+<script defer src="{% static 'pretalx_speakerops/upload.js' %}"></script>
+{% endblock scripts %}
 
 {% block content %}
 <div class="speakerops speakerops--portal" aria-labelledby="checklist-title">
+  {% include "pretalx_speakerops/includes/role_navigation.html" %}
   <header class="speakerops__header">
     <div>
       <p class="speakerops__eyebrow">Speaker workspace</p>
       <h1 id="checklist-title">What do I need to do next?</h1>
       <p>Everything the program team still needs from you, in priority order.</p>
     </div>
+    <div class="speakerops__header-aside">
+    <a class="speakerops__return" href="{{ event.urls.user_submissions }}">&larr; Back to your proposals</a>
     {% if progress.total %}
     <div class="speakerops-progress" aria-label="{{ progress.done }} of {{ progress.total }} resolved">
       <strong>{{ progress.done }}/{{ progress.total }}</strong>
@@ -20,6 +26,7 @@
       <progress value="{{ progress.done }}" max="{{ progress.total }}" aria-label="{{ progress.done }} of {{ progress.total }} tasks resolved"></progress>
     </div>
     {% endif %}
+    </div>
   </header>
 
   {% if pending %}
@@ -36,12 +43,21 @@
         {% if task.submission %}<p class="speakerops__muted">For “{{ task.submission.title }}”</p>{% endif %}
         <p>{{ task.definition.instructions }}</p>
         <p><strong>Done when:</strong> {{ task.definition.completion_criteria }}</p>
-        <form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}">
+        <form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}"{% if task.definition.completion_evaluator == "upload" %} data-upload-form{% endif %}>
           {% csrf_token %}
           {% if task.definition.completion_evaluator == "upload" %}
+            <input type="hidden" name="upload_request_id" value="{{ task.upload_request_id }}">
             <label for="upload-{{ task.pk }}">Choose file for {{ task.definition.name|lower }}</label>
             <p class="speakerops__muted" id="upload-{{ task.pk }}-help">{{ task.definition.completion_criteria }}</p>
+            <p class="speakerops__muted">{% if task.definition.slug == 'headshot' %}Privacy: your headshot becomes public only after the program is released.{% else %}Privacy: this file is visible to authorized program operators and is not published automatically.{% endif %}</p>
             <input class="form-control" id="upload-{{ task.pk }}" name="upload" type="file" aria-describedby="upload-{{ task.pk }}-help"{% if task.definition.slug == 'headshot' %} accept=".jpg,.jpeg,.png,image/jpeg,image/png"{% elif task.definition.slug == 'slides' %} accept=".pdf,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation"{% elif task.definition.slug == 'supporting-document' %} accept=".pdf,application/pdf"{% endif %} required>
+            <div class="speakerops-upload" data-upload-summary hidden>
+              <p><strong data-upload-name></strong> <span data-upload-size></span></p>
+              <progress data-upload-progress value="0" max="100" aria-label="Upload progress"></progress>
+              <p data-upload-state aria-live="polite">Ready to upload.</p>
+              <button class="btn btn-link" type="button" data-upload-cancel>Cancel selection</button>
+              <button class="btn btn-link" type="button" data-upload-retry hidden>Retry upload</button>
+            </div>
           {% elif task.definition.completion_evaluator == "acknowledgement" %}
             <label class="speakerops-check"><input name="response" type="checkbox" value="yes" required> I have read and acknowledge this item.</label>
           {% elif task.definition.completion_evaluator == "profile_field" %}
@@ -53,6 +69,7 @@
           {% endif %}
           <button type="submit" class="btn btn-primary">{% if task.definition.completion_evaluator == "profile_field" %}Save biography and complete{% elif task.definition.completion_evaluator == "upload" %}Submit {{ task.definition.name|lower }}{% else %}Complete {{ task.definition.name|lower }}{% endif %}</button>
         </form>
+        {% if task.definition.completion_evaluator == 'upload' %}{% for evidence in task.speakerops_evidence_items %}{% include "pretalx_speakerops/includes/evidence_comments.html" with evidence=evidence %}{% endfor %}{% endif %}
       </article>
     {% endfor %}
     </div>
@@ -65,7 +82,7 @@
   <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="history-title">
     <div><h2 id="history-title">Completed work</h2><p>Evidence and organizer decisions stay visible.</p></div>
     <ul class="speakerops-list">
-      {% for task in complete %}<li><strong>{{ task.definition.name }}</strong><span>Complete</span></li>{% endfor %}
+      {% for task in complete %}<li><strong>{{ task.definition.name }}</strong><span>Complete{% with evidence=task.speakerops_evidence_items.0 %}{% if evidence.upload %} · v{{ evidence.version }} · {{ evidence.upload.name|cut:"speakerops/evidence/" }} · {{ evidence.created_at|date:"M j, Y, P" }} · {{ evidence.get_review_status_display }}{% endif %}{% endwith %}</span>{% if task.definition.completion_evaluator == 'upload' %}<details><summary>File version history and replacement</summary><ol>{% for evidence in task.speakerops_evidence_items %}<li>v{{ evidence.version }} · {{ evidence.upload.name|cut:"speakerops/evidence/" }} · {{ evidence.created_at|date:"M j, Y, P" }} · {{ evidence.get_review_status_display }}{% if evidence.review_note %} — {{ evidence.review_note }}{% endif %}{% include "pretalx_speakerops/includes/evidence_comments.html" with evidence=evidence %}</li>{% endfor %}</ol><form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}" data-upload-form>{% csrf_token %}<input type="hidden" name="upload_request_id" value="{{ task.upload_request_id }}"><label for="replacement-{{ task.pk }}">Upload a replacement for {{ task.definition.name|lower }}</label><input class="form-control" id="replacement-{{ task.pk }}" name="upload" type="file" required><div class="speakerops-upload" data-upload-summary hidden><p><strong data-upload-name></strong> <span data-upload-size></span></p><progress data-upload-progress value="0" max="100" aria-label="Replacement upload progress"></progress><p data-upload-state aria-live="polite">Ready to upload.</p><button class="btn btn-link" type="button" data-upload-cancel>Cancel selection</button><button class="btn btn-link" type="button" data-upload-retry hidden>Retry upload</button></div><button class="btn btn-outline-primary" type="submit">Submit new version</button></form></details>{% endif %}</li>{% endfor %}
       {% for task in waived %}<li><strong>{{ task.definition.name }}</strong><span>Waived{% if task.waiver_reason %}: {{ task.waiver_reason }}{% endif %}</span></li>{% endfor %}
     </ul>
   </section>

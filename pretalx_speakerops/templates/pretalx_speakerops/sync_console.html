@@ -50,12 +50,12 @@
   <section aria-labelledby="runs-title">
     <h2 id="runs-title">Run history</h2>
     {% for run in runs %}
-    <details class="speakerops-run"{% if run.status == 'partial' or run.status == 'failed' %} open{% endif %}>
+    <details class="speakerops-run" id="sync-run-{{ run.pk }}"{% if run.status == 'partial' or run.status == 'failed' %} open{% endif %}>
       <summary><strong>Run #{{ run.pk }}</strong> <span class="speakerops-badge speakerops-badge--{{ run.status }}">{{ run.status }}</span> <span>{{ run.items.count }} item{{ run.items.count|pluralize }}</span></summary>
       <div class="speakerops-table-wrap">
         <table class="speakerops-table"><thead><tr><th>Record</th><th>Plan</th><th>Status</th><th>Attempts</th><th>Action</th></tr></thead><tbody>
         {% for item in run.items.all %}
-          <tr><td data-label="Record">{% if item.local_type == 'speaker' %}{{ item.payload.firstName }} {{ item.payload.lastName }}{% elif item.local_type == 'session' %}{{ item.payload.title }}{% else %}{{ item.local_type|title }}{% endif %}</td><td data-label="Plan">{{ item.action }}</td><td data-label="Status">{{ item.status }}{% if item.error %}<br><small>{{ item.error }}</small>{% endif %}</td><td data-label="Attempts">{{ item.attempts }}</td><td data-label="Action">
+          <tr id="sync-item-{{ item.pk }}"><td data-label="Record">{% if item.local_type == 'speaker' %}{{ item.payload.firstName }} {{ item.payload.lastName }}{% elif item.local_type == 'session' %}{{ item.payload.title }}{% else %}{{ item.local_type|title }}{% endif %}</td><td data-label="Plan">{{ item.action }}</td><td data-label="Status">{{ item.status }}{% if item.error %}<br><small>{{ item.error }}</small>{% endif %}</td><td data-label="Attempts">{{ item.attempts }}</td><td data-label="Action">
             {% if item.status == 'failed' %}<form method="post">{% csrf_token %}<input type="hidden" name="action" value="retry"><input type="hidden" name="item_id" value="{{ item.pk }}"><label class="speakerops-check"><input type="checkbox" name="confirm_sync" value="yes" required> Confirm</label><button class="btn btn-sm btn-outline-primary" type="submit">Retry</button></form>{% else %}—{% endif %}
           </td></tr>
         {% endfor %}

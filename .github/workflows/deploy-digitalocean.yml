@@ -55,8 +55,8 @@ jobs:
           HOST: ${{ secrets.DIGITALOCEAN_HOST }}
           USER: ${{ secrets.DIGITALOCEAN_USER }}
         run: |
-          scp release/docker-compose.yml deployment-tooling/scripts/deploy-digitalocean.sh "$USER@$HOST:/tmp/"
-          ssh "$USER@$HOST" "install -m 0644 /tmp/docker-compose.yml '$APP_DIR/docker-compose.yml' && install -m 0755 /tmp/deploy-digitalocean.sh '$APP_DIR/deploy-digitalocean.sh'"
+          scp release/docker-compose.yml deployment-tooling/deploy/smoke_journey.py deployment-tooling/deploy/scripts/{deploy-digitalocean.sh,backup-nightly.sh,verify-restore.sh,drill-image-rollback.sh} "$USER@$HOST:/tmp/"
+          ssh "$USER@$HOST" "install -m 0644 /tmp/docker-compose.yml '$APP_DIR/docker-compose.yml' && install -m 0755 /tmp/deploy-digitalocean.sh '$APP_DIR/deploy-digitalocean.sh' && install -m 0755 /tmp/smoke_journey.py '$APP_DIR/smoke_journey.py' && install -m 0755 /tmp/backup-nightly.sh '$APP_DIR/backup-nightly.sh' && install -m 0755 /tmp/verify-restore.sh '$APP_DIR/verify-restore.sh' && install -m 0755 /tmp/drill-image-rollback.sh '$APP_DIR/drill-image-rollback.sh'"
       - name: Back up, deploy, and verify
         env:
           HOST: ${{ secrets.DIGITALOCEAN_HOST }}

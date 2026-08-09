@@ -1,0 +1,3700 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-09T12:00:00Z",
+  "series": [
+    {
+      "slug": "jsconf-china",
+      "name": "JSConf China",
+      "website": "https://jsconf.cn/",
+      "source_policy": {
+        "authority": "official",
+        "scope": "official-edition index plus recoverable official program snapshots",
+        "retrieved_at": "2026-08-09T12:00:00Z",
+        "known_gaps": [
+          {
+            "scope": "JSConf China 2013",
+            "item": "Two published speaker-row titles",
+            "reason": "The immutable official schedule names Isaac Mao and Dominic Tarr in talk slots but publishes empty title fields, so no titles are invented and those two rows remain unimported.",
+            "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json"
+          },
+          {
+            "scope": "JSConf China 2017",
+            "item": "Lighting Talks and Panel QA",
+            "reason": "The official schedule provides no individual speaker attribution, so these rows cannot form deterministic speaker credits.",
+            "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/"
+          },
+          {
+            "scope": "JSConf China 2019",
+            "item": "Welcome Speech, recruitment, panels, party, and WeWork workshop",
+            "reason": "The official schedule provides no individual speaker attribution or only an organization credit, so these rows cannot form deterministic individual speaker credits.",
+            "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/"
+          }
+        ]
+      },
+      "editions": [
+        {
+          "external_key": "china-2012",
+          "name": "沪JS 2012",
+          "date_from": "2012-09-14",
+          "date_to": "2012-09-16",
+          "location": "Shanghai, China",
+          "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+          "source_updated_at": "2026-08-09T21:30:00Z",
+          "talks": [
+            {
+              "external_key": "troy-howard-keynote-building-international-communities",
+              "title": "Keynote: Building International Communities",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "International",
+                "JavaScript"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Troy Howard",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "james-halliday-apps-these-days-are-too-big",
+              "title": "Apps these days are too big",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Node.js",
+                "International"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "James Halliday",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "vicent-marti-intergalactic-javascript-robots-from-outer-space",
+              "title": "Intergalactic Javascript Robots from Outer Space",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Node.js",
+                "International"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Vicent Marti",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "tim-caswell-porting-node-the-journey-from-lake-javascript-to-the-strait-of-lua",
+              "title": "Porting Node: The Journey from Lake JavaScript to The Strait of Lua",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Node.js",
+                "International"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Tim Caswell",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "charlie-robbins-run-with-node-js-for-fun-power-and-profit",
+              "title": "Run with Node.js for fun, power, and profit",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Node.js",
+                "International"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Charlie Robbins",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "steve-sanderson-0-to-60-mobile-web-apps-with-knockout-js-and-azure-mobile-services",
+              "title": "0 to 60 Mobile web apps with Knockout.js and Azure Mobile Services",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "International",
+                "JavaScript"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Steve Sanderson",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "sara-chipps-javascript-client-frameworks-how-did-we-choose",
+              "title": "JavaScript Client Frameworks, How did we choose?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "JavaScript",
+                "International"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Sara Chipps",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "makara-wang-ronan-berder-networking-the-humanitarian-space-with-javascript",
+              "title": "Networking the Humanitarian Space with Javascript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Node.js",
+                "JavaScript"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Makara Wang",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                },
+                {
+                  "name": "Ronan Berder",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "guillermo-rauch-a-realtime-world-html5-websockets-engine-io-socket-io-1-0-spdy-beyond",
+              "title": "A realtime world: HTML5 WebSockets, Engine.IO, Socket.IO 1.0, SPDY & Beyond",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Node.js",
+                "Socket.io",
+                "International"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Guillermo Rauch",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "glenn-block-the-secrets-of-node-revealed-on-windows-and-azure",
+              "title": "The secrets of Node revealed on Windows and Azure",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Node.js",
+                "Scalability",
+                "International"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Glenn Block",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "corey-donohue-real-world-experiences-using-ember-js",
+              "title": "Real world experiences using ember.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Node.js",
+                "International"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Corey Donohue",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "chengshaofei-winter-ecmascript-5-in-action",
+              "title": "ECMAScript 5 in action",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Chengshaofei/寒冬winter/程劭非",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "yuanfeng-python-node-js",
+              "title": "在Node.js上踩过的坑",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Yuanfeng/Python发烧友/苏千",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "zhaojie-wind-js",
+              "title": "Wind.js的调试与排错支持",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "JavaScript"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Zhaojie/老赵/赵劼",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "wangbaopin-seajs",
+              "title": "SeaJS - 更自然的代码组织方式",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "JavaScript",
+                "Node.js"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Wangbaopin/玉伯也叫射雕/王保平",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "ganchaoyang",
+              "title": "让服务器和客户端牵起手来",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js",
+                "Database"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Ganchaoyang/小问/甘超阳",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "wangdaxin-node-jsmysql",
+              "title": "基于Node.js的分布式MySQL代理服务",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js",
+                "Database"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Wangdaxin/王达心",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "huangyoukun-node-jswebim",
+              "title": "Node.js在朋友网WebIM中的实践",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js",
+                "Erlang"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Huangyoukun/黄友昆",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "zhaocheng-chromiumnode-jsruntime",
+              "title": "基于Chromium和Node.js的桌面应用Runtime",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Zhaocheng/小型笨蛋/赵成",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "xiechengzhao-node-js",
+              "title": "Node.js游戏服务器开发",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js",
+                "Database"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Xiechengzhao/谢骋超/圈圈套圈圈",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "pengchun-node-js",
+              "title": "Node.js性能跟踪与调优",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js",
+                "Performance",
+                "Scalability"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Pengchun/朋春/张轩丞",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "jeffsu-dashboard-ing-your-server",
+              "title": "Dashboard-ing your server.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "JeffSu",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "wuzhonghua-snoopy-rrestjswww-wujb-net",
+              "title": "rrestjs框架介绍及轻博客www.wujb.net应用",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "Node.js",
+                "REST"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Wuzhonghua/snoopy/吴中骅",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "aiken-qi-new-app-windows-8",
+              "title": "new app('Windows 8');",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [
+                "China",
+                "JavaScript",
+                "Windows&nbsp;8"
+              ],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Aiken Qi",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hujsconf/blob/65db42d2f8b1ce05df9ae01a343fc7baf991873d/schedule.js",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "external_key": "china-2013",
+          "name": "京JS 2013",
+          "date_from": "2013-11-09",
+          "date_to": "2013-11-11",
+          "location": "Beijing, China",
+          "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+          "source_updated_at": "2026-08-09T21:30:00Z",
+          "talks": [
+            {
+              "external_key": "linqing-lu-node-js-on-the-road-on-the-cloud",
+              "title": "Node.js on the road, on the cloud",
+              "abstract": "Talk plan:\n\nA- Node.js roadmap from Bert/Ben in Node.js core team(details coming around Sep).\n\nB- Hosting Node.js apps with PaaS and MBaaS.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Linqing Lu",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "kyle-drake-bitcoin-and-javascript-the-new-gold-standards",
+              "title": "Bitcoin and JavaScript: The new gold standards",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Kyle Drake",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "kang-hao-kenny-lu-optimizing-js-games-hidden-classes-inline-caches-and-dictionary-mode",
+              "title": "Optimizing JS Games: Hidden Classes, Inline Caches and Dictionary Mode",
+              "abstract": "The main theme about this talk will be JS performance in JS games, or any JS applications in which DOM access isn't the bottleneck. As a developer of a game-targted browser engine Shpinx, I'd like to talk about concepts and stragies we use while optimizing games (不江湖, from fps 30 to 50) and canvas library (Cocos2d-html5, notably pull request #1015).\n\nIn addition to the concepts of hidden classes and inline caches, which were already discussed in some of the excellent talks like Vyacheslav Egorov's, this talk focuses more on dictionary mode and common ways how JS objects fall into it. Some demos of the tools for examining these internals might also be provided.\n\nThe talk will be given in Chinese.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Kang-Hao (Kenny) Lu",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "jason-denizac-my-year-with-node-js",
+              "title": "My Year With Node.js",
+              "abstract": "Over the past year I've dived deep into Node.js. I'll share what I've learned (and what I wish I had known) about the technology, the community, and building a startup around this vibrant open source ecosystem.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Jason Denizac",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "james-halliday-with-james-halliday-substack",
+              "title": "with James Halliday (@substack)",
+              "abstract": "A hands-on workshop with James Halliday (@substack), learning Node.js using the new site nodeschool.io.",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "James Halliday",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "runzeng-guo-qzone",
+              "title": "Qzone网页性能监控和优化的新尝试",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "RunZeng Guo",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "james-halliday-the-wizard-of-moduletopia",
+              "title": "the wizard of moduletopia",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "James Halliday",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "matthew-eernisse-zero-to-ready-with-geddy",
+              "title": "Zero to Ready with Geddy",
+              "abstract": "The Geddy Web framework provides a simple, structured way to build a scalable, production-ready Web app with NodeJS.\n\nIn this talk, I'll show how easy it is to get started working on a Node app, starting by creating an app using Geddy's CLI, and a walk-through of a basic app layout. I will then move on to setting up a database, and then adding authentication by installing the geddy-passport module. The focus here is on building a practical, working application, along with demonstrating the setup of a JavaScript MVC app, and some Node conventions for code.\n\nAfter setting up a basic app, I'll move on to showing how to use Geddy's generator scripts to set up a basic REST API, demonstrating how Geddy's MVC (model/view/controller) architecture works. I'll start with the model layer, Geddy's ORM (object-relational mapper) -- showing how Node's asynchronous programming paradigm works with database-access, and then moving on to Geddy's query API, and database migrations for schema changes. Next I'll show how to use the retrieved data to render a response -- either structured data (like JSON), or rendering HTML templates.\n\nLast I'll cover how Geddy's MVC integrates with realtime -- using the same model code in the browser as on the server, and then show how to test a Geddy application.\n\nThe idea is to leave attendees with a working application, and a basic understanding of how the pieces of a Geddy app fit together -- to show how easy it is to use Geddy to jump-start a server-side JavaScript adventure with Node.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Matthew Eernisse",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "anson-yu-wang-implementing-bigpipe-in-node-js",
+              "title": "Implementing BigPipe in Node.js",
+              "abstract": "I'll show you what BigPipe is, when to use it and how you can implement it using node.js.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Anson Yu Wang",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "belleve-invis-on-harmony",
+              "title": "On Harmony",
+              "abstract": "- Introduce proposals of ECMAScript-Harmony (abbr. ES-harmony)\n\n- Deep analysis of selected new features (incl. Classes, Proxies, Module system and Generators)\n\n- Discussion about script language design and optimization",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Belleve Invis",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "charlie-crane-pomelo-pomelo-european-trip",
+              "title": "pomelo欧洲之旅 (Pomelo European Trip)",
+              "abstract": "Discuss the experience on attending and speaking at JsConf.eu and LXJS.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Charlie Crane",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "weijun-liu-node-jspomelo",
+              "title": "基于node.js与pomelo的消息推送平台",
+              "abstract": "The topic will cover a short introduction of pomelo framework, and new features since V0.2.\n\nThen, we'll introduce our online message push platform, which is implemented in pomelo.  We will talk about the architecture, design detail, features, performance issues of our message platform, etc.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Weijun Liu",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "andre-rodrigues-build-a-photobooth-app-with-azure-and-kinect",
+              "title": "Build a Photobooth App with Azure and Kinect",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "André Rodrigues",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "nick-carneiro-a-survey-of-client-side-data-visualization",
+              "title": "A Survey of Client-side Data Visualization",
+              "abstract": "The rise of data-driven product management has brought data visualization to the fore in recent years. JavaScript developers are uniquely positioned to take advantage of high demand for data visualization and new browser features. In this talk I cover the history of data visualization, the best tools available today, and what's next.\n\nTopics Covered: Best and worst practices, modern datavis tools (D3, Google Charts), performance concerns",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Nick Carneiro",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "krystal-mok-implementing-a-high-performance-javascript-engine",
+              "title": "Implementing a high performance JavaScript Engine",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Krystal Mok",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "eric-redmond-http-is-hard",
+              "title": "HTTP is Hard",
+              "abstract": "As web services have become a standard method for interacting with a central service, REST principles over HTTP are the most common interface. But the HTTP specification is actually very complex (much more complex than telnet or IMAP). This talk focuses on the (often) unseen underlying complexity of properly developing web services against the HTTP protocol, and provides some suggestions on developing node.js web services that adhere to the spirit and letter of the HTTP specification.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Eric Redmond",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "alyssa-ravasio-lean-development-with-node-js",
+              "title": "Lean Development with Node.js",
+              "abstract": "Largely based on my personal experiences and those of entrepreneurial friends in the valley, I want to talk about why Node.js is so great for building startups and how it facilitates a lean style of product development.\n\nMy story: Building Hipcamp with Node.js and the pivots I've made, why Node.js allowed us to make them faster and more seamlessly. A couple places where I fell down.\n\nArt of Prototyping: How Node.js empowers building products that test riskiest business assumptions first (super lightweight, fast).\n\nCustomer Development: How Node.js enables more rapid product iterations, quicker reaction of user feedback, how to elicit and integrate user feedback into product roadmap\n\nLean Team: Why Node.js is great for building products with small teams (everyone can do server and client side, no loss of time in context-switching)\n\nAnalytics with Node.js: How to build, measure, learn",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Alyssa Ravasio",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "oren-golan-don-t-panic-the-hitchhiker-s-guide-to-node",
+              "title": "Don't Panic - The Hitchhiker's Guide to Node",
+              "abstract": "Full-stack JavaScript application opens up new possibilities but it also adds a challenge of making many in-flight decisions, such as the following: Should we use a web framework? Which one? How to organize our client-side codebase? Should we write in Object Oriented or Functional style?\n\nIn this talk we won't spend time on fluff and dive right in to a real codebase. I'll share code and practices that are applicable immediately to any JavaScript developer.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Oren Golan",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "yao-tong-app-clouda",
+              "title": "实时APP时代与云端一体开发框架 - Clouda",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Yao Tong",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "johnny-mukai-self-discovery-looking-for-insight-in-javascripts-esoteric-roots",
+              "title": "Self Discovery: Looking for Insight in Javascript’s Esoteric Roots",
+              "abstract": "One of the most common gripes about Javascript is its use of prototypes rather than classes, if the myriad tools, patterns, and frameworks that massage it into a more classical OOP model are any indicator. But are these approaches hammering a prototypal peg into a class-shaped hole? What was happening in the early 90s that made Brendan Eich reach for prototypes rather than classes when designing his new language?\n\nTo find out, let’s a take a trip back in time and examine an exciting and very different language that heavily influenced Javascript: Self. Self is an ambitious language that, among other things, introduced prototypal OOP to the programming world. What lessons can we learn from this early pioneer of prototypal languages? Can we write better Javascript by understanding Self’s goals and approach to programming? Let’s explore the ambitions of Self and see if we can suss out the advantages and disadvantages of the prototypal approach and apply what we find to our own Javascript writing.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Johnny Mukai",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "kim-joar-bekkelund-patterns-of-large-scale-javascript-applications",
+              "title": "Patterns of Large-Scale JavaScript Applications",
+              "abstract": "JavaScript has come a long way in few years. As we no longer need to battle DOM differences we can focus on building our applications instead. Now, however, as more and more application logic move from the server to the client our main problem is that we need to unlearn our earlier DOM-centric approach to JavaScript. Tools such as Backbone and Angular help, but before we are able to use the effectively we have to change some of our neural pathways. In this talk I will look at a couple of patterns that will help you move away from jQuery spaghetti and get you started on a foundation for building large-scale JavaScript applications.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Kim Joar Bekkelund",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "zhang-pin-firefox-os-bring-the-open-web-to-mobile-devices",
+              "title": "Firefox OS - Bring the Open Web to Mobile Devices",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Zhang Pin",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "jakob-mattson-automated-css-testing-not-just-a-myth",
+              "title": "Automated CSS-testing: Not just a myth",
+              "abstract": "You have some kind of test suite for your web app, so you know the features work. But does it look right? You fire up half a dozen virtual machines and open your drawer with five different mobile devices in it to check it out. The lack of automation in that is embarrasing.\n\nSome people say that you can't test HTML/CSS. I'd like to show you the opposite. You can automate testing visual layout, refactor your CSS with confidence and get rid of this pain.\n\nYou understand why. Let's talk about how.",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Jakob Mattson",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "zhouxuan-yang-totoro",
+              "title": "totoro：简单易用，稳定的前端测试工具",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Zhouxuan Yang",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "rong-shen-advanced-grunt-js",
+              "title": "Advanced Grunt.js",
+              "abstract": "我是一个Grunt的重度用户，Nextday的Web Site和Backend API（预计在8月中发布）都是基于Grunt进行CI的。\n\n本次话题将以一个静态站点的生成和部署为实例，讲解Grunt的高级用法。同时，也便于初次使用的用户能够通过Copy & Paste完成一些常见的任务。",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "沈嵘 (Rong Shen)",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/jingjs/blob/be6b2afad4485c92a17b3278431ec82f6e496095/src/data/schedule.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "external_key": "china-2014",
+          "name": "杭JS 2014",
+          "date_from": "2014-06-21",
+          "date_to": "2014-06-22",
+          "location": "Hangzhou, China",
+          "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+          "source_updated_at": "2026-08-09T21:30:00Z",
+          "talks": [
+            {
+              "external_key": "goddy-zhao-jsconf-china-introduction",
+              "title": "JSConf China Introduction",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Goddy Zhao",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "qing-yan-dive-into-then-js",
+              "title": "Dive into Then.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Qing Yan",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "cheng-zhao-practice-on-embedding-node-js-into-atom-editor",
+              "title": "Practice on embedding Node.js into Atom Editor",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Cheng Zhao",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "hermen-how-to-decouple-frond-end-from-backend-in-taobao",
+              "title": "How to decouple Frond-End from Backend in Taobao",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Hermen",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "simon-su-node-js-practice-on-google-bigquery-api",
+              "title": "Node.js Practice on Google BigQuery API",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Simon Su",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "james-halliday-peer-directed-collaborative-projects",
+              "title": "Peer-Directed Collaborative Projects",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "James Halliday",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "belleve-invis-patrisika-theoretical-and-practical-code-generation",
+              "title": "Patrisika - Theoretical and Practical Code Generation",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Belleve Invis",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "yu-tou-rapid-mvc-app-development",
+              "title": "Rapid MVC APP Development",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Yu Tou",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "berg-blendui-work-smoothly-as-native-ui",
+              "title": "BlendUI - work smoothly as native UI",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Berg",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "sofish-improve-the-performance-of-angular-web-app",
+              "title": "Improve the Performance of Angular Web APP",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Sofish",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "yu-guo-management-and-maintainance-of-open-source-projects",
+              "title": "Management and Maintainance of Open Source Projects",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Yu Guo",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "mikael-karon-massive-javascript-development",
+              "title": "Massive Javascript Development",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Mikael Karon",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "garry-yao-scalable-web-application-with-troopjs",
+              "title": "Scalable Web Application with TroopJS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Garry Yao",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "bo-yu-continuous-tech-learning",
+              "title": "Continuous Tech Learning",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Bo Yu",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "caesar-chi-server-connect-to-api-3rd-service-pattern",
+              "title": "Server Connect To API / 3rd Service Pattern",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Caesar Chi",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "jacob-groundwater-dead-horse-five-lines",
+              "title": "five-lines",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Jacob Groundwater",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                },
+                {
+                  "name": "dead-horse",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "iris-edge-js",
+              "title": "Edge.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Iris",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "kai-xu-hybrid-api",
+              "title": "Hybrid API",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Kai Xu",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "luying-li-storm-distributed-and-fault-tolerant-realtime-computation",
+              "title": "Storm - Distributed and fault-tolerant realtime computation",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Luying Li",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "benfeng-chen-web-components-evolution-of-web-development",
+              "title": "Web Components：Evolution of Web Development",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Benfeng Chen",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/hangjs/blob/c63f644e0507963e02e648b77fd9909051af762f/locales/en/translation.json",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "external_key": "china-2015",
+          "name": "深JS 2015",
+          "date_from": "2015-07-11",
+          "date_to": "2015-07-12",
+          "location": "Shenzhen, China",
+          "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+          "source_updated_at": "2026-08-09T21:30:00Z",
+          "talks": [
+            {
+              "external_key": "goddy-zhao-opening",
+              "title": "Opening",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Goddy Zhao",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "evan-you-database-everywhere-a-reactive-data-architecture-for-javascript-frontends",
+              "title": "Database Everywhere: a Reactive Data Architecture for JavaScript Frontends",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Evan You",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "brian-holt-unlimited-power-es6-generators",
+              "title": "Unlimited Power – ES6 Generators",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Brian Holt",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "qing-yan-how-koa-and-toa-work-use-them-in-real-world",
+              "title": "How koa and toa work & use them in real world",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Qing Yan",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "bohan-li-my-attempt-to-use-angular-js-for-a-real-time-application",
+              "title": "My attempt to use Angular.js for a real-time application",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Bohan li",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "alexandre-strzelewicz-pm2-and-keymetrics-io",
+              "title": "PM2 and Keymetrics.io",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Alexandre Strzelewicz",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "andrew-fisher-nodebot-session-introduction",
+              "title": "Nodebot session introduction",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Andrew Fisher",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "tianle-wen-how-to-build-a-distributed-system-with-node-js",
+              "title": "How to build a distributed system with Node.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Tianle Wen",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "eyal-arubas-the-rise-and-fall-of-js-frameworks",
+              "title": "The Rise and Fall of JS Frameworks",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Eyal Arubas",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "yi-shen-the-infinite-imaginative-data-visulization-in-front-end",
+              "title": "The infinite imaginative data visulization in front-end",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Yi Shen",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "tim-pietrusky-nerd-disco-the-next-generation",
+              "title": "NERD DISCO: The Next Generation",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Tim Pietrusky",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "andrew-fisher-nodebot-session",
+              "title": "Nodebot Session",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Andrew Fisher",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "yiqing-ma-frontend-test-in-qiniu",
+              "title": "Frontend test in Qiniu",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Yiqing Ma",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "jackson-tian-the-optimized-tool-node-profiler",
+              "title": "The optimized tool: node profiler",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Jackson Tian",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "mathias-buus-p2p-pipes",
+              "title": "p2p pipes",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Mathias Buus",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "zongmin-lei-dispatch-service-under-micro-service-structure",
+              "title": "Dispatch service under micro service structure",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Zongmin Lei",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "hermen-the-road-to-isomorphic-web-development",
+              "title": "The road to isomorphic web development",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Hermen",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "hax-javascript-the-world-s-best-programming-language",
+              "title": "JavaScript: The World's Best Programming Language",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Hax",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "hengfei-zhuang-how-fibjs-works-and-how-we-use-it-in-baoz-cn",
+              "title": "How fibjs works and how we use it in baoz.cn",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Hengfei Zhuang",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "yue-ni-persistent-data-structure-in-js-land-implementing-immutable-frontend-using-react-js",
+              "title": "Persistent data structure in JS land: implementing immutable frontend using react.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Yue Ni",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "hui-liu-how-to-build-an-online-ide-with-react",
+              "title": "How to build an online IDE with React",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Hui Liu",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "martin-naumann-diving-in-webgl-and-webvr",
+              "title": "Diving in - WebGL and WebVR",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "Martin Naumann",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            },
+            {
+              "external_key": "dead-horse-maintainable-node-js",
+              "title": "Maintainable Node.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+              "source_updated_at": "2026-08-09T21:30:00Z",
+              "speakers": [
+                {
+                  "name": "dead-horse",
+                  "biography": "",
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z"
+                }
+              ],
+              "field_provenance": {
+                "session_format": {
+                  "source_url": "https://github.com/jsconfcn/ShenJS/blob/e5a5980943ccef433ee6f7a9627ebab0ae37a6ce/en/index.html",
+                  "source_updated_at": "2026-08-09T21:30:00Z",
+                  "method": "exact organizer-published program row type/classification"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "external_key": "china-2016",
+          "name": "宁JS 2016",
+          "date_from": "2016-09-03",
+          "date_to": "2016-09-04",
+          "location": "Nanjing, China",
+          "source_url": "https://jsconf.cn/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "vue-js-the-past-and-the-future-evan-you-c720bbfc",
+              "title": "Vue.js: the Past and the Future",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Evan You",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "how-to-build-a-compiler-james-kyle-55226f3d",
+              "title": "How to build a compiler",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "James Kyle",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "egg-企业级-node-框架-天猪-a58141f5",
+              "title": "egg - 企业级 node 框架",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "天猪",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-cbcf54522b8e4bc030b0b858"
+                }
+              ]
+            },
+            {
+              "external_key": "聊聊-js-测试框架-严清-9c7ea611",
+              "title": "聊聊 JS 测试框架",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "严清",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-776b79a01b770e292124d1a3"
+                }
+              ]
+            },
+            {
+              "external_key": "gridcontrol-networked-pm2-for-microservices-applications-alexandre-strze-1cb724e8",
+              "title": "GridControl: Networked PM2 for Microservices applications",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Alexandre Strzelewicz",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3d-on-the-web-罗诗亚-d3c82186",
+              "title": "3D on the Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "罗诗亚",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-cc9b67bef295605f92e07948"
+                }
+              ]
+            },
+            {
+              "external_key": "building-virtual-reality-on-the-web-kevin-ngo-ab18b1f7",
+              "title": "Building Virtual Reality on the Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kevin Ngo",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "building-a-unified-frontend-and-mobile-team-郭达峰-897456c3",
+              "title": "Building a Unified Frontend and Mobile Team",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "郭达峰",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-4bab930546b35da9e6e39131"
+                }
+              ]
+            },
+            {
+              "external_key": "单页应用-联邦制-实践-孙坤鹏-8fa4408c",
+              "title": "单页应用“联邦制”实践",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "孙坤鹏",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-b453ef77bfdf972375676e6a"
+                }
+              ]
+            },
+            {
+              "external_key": "前端-devops-实践-王龑-89434414",
+              "title": "前端 DevOps 实践",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "王龑",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-43d1f17632665a0572d55a54"
+                }
+              ]
+            },
+            {
+              "external_key": "node-js在线性能调优与故障排查-朴灵-d498e80c",
+              "title": "Node.js在线性能调优与故障排查",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "朴灵",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-4f68d17db689d4b4d765600e"
+                }
+              ]
+            },
+            {
+              "external_key": "learning-design-patterns-from-modern-javascript-frameworks-fraser-xu-e5c80029",
+              "title": "Learning design patterns from modern JavaScript frameworks",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Fraser Xu",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "面向未来的自动化测试-macaca-徐达峰-9602287b",
+              "title": "面向未来的自动化测试-Macaca",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "徐达峰",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-7d85f45b8bcc210d188551b6"
+                }
+              ]
+            },
+            {
+              "external_key": "managing-async-with-rxjs-5-at-netflix-ben-lesh-cdf2653d",
+              "title": "Managing Async with RxJS 5 at Netflix",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ben Lesh",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "移动海量服务下基于react的高性能同构实践-梁伟盛-6dc3923e",
+              "title": "移动海量服务下基于React的高性能同构实践",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "梁伟盛",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-90949d3d1c66f808039a339d"
+                }
+              ]
+            },
+            {
+              "external_key": "build-a-better-app-with-mapbox-peter-liu-6f31f01f",
+              "title": "Build a Better App with Mapbox",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Peter Liu",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "devtools-for-the-progressive-web-kenneth-auchenberg-aa2534d4",
+              "title": "DevTools for the Progressive Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kenneth Auchenberg",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "using-nodejs-to-count-30-billion-requests-per-day-guillaume-a697880f",
+              "title": "Using nodejs to count 30 billion requests per day",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Guillaume",
+                  "source_url": "https://web.archive.org/web/20191019124401id_/https://2016.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "china-2017",
+          "name": "JSConfCN 2017",
+          "date_from": "2017-07-15",
+          "date_to": "2017-07-16",
+          "location": "Shanghai, China",
+          "source_url": "https://jsconf.cn/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "programming-the-universal-future-with-next-js-guillermo-rauch-6523c530",
+              "title": "Programming the Universal Future with Next.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Guillermo Rauch",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "理解现代-web-开发-dexteryy-杨扬-3afebc3a",
+              "title": "理解现代 Web 开发",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "dexteryy/杨扬",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "后-es6-时代的-javascript-语言-hax-贺师俊-1dba4b50",
+              "title": "后 ES6 时代的 JavaScript 语言",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Hax/贺师俊",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "前端工程中的编译时优化-evan-you-5a9a7924",
+              "title": "前端工程中的编译时优化",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Evan You",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "学习react-native的历程-有关react-native你需要知道的一切-neo-nie-9058ee8c",
+              "title": "学习React Native的历程 - 有关React Native你需要知道的一切",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Neo Nie",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "typescript-angular-和移动端的跨平台开发-陈亮-ryan-chen-c5df53e2",
+              "title": "TypeScript, Angular, 和移动端的跨平台开发",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "陈亮（Ryan Chen）",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "upgrading-to-progressive-web-apps-黄玄-4524f52c",
+              "title": "Upgrading to Progressive Web Apps",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "黄玄",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-a4d7e563289014eb2d8939f8"
+                }
+              ]
+            },
+            {
+              "external_key": "利用-autopilot-容器化-node-js-微服务-wyatt-lyon-preul-97a72fa7",
+              "title": "利用 Autopilot 容器化 Node.js 微服务",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Wyatt Lyon Preul",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "无服务器架构与api-朴灵-d632ccc7",
+              "title": "无服务器架构与API",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "朴灵",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-4f68d17db689d4b4d765600e"
+                }
+              ]
+            },
+            {
+              "external_key": "从-rest-到-graphql-jonas-helfer-5a1b290a",
+              "title": "从 REST 到 GraphQL",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jonas Helfer",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "通过react-storybook实现visual-testing驱动开发-joel-arvidsson-5c1c631f",
+              "title": "通过React Storybook实现visual testing驱动开发",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Joel Arvidsson",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "graduating-your-node-js-api-to-production-environment-juha-suomalainen-m-07225be2",
+              "title": "Graduating your node.js API to production environment",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Juha Suomalainen",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Makara Wang",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "基于node-js构建物联网系统-杨江华-9a892086",
+              "title": "基于Node.js构建物联网系统",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "杨江华",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-a2eed495e14228beb8fc06a1"
+                }
+              ]
+            },
+            {
+              "external_key": "如何利用-ruff-os-物联网操作系统快速开发硬件产品-郑晔-155f9c76",
+              "title": "如何利用 Ruff OS 物联网操作系统快速开发硬件产品",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "郑晔",
+                  "source_url": "https://web.archive.org/web/20190122174021id_/https://2017.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-b1f36beab61a6cbb3356e2fa"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "china-2019",
+          "name": "JSConfCN 2019",
+          "date_from": "2019-10-19",
+          "date_to": "2019-10-20",
+          "location": "Shanghai, China",
+          "source_url": "https://jsconf.cn/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "continuous-learning-leadership-evolution-courtney-kissler-b2048940",
+              "title": "Continuous Learning & Leadership evolution",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Courtney Kissler",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "the-beauty-of-typescript-韩骏-61291172",
+              "title": "The Beauty of TypeScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "韩骏",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-dca74112d73deeb6e84b8f43"
+                }
+              ]
+            },
+            {
+              "external_key": "clojurescript-winning-through-simplicity-simon-blanchard-cfadace7",
+              "title": "ClojureScript - Winning through Simplicity",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Simon Blanchard",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "modern-graphql-workflow-张开宇-0d564679",
+              "title": "Modern GraphQL Workflow",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "张开宇",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-1afe6ea6e39f5ab9fbdeb39b"
+                }
+              ]
+            },
+            {
+              "external_key": "building-progressive-web-apps-michael-solati-d8e975fb",
+              "title": "Building (Progressive) Web Apps",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Michael Solati",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "面向传统-serverless-进化之路-陈仲寅-75fe52da",
+              "title": "面向传统，Serverless 进化之路",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "陈仲寅",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-1438d5443397c5ba4f653675"
+                }
+              ]
+            },
+            {
+              "external_key": "the-evolution-of-quality-support-release-at-nike-hollie-newton-607cafc1",
+              "title": "The Evolution of Quality, Support, & Release at Nike",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Hollie Newton",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "响应式编程使你看得更远-马申彦-08168f4c",
+              "title": "响应式编程使你看得更远",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "马申彦",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-818511702aba44a37dbb0dff"
+                }
+              ]
+            },
+            {
+              "external_key": "using-scroll-to-tell-a-story-yongjun-6da0a29a",
+              "title": "Using scroll to tell a story",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "YongJun",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "learn-as-i-write-the-docs-wei-gao-7f412a5e",
+              "title": "Learn as I Write the Docs",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Wei Gao",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "serverless-is-your-bff-yunong-xiao-531275ff",
+              "title": "Serverless is your BFF",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yunong Xiao",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "entropic-package-registry-ryan-day-de6d3056",
+              "title": "Entropic Package Registry",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ryan Day",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "基于redux的模块化设计-林长青-3448b5ea",
+              "title": "基于Redux的模块化设计",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "林长青",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-c1549c7af3fa79b6ce9b5a52"
+                }
+              ]
+            },
+            {
+              "external_key": "diving-into-typescript-design-metadata-with-nestjs-kamil-mysliwiec-835f6f4e",
+              "title": "Diving Into TypeScript Design Metadata with NestJS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kamil Mysliwiec",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "writing-code-to-refactor-code-a-practical-guide-to-abstract-syntax-trees-f8d0a8be",
+              "title": "Writing Code to Refactor Code - A Practical Guide to Abstract Syntax Trees",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Olivia Zhang",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-的执行-性能-陈熙昱-b6a013c9",
+              "title": "JavaScript 的执行 & 性能",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "陈熙昱",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-070c81d65d31df786cdddd26"
+                }
+              ]
+            },
+            {
+              "external_key": "去除迷雾-漫谈-webassembly-陈浩-088de5a7",
+              "title": "去除迷雾，漫谈 WebAssembly",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "陈浩",
+                  "source_url": "https://web.archive.org/web/20191113030909id_/https://2019.jsconfchina.com/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "biography": "",
+                  "canonical_key": "official-name-ba80518906ead30cefca2cf3"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

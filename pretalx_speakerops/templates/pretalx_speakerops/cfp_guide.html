@@ -1,0 +1,65 @@
+{% extends "cfp/event/base.html" %}
+{% load static %}
+
+{% block custom_header %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+<script defer src="{% static 'pretalx_speakerops/orga-a11y.js' %}"></script>
+{% endblock custom_header %}
+
+{% block content %}
+<div class="speakerops speakerops-guide" aria-labelledby="cfp-guide-title">
+  <p class="speakerops__eyebrow">AI Engineer speaker guide</p>
+  <h1 id="cfp-guide-title">Write a proposal reviewers can champion</h1>
+  <p class="lead">Make a specific promise to a specific audience. Give a human reviewer enough evidence to picture the session, assess its fit, and trust you can deliver it.</p>
+
+  <section aria-labelledby="outcome-title">
+    <h2 id="outcome-title">Start with the audience outcome</h2>
+    <p>Write one sentence: “After this session, a <strong>[level]</strong> attendee who <strong>[current situation]</strong> can <strong>[observable outcome]</strong>.” Use it to decide what belongs in the abstract.</p>
+  </section>
+
+  <section aria-labelledby="abstract-title">
+    <h2 id="abstract-title">Build the abstract in four moves</h2>
+    <ol>
+      <li>Name the real problem and who experiences it.</li>
+      <li>Explain what the session will demonstrate or teach.</li>
+      <li>Give two or three concrete takeaways.</li>
+      <li>State the assumed experience level.</li>
+    </ol>
+    <p>Prefer a title with a concrete tension, result, or surprising constraint. Avoid unexplained product names and inflated claims.</p>
+  </section>
+
+  <section aria-labelledby="fit-title">
+    <h2 id="fit-title">Fit the program</h2>
+    <p>Choose one format and one to five topics. Production case studies, technical deep dives, live builds, evaluations, incident lessons, research-to-practice translations, and evidence-backed points of view all fit.</p>
+    <div class="alert alert-info" role="note"><strong>Commercial-content policy:</strong> vendor-affiliated proposals cannot be vendor-only main-stage talks. Disclose the relationship and choose an appropriate workshop, leadership, expo, or booth context. Every proposal receives human review.</div>
+  </section>
+
+  <section aria-labelledby="selection-title">
+    <h2 id="selection-title">Make a selective program easier to assemble</h2>
+    <p>At a 5–15% acceptance rate, strong proposals still lose to a clearer fit or a more complementary program mix. Scope the claim, disclose constraints, say what is genuinely novel, and show what an attendee can apply afterward. Multiple submissions are welcome when they are genuinely distinct.</p>
+  </section>
+
+  <section aria-labelledby="examples-title">
+    <h2 id="examples-title">Study real programs</h2>
+    <ul>
+      <li><a href="https://www.youtube.com/watch?v=qpmZID27t98">“The Multimodal Future of Education” — Stefania Druga</a></li>
+      <li><a href="https://www.youtube.com/watch?v=5nOLb27hQ5w">“The era of unbounded products: Designing for Multimodal I/O” — Ben Hylak</a></li>
+      <li><a href="https://www.youtube.com/watch?v=aNmfvN6S_n4">“No more bad outputs with structured generation” — Rémi Louf</a></li>
+      <li><a href="https://www.youtube.com/@aidotengineer">AI Engineer recording channel</a> and the <a href="https://www.ai.engineer/europe/schedule">AI Engineer Europe schedule</a></li>
+      <li><a href="https://us.pycon.org/2026/schedule/talks/">PyCon US 2026 talks</a></li>
+      <li><a href="https://jsconf.jp/2025/en/schedule">JSConf JP 2025 schedule</a></li>
+      <li><a href="https://schedule.gdconf.com/">GDC session catalog</a></li>
+      <li><a href="https://gotopia.tech/sessions">GOTO conference sessions</a></li>
+      <li><a href="https://www.youtube.com/@StrangeLoopConf">Strange Loop recordings</a></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="next-title">
+    <h2 id="next-title">What happens next</h2>
+    <p>A human reviewer scores program fit, speaker value, and practicality. The chair retains decision authority. Acceptances go out in waves on August 15, September 1, and September 15.</p>
+    <p>Selected speakers receive free event admission, economy travel, and accommodation guidance (two domestic nights or three international nights). The team collects an MC introduction so stage time stays focused, then professionally records and publishes the session. Strong contributors may be invited back in a future program.</p>
+  </section>
+
+  {% if event.cfp.is_open %}<a class="btn btn-primary" href="{{ event.urls.submit }}">Start a proposal</a>{% endif %}
+</div>
+{% endblock content %}
