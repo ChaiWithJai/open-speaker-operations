@@ -7,7 +7,30 @@ containers and host ports are not reused or stopped.
 
 ## Deploy
 
-1. Create `/opt/open-speaker-operations/.env` with mode `0600` from `.env.example`.
+Routine deployments are performed by `.github/workflows/deploy-digitalocean.yml`,
+not by building or copying application source on the Droplet. Configure a
+protected GitHub Environment named `production` with a required reviewer.
+
+Environment secrets:
+
+- `DIGITALOCEAN_HOST`: Droplet hostname or IPv4 address.
+- `DIGITALOCEAN_USER`: restricted deployment user (or `root` until one exists).
+- `DIGITALOCEAN_SSH_KEY`: private key dedicated to this repository.
+- `DIGITALOCEAN_SSH_KNOWN_HOSTS`: pinned `known_hosts` entry for the Droplet.
+
+Optional environment variables:
+
+- `DIGITALOCEAN_APP_DIR` (default `/opt/open-speaker-operations`).
+- `SPEAKEROPS_PUBLIC_URL` (default `https://loop.dharmicdata.org`).
+
+On a green `main` build, CI publishes the commit-SHA image and the deployment
+workflow uploads the versioned Compose/runbook contract, creates a database
+backup, deploys, waits for health, and verifies the public landing page and CFP.
+
+### First-time host setup
+
+1. Create `/opt/open-speaker-operations/.env` with mode `0600` from the
+   production-oriented `.env.example` (not `.env.local.example`).
    Use unique values for `POSTGRES_PASSWORD` and `DJANGO_SUPERUSER_PASSWORD`, and
    pin `APP_IMAGE` to an immutable commit SHA.
 2. Copy `docker-compose.yml` to `/opt/open-speaker-operations/docker-compose.yml`.
@@ -30,6 +53,13 @@ containers and host ports are not reused or stopped.
 The DNS record is an `A` record for `loop.dharmicdata.org` pointing to the
 Droplet's public IPv4 address. Caddy obtains and renews the certificate after DNS
 resolves.
+
+### Manual redeploy or image rollback
+
+Use **Actions → Deploy DigitalOcean → Run workflow** and provide a full
+40-character commit SHA whose image exists in GHCR. This exercises the same
+backup, health, and rollback logic as an automatic deployment. Do not use
+`latest`.
 
 ## Verify
 
@@ -90,6 +120,13 @@ be copied with the database backup for a durable environment.
 
 ## Roll back
 
-Set `APP_IMAGE` in `.env` to the previously verified commit SHA and run `pull`
-followed by `up -d --wait` again. Compose retains the database and data volume.
+Prefer the manual GitHub workflow with the previous verified commit SHA. If
+GitHub Actions is unavailable, set `APP_IMAGE` in `.env` to that SHA and run
+`pull` followed by `up -d --wait`. Compose retains the database and data volume.
 Do not remove volumes during rollback.
+
+The deployment script automatically restores the previous image setting when
+container or public-URL verification fails. It does not automatically restore a
+database because reversing migrations without an operator decision can destroy
+data. Use the timestamped pre-deploy dump and the restore procedure above when
+the incident requires data rollback.

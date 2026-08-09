@@ -1,0 +1,65 @@
+name: Deploy DigitalOcean
+
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      image_sha:
+        description: Full 40-character commit SHA to deploy or roll back to
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: speakerops-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      DEPLOY_SHA: ${{ github.event.inputs.image_sha || github.event.workflow_run.head_sha }}
+      APP_DIR: ${{ vars.DIGITALOCEAN_APP_DIR || '/opt/open-speaker-operations' }}
+      PUBLIC_URL: ${{ vars.SPEAKEROPS_PUBLIC_URL || 'https://loop.dharmicdata.org' }}
+    steps:
+      - name: Validate immutable image SHA
+        run: test "$(printf '%s' "$DEPLOY_SHA" | sed 's/[^0-9a-f]//g')" = "$DEPLOY_SHA" && test "${#DEPLOY_SHA}" -eq 40
+      - name: Check out current deployment tooling
+        uses: actions/checkout@v4
+        with:
+          path: deployment-tooling
+      - name: Check out release contract
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+          path: release
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DIGITALOCEAN_SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 0700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0600 ~/.ssh/known_hosts
+      - name: Upload deployment contract
+        env:
+          HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+          USER: ${{ secrets.DIGITALOCEAN_USER }}
+        run: |
+          scp release/docker-compose.yml deployment-tooling/scripts/deploy-digitalocean.sh "$USER@$HOST:/tmp/"
+          ssh "$USER@$HOST" "install -m 0644 /tmp/docker-compose.yml '$APP_DIR/docker-compose.yml' && install -m 0755 /tmp/deploy-digitalocean.sh '$APP_DIR/deploy-digitalocean.sh'"
+      - name: Back up, deploy, and verify
+        env:
+          HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+          USER: ${{ secrets.DIGITALOCEAN_USER }}
+          IMAGE: ghcr.io/chaiwithjai/open-speaker-operations:${{ env.DEPLOY_SHA }}
+        run: ssh "$USER@$HOST" "SPEAKEROPS_APP_DIR='$APP_DIR' SPEAKEROPS_PUBLIC_URL='$PUBLIC_URL' '$APP_DIR/deploy-digitalocean.sh' '$IMAGE'"
