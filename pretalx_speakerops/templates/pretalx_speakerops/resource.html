@@ -1,7 +1,28 @@
 {% extends "agenda/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/carbon/carbon-styles.css' %}">
+<style>
+  .speakerops-page { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .speakerops-page h1 { font-size: 1.75rem; font-weight: 600; margin: 0 0 1.5rem; }
+</style>
+{% endblock stylesheets %}
+
 {% block content %}
-<main aria-labelledby="resource-title">
+<main class="speakerops-page" aria-labelledby="resource-title">
   <h1 id="resource-title">{{ resource.title }}</h1>
-  {% if version %}<section>{{ version.body_html|safe }}</section>{% else %}<p>This resource is not published.</p>{% endif %}
+  {% if version %}
+  <article class="cds--tile" style="padding:1.5rem;">
+    {{ version.body_html|safe }}
+  </article>
+  {% else %}
+  <div class="cds--notification cds--notification--info" role="alert">
+    <div class="cds--notification__details">
+      <h3 class="cds--notification__title">Not published</h3>
+      <p>This resource is not yet available.</p>
+    </div>
+  </div>
+  {% endif %}
 </main>
-{% endblock %}
+{% endblock content %}

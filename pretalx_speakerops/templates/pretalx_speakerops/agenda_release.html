@@ -2,34 +2,46 @@
 {% load static %}
 
 {% block stylesheets %}{{ block.super }}
-<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/carbon/carbon-styles.css' %}">
+<style>
+  .speakerops-page { max-width: 72rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .speakerops-page h1 { font-size: 1.75rem; font-weight: 600; margin: 0 0 .25rem; }
+  .speakerops-back { display:inline-block; margin-bottom:1.5rem; color:#175cd3; text-decoration:none; font-size:.875rem; }
+</style>
 {% endblock stylesheets %}
 
 {% block content %}
-<main class="speakerops" aria-labelledby="agenda-title">
-  <header class="speakerops__header">
-    <div><p class="speakerops__eyebrow">Program delivery</p><h1 id="agenda-title">Agenda &amp; release gate</h1><p>Review the draft by time and room. Blocking conflicts must be resolved before publication.</p></div>
-    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to operations</a>
-  </header>
+<main class="speakerops-page" aria-labelledby="agenda-title">
+  <a class="speakerops-back" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">← Back to operations</a>
+  <h1 id="agenda-title">Agenda &amp; release gate</h1>
+  <p style="color:var(--cds-text-secondary,#525252); margin:0 0 2rem;">Review the draft by time and room. Blocking conflicts must be resolved before publication.</p>
 
   {% if blocking %}
-  <section class="speakerops__alert" aria-labelledby="blocked-title">
-    <h2 id="blocked-title">Release blocked · {{ blocking|length }} conflict{{ blocking|length|pluralize }}</h2>
-    <ul>{% for item in blocking %}<li>{{ item.message }}</li>{% endfor %}</ul>
-  </section>
+  <div class="cds--notification cds--notification--error" role="alert" style="margin-bottom:1.5rem;">
+    <div class="cds--notification__details">
+      <h3 class="cds--notification__title">Release blocked — {{ blocking|length }} conflict{{ blocking|length|pluralize }}</h3>
+      <ul class="cds--notification__item">{% for item in blocking %}<li>{{ item.message }}</li>{% endfor %}</ul>
+    </div>
+  </div>
   {% else %}
-  <section class="speakerops__success"><strong>Release gate clear.</strong> No blocking room or speaker conflicts.</section>
+  <div class="cds--notification cds--notification--success" role="alert" style="margin-bottom:1.5rem;">
+    <div class="cds--notification__details">
+      <h3 class="cds--notification__title">Release gate clear</h3>
+      <p>No blocking room or speaker conflicts.</p>
+    </div>
+  </div>
   {% endif %}
 
-  <div class="speakerops-table-wrap">
-    <table class="speakerops-table">
+  <h2 style="font-size:1.25rem; font-weight:600; margin:0 0 1rem;">Draft schedule</h2>
+  <div class="cds--data-table-container">
+    <table class="cds--data-table cds--data-table--sm">
       <thead><tr><th>Time</th><th>Room</th><th>Session</th><th>Speakers</th></tr></thead>
       <tbody>
       {% for slot in slots %}
         <tr>
           <td>{{ slot.start }}–{{ slot.end|time:"H:i" }}</td>
           <td>{{ slot.room.name|default:"Unplaced" }}</td>
-          <td><strong>{{ slot.submission.title }}</strong><br><small>{{ slot.submission.code }}</small></td>
+          <td><strong>{{ slot.submission.title }}</strong><br><small style="color:var(--cds-text-secondary,#525252);">{{ slot.submission.code }}</small></td>
           <td>{{ slot.submission.display_speaker_names }}</td>
         </tr>
       {% empty %}<tr><td colspan="4">No scheduled sessions yet.</td></tr>{% endfor %}
@@ -37,15 +49,21 @@
     </table>
   </div>
 
-  <section class="speakerops-panel">
-    <div><h2>Publish this revision</h2><p>Publication changes public embeds and calendar output. The server rechecks the gate.</p></div>
-    <form method="post">
+  <div style="margin-top:2rem; padding:1.5rem; border:1px solid var(--cds-border-subtle,#e0e0e0); border-radius:4px; background:var(--cds-layer-01,#fff);">
+    <h2 style="font-size:1.25rem; font-weight:600; margin:0 0 .5rem;">Publish this revision</h2>
+    <p style="color:var(--cds-text-secondary,#525252); margin:0 0 1rem;">Publication changes public embeds and calendar output. The server rechecks the gate.</p>
+    <form method="post" style="display:grid; gap:1rem;">
       {% csrf_token %}
-      <label for="release-name">Revision name</label>
-      <input class="form-control" id="release-name" name="name" value="SpeakerOps release" required>
-      <label class="speakerops-check"><input type="checkbox" name="confirm_release" value="yes" required> I confirm this schedule should become public.</label>
-      <button class="btn btn-primary" type="submit"{% if blocking %} disabled aria-disabled="true"{% endif %}>Release schedule</button>
+      <div>
+        <label class="cds--label" for="release-name">Revision name</label>
+        <input class="cds--text-input" id="release-name" name="name" value="SpeakerOps release" required>
+      </div>
+      <div class="cds--checkbox-label">
+        <input class="cds--checkbox" type="checkbox" name="confirm_release" value="yes" required>
+        <label class="cds--checkbox-label-text">I confirm this schedule should become public.</label>
+      </div>
+      <button class="cds--btn cds--btn--primary" type="submit"{% if blocking %} disabled aria-disabled="true{% endif %}" style="justify-self:start;">Release schedule</button>
     </form>
-  </section>
+  </div>
 </main>
 {% endblock content %}

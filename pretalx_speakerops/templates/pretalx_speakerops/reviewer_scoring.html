@@ -2,52 +2,72 @@
 {% load static %}
 
 {% block stylesheets %}{{ block.super }}
-<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/carbon/carbon-styles.css' %}">
+<style>
+  .speakerops-page { max-width: 72rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .speakerops-page h1 { font-size: 1.75rem; font-weight: 600; margin: 0 0 .25rem; }
+  .speakerops-back { display:inline-block; margin-bottom:1.5rem; color:#175cd3; text-decoration:none; font-size:.875rem; }
+  .speakerops-review-layout { display:grid; grid-template-columns: minmax(13rem,17rem) minmax(0,1fr); gap:1.5rem; align-items:start; }
+  .speakerops-queue { border:1px solid var(--cds-border-subtle,#e0e0e0); border-radius:4px; background:var(--cds-layer-01,#fff); overflow:hidden; position:sticky; top:1rem; }
+  .speakerops-queue h2 { display:flex; justify-content:space-between; padding:1rem; margin:0; font-size:1rem; border-bottom:1px solid var(--cds-border-subtle,#e0e0e0); }
+  .speakerops-queue a { display:grid; padding:.8rem 1rem; border-bottom:1px solid var(--cds-border-subtle,#e0e0e0); color:inherit; text-decoration:none; }
+  .speakerops-queue a[aria-current="page"] { background:var(--cds-background-brand,#eaf2ff); box-shadow:inset 4px 0 #175cd3; }
+  .speakerops-queue small { color:var(--cds-text-secondary,#525252); }
+  .speakerops-review-form { border:1px solid var(--cds-border-subtle,#e0e0e0); border-radius:4px; background:var(--cds-layer-01,#fff); padding:clamp(1rem,3vw,2rem); }
+  .speakerops-score-options { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.5rem; }
+  .speakerops-score-options label { cursor:pointer; }
+  .speakerops-score-options input { position:absolute; opacity:0; }
+  .speakerops-score-options span { display:grid; min-height:4.5rem; place-items:center; padding:.45rem; border:1px solid var(--cds-border-subtle,#e0e0e0); border-radius:9px; text-align:center; }
+  .speakerops-score-options input:checked+span { border-color:#175cd3; background:var(--cds-background-brand,#eaf2ff); box-shadow:inset 0 0 0 1px #175cd3; }
+  .speakerops-score-options input:focus-visible+span { outline:3px solid rgba(23,92,211,.25); }
+  .speakerops-score-options strong { font-size:1.25rem; }
+  .speakerops-score-options small { color:var(--cds-text-secondary,#525252); }
+  @media(max-width:900px){ .speakerops-review-layout{ grid-template-columns:1fr; } .speakerops-queue{ position:static; } .speakerops-score-options{ grid-template-columns:repeat(2,1fr); } }
+</style>
 {% endblock stylesheets %}
 {% block scripts %}{{ block.super }}
 <script defer src="{% static 'pretalx_speakerops/reviewer.js' %}"></script>
 {% endblock scripts %}
 
 {% block content %}
-<main class="speakerops speakerops--review" aria-labelledby="review-title">
-  <header class="speakerops__header">
-    <div>
-      <p class="speakerops__eyebrow">Reviewer workspace</p>
-      <h1 id="review-title">Score assigned proposals</h1>
-      <p>Keyboard-first scoring with draft-safe autosave.</p>
-    </div>
-    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to operations</a>
-  </header>
+<main class="speakerops-page" aria-labelledby="review-title">
+  <a class="speakerops-back" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">← Back to operations</a>
+  <h1 id="review-title">Score assigned proposals</h1>
+  <p style="color:var(--cds-text-secondary,#525252); margin:0 0 2rem;">Keyboard-first scoring with draft-safe autosave.</p>
 
   <div class="speakerops-review-layout">
     <aside class="speakerops-queue" aria-label="Assigned proposals">
-      <h2>Queue <span>{{ queue|length }}</span></h2>
+      <h2>Queue <span class="cds--tag cds--tag--gray">{{ queue|length }}</span></h2>
       {% for proposal in queue %}
       <a href="{% url 'plugins:speakerops:speakerops_review' event.slug proposal.pk %}"{% if submission.pk == proposal.pk %} aria-current="page"{% endif %}>
         <small>{{ proposal.code }}</small><strong>{{ proposal.title }}</strong>
       </a>
-      {% empty %}<p>No assigned proposals are awaiting review.</p>{% endfor %}
+      {% empty %}<p style="padding:1rem; color:var(--cds-text-secondary,#525252);">No assigned proposals are awaiting review.</p>{% endfor %}
     </aside>
 
     {% if submission %}
     <form class="speakerops-review-form" method="post" data-review-autosave>
       {% csrf_token %}
-      <div class="speakerops-review-form__title">
-        <div><p class="speakerops__eyebrow">{{ submission.code }}</p><h2>{{ submission.title }}</h2></div>
-        <span data-save-state aria-live="polite">Ready</span>
+      <div style="display:flex; justify-content:space-between; gap:1rem; align-items:start; margin-bottom:1.5rem;">
+        <div>
+          <p style="font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#175cd3; margin:0 0 .25rem;">{{ submission.code }}</p>
+          <h2 style="margin:0; font-size:1.5rem;">{{ submission.title }}</h2>
+        </div>
+        <span data-save-state aria-live="polite" class="cds--tag cds--tag--gray" style="align-self:center;">Ready</span>
       </div>
-      <section class="speakerops-proposal-copy">
-        <h3>Abstract</h3>
-        <p>{{ submission.abstract }}</p>
-        {% if submission.description %}<h3>Description</h3><p>{{ submission.description }}</p>{% endif %}
-      </section>
 
-      <section aria-labelledby="rubric-title">
-        <h3 id="rubric-title">Rubric</h3>
+      <div style="padding:1rem; margin:1rem 0; border-radius:10px; background:var(--cds-layer-02,#f4f4f4);">
+        <h3 style="margin:0 0 .5rem;">Abstract</h3>
+        <p style="margin:0;">{{ submission.abstract }}</p>
+        {% if submission.description %}<h3 style="margin:1rem 0 .5rem;">Description</h3><p style="margin:0;">{{ submission.description }}</p>{% endif %}
+      </div>
+
+      <fieldset style="border:0; padding:0; margin:0 0 1.5rem;">
+        <legend style="font-weight:600; font-size:1.125rem; margin-bottom:1rem;">Rubric</legend>
         {% for criterion in criteria %}
-        <fieldset class="speakerops-score">
-          <legend>{{ criterion.category.name }} <small>×{{ criterion.category.weight }}</small></legend>
-          <div class="speakerops-score__options">
+        <fieldset style="border:0; padding:0; margin:0 0 1.25rem;">
+          <legend style="font-weight:600; margin-bottom:.5rem;">{{ criterion.category.name }} <small style="color:var(--cds-text-secondary,#525252); font-weight:400;">×{{ criterion.category.weight }}</small></legend>
+          <div class="speakerops-score-options">
           {% for option in criterion.options %}
             <label>
               <input type="radio" name="score_{{ criterion.category.pk }}" value="{{ option.pk }}"{% if criterion.selected == option.pk %} checked{% endif %} required>
@@ -57,21 +77,31 @@
           </div>
         </fieldset>
         {% endfor %}
-      </section>
-
-      <label for="review-comments"><strong>Reviewer comments</strong></label>
-      <textarea class="form-control" id="review-comments" name="comments" rows="5">{% if review %}{{ review.text }}{% endif %}</textarea>
-
-      <fieldset class="speakerops-recommendation">
-        <legend>Recommendation</legend>
-        {% for value, label in recommendation_choices %}
-        <label><input type="radio" name="recommendation" value="{{ value }}"{% if recommendation.recommendation == value %} checked{% endif %}> {{ label }}</label>
-        {% endfor %}
       </fieldset>
-      <button type="submit" class="btn btn-primary">Save review</button>
+
+      <div style="margin-bottom:1.5rem;">
+        <label class="cds--label" for="review-comments"><strong>Reviewer comments</strong></label>
+        <textarea class="cds--text-area" id="review-comments" name="comments" rows="5">{% if review %}{{ review.text }}{% endif %}</textarea>
+      </div>
+
+      <fieldset style="border:0; padding:0; margin:0 0 1.5rem;">
+        <legend style="font-weight:600; margin-bottom:.75rem;">Recommendation</legend>
+        <div style="display:flex; flex-wrap:wrap; gap:.75rem 1.25rem;">
+        {% for value, label in recommendation_choices %}
+        <div class="cds--radio-button-label">
+          <input class="cds--radio-button" type="radio" name="recommendation" value="{{ value }}"{% if recommendation and recommendation.recommendation == value %} checked{% endif %}>
+          <label class="cds--radio-button-label-text">{{ label }}</label>
+        </div>
+        {% endfor %}
+        </div>
+      </fieldset>
+      <button type="submit" class="cds--btn cds--btn--primary">Save review</button>
     </form>
     {% else %}
-    <section class="speakerops-empty"><h2>Queue complete</h2><p>There are no assigned proposals awaiting review.</p></section>
+    <div style="padding:2.5rem; border:1px dashed #b8c0c7; border-radius:4px; text-align:center; color:var(--cds-text-secondary,#525252);">
+      <h2 style="margin:0 0 .5rem;">Queue complete</h2>
+      <p style="margin:0;">There are no assigned proposals awaiting review.</p>
+    </div>
     {% endif %}
   </div>
 </main>

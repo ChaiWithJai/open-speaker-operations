@@ -2,71 +2,85 @@
 {% load static %}
 
 {% block cfp_stylesheets %}{{ block.super }}
-<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/carbon/carbon-styles.css' %}">
+<style>
+  .speakerops-page { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .speakerops-page h1 { font-size: 1.75rem; font-weight: 600; margin: 0 0 .25rem; }
+  .speakerops-page .subtitle { color: var(--cds-text-secondary,#525252); margin: 0 0 2rem; }
+  .speakerops-back { display:inline-block; margin-bottom:1.5rem; color:#175cd3; text-decoration:none; font-size:.875rem; }
+  .speakerops-section-title { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 1rem; }
+</style>
 {% endblock cfp_stylesheets %}
 
 {% block content %}
-<main class="speakerops speakerops--portal" aria-labelledby="checklist-title">
-  <header class="speakerops__header">
-    <div>
-      <p class="speakerops__eyebrow">Speaker workspace</p>
-      <h1 id="checklist-title">What do I need to do next?</h1>
-      <p>Everything the program team still needs from you, in priority order.</p>
-    </div>
-    {% if progress.total %}
-    <div class="speakerops-progress" aria-label="{{ progress.done }} of {{ progress.total }} complete">
-      <strong>{{ progress.done }}/{{ progress.total }}</strong>
-      <span>complete</span>
-      <progress value="{{ progress.done }}" max="{{ progress.total }}"></progress>
-    </div>
-    {% endif %}
+<main class="speakerops-page" aria-labelledby="checklist-title">
+  <header style="margin-bottom:2rem;">
+    <h1 id="checklist-title">What do I need to do next?</h1>
+    <p class="subtitle">Everything the program team still needs from you, in priority order.</p>
   </header>
 
+  {% if progress.total %}
+  <div class="cds--progress-bar__label" style="margin-bottom:1.5rem;">
+    <span>{{ progress.done }} of {{ progress.total }} complete</span>
+  </div>
+  <div class="cds--progress-bar" style="margin-bottom:2rem;">
+    <div class="cds--progress-bar__bar" style="width:{% if progress.total %}{{ progress.done|div:progress.total|mul:100 }}{% else %}0{% endif %}%"></div>
+  </div>
+  {% endif %}
+
   {% if pending %}
-  <section aria-labelledby="attention-title">
-    <h2 id="attention-title">Needs your attention</h2>
-    <div class="speakerops-stack">
-    {% for task in pending %}
-      <article class="speakerops-task{% if task.due_date and task.due_date < today %} speakerops-task--overdue{% endif %}">
-        <div class="speakerops-task__meta">
-          <span class="speakerops-badge">{{ task.get_status_display }}</span>
-          {% if task.due_date %}<span>Due {{ task.due_date }}{% if task.due_date < today %} · overdue{% endif %}</span>{% endif %}
-        </div>
-        <h3>{{ task.definition.name }}</h3>
-        {% if task.submission %}<p class="speakerops__muted">For “{{ task.submission.title }}”</p>{% endif %}
-        <p>{{ task.definition.instructions }}</p>
-        <p><strong>Done when:</strong> {{ task.definition.completion_criteria }}</p>
-        <form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}">
-          {% csrf_token %}
-          {% if task.definition.completion_evaluator == "upload" %}
-            <label for="upload-{{ task.pk }}">Choose evidence file</label>
-            <input class="form-control" id="upload-{{ task.pk }}" name="upload" type="file" required>
-          {% elif task.definition.completion_evaluator == "acknowledgement" %}
-            <label class="speakerops-check"><input name="response" type="checkbox" value="yes" required> I have read and acknowledge this item.</label>
-          {% else %}
-            <label for="response-{{ task.pk }}">Evidence response</label>
-            <input class="form-control" id="response-{{ task.pk }}" name="response" type="text" required>
-          {% endif %}
-          <button type="submit" class="btn btn-primary">Submit evidence</button>
-        </form>
-      </article>
-    {% endfor %}
+  <h2 class="speakerops-section-title">Needs your attention</h2>
+  <div style="display:grid; gap:1rem;">
+  {% for task in pending %}
+    <div class="cds--tile{% if task.due_date and task.due_date < today %} cds--tile--clickable{% endif %}" style="{% if task.due_date and task.due_date < today %}border-left:4px solid #b42318;{% endif %} padding:1.25rem;">
+      <div style="display:flex; justify-content:space-between; gap:1rem; margin-bottom:.5rem;">
+        <span class="cds--tag cds--tag--gray">{{ task.get_status_display }}</span>
+        {% if task.due_date %}<span style="font-size:.875rem; color:var(--cds-text-secondary,#525252);">Due {{ task.due_date }}{% if task.due_date < today %} · <span style="color:#b42318;">overdue</span>{% endif %}</span>{% endif %}
+      </div>
+      <h3 style="margin:.5rem 0;">{{ task.definition.name }}</h3>
+      {% if task.submission %}<p style="color:var(--cds-text-secondary,#525252); font-size:.875rem; margin:.25rem 0;">For "{{ task.submission.title }}"</p>{% endif %}
+      <p style="margin:.5rem 0;">{{ task.definition.instructions }}</p>
+      <p style="font-size:.875rem; color:var(--cds-text-secondary,#525252);"><strong>Done when:</strong> {{ task.definition.completion_criteria }}</p>
+      <form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}" style="margin-top:1rem; display:grid; gap:.75rem;">
+        {% csrf_token %}
+        {% if task.definition.completion_evaluator == "upload" %}
+          <label class="cds--label" for="upload-{{ task.pk }}">Choose evidence file</label>
+          <input class="cds--text-input" id="upload-{{ task.pk }}" name="upload" type="file" required>
+        {% elif task.definition.completion_evaluator == "acknowledgement" %}
+          <div class="cds--checkbox-label">
+            <input class="cds--checkbox" name="response" type="checkbox" value="yes" required>
+            <label class="cds--checkbox-label-text">I have read and acknowledge this item.</label>
+          </div>
+        {% else %}
+          <label class="cds--label" for="response-{{ task.pk }}">Evidence response</label>
+          <input class="cds--text-input" id="response-{{ task.pk }}" name="response" type="text" required>
+        {% endif %}
+        <button type="submit" class="cds--btn cds--btn--primary" style="justify-self:start;">Submit evidence</button>
+      </form>
     </div>
-  </section>
+  {% endfor %}
+  </div>
   {% elif not complete and not waived %}
-  <section class="speakerops-empty"><h2>You’re all caught up</h2><p>No tasks need your attention right now.</p></section>
+  <div class="cds--notification cds--notification--success" role="alert">
+    <div class="cds--notification__details">
+      <h3 class="cds--notification__title">You're all caught up</h3>
+      <p>No tasks need your attention right now.</p>
+    </div>
+  </div>
   {% endif %}
 
   {% if complete or waived %}
-  <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="history-title">
-    <div><h2 id="history-title">Completed work</h2><p>Evidence and organizer decisions stay visible.</p></div>
-    <ul class="speakerops-list">
-      {% for task in complete %}<li><strong>{{ task.definition.name }}</strong><span>Complete</span></li>{% endfor %}
-      {% for task in waived %}<li><strong>{{ task.definition.name }}</strong><span>Waived{% if task.waiver_reason %}: {{ task.waiver_reason }}{% endif %}</span></li>{% endfor %}
-    </ul>
-  </section>
+  <h2 class="speakerops-section-title">Completed work</h2>
+  <div class="cds--data-table-container">
+    <table class="cds--data-table cds--data-table--sm">
+      <tbody>
+        {% for task in complete %}<tr><td>{{ task.definition.name }}</td><td><span class="cds--tag cds--tag--green">Complete</span></td></tr>{% endfor %}
+        {% for task in waived %}<tr><td>{{ task.definition.name }}</td><td><span class="cds--tag cds--tag--blue">Waived{% if task.waiver_reason %}: {{ task.waiver_reason }}{% endif %}</span></td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% endif %}
 
-  <p><a href="{% url 'plugins:speakerops:speakerops_resource' event.slug 'speaker-guide' %}">Open the speaker guide →</a></p>
+  <p style="margin-top:2rem;"><a href="{% url 'plugins:speakerops:speakerops_resource' event.slug 'speaker-guide' %}" class="cds--link">Open the speaker guide →</a></p>
 </main>
 {% endblock content %}
