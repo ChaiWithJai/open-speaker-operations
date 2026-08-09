@@ -1,5 +1,15 @@
 # Performance Audit — Speaker Ops
 
+> **Resolution (2026-08-09):** The findings below are the initial audit record.
+> Production commit `a58c2f0520f8b03f1fa7336593020dbee3624013` consolidates the
+> dashboard aggregates, removes repeated drilldown/agenda/reviewer work, enforces
+> query budgets in CI, and reuses the event-level dashboard snapshot for two
+> seconds. Three external 300-request authenticated runs measured p95
+> response-start at 355.0–415.5 ms on the 2-vCPU demo Droplet. PostgreSQL
+> `EXPLAIN (ANALYZE)` completed the hot plans in 0.05–0.14 ms; existing foreign-key
+> indexes and small-table scans were cheaper than speculative new indexes, so the
+> original blanket index recommendation was intentionally not implemented.
+
 **Date:** 2026-08-08
 **Scope:** 100% of core workflows, profiled via live server + code audit.
 **Goal:** Lightning-fast demo for competition evaluation.
