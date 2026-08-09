@@ -166,6 +166,51 @@ def test_reminder_replay_is_deduplicated(event, users):
 
 
 @pytest.mark.django_db(transaction=True)
+def test_reminder_action_requires_confirmation_and_only_queues_overdue_tasks(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.speakers.add(users["speaker"])
+        submission.accept(person=users["chair"], force=True)
+        tasks = list(
+            OnboardingTask.objects.filter(
+                event=event,
+                submission=submission,
+                speaker=users["speaker"],
+                status=OnboardingTask.PENDING,
+            ).order_by("pk")[:2]
+        )
+        tasks[0].due_date = timezone.localdate() - timedelta(days=1)
+        tasks[0].save(update_fields=["due_date", "updated"])
+        tasks[1].due_date = timezone.localdate() + timedelta(days=1)
+        tasks[1].save(update_fields=["due_date", "updated"])
+    client.force_login(users["chair"])
+    url = f"/orga/{event.slug}/speaker-operations/reminders/"
+    response = client.post(url)
+    assert response.status_code == 302
+    with scope(event=event):
+        assert ReminderReceipt.objects.count() == 0
+
+    response = client.post(url, {"confirm_reminders": "yes"})
+    assert response.status_code == 302
+    with scope(event=event):
+        receipts = ReminderReceipt.objects.all()
+        assert list(receipts.values_list("task_id", flat=True)) == [tasks[0].pk]
+
+
+@pytest.mark.django_db(transaction=True)
+def test_empty_task_selection_does_not_fall_back_to_every_pending_task(event, users):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.speakers.add(users["speaker"])
+        submission.accept(person=users["chair"], force=True)
+        empty = OnboardingTask.objects.none()
+        assert queue_reminders(event, tasks=empty, reminder_key="empty") == 0
+        assert not ReminderReceipt.objects.filter(reminder_key="empty").exists()
+
+
+@pytest.mark.django_db(transaction=True)
 def test_resources_sanitize_and_only_publish_visible(event, users, client):
     with scope(event=event):
         submission = event.submissions.first()

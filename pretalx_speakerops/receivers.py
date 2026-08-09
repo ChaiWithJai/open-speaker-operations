@@ -3,6 +3,7 @@ from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.html import format_html
 from pretalx.cfp.signals import html_head as cfp_html_head
+from pretalx.orga.signals import html_head as orga_html_head
 from pretalx.orga.signals import nav_event
 from pretalx.schedule.signals import schedule_release
 from pretalx.submission.signals import submission_state_change
@@ -32,6 +33,16 @@ def speakerops_navigation(sender, request, **kwargs):
             "active": "speakerops" in request.path,
         }
     ]
+
+
+@receiver(orga_html_head)
+def speakerops_orga_assets(sender, request, **kwargs):
+    if "/speaker-operations/" not in request.path:
+        return ""
+    return format_html(
+        '<script defer src="{}"></script>',
+        static("pretalx_speakerops/orga-a11y.js"),
+    )
 
 
 @receiver(cfp_html_head)

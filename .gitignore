@@ -1,4 +1,8 @@
 .venv/
+.test-venv/
+.playwright-cli/
+build/
+output/
 .pretalx-data/
 .pytest_cache/
 .ruff_cache/

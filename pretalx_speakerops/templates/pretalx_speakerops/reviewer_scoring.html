@@ -9,14 +9,14 @@
 {% endblock scripts %}
 
 {% block content %}
-<main class="speakerops speakerops--review" aria-labelledby="review-title">
+<div class="speakerops speakerops--review" aria-labelledby="review-title">
   <header class="speakerops__header">
     <div>
       <p class="speakerops__eyebrow">Reviewer workspace</p>
       <h1 id="review-title">Score assigned proposals</h1>
       <p>Keyboard-first scoring with draft-safe autosave.</p>
     </div>
-    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to operations</a>
+    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}">Review queue</a>
   </header>
 
   <div class="speakerops-review-layout">
@@ -34,7 +34,7 @@
       {% csrf_token %}
       <div class="speakerops-review-form__title">
         <div><p class="speakerops__eyebrow">{{ submission.code }}</p><h2>{{ submission.title }}</h2></div>
-        <span data-save-state aria-live="polite">Ready</span>
+        <span data-save-state aria-live="polite">All changes saved</span>
       </div>
       <section class="speakerops-proposal-copy">
         <h3>Abstract</h3>
@@ -74,5 +74,5 @@
     <section class="speakerops-empty"><h2>Queue complete</h2><p>There are no assigned proposals awaiting review.</p></section>
     {% endif %}
   </div>
-</main>
+</div>
 {% endblock content %}

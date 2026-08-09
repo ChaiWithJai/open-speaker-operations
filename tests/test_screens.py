@@ -44,6 +44,10 @@ def test_dashboard_has_all_six_prd_counts_and_exact_drilldowns(event, users, cli
     client.force_login(users["chair"])
     dashboard = client.get(f"/orga/{event.slug}/speaker-operations/")
     assert dashboard.status_code == 200
+    body = dashboard.content.decode()
+    assert "Review sync plan" in body
+    assert 'action="/orga/' + event.slug + '/speaker-operations/preview/"' not in body
+    assert "Only speakers with an overdue, unresolved task" in body
     assert {
         "tasks",
         "missing_assets",

@@ -6,14 +6,32 @@ from django_scopes import scope
 from ..models import OnboardingTask, OnboardingTemplate, TaskDefinition, TaskEvidence
 
 DEFAULT_DEFINITIONS = (
-    ("profile", "Profile biography", "profile_field", {"field": "biography"}, 14),
-    ("acknowledgement", "Acknowledge participation", "acknowledgement", {}, 14),
+    (
+        "profile",
+        "Add your speaker biography",
+        "profile_field",
+        {"field": "biography"},
+        14,
+        "Write a short biography for the public speaker page.",
+        "A biography has been saved to your event profile.",
+    ),
+    (
+        "acknowledgement",
+        "Confirm your participation",
+        "acknowledgement",
+        {},
+        14,
+        "Confirm that you plan to participate in this event.",
+        "The participation acknowledgement is checked.",
+    ),
     (
         "headshot",
         "Upload a headshot",
         "upload",
         {"extensions": [".jpg", ".jpeg", ".png"], "max_size": 5_000_000},
         10,
+        "Upload a clear JPG or PNG portrait for the public program.",
+        "A JPG or PNG image no larger than 5 MB has been uploaded.",
     ),
     (
         "slides",
@@ -21,6 +39,8 @@ DEFAULT_DEFINITIONS = (
         "upload",
         {"extensions": [".pdf", ".pptx"], "max_size": 20_000_000},
         7,
+        "Upload the final deck as a PDF or PowerPoint file.",
+        "A PDF or PPTX file no larger than 20 MB has been uploaded.",
     ),
     (
         "supporting-document",
@@ -28,6 +48,8 @@ DEFAULT_DEFINITIONS = (
         "upload",
         {"extensions": [".pdf"], "max_size": 10_000_000},
         7,
+        "Upload any handout or supporting material as a PDF.",
+        "A PDF no larger than 10 MB has been uploaded.",
     ),
 )
 
@@ -36,16 +58,24 @@ def get_or_create_default_template(event):
     template, _ = OnboardingTemplate.objects.get_or_create(
         event=event, slug="standard-speaker", defaults={"name": "Standard speaker onboarding"}
     )
-    for position, (slug, name, evaluator, config, due_days) in enumerate(DEFAULT_DEFINITIONS):
-        TaskDefinition.objects.get_or_create(
+    for position, (
+        slug,
+        name,
+        evaluator,
+        config,
+        due_days,
+        instructions,
+        completion_criteria,
+    ) in enumerate(DEFAULT_DEFINITIONS):
+        TaskDefinition.objects.update_or_create(
             event=event,
-            template=template,
             slug=slug,
             defaults={
+                "template": template,
                 "position": position,
                 "name": name,
-                "instructions": f"Complete: {name}.",
-                "completion_criteria": "Provide the requested evidence.",
+                "instructions": instructions,
+                "completion_criteria": completion_criteria,
                 "task_type": evaluator,
                 "completion_evaluator": evaluator,
                 "evaluator_config": config,

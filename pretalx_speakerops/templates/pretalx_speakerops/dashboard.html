@@ -6,12 +6,12 @@
 {% endblock stylesheets %}
 
 {% block content %}
-<main class="speakerops" aria-labelledby="speakerops-title">
+<div class="speakerops" aria-labelledby="speakerops-title">
   <header class="speakerops__header">
     <div>
       <p class="speakerops__eyebrow">Program command center</p>
       <h1 id="speakerops-title">Speaker Operations</h1>
-      <p>Move the program from proposal to published schedule without losing the thread.</p>
+      <p>Turn the fragile weeks between acceptance and showtime into one controlled path. Give every human a next action, prevent unsafe publishing, and recover downstream synchronization without duplicate work.</p>
     </div>
     <nav class="speakerops__actions" aria-label="Speaker Operations views">
       <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}">Review queue</a>
@@ -22,11 +22,14 @@
 
   {% if attention.overdue or attention.blocked_release or attention.sync_errors %}
   <section class="speakerops__alert" aria-label="Needs attention">
-    <strong>Needs attention</strong>
+    <p class="speakerops__eyebrow">Recommended next action</p>
+    {% if attention.blocked_release %}<h2>Resolve schedule conflicts to unlock publishing</h2>
+    {% elif attention.overdue %}<h2>Bring overdue speaker work back on track</h2>
+    {% else %}<h2>Recover failed synchronization records</h2>{% endif %}
     <ul>
-      {% if attention.blocked_release %}<li>Public release is blocked by schedule conflicts.</li>{% endif %}
-      {% if attention.overdue %}<li>{{ attention.overdue }} onboarding task{{ attention.overdue|pluralize }} overdue.</li>{% endif %}
-      {% if attention.sync_errors %}<li>{{ attention.sync_errors }} synchronization error{{ attention.sync_errors|pluralize }} ready to retry.</li>{% endif %}
+      {% if attention.blocked_release %}<li><a href="{% url 'plugins:speakerops:speakerops_agenda' event.slug %}">Review the blocking schedule conflicts →</a></li>{% endif %}
+      {% if attention.overdue %}<li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'tasks' %}">{{ attention.overdue }} onboarding task{{ attention.overdue|pluralize }} overdue →</a></li>{% endif %}
+      {% if attention.sync_errors %}<li><a href="{% url 'plugins:speakerops:speakerops_sync_console' event.slug %}">{{ attention.sync_errors }} synchronization error{{ attention.sync_errors|pluralize }} ready to retry →</a></li>{% endif %}
     </ul>
   </section>
   {% endif %}
@@ -42,9 +45,16 @@
 
   <section class="speakerops-panel">
     <div><p class="speakerops__eyebrow">Integration health</p><h2>Accelevents: {{ counts.sync_status|title }}</h2><p>Preview the exact create, update, and no-op plan before authorizing writes.</p></div>
-    <form method="post" action="{% url 'plugins:speakerops:speakerops_sync_preview' event.slug %}">{% csrf_token %}<button type="submit" class="btn btn-primary">Create sync preview</button></form>
+    <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_sync_console' event.slug %}">Review sync plan</a>
   </section>
 
-  <form method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">{% csrf_token %}<button type="submit" class="btn btn-secondary">Queue due reminders</button></form>
-</main>
+  <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="reminders-title">
+    <div><p class="speakerops__eyebrow">Speaker follow-up</p><h2 id="reminders-title">{{ counts.due_reminders }} overdue reminder{{ counts.due_reminders|pluralize }}</h2><p>Only speakers with an overdue, unresolved task will receive a reminder.</p></div>
+    <form method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">
+      {% csrf_token %}
+      <label class="speakerops-check"><input type="checkbox" name="confirm_reminders" value="yes" required{% if not counts.due_reminders %} disabled{% endif %}> Confirm {{ counts.due_reminders }} recipient{{ counts.due_reminders|pluralize }}</label>
+      <button type="submit" class="btn btn-secondary"{% if not counts.due_reminders %} disabled{% endif %}>Send overdue reminders</button>
+    </form>
+  </section>
+</div>
 {% endblock content %}

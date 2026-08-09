@@ -5,9 +5,10 @@ from ..models import OnboardingTask, ReminderReceipt
 
 
 def queue_reminders(event, tasks=None, reminder_key="onboarding-due"):
-    tasks = tasks or OnboardingTask.objects.filter(
-        event=event, status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED)
-    ).select_related("speaker", "submission", "definition")
+    if tasks is None:
+        tasks = OnboardingTask.objects.filter(
+            event=event, status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED)
+        ).select_related("speaker", "submission", "definition")
     queued = 0
     with scope(event=event):
         template, _ = MailTemplate.objects.get_or_create(

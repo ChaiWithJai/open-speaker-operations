@@ -127,6 +127,7 @@ class DashboardView(EventContextMixin, TemplateView):
                     .first()
                     or "not configured"
                 ),
+                "due_reminders": task_stats["overdue"],
             },
             "attention": {
                 "overdue": task_stats["overdue"],
@@ -548,9 +549,31 @@ class ReminderView(EventContextMixin, View):
     permission = "manage"
 
     def post(self, request, event):
-        key = request.POST.get("reminder_key", "onboarding-due")
-        queued = queue_reminders(self.event, reminder_key=key)
-        return JsonResponse({"queued": queued, "reminder_key": key})
+        if request.POST.get("confirm_reminders") != "yes":
+            messages.error(request, "Confirm the overdue reminder recipients first.")
+            return redirect(
+                reverse("plugins:speakerops:speakerops_dashboard", kwargs={"event": event})
+            )
+        today = timezone.localdate()
+        with scope(event=self.event):
+            overdue_tasks = OnboardingTask.objects.filter(
+                event=self.event,
+                due_date__lt=today,
+                status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
+            ).select_related("speaker", "submission", "definition")
+            queued = queue_reminders(
+                self.event,
+                tasks=overdue_tasks,
+                reminder_key=f"onboarding-overdue:{today.isoformat()}",
+            )
+        if queued:
+            messages.success(
+                request,
+                f"Queued {queued} overdue reminder{'s' if queued != 1 else ''}.",
+            )
+        else:
+            messages.info(request, "No new overdue reminders were queued.")
+        return redirect(reverse("plugins:speakerops:speakerops_dashboard", kwargs={"event": event}))
 
 
 class ResourceView(TemplateView):
@@ -593,12 +616,17 @@ class PublishedScheduleMixin:
                 .order_by("start", "room__position")
             )
             speakers = []
+            speaker_cards = []
+            cards_by_speaker = {}
             seen = set()
             for slot in slots:
                 for speaker in slot.submission.speakers.all():
                     if speaker.pk not in seen:
                         seen.add(speaker.pk)
                         speakers.append(speaker)
+                        cards_by_speaker[speaker.pk] = {"speaker": speaker, "sessions": []}
+                        speaker_cards.append(cards_by_speaker[speaker.pk])
+                    cards_by_speaker[speaker.pk]["sessions"].append(slot.submission)
         return TemplateView.as_view(
             template_name=self.template_name,
             extra_context={
@@ -606,6 +634,7 @@ class PublishedScheduleMixin:
                 "schedule": schedule,
                 "slots": slots,
                 "speakers": speakers,
+                "speaker_cards": speaker_cards,
             },
         )(request)
 

@@ -23,6 +23,7 @@ def schedule_slots(schedule):
             submission__isnull=False,
             start__isnull=False,
             end__isnull=False,
+            is_visible=True,
         )
         .select_related("room", "submission")
         .prefetch_related("submission__speakers")

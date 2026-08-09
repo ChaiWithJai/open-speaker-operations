@@ -6,7 +6,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-<main class="speakerops" aria-labelledby="sync-title">
+<div class="speakerops" aria-labelledby="sync-title">
   <header class="speakerops__header">
     <div><p class="speakerops__eyebrow">One-way integration</p><h1 id="sync-title">Accelevents synchronization</h1><p>Preview first, execute intentionally, and retry only failed records.</p></div>
     <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to operations</a>
@@ -16,7 +16,7 @@
     <div>
       <p class="speakerops__eyebrow">Connection</p>
       <h2>{% if connection %}{{ connection.get_status_display }}{% else %}Not configured{% endif %}</h2>
-      {% if connection %}<p>{{ connection.base_url }} · event {{ connection.event_url }}</p>{% endif %}
+      {% if connection %}<p>Demo connector · {{ connection.event_url }}</p>{% endif %}
     </div>
     <form method="post">{% csrf_token %}<input type="hidden" name="action" value="preview"><button class="btn btn-primary" type="submit">Create preview</button></form>
   </section>
@@ -27,6 +27,14 @@
     {% for item in previews %}
       <article class="speakerops-run">
         <div><strong>Preview #{{ item.pk }}</strong><span class="speakerops-badge">{{ item.status }}</span><p>{{ item.payload.items|length }} planned item{{ item.payload.items|length|pluralize }} · {{ item.created_at }}</p></div>
+        <details>
+          <summary>Review planned changes</summary>
+          <ul class="speakerops-change-list">
+          {% for change in item.payload.items %}
+            <li><span class="speakerops-badge">{{ change.action }}</span> {% if change.local_type == 'speaker' %}{{ change.payload.firstName }} {{ change.payload.lastName }}{% elif change.local_type == 'session' %}{{ change.payload.title }}{% else %}{{ change.local_type|title }}{% endif %}</li>
+          {% endfor %}
+          </ul>
+        </details>
         {% if item.status == 'created' %}
         <form method="post">
           {% csrf_token %}<input type="hidden" name="action" value="run"><input type="hidden" name="preview_id" value="{{ item.pk }}">
@@ -47,7 +55,7 @@
       <div class="speakerops-table-wrap">
         <table class="speakerops-table"><thead><tr><th>Record</th><th>Plan</th><th>Status</th><th>Attempts</th><th>Action</th></tr></thead><tbody>
         {% for item in run.items.all %}
-          <tr><td>{{ item.local_type }} #{{ item.local_id }}</td><td>{{ item.action }}</td><td>{{ item.status }}{% if item.error %}<br><small>{{ item.error }}</small>{% endif %}</td><td>{{ item.attempts }}</td><td>
+          <tr><td data-label="Record">{% if item.local_type == 'speaker' %}{{ item.payload.firstName }} {{ item.payload.lastName }}{% elif item.local_type == 'session' %}{{ item.payload.title }}{% else %}{{ item.local_type|title }}{% endif %}</td><td data-label="Plan">{{ item.action }}</td><td data-label="Status">{{ item.status }}{% if item.error %}<br><small>{{ item.error }}</small>{% endif %}</td><td data-label="Attempts">{{ item.attempts }}</td><td data-label="Action">
             {% if item.status == 'failed' %}<form method="post">{% csrf_token %}<input type="hidden" name="action" value="retry"><input type="hidden" name="item_id" value="{{ item.pk }}"><label class="speakerops-check"><input type="checkbox" name="confirm_sync" value="yes" required> Confirm</label><button class="btn btn-sm btn-outline-primary" type="submit">Retry</button></form>{% else %}—{% endif %}
           </td></tr>
         {% endfor %}
@@ -56,5 +64,5 @@
     </details>
     {% empty %}<div class="speakerops-empty"><p>No synchronization runs yet.</p></div>{% endfor %}
   </section>
-</main>
+</div>
 {% endblock content %}

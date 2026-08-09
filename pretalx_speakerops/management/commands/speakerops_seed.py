@@ -1,4 +1,5 @@
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 
 from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
@@ -19,6 +20,7 @@ from ...models import (
     AcceleventsConnection,
     ExternalIdentity,
     OnboardingTask,
+    ReminderReceipt,
     Resource,
     ResourceVersion,
     SyncAttempt,
@@ -28,7 +30,11 @@ from ...models import (
     TaskDefinition,
 )
 from ...onboarding.reminders import queue_reminders
-from ...onboarding.services import ensure_acceptance_plan, record_evidence
+from ...onboarding.services import (
+    ensure_acceptance_plan,
+    get_or_create_default_template,
+    record_evidence,
+)
 from ...program.policy import release_schedule
 from ...program.reviews import configure_review_rounds
 
@@ -46,6 +52,69 @@ TASK_MACHINE = StateMachine(
         Transition(OnboardingTask.REOPENED, OnboardingTask.COMPLETE, frozenset({"speaker"})),
         Transition(OnboardingTask.PENDING, OnboardingTask.WAIVED, frozenset({"organiser"})),
         Transition(OnboardingTask.REOPENED, OnboardingTask.WAIVED, frozenset({"organiser"})),
+    ),
+)
+
+CURATED_PROGRAM = (
+    (
+        "Maya Chen",
+        "Designing Calm Systems for High-Stakes Work",
+        "How teams can reduce cognitive load without hiding consequential decisions.",
+    ),
+    (
+        "Jordan Okafor",
+        "From Spreadsheet Chaos to Program Readiness",
+        "A practical operating model for coordinating speakers, reviewers, and schedules.",
+    ),
+    (
+        "Priya Raman",
+        "Trustworthy AI Needs Operational Guardrails",
+        "Patterns that turn responsible-AI principles into observable delivery controls.",
+    ),
+    (
+        "Luis Alvarez",
+        "The Human Side of Reliable Integrations",
+        "Designing previews, retries, and audit trails that operators can understand.",
+    ),
+    (
+        "Amina Yusuf",
+        "Accessibility Is a Systems Requirement",
+        "Making inclusive choices visible from content collection through publication.",
+    ),
+    (
+        "Noah Williams",
+        "Decision Quality in Distributed Review Teams",
+        "A shared rubric and explicit handoffs for faster, fairer program decisions.",
+    ),
+    (
+        "Elena Petrova",
+        "Designing for the Moment Something Goes Wrong",
+        "Recovery paths that preserve context, confidence, and completed work.",
+    ),
+    (
+        "Marcus Reed",
+        "Own the Workflow, Not Just the Infrastructure",
+        "Balancing open-source ownership, continuity, and operating cost.",
+    ),
+    (
+        "Sofia Kim",
+        "Content Models That Make the Next Action Obvious",
+        "Turning status inventories into clear, role-specific operating queues.",
+    ),
+    (
+        "David Mensah",
+        "Release Gates Without Release Theater",
+        "How server-enforced checks prevent unsafe publication without slowing teams down.",
+    ),
+    (
+        "Leila Haddad",
+        "Measuring Flow Across Human and Technical Systems",
+        "Useful measures for readiness, handoff latency, recovery, and operator confidence.",
+    ),
+    (
+        "Theo Martin",
+        "A Better Final Mile for Event Operations",
+        "A closing blueprint for moving an accepted idea safely into the hands of attendees.",
     ),
 )
 
@@ -73,12 +142,18 @@ class Command(BaseCommand):
             )
         event = Event.objects.get(slug="speakerops-demo")
         event.enable_plugin("pretalx_speakerops")
-        event.save(update_fields=["plugins", "updated"])
+        event.name = "DemoCon 2026"
+        event.email = "program@democon.test"
+        event.landing_page_text = (
+            "<p>A three-day program about humane, reliable technology operations. "
+            "Explore practical sessions from the people building calmer systems.</p>"
+        )
+        event.save(update_fields=["plugins", "name", "email", "landing_page_text", "updated"])
         users = {}
         for role, email, name in (
             ("chair", "chair@example.org", "Program Chair"),
             ("reviewer", "reviewer@example.org", "Reviewer"),
-            ("speaker", "speaker@example.org", "Demo Speaker"),
+            ("speaker", "speaker@example.org", "Maya Chen"),
         ):
             user, created = User.objects.get_or_create(email=email, defaults={"name": name})
             user.name = name
@@ -115,6 +190,7 @@ class Command(BaseCommand):
         with scope(event=event):
             configure_demo_cfp(event)
             configure_review_rounds(event, second_round=True)
+            get_or_create_default_template(event)
             event.cfp.opening = timezone.now() - timedelta(days=1)
             event.cfp.deadline = timezone.now() + timedelta(days=90)
             event.cfp.headline = "Share your idea with DemoCon"
@@ -141,12 +217,42 @@ class Command(BaseCommand):
                 proposal.state = state
                 proposal.title = title
                 proposal.save(update_fields=["state", "title", "updated"])
-                proposal.speakers.add(users["speaker"])
+                proposal.speakers.set([users["speaker"]])
             queued.assigned_reviewers.add(users["reviewer"])
             Review.objects.filter(submission=queued).exclude(user=users["reviewer"]).delete()
+            draft.abstract = (
+                "A field guide to introducing AI into consequential workflows without "
+                "removing human judgment or accountability."
+            )
+            draft.description = (
+                "Attendees leave with a lightweight decision framework, practical review "
+                "questions, and examples of responsible escalation paths."
+            )
+            draft.save(update_fields=["abstract", "description", "updated"])
+            queued.abstract = (
+                "Trust is designed through visible state, bounded automation, and recovery "
+                "paths—not through reassuring copy alone."
+            )
+            queued.description = (
+                "We examine interface patterns for autosave, high-stakes confirmation, audit "
+                "history, and failure recovery using real operational scenarios."
+            )
+            queued.save(update_fields=["abstract", "description", "updated"])
+            accepted.abstract = (
+                "How a small team replaced scattered spreadsheets and reminders with one "
+                "measurable readiness-to-publish workflow."
+            )
+            accepted.description = (
+                "A concrete case study covering ownership, handoffs, release gates, and safe "
+                "synchronization with downstream event systems."
+            )
+            accepted.save(update_fields=["abstract", "description", "updated"])
             submission = accepted
             if submission:
                 ensure_acceptance_plan(submission)
+                OnboardingTask.objects.filter(event=event).exclude(
+                    submission=submission, speaker=users["speaker"]
+                ).delete()
                 definition = TaskDefinition.objects.filter(event=event).first()
                 if definition:
                     OnboardingTask.objects.get_or_create(
@@ -199,6 +305,70 @@ class Command(BaseCommand):
                     tasks[2].waiver_reason = "Covered during speaker briefing"
                     tasks[2].save(update_fields=["waiver_reason", "updated"])
             schedule = event.wip_schedule
+            curated_slots = list(
+                TalkSlot.objects.filter(schedule=schedule, submission__isnull=False)
+                .select_related("submission")
+                .order_by("pk")[: len(CURATED_PROGRAM)]
+            )
+            curated_submission_ids = [slot.submission_id for slot in curated_slots]
+            Submission.all_objects.filter(event=event).exclude(
+                pk__in={draft.pk, queued.pk, accepted.pk, *curated_submission_ids}
+            ).update(state=SubmissionStates.DELETED)
+            program_by_submission = {
+                slot.submission_id: program
+                for slot, program in zip(curated_slots, CURATED_PROGRAM, strict=True)
+            }
+            for slot, (speaker_name, title, abstract) in zip(
+                curated_slots, CURATED_PROGRAM, strict=True
+            ):
+                proposal = slot.submission
+                proposal.title = title
+                proposal.abstract = abstract
+                proposal.description = (
+                    f"{abstract} This session includes a concrete operating pattern and a "
+                    "take-home checklist."
+                )
+                proposal.save(update_fields=["title", "abstract", "description", "updated"])
+                speaker = proposal.speakers.order_by("pk").first()
+                if speaker:
+                    if speaker != users["speaker"]:
+                        speaker.name = speaker_name
+                        speaker.save(update_fields=["name"])
+                    proposal.speakers.set([speaker])
+
+            rooms = list(event.rooms.order_by("position", "pk")[:2])
+            for room, name in zip(rooms, ("Main Stage", "Studio"), strict=False):
+                room.name = name
+                room.save(update_fields=["name", "updated"])
+            event_zone = ZoneInfo(event.timezone)
+            for demo_schedule in event.schedules.all():
+                demo_slots = list(
+                    TalkSlot.objects.filter(
+                        schedule=demo_schedule,
+                        submission__isnull=False,
+                    ).order_by("pk")
+                )
+                TalkSlot.objects.filter(schedule=demo_schedule).exclude(
+                    submission_id__in=curated_submission_ids
+                ).update(is_visible=False)
+                visible_slots = {}
+                for slot in demo_slots:
+                    if slot.submission_id in program_by_submission:
+                        visible_slots.setdefault(slot.submission_id, slot)
+                    elif slot.submission_id:
+                        slot.is_visible = False
+                for index, submission_id in enumerate(curated_submission_ids):
+                    slot = visible_slots.get(submission_id)
+                    if not slot:
+                        continue
+                    day = event.date_from + timedelta(days=index // 4)
+                    hour = (9, 11, 14, 16)[index % 4]
+                    start = timezone.make_aware(datetime.combine(day, time(hour=hour)), event_zone)
+                    slot.start = start
+                    slot.end = start + timedelta(minutes=45)
+                    slot.room = rooms[index % len(rooms)] if rooms else None
+                    slot.is_visible = True
+                    slot.save(update_fields=["start", "end", "room", "is_visible", "updated"])
             conflicting_slots = list(
                 TalkSlot.objects.filter(schedule=schedule, submission__isnull=False)
                 .select_related("submission")
@@ -249,6 +419,7 @@ class Command(BaseCommand):
                     "created_by": administrator,
                 },
             )
+            ReminderReceipt.objects.filter(event=event).delete()
             queue_reminders(event, reminder_key="seed-onboarding-reminder")
             connection, _ = AcceleventsConnection.objects.get_or_create(
                 event=event,
@@ -261,6 +432,9 @@ class Command(BaseCommand):
             )
             accepted = event.submissions.filter(state=SubmissionStates.ACCEPTED).first()
             if accepted:
+                SyncRun.objects.filter(event=event).delete()
+                SyncPreview.objects.filter(event=event).delete()
+                ExternalIdentity.objects.filter(event=event).delete()
                 speaker = accepted.speakers.first()
                 payload = {
                     "firstName": (speaker.name or "Demo").split(" ", 1)[0],
@@ -367,7 +541,7 @@ class Command(BaseCommand):
                             "external_id": item["external_id"],
                             "attempts": 2 if status == SyncItem.SUCCEEDED else 1,
                             "error": (
-                                "Injected demo failure; retry this item."
+                                "Destination rate limit reached; this record is safe to retry."
                                 if status == SyncItem.FAILED
                                 else ""
                             ),
@@ -380,7 +554,7 @@ class Command(BaseCommand):
                             number=1,
                             defaults={
                                 "status": "failed",
-                                "error": "Injected demo failure; retry was safe.",
+                                "error": "Destination rate limit reached; retry was safe.",
                                 "finished_at": timezone.now(),
                             },
                         )
