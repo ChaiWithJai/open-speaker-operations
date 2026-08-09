@@ -78,16 +78,23 @@ The 2-vCPU/4-GB demo Droplet uses two Gunicorn workers with three threads each
 and one Celery worker process. This provides six HTTP request slots without the
 CPU contention observed with three Gunicorn processes.
 
-On the deterministic seed, commit `3347537be25acc55fac0f83761225f2c88faece8`
+On the deterministic seed, commit `a58c2f0520f8b03f1fa7336593020dbee3624013`
 produced these warm Django query counts: dashboard 17, task drilldown 19, agenda
 13, reviewer 14, and sync console 15. Query-budget tests enforce fewer than 40
 queries for the chair views and a maximum of 30 for a reviewer screen with 11
 criteria.
 
-A live authenticated run of 100 dashboard requests from five persistent HTTPS
-clients measured p50 response-start at 296 ms and p95 at 480 ms. Web memory
-remained below 245 MiB during the selected two-worker test; PostgreSQL remained
-below 76 MiB, the Celery worker below 126 MiB, and host swap use was zero.
+The production dashboard reuses only its event-level count/status snapshot for
+two seconds. Authentication, permissions, messages, CSRF state, and HTML remain
+per-request. From a separate machine, five persistent HTTPS clients with five
+independent authenticated sessions made three 300-request runs. Their aggregate
+p50 response-start values were 188.3, 185.4, and 204.7 ms; p95 values were 355.0,
+370.6, and 415.5 ms. All 900 responses were HTTP 200.
+
+During the resource-sampled run, the web container peaked at 7.56% of the
+3.824-GiB host limit, PostgreSQL at 1.88%, and the Celery worker at 3.21%. Host
+swap use remained zero. The web container peaked at 91.85% CPU, leaving the
+second vCPU available for the database, proxy, and worker.
 
 The PostgreSQL hot-path plans completed in 0.05–0.14 ms on demo-shaped data.
 Existing event and foreign-key indexes covered selective lookups, while the small
