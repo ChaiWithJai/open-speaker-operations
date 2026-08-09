@@ -17,10 +17,14 @@ done
 # 2. Migrations (always)
 python -m pretalx migrate --noinput
 
-# 3. Seed — idempotent, never blocks server
+# 3. Collect static files (CSS, JS, images)
+echo "Collecting static files..."
+python -m pretalx collectstatic --noinput 2>/dev/null || true
+
+# 4. Seed — idempotent, never blocks server
 echo "Seeding..."
 python -m pretalx speakerops_seed || echo "Seed completed with warnings (non-fatal)."
 
-# 4. Runserver (always reaches here)
+# 5. Runserver (always reaches here)
 echo "Starting server..."
 exec python -m pretalx runserver 0.0.0.0:8000 --noreload
