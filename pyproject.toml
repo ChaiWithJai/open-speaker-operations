@@ -8,6 +8,8 @@ version = "0.0.0"
 requires-python = ">=3.11"
 dependencies = [
     "celery",
+    "Faker",
+    "freezegun",
     "gunicorn",
     "pretalx==2025.2.2",
     "psycopg[binary]",
@@ -19,8 +21,6 @@ dev = [
     "bleach",
     "celery",
     "drf-spectacular",
-    "Faker",
-    "freezegun",
     "pytest",
     "pytest-django",
     "redis",
