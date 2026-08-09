@@ -110,7 +110,7 @@ def preview(event, payloads):
     return run
 
 
-def execute_preview(event, preview_id, actor, payloads=None):
+def execute_preview(event, preview_id, actor, payloads=None, execute_now=True):
     with transaction.atomic():
         preview_run = SyncPreview.objects.select_for_update().get(pk=preview_id, event=event)
         current_payload = [
@@ -153,6 +153,14 @@ def execute_preview(event, preview_id, actor, payloads=None):
             key=f"sync-run:{run.pk}:start",
             expected_version=run.version,
         )
+    if execute_now:
+        items = list(run.items.order_by("pk"))
+        if not items:
+            _refresh_run_status(run, actor)
+        else:
+            for item in items:
+                execute_item(item, actor)
+        run.refresh_from_db()
     return run
 
 
@@ -227,6 +235,7 @@ def execute_item(item, actor):
             key=f"sync-item:{item.pk}:noop",
             expected_version=item.version,
         )
+        _refresh_run_status(item.run, actor)
         return item
     attempt = SyncAttempt.objects.create(
         event=item.event, item=item, number=item.attempts + 1, status="running"
@@ -247,6 +256,7 @@ def execute_item(item, actor):
     )
     item.refresh_from_db()
     item.attempts = attempt_number
+    item.error = ""
     try:
         if item.local_type == "speaker":
             if item.action == "update":

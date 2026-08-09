@@ -1,0 +1,51 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock stylesheets %}
+
+{% block content %}
+<main class="speakerops" aria-labelledby="agenda-title">
+  <header class="speakerops__header">
+    <div><p class="speakerops__eyebrow">Program delivery</p><h1 id="agenda-title">Agenda &amp; release gate</h1><p>Review the draft by time and room. Blocking conflicts must be resolved before publication.</p></div>
+    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to operations</a>
+  </header>
+
+  {% if blocking %}
+  <section class="speakerops__alert" aria-labelledby="blocked-title">
+    <h2 id="blocked-title">Release blocked · {{ blocking|length }} conflict{{ blocking|length|pluralize }}</h2>
+    <ul>{% for item in blocking %}<li>{{ item.message }}</li>{% endfor %}</ul>
+  </section>
+  {% else %}
+  <section class="speakerops__success"><strong>Release gate clear.</strong> No blocking room or speaker conflicts.</section>
+  {% endif %}
+
+  <div class="speakerops-table-wrap">
+    <table class="speakerops-table">
+      <thead><tr><th>Time</th><th>Room</th><th>Session</th><th>Speakers</th></tr></thead>
+      <tbody>
+      {% for slot in slots %}
+        <tr>
+          <td>{{ slot.start }}–{{ slot.end|time:"H:i" }}</td>
+          <td>{{ slot.room.name|default:"Unplaced" }}</td>
+          <td><strong>{{ slot.submission.title }}</strong><br><small>{{ slot.submission.code }}</small></td>
+          <td>{{ slot.submission.display_speaker_names }}</td>
+        </tr>
+      {% empty %}<tr><td colspan="4">No scheduled sessions yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <section class="speakerops-panel">
+    <div><h2>Publish this revision</h2><p>Publication changes public embeds and calendar output. The server rechecks the gate.</p></div>
+    <form method="post">
+      {% csrf_token %}
+      <label for="release-name">Revision name</label>
+      <input class="form-control" id="release-name" name="name" value="SpeakerOps release" required>
+      <label class="speakerops-check"><input type="checkbox" name="confirm_release" value="yes" required> I confirm this schedule should become public.</label>
+      <button class="btn btn-primary" type="submit"{% if blocking %} disabled aria-disabled="true"{% endif %}>Release schedule</button>
+    </form>
+  </section>
+</main>
+{% endblock content %}

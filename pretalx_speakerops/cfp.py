@@ -12,6 +12,16 @@ DEMO_CFP_QUESTIONS = (
     ("Speaker headshot", QuestionVariant.FILE, QuestionRequired.OPTIONAL),
 )
 
+QUESTION_OPTIONS = {
+    "Session format": ("Main stage", "Workshop", "Roundtable"),
+    "Audience interests": (
+        "AI engineering",
+        "Product and design",
+        "Leadership",
+        "Developer experience",
+    ),
+}
+
 
 def configure_demo_cfp(event):
     """Configure the seeded AIE CFP using pretalx's native question system."""
@@ -33,16 +43,13 @@ def configure_demo_cfp(event):
             question.save()
             question.submission_types.set([submission_type])
             if variant in (QuestionVariant.CHOICES, QuestionVariant.MULTIPLE):
-                options = (
-                    "Main stage",
-                    "Workshop",
-                    "Roundtable",
-                )
+                options = QUESTION_OPTIONS[label]
                 for option_position, option_text in enumerate(options):
                     AnswerOption.objects.update_or_create(
                         question=question,
                         answer=option_text,
                         defaults={"position": option_position},
                     )
+                question.options.exclude(answer__in=options).delete()
             questions.append(question)
         return questions

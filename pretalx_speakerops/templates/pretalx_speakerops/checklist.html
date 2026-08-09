@@ -1,66 +1,75 @@
-{% extends "orga/base.html" %}
-{% block content %}
-<main aria-labelledby="checklist-title">
-  <h1 id="checklist-title">What do I need to do next?</h1>
+{% extends "cfp/event/base.html" %}
+{% load static %}
 
-  {% if progress.total %}
-    <p class="text-muted">{{ progress.done }} of {{ progress.total }} complete.</p>
-  {% endif %}
+{% block cfp_stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock cfp_stylesheets %}
+
+{% block content %}
+<main class="speakerops speakerops--portal" aria-labelledby="checklist-title">
+  <header class="speakerops__header">
+    <div>
+      <p class="speakerops__eyebrow">Speaker workspace</p>
+      <h1 id="checklist-title">What do I need to do next?</h1>
+      <p>Everything the program team still needs from you, in priority order.</p>
+    </div>
+    {% if progress.total %}
+    <div class="speakerops-progress" aria-label="{{ progress.done }} of {{ progress.total }} complete">
+      <strong>{{ progress.done }}/{{ progress.total }}</strong>
+      <span>complete</span>
+      <progress value="{{ progress.done }}" max="{{ progress.total }}"></progress>
+    </div>
+    {% endif %}
+  </header>
 
   {% if pending %}
-  <h2>Needs your attention</h2>
-  {% for task in pending %}
-  <article class="card mb-2">
-    <div class="card-body">
-      <h3 class="card-title">{{ task.definition.name }}</h3>
-      <p>Status: {{ task.get_status_display }}</p>
-      <p>Due: {% if task.due_date %}{% if task.due_date < today %}<span class="text-danger">{{ task.due_date }} (overdue)</span>{% else %}{{ task.due_date }}{% endif %}{% else %}No due date{% endif %}</p>
-      <p>{{ task.definition.instructions }}</p>
-      <p class="text-muted">Completion criteria: {{ task.definition.completion_criteria }}</p>
-      <form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}">
-        {% csrf_token %}
-        {% if task.definition.completion_evaluator == "upload" %}
-          <label for="upload-{{ task.pk }}">Upload evidence</label>
-          <input id="upload-{{ task.pk }}" name="upload" type="file" required>
-        {% elif task.definition.completion_evaluator == "acknowledgement" %}
-          <label><input name="response" type="checkbox" value="yes" required> I acknowledge this task.</label>
-        {% else %}
-          <label for="response-{{ task.pk }}">Evidence response</label>
-          <input id="response-{{ task.pk }}" name="response" type="text" required>
-        {% endif %}
-        <button type="submit" class="btn btn-primary">Submit evidence</button>
-      </form>
+  <section aria-labelledby="attention-title">
+    <h2 id="attention-title">Needs your attention</h2>
+    <div class="speakerops-stack">
+    {% for task in pending %}
+      <article class="speakerops-task{% if task.due_date and task.due_date < today %} speakerops-task--overdue{% endif %}">
+        <div class="speakerops-task__meta">
+          <span class="speakerops-badge">{{ task.get_status_display }}</span>
+          {% if task.due_date %}<span>Due {{ task.due_date }}{% if task.due_date < today %} · overdue{% endif %}</span>{% endif %}
+        </div>
+        <h3>{{ task.definition.name }}</h3>
+        {% if task.submission %}<p class="speakerops__muted">For “{{ task.submission.title }}”</p>{% endif %}
+        <p>{{ task.definition.instructions }}</p>
+        <p><strong>Done when:</strong> {{ task.definition.completion_criteria }}</p>
+        <form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_complete_task' event.slug task.pk %}">
+          {% csrf_token %}
+          {% if task.definition.completion_evaluator == "upload" %}
+            <label for="upload-{{ task.pk }}">Choose evidence file</label>
+            <input class="form-control" id="upload-{{ task.pk }}" name="upload" type="file" required>
+          {% elif task.definition.completion_evaluator == "acknowledgement" %}
+            <label class="speakerops-check"><input name="response" type="checkbox" value="yes" required> I have read and acknowledge this item.</label>
+          {% elif task.definition.completion_evaluator == "profile_field" %}
+            <label for="response-{{ task.pk }}">Speaker biography</label>
+            <textarea class="form-control" id="response-{{ task.pk }}" name="response" rows="5" required placeholder="Tell attendees who you are and what perspective you bring."></textarea>
+          {% else %}
+            <label for="response-{{ task.pk }}">Evidence response</label>
+            <input class="form-control" id="response-{{ task.pk }}" name="response" type="text" required>
+          {% endif %}
+          <button type="submit" class="btn btn-primary">{% if task.definition.completion_evaluator == "profile_field" %}Save biography and complete{% else %}Submit evidence{% endif %}</button>
+        </form>
+      </article>
+    {% endfor %}
     </div>
-  </article>
-  {% endfor %}
+  </section>
   {% elif not complete and not waived %}
-  <div class="card"><div class="card-body">
-    <p class="mb-0">You're all caught up — no tasks need your attention right now. <a href="{% url 'plugins:speakerops:speakerops_resource' event.slug 'speaker-guide' %}">Read the speaker guide</a> to prepare.</p>
-  </div></div>
+  <section class="speakerops-empty"><h2>You’re all caught up</h2><p>No tasks need your attention right now.</p></section>
   {% endif %}
 
-  {% if complete %}
-  <h2>Complete</h2>
-  {% for task in complete %}
-  <article class="card mb-2 bg-light">
-    <div class="card-body">
-      <h3 class="card-title">{{ task.definition.name }}</h3>
-      <p class="text-muted">Completed.</p>
-    </div>
-  </article>
-  {% endfor %}
+  {% if complete or waived %}
+  <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="history-title">
+    <div><h2 id="history-title">Completed work</h2><p>Evidence and organizer decisions stay visible.</p></div>
+    <ul class="speakerops-list">
+      {% for task in complete %}<li><strong>{{ task.definition.name }}</strong><span>Complete</span></li>{% endfor %}
+      {% for task in waived %}<li><strong>{{ task.definition.name }}</strong><span>Waived{% if task.waiver_reason %}: {{ task.waiver_reason }}{% endif %}</span></li>{% endfor %}
+    </ul>
+  </section>
   {% endif %}
 
-  {% if waived %}
-  <h2>Waived</h2>
-  {% for task in waived %}
-  <article class="card mb-2 bg-light">
-    <div class="card-body">
-      <h3 class="card-title">{{ task.definition.name }}</h3>
-      <p class="text-muted">Waived{% if task.waiver_reason %}: {{ task.waiver_reason }}{% endif %}</p>
-    </div>
-  </article>
-  {% endfor %}
-  {% endif %}
+  <p><a href="{% url 'plugins:speakerops:speakerops_resource' event.slug 'speaker-guide' %}">Open the speaker guide →</a></p>
 </main>
-{% endblock %}
+{% endblock content %}

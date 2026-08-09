@@ -13,6 +13,7 @@ from pretalx_speakerops.models import (
     AcceleventsConnection,
     ExternalIdentity,
     SyncItem,
+    SyncRun,
 )
 
 
@@ -73,7 +74,7 @@ def test_partial_run_retry_does_not_resend_successful_item(event, users, mock_ur
             ("speaker", 9102, {"email": "two@example.org", "firstName": "Two"}),
         ]
         sync_preview = preview(event, payloads)
-        run = execute_preview(event, sync_preview.pk, users["chair"])
+        run = execute_preview(event, sync_preview.pk, users["chair"], execute_now=False)
         import mock_accelevents.server as mock
 
         mock.FAIL_EMAIL = "two@example.org"
@@ -110,7 +111,7 @@ def test_update_then_preview_is_noop_and_stale_preview_is_rejected(event, users,
             request_fingerprint="stale",
         )
         update_preview = preview(event, [("speaker", 999, {**payload, "bio": "new"})])
-        run = execute_preview(event, update_preview.pk, users["chair"])
+        run = execute_preview(event, update_preview.pk, users["chair"], execute_now=False)
         item = run.items.get()
         assert item.action == "update"
         execute_item(item, users["chair"])
@@ -131,3 +132,26 @@ def test_update_then_preview_is_noop_and_stale_preview_is_rejected(event, users,
         users["speaker"].save(update_fields=["email"])
         with pytest.raises(ValueError, match="Preview is stale"):
             execute_preview(event, stale.pk, users["chair"])
+
+
+@pytest.mark.django_db(transaction=True)
+def test_execute_preview_runs_items_and_empty_preview_terminates(event, users, mock_url):
+    with scope(event=event):
+        AcceleventsConnection.objects.create(
+            event=event,
+            base_url=mock_url,
+            event_url="demo",
+            credential_ref="demo-key",
+            status=AcceleventsConnection.STATUS_CONNECTED,
+        )
+        populated = preview(
+            event,
+            [("speaker", 9901, {"email": "terminal@example.org", "firstName": "Terminal"})],
+        )
+        populated_run = execute_preview(event, populated.pk, users["chair"])
+        assert populated_run.status == SyncRun.SUCCEEDED
+        assert populated_run.items.get().status == SyncItem.SUCCEEDED
+
+        empty = preview(event, [])
+        empty_run = execute_preview(event, empty.pk, users["chair"])
+        assert empty_run.status == SyncRun.SUCCEEDED

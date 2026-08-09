@@ -1,15 +1,19 @@
 from django.urls import path
 
 from .views import (
+    AgendaReleaseView,
     ChecklistView,
     CompleteTaskView,
     DashboardView,
     DrilldownView,
     PublishedEmbedView,
+    PublishedGalleryView,
     PublishedIcsView,
     ReminderView,
     ResourceView,
+    ReviewerScoringView,
     StatusView,
+    SyncConsoleView,
     SyncPreviewView,
     SyncRunView,
     TaskAdminView,
@@ -29,6 +33,11 @@ urlpatterns = [
         name="speakerops_embed",
     ),
     path(
+        "<slug:event>/speaker-operations/gallery/",
+        PublishedGalleryView.as_view(),
+        name="speakerops_gallery",
+    ),
+    path(
         "orga/<slug:event>/speaker-operations/reminders/",
         ReminderView.as_view(),
         name="speakerops_reminders",
@@ -42,6 +51,26 @@ urlpatterns = [
         "orga/<slug:event>/speaker-operations/sync/<int:pk>/run/",
         SyncRunView.as_view(),
         name="speakerops_sync_run",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/sync-console/",
+        SyncConsoleView.as_view(),
+        name="speakerops_sync_console",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/reviewer/",
+        ReviewerScoringView.as_view(),
+        name="speakerops_review_queue",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/reviewer/<int:pk>/",
+        ReviewerScoringView.as_view(),
+        name="speakerops_review",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/agenda/",
+        AgendaReleaseView.as_view(),
+        name="speakerops_agenda",
     ),
     path(
         "orga/<slug:event>/speaker-operations/",

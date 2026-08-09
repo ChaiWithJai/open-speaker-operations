@@ -1,66 +1,107 @@
 services:
   postgres:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: speakerops
-      POSTGRES_USER: speakerops
-      POSTGRES_PASSWORD: speakerops
+      POSTGRES_DB: ${POSTGRES_DB:-speakerops}
+      POSTGRES_USER: ${POSTGRES_USER:-speakerops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-speakerops}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U speakerops -d speakerops"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 3s
       timeout: 3s
       retries: 20
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
 
   mock-accelevents:
-    build:
-      context: .
-      dockerfile: mock_accelevents/Dockerfile
+    image: ${APP_IMAGE:-open-speaker-operations:local}
+    build: .
+    entrypoint: ["python", "-m", "mock_accelevents.server"]
     environment:
       MOCK_ACCELEVENTS_KEY: demo-key
+    restart: unless-stopped
     ports:
-      - "9001:9000"
+      - "${MOCK_BIND:-127.0.0.1:9001}:9000"
 
   web:
+    image: ${APP_IMAGE:-open-speaker-operations:local}
     build: .
+    restart: unless-stopped
     environment:
       PRETALX_CONFIG_FILE: /app/docker/pretalx.cfg
-    command: >
-      sh -c "python -m pretalx migrate &&
-      (python -m pretalx init --noinput || true) &&
-      (python -m pretalx create_test_event --stage schedule --slug speakerops-demo --seed 42 || true) &&
-      python -m pretalx speakerops_seed &&
-      python -m pretalx runserver 0.0.0.0:8000 --noreload"
+      PRETALX_SITE_URL: ${PRETALX_SITE_URL:-http://127.0.0.1:8001}
+      PRETALX_HTTPS: ${PRETALX_HTTPS:-False}
+      PRETALX_DEBUG: ${PRETALX_DEBUG:-False}
+      PRETALX_DB_NAME: ${POSTGRES_DB:-speakerops}
+      PRETALX_DB_USER: ${POSTGRES_USER:-speakerops}
+      PRETALX_DB_PASS: ${POSTGRES_PASSWORD:-speakerops}
+      PRETALX_DB_HOST: postgres
+      PRETALX_REDIS: redis://redis:6379/0
+      PRETALX_CELERY_BROKER: redis://redis:6379/0
+      PRETALX_CELERY_BACKEND: redis://redis:6379/0
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-admin@example.org}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-speakerops-demo}
+      PRETALX_INIT_ORGANISER_NAME: ${PRETALX_INIT_ORGANISER_NAME:-Demo Organiser}
+      PRETALX_INIT_ORGANISER_SLUG: ${PRETALX_INIT_ORGANISER_SLUG:-demo-organiser}
+      WEB_WORKERS: ${WEB_WORKERS:-2}
+      WEB_THREADS: ${WEB_THREADS:-2}
+      SEED_DEMO: ${SEED_DEMO:-true}
     volumes:
       - pretalx-data:/data
     ports:
-      - "8001:8000"
+      - "${WEB_BIND:-127.0.0.1:8001}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 24
+      start_period: 15s
     depends_on:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
       mock-accelevents:
         condition: service_started
 
   worker:
+    image: ${APP_IMAGE:-open-speaker-operations:local}
     build: .
+    restart: unless-stopped
     environment:
       PRETALX_CONFIG_FILE: /app/docker/pretalx.cfg
+      PRETALX_SITE_URL: ${PRETALX_SITE_URL:-http://127.0.0.1:8001}
+      PRETALX_HTTPS: ${PRETALX_HTTPS:-False}
+      PRETALX_DEBUG: ${PRETALX_DEBUG:-False}
+      PRETALX_DB_NAME: ${POSTGRES_DB:-speakerops}
+      PRETALX_DB_USER: ${POSTGRES_USER:-speakerops}
+      PRETALX_DB_PASS: ${POSTGRES_PASSWORD:-speakerops}
+      PRETALX_DB_HOST: postgres
+      PRETALX_REDIS: redis://redis:6379/0
+      PRETALX_CELERY_BROKER: redis://redis:6379/0
+      PRETALX_CELERY_BACKEND: redis://redis:6379/0
+      RUN_MIGRATIONS: "false"
+      SEED_DEMO: "false"
       DJANGO_SUPERUSER_EMAIL: admin@example.org
       DJANGO_SUPERUSER_PASSWORD: speakerops-demo
       PRETALX_INIT_ORGANISER_NAME: Demo Organiser
       PRETALX_INIT_ORGANISER_SLUG: demo-organiser
-    command: celery -A pretalx.celery_app:app worker --loglevel=INFO
+    command: celery -A pretalx.celery_app:app worker --loglevel=INFO --concurrency=${CELERY_CONCURRENCY:-2}
     volumes:
       - pretalx-data:/data
     depends_on:
-      postgres:
+      web:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 
 volumes:
   pretalx-data:

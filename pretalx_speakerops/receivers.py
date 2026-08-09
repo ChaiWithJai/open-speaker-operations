@@ -1,5 +1,8 @@
 from django.dispatch import receiver
+from django.templatetags.static import static
 from django.urls import reverse
+from django.utils.html import format_html
+from pretalx.cfp.signals import html_head as cfp_html_head
 from pretalx.orga.signals import nav_event
 from pretalx.schedule.signals import schedule_release
 from pretalx.submission.signals import submission_state_change
@@ -29,6 +32,18 @@ def speakerops_navigation(sender, request, **kwargs):
             "active": "speakerops" in request.path,
         }
     ]
+
+
+@receiver(cfp_html_head)
+def speakerops_cfp_assets(sender, request, **kwargs):
+    """Enhance the native CFP without overriding pretalx templates."""
+    if "/submit/" not in request.path and "/talk/" not in request.path:
+        return ""
+    return format_html(
+        '<link rel="stylesheet" href="{}"><script defer src="{}"></script>',
+        static("pretalx_speakerops/speakerops.css"),
+        static("pretalx_speakerops/cfp-form.js"),
+    )
 
 
 @receiver(schedule_release)

@@ -8,7 +8,7 @@ from django_scopes import scope
 from pretalx.event.models import Event, Team
 from pretalx.person.models import User
 from pretalx.schedule.models import TalkSlot
-from pretalx.submission.models import Review, SubmissionStates
+from pretalx.submission.models import Review, Submission, SubmissionStates
 
 from ...cfp import configure_demo_cfp
 from ...domain.commands import Command as DomainCommand
@@ -81,9 +81,9 @@ class Command(BaseCommand):
             ("speaker", "speaker@example.org", "Demo Speaker"),
         ):
             user, created = User.objects.get_or_create(email=email, defaults={"name": name})
-            if created:
-                user.set_password("speakerops-demo")
-                user.save(update_fields=["password"])
+            user.name = name
+            user.set_password("speakerops-demo")
+            user.save(update_fields=["name", "password"])
             users[role] = user
 
         teams = (
@@ -115,22 +115,37 @@ class Command(BaseCommand):
         with scope(event=event):
             configure_demo_cfp(event)
             configure_review_rounds(event, second_round=True)
-            assigned_review = Review.objects.filter(submission__event=event).first()
-            if assigned_review and assigned_review.user_id != users["reviewer"].pk:
-                assigned_review.user = users["reviewer"]
-                assigned_review.save(update_fields=["user", "updated"])
-            submission = (
-                event.submissions.exclude(
-                    state__in=(
-                        SubmissionStates.REJECTED,
-                        SubmissionStates.WITHDRAWN,
-                    )
-                )
-                .order_by("pk")
-                .first()
+            event.cfp.opening = timezone.now() - timedelta(days=1)
+            event.cfp.deadline = timezone.now() + timedelta(days=90)
+            event.cfp.headline = "Share your idea with DemoCon"
+            event.cfp.text = (
+                "Bring us a practical story about building responsible, humane technology. "
+                "Save a draft, return when you are ready, and submit it for review."
             )
+            event.cfp.save(update_fields=["opening", "deadline", "headline", "text", "updated"])
+            event.submission_types.update(deadline=timezone.now() + timedelta(days=90))
+
+            journey_submissions = list(
+                Submission.all_objects.filter(event=event)
+                .exclude(state=SubmissionStates.DELETED)
+                .order_by("pk")[:3]
+            )
+            if len(journey_submissions) < 3:
+                raise RuntimeError("The deterministic demo needs at least three seeded proposals.")
+            draft, queued, accepted = journey_submissions
+            for proposal, state, title in (
+                (draft, SubmissionStates.DRAFT, "Draft: Responsible AI in Practice"),
+                (queued, SubmissionStates.SUBMITTED, "Review: Designing Trustworthy Systems"),
+                (accepted, SubmissionStates.ACCEPTED, "Accepted: Operations That Scale"),
+            ):
+                proposal.state = state
+                proposal.title = title
+                proposal.save(update_fields=["state", "title", "updated"])
+                proposal.speakers.add(users["speaker"])
+            queued.assigned_reviewers.add(users["reviewer"])
+            Review.objects.filter(submission=queued).exclude(user=users["reviewer"]).delete()
+            submission = accepted
             if submission:
-                submission.speakers.add(users["speaker"])
                 ensure_acceptance_plan(submission)
                 definition = TaskDefinition.objects.filter(event=event).first()
                 if definition:

@@ -109,6 +109,17 @@ def evaluate_task(task):
 
 def record_evidence(task, speaker, kind, value=None, upload=None):
     config = task.definition.evaluator_config
+    value = value or {}
+    if kind == "profile_field":
+        from pretalx.person.models import SpeakerProfile
+
+        field = config.get("field")
+        response = str(value.get("response", "")).strip()
+        if field not in {"biography"} or not response:
+            raise ValueError("Add your biography before completing this task.")
+        profile, _ = SpeakerProfile.objects.get_or_create(event=task.event, user=speaker)
+        setattr(profile, field, response)
+        profile.save(update_fields=[field, "updated"])
     if upload:
         suffix = upload.name.lower().rsplit(".", 1)[-1]
         allowed = [item.lstrip(".").lower() for item in config.get("extensions", [])]
@@ -121,7 +132,7 @@ def record_evidence(task, speaker, kind, value=None, upload=None):
         task=task,
         speaker=speaker,
         kind=kind,
-        value=value or {},
+        value=value,
         upload=upload,
         content_type=getattr(upload, "content_type", "") if upload else "",
         size=getattr(upload, "size", None),

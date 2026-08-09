@@ -16,22 +16,61 @@ class WarningPolicy:
 POLICY = WarningPolicy()
 
 
-def classify_warnings(schedule):
-    warnings = schedule.get_all_talk_warnings()
+def schedule_slots(schedule):
+    """Load the schedule data needed for overlap checks in bounded queries."""
+    return list(
+        schedule.talks.filter(
+            submission__isnull=False,
+            start__isnull=False,
+            end__isnull=False,
+        )
+        .select_related("room", "submission")
+        .prefetch_related("submission__speakers")
+        .order_by("start", "pk")
+    )
+
+
+def classify_warnings(schedule, *, slots=None):
+    """Return canonical room/speaker overlap rows using one prefetched slot set."""
+    slots = schedule_slots(schedule) if slots is None else slots
+    speakers_by_slot = {
+        slot.pk: {speaker.pk: speaker for speaker in slot.submission.speakers.all()}
+        for slot in slots
+    }
     classified = []
-    for talk, talk_warnings in warnings.items():
-        for warning in talk_warnings:
-            category = warning.get("type", "advisory")
-            classified.append(
-                {
-                    "talk": talk,
-                    "warning": warning,
-                    "category": category,
-                    "blocking": category in POLICY.blocking_categories
-                    or category in {"room_overlap", "speaker_overlap"},
-                }
-            )
+    for index, talk in enumerate(slots):
+        for competitor in slots[index + 1 :]:
+            if competitor.start >= talk.end:
+                break
+            if talk.start >= competitor.end:
+                continue
+            title = talk.submission.title
+            competing_title = competitor.submission.title
+            if talk.room_id and talk.room_id == competitor.room_id:
+                resource = f"room {talk.room.name}"
+                classified.append(
+                    _warning_row(talk, competitor, "room", title, competing_title, resource)
+                )
+            shared = set(speakers_by_slot[talk.pk]) & set(speakers_by_slot[competitor.pk])
+            for speaker_id in sorted(shared):
+                speaker = speakers_by_slot[talk.pk][speaker_id]
+                resource = f"speaker {speaker.get_display_name()}"
+                classified.append(
+                    _warning_row(talk, competitor, "speaker", title, competing_title, resource)
+                )
     return classified
+
+
+def _warning_row(talk, competitor, category, title, competing_title, resource):
+    message = f"{title} conflicts with {competing_title} ({resource})."
+    return {
+        "talk": talk,
+        "warning": {"type": category, "message": message},
+        "category": category,
+        "message": message,
+        "competitor": competitor,
+        "blocking": category in POLICY.blocking_categories,
+    }
 
 
 def blocking_warnings(schedule):

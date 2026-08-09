@@ -1,0 +1,78 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock stylesheets %}
+{% block scripts %}{{ block.super }}
+<script defer src="{% static 'pretalx_speakerops/reviewer.js' %}"></script>
+{% endblock scripts %}
+
+{% block content %}
+<main class="speakerops speakerops--review" aria-labelledby="review-title">
+  <header class="speakerops__header">
+    <div>
+      <p class="speakerops__eyebrow">Reviewer workspace</p>
+      <h1 id="review-title">Score assigned proposals</h1>
+      <p>Keyboard-first scoring with draft-safe autosave.</p>
+    </div>
+    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to operations</a>
+  </header>
+
+  <div class="speakerops-review-layout">
+    <aside class="speakerops-queue" aria-label="Assigned proposals">
+      <h2>Queue <span>{{ queue|length }}</span></h2>
+      {% for proposal in queue %}
+      <a href="{% url 'plugins:speakerops:speakerops_review' event.slug proposal.pk %}"{% if submission.pk == proposal.pk %} aria-current="page"{% endif %}>
+        <small>{{ proposal.code }}</small><strong>{{ proposal.title }}</strong>
+      </a>
+      {% empty %}<p>No assigned proposals are awaiting review.</p>{% endfor %}
+    </aside>
+
+    {% if submission %}
+    <form class="speakerops-review-form" method="post" data-review-autosave>
+      {% csrf_token %}
+      <div class="speakerops-review-form__title">
+        <div><p class="speakerops__eyebrow">{{ submission.code }}</p><h2>{{ submission.title }}</h2></div>
+        <span data-save-state aria-live="polite">Ready</span>
+      </div>
+      <section class="speakerops-proposal-copy">
+        <h3>Abstract</h3>
+        <p>{{ submission.abstract }}</p>
+        {% if submission.description %}<h3>Description</h3><p>{{ submission.description }}</p>{% endif %}
+      </section>
+
+      <section aria-labelledby="rubric-title">
+        <h3 id="rubric-title">Rubric</h3>
+        {% for criterion in criteria %}
+        <fieldset class="speakerops-score">
+          <legend>{{ criterion.category.name }} <small>×{{ criterion.category.weight }}</small></legend>
+          <div class="speakerops-score__options">
+          {% for option in criterion.options %}
+            <label>
+              <input type="radio" name="score_{{ criterion.category.pk }}" value="{{ option.pk }}"{% if criterion.selected == option.pk %} checked{% endif %} required>
+              <span><strong>{{ option.value }}</strong><small>{{ option.label }}</small></span>
+            </label>
+          {% endfor %}
+          </div>
+        </fieldset>
+        {% endfor %}
+      </section>
+
+      <label for="review-comments"><strong>Reviewer comments</strong></label>
+      <textarea class="form-control" id="review-comments" name="comments" rows="5">{% if review %}{{ review.text }}{% endif %}</textarea>
+
+      <fieldset class="speakerops-recommendation">
+        <legend>Recommendation</legend>
+        {% for value, label in recommendation_choices %}
+        <label><input type="radio" name="recommendation" value="{{ value }}"{% if recommendation.recommendation == value %} checked{% endif %}> {{ label }}</label>
+        {% endfor %}
+      </fieldset>
+      <button type="submit" class="btn btn-primary">Save review</button>
+    </form>
+    {% else %}
+    <section class="speakerops-empty"><h2>Queue complete</h2><p>There are no assigned proposals awaiting review.</p></section>
+    {% endif %}
+  </div>
+</main>
+{% endblock content %}

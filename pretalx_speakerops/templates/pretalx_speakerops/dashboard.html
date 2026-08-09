@@ -1,89 +1,50 @@
-</think>
-
 {% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock stylesheets %}
+
 {% block content %}
-<h1>Speaker Operations</h1>
+<main class="speakerops" aria-labelledby="speakerops-title">
+  <header class="speakerops__header">
+    <div>
+      <p class="speakerops__eyebrow">Program command center</p>
+      <h1 id="speakerops-title">Speaker Operations</h1>
+      <p>Move the program from proposal to published schedule without losing the thread.</p>
+    </div>
+    <nav class="speakerops__actions" aria-label="Speaker Operations views">
+      <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}">Review queue</a>
+      <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_agenda' event.slug %}">Agenda &amp; release</a>
+      <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_sync_console' event.slug %}">Accelevents sync</a>
+    </nav>
+  </header>
 
-{% if attention.overdue > 0 or attention.blocked_release %}
-<div class="alert alert-warning">
-  {% if attention.blocked_release %}
-  <strong>Release blocked.</strong> Resolve schedule conflicts before releasing.
+  {% if attention.overdue or attention.blocked_release or attention.sync_errors %}
+  <section class="speakerops__alert" aria-label="Needs attention">
+    <strong>Needs attention</strong>
+    <ul>
+      {% if attention.blocked_release %}<li>Public release is blocked by schedule conflicts.</li>{% endif %}
+      {% if attention.overdue %}<li>{{ attention.overdue }} onboarding task{{ attention.overdue|pluralize }} overdue.</li>{% endif %}
+      {% if attention.sync_errors %}<li>{{ attention.sync_errors }} synchronization error{{ attention.sync_errors|pluralize }} ready to retry.</li>{% endif %}
+    </ul>
+  </section>
   {% endif %}
-  {% if attention.overdue > 0 %}
-  <strong>{{ attention.overdue }}</strong> overdue task(s).
-  {% endif %}
-</div>
-{% endif %}
 
-<div class="row">
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-body">
-        <h2 class="card-title">{{ counts.tasks }}</h2>
-        <p class="card-text">Outstanding onboarding</p>
-        <a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'tasks' %}" class="btn btn-link">View details</a>
-      </div>
-    </div>
-  </div>
+  <section class="speakerops__grid" aria-label="Operational counts">
+    <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'tasks' %}"><span class="speakerops-card__value">{{ counts.tasks }}</span><span class="speakerops-card__label">Outstanding tasks</span><span class="speakerops-card__link">Open records →</span></a>
+    <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'missing-assets' %}"><span class="speakerops-card__value">{{ counts.missing_assets }}</span><span class="speakerops-card__label">Missing assets</span><span class="speakerops-card__link">Open records →</span></a>
+    <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'review' %}"><span class="speakerops-card__value">{{ counts.reviewed }}<small>/{{ counts.proposals }}</small></span><span class="speakerops-card__label">Review progress</span><span class="speakerops-card__link">Open records →</span></a>
+    <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'undecided' %}"><span class="speakerops-card__value">{{ counts.undecided }}</span><span class="speakerops-card__label">Undecided proposals</span><span class="speakerops-card__link">Open records →</span></a>
+    <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'conflicts' %}"><span class="speakerops-card__value">{{ counts.conflicts }}</span><span class="speakerops-card__label">Schedule conflicts</span><span class="speakerops-card__link">Resolve conflicts →</span></a>
+    <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'sync' %}"><span class="speakerops-card__value">{{ counts.sync }}</span><span class="speakerops-card__label">Synchronization errors</span><span class="speakerops-card__link">Inspect failures →</span></a>
+  </section>
 
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-body">
-        <h2 class="card-title">{{ counts.undecided }}</h2>
-        <p class="card-text">Undecided proposals</p>
-        <a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'undecided' %}" class="btn btn-link">View details</a>
-      </div>
-    </div>
-  </div>
+  <section class="speakerops-panel">
+    <div><p class="speakerops__eyebrow">Integration health</p><h2>Accelevents: {{ counts.sync_status|title }}</h2><p>Preview the exact create, update, and no-op plan before authorizing writes.</p></div>
+    <form method="post" action="{% url 'plugins:speakerops:speakerops_sync_preview' event.slug %}">{% csrf_token %}<button type="submit" class="btn btn-primary">Create sync preview</button></form>
+  </section>
 
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-body">
-        <h2 class="card-title">{{ counts.reviewed }} / {{ counts.proposals }}</h2>
-        <p class="card-text">Reviewed proposals</p>
-        <a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'review' %}" class="btn btn-link">View details</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-body">
-        <h2 class="card-title">{{ counts.conflicts }}</h2>
-        <p class="card-text">Schedule conflicts</p>
-        <a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'conflicts' %}" class="btn btn-link">View details</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-body">
-        <h2 class="card-title">{{ counts.sync }}</h2>
-        <p class="card-text">Accelevents runs</p>
-        <a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'sync' %}" class="btn btn-link">View details</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-body">
-        <h2 class="card-title">{{ counts.sync_status }}</h2>
-        <p class="card-text">Sync status</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<h2>Actions</h2>
-<form method="post" action="{% url 'plugins:speakerops:speakerops_sync_preview' event.slug %}">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-primary">Run Accelevents preview</button>
-</form>
-
-<form method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-secondary">Queue due reminders</button>
-</form>
-{% endblock %}
+  <form method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">{% csrf_token %}<button type="submit" class="btn btn-secondary">Queue due reminders</button></form>
+</main>
+{% endblock content %}
