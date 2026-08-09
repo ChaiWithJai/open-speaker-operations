@@ -1,0 +1,1275 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-09T12:00:00Z",
+  "series": [
+    {
+      "slug": "jsconf-iceland",
+      "name": "JSConf Iceland",
+      "website": "https://2018.jsconf.is/",
+      "source_policy": {
+        "authority": "official",
+        "scope": "complete-official-speaker-records",
+        "repository": "https://github.com/jsis/jsconf.is",
+        "retrieved_at": "2026-08-09T12:00:00Z",
+        "known_gaps": [
+          {
+            "scope": "JSConf Iceland federation history",
+            "item": "2017 edition",
+            "reason": "No official 2017 edition or program record was found; the official repository history exposes the 2016 and 2018 editions.",
+            "source_url": "https://github.com/jsis/jsconf.is"
+          }
+        ]
+      },
+      "editions": [
+        {
+          "external_key": "iceland-2016",
+          "name": "JSConf Iceland 2016",
+          "date_from": "",
+          "date_to": "",
+          "location": "Reykjavík, Iceland",
+          "source_url": "https://2016.jsconf.is/schedule/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "raquel-velez",
+              "title": "The npm website: a tale of wonder and woe (and wombats!)",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/raquel-velez/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Raquel Vélez",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/raquel-velez/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "lin-clark",
+              "title": "A cartoon guide to performance in React",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/lin-clark/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Lin Clark",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/lin-clark/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jan-lehnardt",
+              "title": "The state of the JavaScript Community",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/jan-lehnardt/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jan Lehnardt",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/jan-lehnardt/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "myles-borins",
+              "title": "On left-pad and empathy: understanding human connection",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/myles-borins/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Myles Borins",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/myles-borins/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "brian-holt",
+              "title": "React: Learn Once Write Anywhere",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/brian-holt/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Brian Holt",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/brian-holt/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "liv-erickson",
+              "title": "Why you should care about the VR Web - and how to build it!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/liv-erickson/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Liv Erickson",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/liv-erickson/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "vitaly-friedman",
+              "title": "Dirty little front-end tricks",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/vitaly-friedman/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Vitaly Friedman",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/vitaly-friedman/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mariko-kosaka",
+              "title": "Making a Robot Eye with JavaScript - or Magic of Computer Vision Unraveled",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/mariko-kosaka/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mariko Kosaka",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/mariko-kosaka/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "max-goodman",
+              "title": "Bicycle.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/max-goodman/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Max Goodman",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/max-goodman/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "alejandro-oviedo",
+              "title": "Demystifying (JavaScript) engines",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/alejandro-oviedo/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Alejandro Oviedo",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/alejandro-oviedo/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "katrina-uychaco",
+              "title": "Spinning up an Electron App - Desktop Apps in JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/katrina-uychaco/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Katrina Uychaco",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/katrina-uychaco/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "justin-falcone",
+              "title": "Why is a Guinea Pig Like a Microservice?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/justin-falcone/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Justin Falcone",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/justin-falcone/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "amy-cheng",
+              "title": "Recreate Masterpieces of Modern Art with JavaScript!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/amy-cheng/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Amy Cheng",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/amy-cheng/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tilde-ann-thurium",
+              "title": "Pivoting to React, at scale",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/tilde-ann-thurium/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tilde Ann Thurium",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/tilde-ann-thurium/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tsubomi-imamura",
+              "title": "Breaking the monolith with Node and Docker at Netflix",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/tsubomi-imamura/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tsubomi Imamura",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/tsubomi-imamura/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nick-doiron",
+              "title": "If One Laptop per Child were started today, how JavaScript-y would it be?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/nick-doiron/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nick Doiron",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/nick-doiron/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "alex-kaminsky",
+              "title": "The First Engineer's Dilemma",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/alex-kaminsky/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Alex Kaminsky",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/alex-kaminsky/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "david-khourshid",
+              "title": "Reactive Animations with CSS Variables",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/david-khourshid/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "David Khourshid",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/david-khourshid/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jenna-zeigen",
+              "title": "On How Your Brain is Conspiring Against You Making Good Software",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/jenna-zeigen/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jenna Zeigen",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/jenna-zeigen/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "david-luecke",
+              "title": "Meet MySam - An open AI experiment",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/david-luecke/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "David Luecke",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/david-luecke/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mihai-cirlanaru",
+              "title": "Speech Recognition on the Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/mihai-cirlanaru/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mihai Cîrlănaru",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/mihai-cirlanaru/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "felipe-ribeiro",
+              "title": "JavaScript @ Spotify",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/felipe-ribeiro/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Felipe Ribeiro",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/felipe-ribeiro/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "dag-inge-aas",
+              "title": "User experience is everything",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/dag-inge-aas/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dag-Inge Aas",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/dag-inge-aas/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "azat-mardan",
+              "title": "You Don't Know Node.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/azat-mardan/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Azat Mardan",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/azat-mardan/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "denis-rechkunov",
+              "title": "Progressive Rendering – how to make your app render sooner",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/denis-rechkunov/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Denis Rechkunov",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/denis-rechkunov/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "seth-samuel",
+              "title": "Arbitrary Computation on the GPU Using WebGL",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/seth-samuel/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Seth Samuel",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/seth-samuel/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "dan-callahan",
+              "title": "The New Mobile Web: Service Worker, Push, and App Manifests",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/dan-callahan/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dan Callahan",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/dan-callahan/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "heiko-behrens",
+              "title": "JavaScript on tiny, wearable hardware",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/heiko-behrens/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Heiko Behrens",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/heiko-behrens/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "johannes-ewald",
+              "title": "The future of frontend tooling",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/johannes-ewald/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Johannes Ewald",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/johannes-ewald/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "visnu-pitiyanuvath",
+              "title": "HSL: The RGB You've Been Waiting For",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/visnu-pitiyanuvath/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Visnu Pitiyanuvath",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/visnu-pitiyanuvath/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tryggvi-gylfason",
+              "title": "This will flow your mind",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/tryggvi-gylfason/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tryggvi Gylfason",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/tryggvi-gylfason/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "malte-ubl",
+              "title": "#notalljavascript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/malte-ubl/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Malte Ubl",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/malte-ubl/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "berglind-osk",
+              "title": "Feeling like a fake - the Impostor Syndrome",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/berglind-osk/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Berglind Ósk Bergsdóttir",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/berglind-osk/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "david-blurton",
+              "title": "Full-stack JavaScript development with Docker",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.jsconf.is/speakers/david-blurton/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "David Blurton",
+                  "biography": "",
+                  "source_url": "https://2016.jsconf.is/speakers/david-blurton/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "iceland-2018",
+          "name": "JSConf Iceland 2018",
+          "date_from": "2018-03-01",
+          "date_to": "2018-03-02",
+          "location": "Reykjavík, Iceland",
+          "source_url": "https://2018.jsconf.is/schedule/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "dan-abramov",
+              "title": "Beyond React 16",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/dan-abramov/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dan Abramov",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/dan-abramov/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "halldor-and-thordur",
+              "title": "Paint Splatter: The making of an interactive artwork",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/halldor-and-thordur/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Halldór Eldjárn",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/halldor-and-thordur/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Þórður Hans Baldursson",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/halldor-and-thordur/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sean-larkin",
+              "title": "webpack 4: The State of the Art",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/sean-larkin/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sean Thomas Larkin",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/sean-larkin/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sarah-drasner",
+              "title": "Live and Machine Learn",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/sarah-drasner/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sarah Drasner",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/sarah-drasner/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "anna-henningsen",
+              "title": "Node.js: Where are we now, where are we going?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/anna-henningsen/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Anna Henningsen",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/anna-henningsen/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "david-khourshid",
+              "title": "Simplifying Complex UIs with Finite Automata & Statecharts",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/david-khourshid/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "David Khourshid",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/david-khourshid/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "carolyn-stransky",
+              "title": "Humanizing Your Documentation",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/carolyn-stransky/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Carolyn Stransky",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/carolyn-stransky/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "raisa-cuevas",
+              "title": "Augmented Reality: Past, Present, Future",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/raisa-cuevas/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Raisa Cuevas",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/raisa-cuevas/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "catherine-meade",
+              "title": "GitHub Pull Requests for Everyone",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/catherine-meade/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Catherine Meade",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/catherine-meade/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "dan-gebhardt",
+              "title": "Give Apps Online Superpowers by Optimizing them for Offline",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/dan-gebhardt/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dan Gebhardt",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/dan-gebhardt/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "john-feminella",
+              "title": "Building with Blockchains: Better Distributed Applications",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/john-feminella/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "John Feminella",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/john-feminella/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "will-klein",
+              "title": "End to End Testing: The Game Has Changed",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/will-klein/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Will Klein",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/will-klein/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jean-yves-perrier",
+              "title": "Today: Making a browser fast, the story of Firefox Quantum.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/jean-yves-perrier/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jean-Yves Perrier",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/jean-yves-perrier/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "maja-wichrowska",
+              "title": "Do the Right (to Left) Thing: Directional Content in React",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/maja-wichrowska/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Maja Wichrowska",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/maja-wichrowska/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nicole-chung",
+              "title": "Sharing is Caring: build a peer-to-peer network with WebRTC",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/nicole-chung/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nicole Chung",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/nicole-chung/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "madlaina-kalunder",
+              "title": "Building a raytracing engine with JS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/madlaina-kalunder/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Madlaina Kalunder",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/madlaina-kalunder/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kate-compton",
+              "title": "Creating generative art with Javascript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/kate-compton/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kate Compton",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/kate-compton/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "michael-henretty",
+              "title": "VoiceHTML - Speech Recognition as a Progressive Enhancement",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/michael-henretty/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Michael Henretty",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/michael-henretty/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "abhinav-rastogi",
+              "title": "Scaling NodeJS beyond the ordinary",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/abhinav-rastogi/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Abhinav Rastogi",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/abhinav-rastogi/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "bryan-hughes",
+              "title": "“Works for Me”",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/bryan-hughes/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Bryan Hughes",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/bryan-hughes/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nara-kasbergen",
+              "title": "Empathy as a Service: Supporting Mental Health in Tech",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/nara-kasbergen/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nara Kasbergen",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/nara-kasbergen/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sarrah-vesselov",
+              "title": "How to style in React and not lose friends",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/sarrah-vesselov/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sarrah Vesselov",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/sarrah-vesselov/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "dominik-kundel",
+              "title": "XSS, CSRF, CSP, JWT, WTF? IDK ¯\\\\_(ツ)_/¯",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/dominik-kundel/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dominik Kundel",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/dominik-kundel/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "arun-michael-dsouza",
+              "title": "Houdini - What lies ahead",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/arun-michael-dsouza/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Arun Michael Dsouza",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/arun-michael-dsouza/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "opher-vishnia",
+              "title": "Wait, you can do that with JavaScript…!?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/opher-vishnia/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Opher Vishnia",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/opher-vishnia/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "martin-kleppe",
+              "title": "Daedalus – Though the Maze of Code",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/martin-kleppe/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Martin Kleppe",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/martin-kleppe/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "armagan-amcalar",
+              "title": "Code, Play & Rock 'n' Roll: A WebAudio Experiment",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2018.jsconf.is/speakers/armagan-amcalar/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Armagan Amcalar",
+                  "biography": "",
+                  "source_url": "https://2018.jsconf.is/speakers/armagan-amcalar/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

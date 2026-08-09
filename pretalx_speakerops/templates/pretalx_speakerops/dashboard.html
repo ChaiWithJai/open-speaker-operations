@@ -6,34 +6,67 @@
 {% endblock stylesheets %}
 
 {% block content %}
-<main class="speakerops" aria-labelledby="speakerops-title">
+<div class="speakerops" aria-labelledby="speakerops-title">
   <header class="speakerops__header">
     <div>
       <p class="speakerops__eyebrow">Program command center</p>
       <h1 id="speakerops-title">Speaker Operations</h1>
-      <p>Move the program from proposal to published schedule without losing the thread.</p>
+      <p>Turn the fragile weeks between acceptance and showtime into one controlled path. Give every human a next action, prevent unsafe publishing, and recover downstream synchronization without duplicate work.</p>
     </div>
     <nav class="speakerops__actions" aria-label="Speaker Operations views">
       <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}">Review queue</a>
+      <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_abstract_management' event.slug %}">Abstract management</a>
       <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_agenda' event.slug %}">Agenda &amp; release</a>
+      <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_embed_builder' event.slug %}">Embed &amp; share</a>
       <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_sync_console' event.slug %}">Accelevents sync</a>
     </nav>
   </header>
 
   {% if attention.overdue or attention.blocked_release or attention.sync_errors %}
   <section class="speakerops__alert" aria-label="Needs attention">
-    <strong>Needs attention</strong>
+    <p class="speakerops__eyebrow">Recommended next action</p>
+    {% if attention.blocked_release %}<h2>Resolve schedule conflicts to unlock publishing</h2>
+    {% elif attention.overdue %}<h2>Bring overdue speaker work back on track</h2>
+    {% else %}<h2>Recover failed synchronization records</h2>{% endif %}
     <ul>
-      {% if attention.blocked_release %}<li>Public release is blocked by schedule conflicts.</li>{% endif %}
-      {% if attention.overdue %}<li>{{ attention.overdue }} onboarding task{{ attention.overdue|pluralize }} overdue.</li>{% endif %}
-      {% if attention.sync_errors %}<li>{{ attention.sync_errors }} synchronization error{{ attention.sync_errors|pluralize }} ready to retry.</li>{% endif %}
+      {% if attention.blocked_release %}<li><a href="{% url 'plugins:speakerops:speakerops_agenda' event.slug %}">Review the blocking schedule conflicts →</a></li>{% endif %}
+      {% if attention.overdue %}<li><a href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'tasks' %}">{{ attention.overdue }} onboarding task{{ attention.overdue|pluralize }} overdue →</a></li>{% endif %}
+      {% if attention.sync_errors %}<li><a href="{% url 'plugins:speakerops:speakerops_sync_console' event.slug %}">{{ attention.sync_errors }} synchronization error{{ attention.sync_errors|pluralize }} ready to retry →</a></li>{% endif %}
     </ul>
   </section>
   {% endif %}
 
+  <section aria-labelledby="lifecycle-title">
+    <div class="speakerops-section-heading">
+      <div><p class="speakerops__eyebrow">Reconciled lifecycle</p><h2 id="lifecycle-title">From proposal to synchronized program</h2></div>
+      <p>Every number uses submitted proposals as its denominator and explains the gap to the prior stage.</p>
+    </div>
+    <ol class="speakerops-funnel">
+      {% for stage in lifecycle %}
+      <li>
+        <a href="{{ stage.url }}"><strong>{{ stage.count }}<span>/{{ stage.denominator }}</span></strong><b>{{ stage.label }}</b></a>
+        <p>{{ stage.explanation }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section aria-labelledby="exceptions-title">
+    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Owned exceptions</p><h2 id="exceptions-title">What needs attention now</h2></div><p>Ranked by operational risk, with a named owner and exact recovery path.</p></div>
+    <div class="speakerops-stack">
+    {% for item in attention_items %}
+      <article class="speakerops-exception">
+        <div><span class="speakerops-badge">{{ item.severity }}</span><h3>{{ item.title }}</h3><p>{{ item.reason }}</p><small>Owner: {{ item.owner }}</small></div>
+        <a class="btn btn-outline-primary" href="{{ item.url }}">{{ item.action }}</a>
+      </article>
+    {% empty %}<div class="speakerops-empty"><p>No unresolved operational exceptions.</p></div>{% endfor %}
+    </div>
+  </section>
+
   <section class="speakerops__grid" aria-label="Operational counts">
     <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'tasks' %}"><span class="speakerops-card__value">{{ counts.tasks }}</span><span class="speakerops-card__label">Outstanding tasks</span><span class="speakerops-card__link">Open records →</span></a>
     <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'missing-assets' %}"><span class="speakerops-card__value">{{ counts.missing_assets }}</span><span class="speakerops-card__label">Missing assets</span><span class="speakerops-card__link">Open records →</span></a>
+    <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'content' %}"><span class="speakerops-card__value">{{ counts.pending_content }}</span><span class="speakerops-card__label">Content awaiting approval</span><span class="speakerops-card__link">Review versions →</span></a>
     <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'review' %}"><span class="speakerops-card__value">{{ counts.reviewed }}<small>/{{ counts.proposals }}</small></span><span class="speakerops-card__label">Review progress</span><span class="speakerops-card__link">Open records →</span></a>
     <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'undecided' %}"><span class="speakerops-card__value">{{ counts.undecided }}</span><span class="speakerops-card__label">Undecided proposals</span><span class="speakerops-card__link">Open records →</span></a>
     <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'conflicts' %}"><span class="speakerops-card__value">{{ counts.conflicts }}</span><span class="speakerops-card__label">Schedule conflicts</span><span class="speakerops-card__link">Resolve conflicts →</span></a>
@@ -42,9 +75,28 @@
 
   <section class="speakerops-panel">
     <div><p class="speakerops__eyebrow">Integration health</p><h2>Accelevents: {{ counts.sync_status|title }}</h2><p>Preview the exact create, update, and no-op plan before authorizing writes.</p></div>
-    <form method="post" action="{% url 'plugins:speakerops:speakerops_sync_preview' event.slug %}">{% csrf_token %}<button type="submit" class="btn btn-primary">Create sync preview</button></form>
+    <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_sync_console' event.slug %}">Review sync plan</a>
   </section>
 
-  <form method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">{% csrf_token %}<button type="submit" class="btn btn-secondary">Queue due reminders</button></form>
-</main>
+  <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="reminders-title">
+    <div><p class="speakerops__eyebrow">Speaker follow-up</p><h2 id="reminders-title">{{ counts.due_reminders }} overdue reminder{{ counts.due_reminders|pluralize }}</h2><p>Only speakers with an overdue, unresolved task will receive a reminder.</p></div>
+    <form method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">
+      {% csrf_token %}
+      <label class="speakerops-check"><input type="checkbox" name="confirm_reminders" value="yes" required{% if not counts.due_reminders %} disabled{% endif %}> Confirm {{ counts.due_reminders }} recipient{{ counts.due_reminders|pluralize }}</label>
+      <button type="submit" class="btn btn-secondary"{% if not counts.due_reminders %} disabled{% endif %}>Send overdue reminders</button>
+    </form>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="speaker-workflow-title">
+    <div><p class="speakerops__eyebrow">Speaker control</p><h2 id="speaker-workflow-title">Roster, workflow &amp; logistics</h2><p>Import speakers, filter their readiness, assign dated actions in bulk, and reconcile travel or accessibility needs.</p></div>
+    <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_speakers' event.slug %}">Open speaker operations</a>
+  </section>
+
+  <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="evidence-title">
+    <div><p class="speakerops__eyebrow">Recent evidence</p><h2 id="evidence-title">What changed and recovered</h2><p>Human-readable transitions and synchronization outcomes, newest first.</p></div>
+    <ul class="speakerops-list">
+      {% for item in recent_evidence %}<li><strong>{% if item.url %}<a href="{{ item.url }}">{{ item.kind }} · {{ item.label }}</a>{% else %}{{ item.kind }} · {{ item.label }}{% endif %}</strong><span>{{ item.actor }} · {{ item.timestamp|date:"M j, Y, P" }}</span></li>{% empty %}<li><span>No transition evidence yet.</span></li>{% endfor %}
+    </ul>
+  </section>
+</div>
 {% endblock content %}

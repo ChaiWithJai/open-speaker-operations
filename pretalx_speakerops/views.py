@@ -1,37 +1,69 @@
+import csv
+import uuid
+from urllib.parse import urlencode
+
+from csp.decorators import csp_update
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Prefetch, Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import TemplateView, View
 from django_scopes import scope
 from pretalx.event.models import Event
 from pretalx.person.models import User
 from pretalx.submission.models import Review, ReviewScore, Submission, SubmissionStates
 
-from .auth import is_speaker, require_event_permission
+from .auth import can_manage, is_speaker, require_event_permission, role_home_url, role_navigation
+from .cfp_forms import ConditionalQuestionRuleForm, ReviewerPoolForm
+from .conference_memory import (
+    conference_coverage,
+    find_related_talks,
+    memory_decision_support,
+    speaker_memory_summary,
+)
 from .domain.commands import Command, execute
 from .domain.state import StateMachine, Transition
 from .integrations.sync import execute_item, execute_preview, preview
 from .models import (
     AcceleventsConnection,
+    AcceptanceWave,
     CommandReceipt,
+    ConditionalQuestionRule,
+    ConferenceSeries,
+    HistoricalSpeaker,
+    HistoricalTalk,
     OnboardingTask,
     OutboxEvent,
+    ProgramDecision,
     Resource,
+    ReviewerPool,
     ReviewRecommendation,
+    SessionPublicationApproval,
+    SpeakerMemoryProfile,
     SyncItem,
     SyncPreview,
     SyncRun,
+    TaskEvidence,
+    TransitionLog,
 )
 from .onboarding.reminders import queue_reminders
 from .onboarding.services import record_evidence
+from .program.auto_schedule import apply_schedule_proposal, build_schedule_proposal
 from .program.calendar import released_ical
+from .program.decisions import (
+    finalize_rejections,
+    release_acceptance_wave,
+    stage_program_decision,
+)
 from .program.policy import classify_warnings, release_schedule, schedule_slots
 from .program.reviews import configure_review_rounds
 
@@ -55,6 +87,82 @@ TASK_MACHINE = StateMachine(
 )
 
 DASHBOARD_SNAPSHOT_SECONDS = 2
+
+
+def _lifecycle_record_ids(event):
+    submitted = set(
+        Submission.objects.filter(event=event)
+        .exclude(state=SubmissionStates.DRAFT)
+        .values_list("pk", flat=True)
+    )
+    reviewed = set(
+        Submission.objects.filter(event=event, pk__in=submitted, reviews__isnull=False)
+        .distinct()
+        .values_list("pk", flat=True)
+    )
+    decided = set(
+        ProgramDecision.objects.filter(event=event).values_list("submission_id", flat=True)
+    )
+    task_states = {}
+    for submission_id, status in OnboardingTask.objects.filter(
+        event=event, submission__isnull=False
+    ).values_list("submission_id", "status"):
+        task_states.setdefault(submission_id, []).append(status)
+    onboarded = {
+        submission_id
+        for submission_id, states in task_states.items()
+        if states
+        and all(state in (OnboardingTask.COMPLETE, OnboardingTask.WAIVED) for state in states)
+    }
+    wip_schedule = event.wip_schedule
+    scheduled = (
+        set(
+            wip_schedule.talks.filter(submission__isnull=False, start__isnull=False).values_list(
+                "submission_id", flat=True
+            )
+        )
+        if wip_schedule
+        else set()
+    )
+    current_schedule = event.current_schedule
+    published = (
+        set(
+            current_schedule.talks.filter(
+                submission__isnull=False, start__isnull=False
+            ).values_list("submission_id", flat=True)
+        )
+        if current_schedule
+        else set()
+    )
+    synchronized = set(
+        SyncItem.objects.filter(
+            event=event,
+            local_type="session",
+            status__in=(SyncItem.SUCCEEDED, SyncItem.NOOP, SyncItem.RECONCILED),
+        ).values_list("local_id", flat=True)
+    )
+    return {
+        "submitted": submitted,
+        "reviewed": reviewed,
+        "decided": decided,
+        "onboarded": onboarded,
+        "scheduled": scheduled,
+        "published": published,
+        "synchronized": synchronized,
+    }
+
+
+def _gap_explanation(label, prior_label, count, prior_count):
+    if count == prior_count:
+        return f"All {prior_label} records have {label} evidence."
+    if count < prior_count:
+        gap = prior_count - count
+        return f"{gap} {prior_label} record{'s' if gap != 1 else ''} still need {label} evidence."
+    extra = count - prior_count
+    return (
+        f"{extra} {label} record{'s' if extra != 1 else ''} came from an inherited or "
+        f"recovery path without matching {prior_label} evidence."
+    )
 
 
 class EventContextMixin(LoginRequiredMixin):
@@ -83,10 +191,535 @@ class EventContextMixin(LoginRequiredMixin):
                 request.user, self.event, "event.update_event", "submission.orga_update_submission"
             )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault("event", self.event)
+        context["speakerops_navigation"] = role_navigation(
+            self.request.user, self.event, self.request.path
+        )
+        return context
+
+
+class RoleEntryView(View):
+    """Route a signed-in participant to their authorized event workspace."""
+
+    def get(self, request, event):
+        event = get_object_or_404(Event, slug=event)
+        if "pretalx_speakerops" not in event.plugin_list:
+            raise Http404
+        if not request.user.is_authenticated:
+            login_url = reverse("cfp:event.login", kwargs={"event": event.slug})
+            return redirect(f"{login_url}?{urlencode({'next': request.path})}")
+        with scope(event=event):
+            destination = role_home_url(request.user, event)
+        if not destination:
+            raise Http404
+        return redirect(destination)
+
+
+class PublicCfpGuideView(TemplateView):
+    template_name = "pretalx_speakerops/cfp_guide.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.event = get_object_or_404(Event, slug=kwargs["event"])
+        if "pretalx_speakerops" not in self.event.plugin_list:
+            raise Http404
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        kwargs["event"] = self.event
+        return super().get_context_data(**kwargs)
+
+
+class ConferenceMemoryView(EventContextMixin, TemplateView):
+    permission = "review"
+    template_name = "pretalx_speakerops/conference_memory.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get("q", "").strip()
+        series_slug = self.request.GET.get("series", "").strip()
+        talks = HistoricalTalk.objects.select_related("edition__series").prefetch_related(
+            "credits__speaker"
+        )
+        if query:
+            talks = talks.filter(
+                Q(title__icontains=query)
+                | Q(abstract__icontains=query)
+                | Q(track__icontains=query)
+                | Q(session_format__icontains=query)
+                | Q(level__icontains=query)
+                | Q(topics__icontains=query)
+                | Q(speakers__name__icontains=query)
+                | Q(edition__name__icontains=query)
+            ).distinct()
+        if series_slug:
+            talks = talks.filter(edition__series__slug=series_slug)
+        talks = talks.order_by("-edition__date_from", "title")
+        result_count = talks.count()
+        page = Paginator(talks, 50).get_page(self.request.GET.get("page"))
+        context.update(
+            event=self.event,
+            query=query,
+            selected_series=series_slug,
+            conference_series=ConferenceSeries.objects.prefetch_related("editions"),
+            historical_talks=page.object_list,
+            page_obj=page,
+            result_count=result_count,
+            historical_talk_count=HistoricalTalk.objects.count(),
+            memory_insights=memory_decision_support(talks),
+            coverage_series=conference_coverage(),
+        )
+        return context
+
+
+class ConferenceSpeakerView(EventContextMixin, TemplateView):
+    permission = "review"
+    template_name = "pretalx_speakerops/conference_speaker.html"
+
+    def _speaker(self):
+        return get_object_or_404(HistoricalSpeaker, pk=self.kwargs["pk"])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        speaker = self._speaker()
+        profile = (
+            SpeakerMemoryProfile.objects.filter(event=self.event, speaker=speaker)
+            .select_related("updated_by")
+            .first()
+        )
+        talks = list(
+            speaker.historical_talks.select_related("edition__series")
+            .prefetch_related("credits__speaker")
+            .order_by("-edition__date_from", "title")
+        )
+        summary = speaker_memory_summary(speaker, talks)
+        for talk in talks:
+            credit = next(
+                (credit for credit in talk.credits.all() if credit.speaker_id == speaker.pk),
+                None,
+            )
+            talk.speakerops_name_at_source = credit.name_at_source if credit else speaker.name
+        identity_query = Q()
+        for name in summary["aliases"]:
+            identity_query |= Q(submission__speakers__name__iexact=name)
+        current_reviews = list(
+            Review.objects.filter(
+                submission__event=self.event,
+            )
+            .filter(identity_query)
+            .select_related("submission", "user")
+            .distinct()
+            .order_by("-updated")
+        )
+        context.update(
+            event=self.event,
+            speaker=speaker,
+            profile=profile,
+            memory_summary=summary,
+            historical_talks=talks,
+            current_reviews=current_reviews,
+            can_edit_profile=can_manage(self.request.user, self.event),
+        )
+        return context
+
+    def post(self, request, event, pk):
+        if not can_manage(request.user, self.event):
+            raise Http404
+        speaker = self._speaker()
+        tags = list(
+            dict.fromkeys(
+                tag.strip()[:80] for tag in request.POST.get("tags", "").split(",") if tag.strip()
+            )
+        )[:20]
+        SpeakerMemoryProfile.objects.update_or_create(
+            event=self.event,
+            speaker=speaker,
+            defaults={
+                "tags": tags,
+                "internal_notes": request.POST.get("internal_notes", "").strip(),
+                "updated_by": request.user,
+            },
+        )
+        messages.success(request, "Speaker CRM context saved; sourced history was not modified.")
+        return redirect(request.path)
+
+
+class ProgramDecisionsView(EventContextMixin, TemplateView):
+    permission = "manage"
+    template_name = "pretalx_speakerops/program_decisions.html"
+
+    def _review_results(self):
+        submissions = list(
+            Submission.objects.filter(event=self.event, reviews__isnull=False)
+            .prefetch_related(
+                Prefetch(
+                    "reviews",
+                    queryset=Review.objects.select_related("user").prefetch_related(
+                        "scores__category"
+                    ),
+                    to_attr="speakerops_reviews",
+                )
+            )
+            .distinct()
+        )
+        results = []
+        for submission in submissions:
+            normalized_scores = []
+            for review in submission.speakerops_reviews:
+                scores = list(review.scores.all())
+                total_weight = sum(score.category.weight for score in scores)
+                if review.score is not None and total_weight:
+                    normalized_scores.append(float(review.score) / float(total_weight))
+            results.append(
+                {
+                    "submission": submission,
+                    "review_count": len(submission.speakerops_reviews),
+                    "aggregate": (
+                        round(sum(normalized_scores) / len(normalized_scores), 2)
+                        if normalized_scores
+                        else None
+                    ),
+                    "reviews": submission.speakerops_reviews,
+                }
+            )
+        descending = self.request.GET.get("sort", "desc") != "asc"
+        return sorted(
+            results,
+            key=lambda item: (
+                item["aggregate"] is not None,
+                item["aggregate"] or 0,
+                item["submission"].title,
+            ),
+            reverse=descending,
+        )
+
+    def get(self, request, *args, **kwargs):
+        if request.GET.get("export") == "csv":
+            with scope(event=self.event):
+                results = self._review_results()
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = (
+                f'attachment; filename="{self.event.slug}-weighted-review-results.csv"'
+            )
+            writer = csv.writer(response)
+            writer.writerow(["code", "title", "weighted_average", "review_count"])
+            for result in results:
+                writer.writerow(
+                    [
+                        result["submission"].code,
+                        result["submission"].title,
+                        result["aggregate"] if result["aggregate"] is not None else "",
+                        result["review_count"],
+                    ]
+                )
+            return response
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        with scope(event=self.event):
+            waves = list(
+                AcceptanceWave.objects.filter(event=self.event)
+                .annotate(
+                    decision_count=Count("decisions", filter=Q(decisions__applied_at__isnull=True))
+                )
+                .order_by("position")
+            )
+            decisions = list(
+                ProgramDecision.objects.filter(event=self.event)
+                .select_related("submission", "wave", "decided_by")
+                .order_by("status", "wave__position", "submission__title")
+            )
+            review_results = self._review_results()
+        context.update(
+            event=self.event,
+            waves=waves,
+            decisions=decisions,
+            review_results=review_results,
+        )
+        return context
+
+    def post(self, request, event):
+        if request.POST.get("confirm") != "yes":
+            messages.error(request, "Confirm before changing proposal states or sending mail.")
+            return redirect(request.path)
+        with scope(event=self.event):
+            action = request.POST.get("action")
+            if action == "release_wave":
+                wave = get_object_or_404(
+                    AcceptanceWave, event=self.event, pk=request.POST.get("wave")
+                )
+                try:
+                    released = release_acceptance_wave(wave, request.user)
+                except ValidationError as error:
+                    messages.error(request, "; ".join(error.messages))
+                else:
+                    messages.success(request, f"Released {released} staged acceptances.")
+            elif action == "finalize_rejections":
+                finalized = finalize_rejections(self.event, request.user)
+                messages.success(request, f"Finalized {finalized} staged rejections.")
+            else:
+                messages.error(request, "Choose a valid program decision action.")
+        return redirect(request.path)
+
+
+class CfpRoutingView(EventContextMixin, TemplateView):
+    permission = "manage"
+    template_name = "pretalx_speakerops/cfp_routing.html"
+
+    def _rule(self):
+        rule_id = self.request.POST.get("rule_id") or self.request.GET.get("rule")
+        if not rule_id:
+            return None
+        return get_object_or_404(ConditionalQuestionRule, event=self.event, pk=rule_id)
+
+    def _pool(self):
+        pool_id = self.request.POST.get("pool_id") or self.request.GET.get("pool")
+        if not pool_id:
+            return None
+        return get_object_or_404(ReviewerPool, event=self.event, pk=pool_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["event"] = self.event
+        with scope(event=self.event):
+            selected_rule = getattr(self, "selected_rule", None) or self._rule()
+            selected_pool = getattr(self, "selected_pool", None) or self._pool()
+            context.update(
+                rules=ConditionalQuestionRule.objects.filter(event=self.event).select_related(
+                    "controller_question", "trigger_option", "target_question"
+                ),
+                pools=ReviewerPool.objects.filter(event=self.event).prefetch_related(
+                    "reviewers", "track_mappings__track"
+                ),
+                selected_rule=selected_rule,
+                selected_pool=selected_pool,
+                rule_form=getattr(self, "rule_form", None)
+                or ConditionalQuestionRuleForm(event=self.event, instance=selected_rule),
+                pool_form=getattr(self, "pool_form", None)
+                or ReviewerPoolForm(event=self.event, pool=selected_pool),
+            )
+        return context
+
+    def post(self, request, event):
+        with scope(event=self.event):
+            action = request.POST.get("action")
+            if action == "save_rule":
+                self.selected_rule = self._rule()
+                self.rule_form = ConditionalQuestionRuleForm(
+                    request.POST, event=self.event, instance=self.selected_rule
+                )
+                if self.rule_form.is_valid():
+                    rule = self.rule_form.save()
+                    messages.success(request, "Conditional CFP rule saved.")
+                    return redirect(f"{request.path}?rule={rule.pk}")
+            elif action == "save_pool":
+                self.selected_pool = self._pool()
+                self.pool_form = ReviewerPoolForm(
+                    request.POST, event=self.event, pool=self.selected_pool
+                )
+                if self.pool_form.is_valid():
+                    pool = self.pool_form.save()
+                    messages.success(request, "Reviewer pool and category routes saved.")
+                    return redirect(f"{request.path}?pool={pool.pk}")
+            else:
+                messages.error(request, "Choose a valid CFP routing action.")
+        return self.get(request, event)
+
 
 class DashboardView(EventContextMixin, TemplateView):
     permission = "dashboard"
     template_name = "pretalx_speakerops/dashboard.html"
+
+    def _lifecycle(self, record_ids):
+        stages = (
+            ("submitted", "submitted"),
+            ("reviewed", "review"),
+            ("decided", "decision"),
+            ("onboarded", "completed onboarding"),
+            ("scheduled", "schedule"),
+            ("published", "publication"),
+            ("synchronized", "synchronization"),
+        )
+        denominator = len(record_ids["submitted"])
+        result = []
+        previous_key = None
+        for key, evidence_label in stages:
+            count = len(record_ids[key])
+            explanation = (
+                "This is the denominator for every downstream program stage."
+                if previous_key is None
+                else _gap_explanation(
+                    evidence_label,
+                    previous_key,
+                    count,
+                    len(record_ids[previous_key]),
+                )
+            )
+            result.append(
+                {
+                    "key": key,
+                    "label": key.title(),
+                    "count": count,
+                    "denominator": denominator,
+                    "explanation": explanation,
+                    "url": reverse(
+                        "plugins:speakerops:speakerops_drilldown",
+                        kwargs={"event": self.event.slug, "kind": key},
+                    ),
+                }
+            )
+            previous_key = key
+        return result
+
+    def _attention_items(self, record_ids, overdue_tasks, conflicts, failed_sync_items):
+        items = []
+        definitions = (
+            (
+                bool(conflicts),
+                "Critical",
+                0,
+                f"{conflicts} schedule conflict{'s' if conflicts != 1 else ''}",
+                "Publication is server-blocked until the overlapping records clear.",
+                "Program chair",
+                reverse("plugins:speakerops:speakerops_agenda", kwargs={"event": self.event.slug}),
+                "Resolve conflicts",
+            ),
+        )
+        for active, severity, rank, title, reason, owner, url, action in definitions:
+            if active:
+                items.append(
+                    {
+                        "severity": severity,
+                        "rank": rank,
+                        "title": title,
+                        "reason": reason,
+                        "owner": owner,
+                        "url": url,
+                        "action": action,
+                    }
+                )
+        for task in overdue_tasks:
+            items.append(
+                {
+                    "severity": "High",
+                    "rank": 1,
+                    "title": f"{task.definition.name} · {task.speaker.get_display_name()}",
+                    "reason": (
+                        f"Due {task.due_date.isoformat()}; required evidence is still unresolved."
+                    ),
+                    "owner": "Speaker + program operator",
+                    "url": (
+                        reverse(
+                            "plugins:speakerops:speakerops_drilldown",
+                            kwargs={"event": self.event.slug, "kind": "tasks"},
+                        )
+                        + f"#task-{task.pk}"
+                    ),
+                    "action": "Resolve this task",
+                }
+            )
+        for item in failed_sync_items:
+            record_name = (
+                f"{item.payload.get('firstName', '')} {item.payload.get('lastName', '')}".strip()
+                if item.local_type == "speaker"
+                else item.payload.get("title", item.local_type.replace("_", " ").title())
+            )
+            items.append(
+                {
+                    "severity": "High",
+                    "rank": 1,
+                    "title": f"Synchronization failed · {record_name}",
+                    "reason": "Retry only this failed record; successful writes remain preserved.",
+                    "owner": "Integration operator",
+                    "url": (
+                        reverse(
+                            "plugins:speakerops:speakerops_sync_console",
+                            kwargs={"event": self.event.slug},
+                        )
+                        + f"#sync-item-{item.pk}"
+                    ),
+                    "action": "Retry this record",
+                }
+            )
+        reviewed_undecided = len(record_ids["reviewed"] - record_ids["decided"])
+        if reviewed_undecided:
+            items.append(
+                {
+                    "severity": "Medium",
+                    "rank": 2,
+                    "title": f"{reviewed_undecided} reviewed proposal"
+                    f"{'s' if reviewed_undecided != 1 else ''} without a recorded decision",
+                    "reason": "Review evidence exists, but no staged chair decision reconciles it.",
+                    "owner": "Program chair",
+                    "url": reverse(
+                        "plugins:speakerops:speakerops_program_decisions",
+                        kwargs={"event": self.event.slug},
+                    ),
+                    "action": "Stage program decisions",
+                }
+            )
+        return sorted(items, key=lambda item: (item["rank"], item["title"]))
+
+    def _recent_evidence(self):
+        transition_rows = list(
+            TransitionLog.objects.filter(event=self.event)
+            .select_related("actor")
+            .order_by("-timestamp")[:4]
+        )
+        task_ids = [
+            item.aggregate_id
+            for item in transition_rows
+            if item.aggregate_type.rsplit(".", 1)[-1].lower() == "onboardingtask"
+        ]
+        task_map = {
+            task.pk: task
+            for task in OnboardingTask.objects.filter(pk__in=task_ids).select_related(
+                "speaker", "definition"
+            )
+        }
+        transitions = []
+        for item in transition_rows:
+            task = task_map.get(item.aggregate_id)
+            label = (
+                f"{task.definition.name} for {task.speaker.get_display_name()}: "
+                f"{item.from_state or 'created'} → {item.to_state}"
+                if task
+                else f"Operational record: {item.from_state or 'created'} → {item.to_state}"
+            )
+            transitions.append(
+                {
+                    "kind": "Speaker task" if task else "Transition",
+                    "label": label,
+                    "actor": item.actor.get_display_name() if item.actor else "System",
+                    "timestamp": item.timestamp,
+                    "url": (
+                        reverse(
+                            "plugins:speakerops:speakerops_drilldown",
+                            kwargs={"event": self.event.slug, "kind": "tasks"},
+                        )
+                        + f"#task-{task.pk}"
+                        if task
+                        else ""
+                    ),
+                }
+            )
+        sync_runs = [
+            {
+                "kind": "Synchronization",
+                "label": f"Recovery finished with {run.status.replace('_', ' ')} status",
+                "actor": "Integration operator",
+                "timestamp": run.finished_at or run.started_at or run.created,
+                "url": reverse(
+                    "plugins:speakerops:speakerops_sync_console",
+                    kwargs={"event": self.event.slug},
+                )
+                + f"#sync-run-{run.pk}",
+            }
+            for run in SyncRun.objects.filter(event=self.event).order_by("-created")[:3]
+        ]
+        return sorted(transitions + sync_runs, key=lambda item: item["timestamp"], reverse=True)[:6]
 
     def _snapshot(self):
         today = timezone.localdate()
@@ -106,12 +739,28 @@ class DashboardView(EventContextMixin, TemplateView):
                 ),
             ),
         )
+        pending_content = TaskEvidence.objects.filter(
+            event=self.event,
+            upload__isnull=False,
+            review_status=TaskEvidence.PENDING,
+        ).count()
         proposal_stats = proposals.aggregate(
             total=Count("pk", distinct=True),
             undecided=Count("pk", filter=Q(state=SubmissionStates.SUBMITTED), distinct=True),
             reviewed=Count("pk", filter=Q(reviews__isnull=False), distinct=True),
         )
         sync_error_count = SyncItem.objects.filter(event=self.event, status=SyncItem.FAILED).count()
+        overdue_tasks = list(
+            tasks.filter(due_date__lt=today, status__in=active_states)
+            .select_related("speaker", "definition")
+            .order_by("due_date", "pk")
+        )
+        failed_sync_items = list(
+            SyncItem.objects.filter(event=self.event, status=SyncItem.FAILED).order_by(
+                "-updated", "pk"
+            )
+        )
+        lifecycle_ids = _lifecycle_record_ids(self.event)
         return {
             "counts": {
                 "tasks": task_stats["active"],
@@ -120,6 +769,7 @@ class DashboardView(EventContextMixin, TemplateView):
                 "proposals": proposal_stats["total"],
                 "conflicts": conflicts,
                 "missing_assets": task_stats["missing_assets"],
+                "pending_content": pending_content,
                 "sync": sync_error_count,
                 "sync_status": (
                     AcceleventsConnection.objects.filter(event=self.event)
@@ -127,12 +777,18 @@ class DashboardView(EventContextMixin, TemplateView):
                     .first()
                     or "not configured"
                 ),
+                "due_reminders": task_stats["overdue"],
             },
             "attention": {
                 "overdue": task_stats["overdue"],
                 "blocked_release": conflicts > 0,
                 "sync_errors": sync_error_count,
             },
+            "lifecycle": self._lifecycle(lifecycle_ids),
+            "attention_items": self._attention_items(
+                lifecycle_ids, overdue_tasks, conflicts, failed_sync_items
+            ),
+            "recent_evidence": self._recent_evidence(),
         }
 
     def get_context_data(self, **kwargs):
@@ -159,13 +815,35 @@ class DrilldownView(EventContextMixin, TemplateView):
                     OnboardingTask.objects.filter(
                         event=self.event,
                         status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
-                    ).select_related("speaker", "definition")
+                    )
+                    .select_related("speaker", "definition", "submission")
+                    .order_by("due_date", "pk")
+                )
+            elif kind == "content":
+                rows = list(
+                    OnboardingTask.objects.filter(
+                        event=self.event,
+                        definition__completion_evaluator="upload",
+                        evidence_items__isnull=False,
+                    )
+                    .select_related("speaker", "definition", "submission")
+                    .prefetch_related(
+                        Prefetch(
+                            "evidence_items",
+                            queryset=TaskEvidence.objects.select_related("reviewed_by").order_by(
+                                "-version"
+                            ),
+                            to_attr="speakerops_evidence_items",
+                        )
+                    )
+                    .distinct()
+                    .order_by("speaker__name", "definition__position", "pk")
                 )
             elif kind == "undecided":
                 rows = list(
                     Submission.objects.filter(event=self.event, state=SubmissionStates.SUBMITTED)
                 )
-            elif kind == "review":
+            elif kind in {"review", "reviewed"}:
                 review_rows = Submission.objects.filter(event=self.event, reviews__isnull=False)
                 if not self.request.user.has_perm("submission.orga_update_submission", self.event):
                     review_rows = review_rows.filter(reviews__user=self.request.user)
@@ -176,7 +854,9 @@ class DrilldownView(EventContextMixin, TemplateView):
                         event=self.event,
                         definition__completion_evaluator="upload",
                         status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
-                    ).select_related("speaker", "definition", "submission")
+                    )
+                    .select_related("speaker", "definition", "submission")
+                    .order_by("due_date", "pk")
                 )
             elif kind in {"sync", "conflicts"}:
                 if kind == "conflicts":
@@ -188,6 +868,20 @@ class DrilldownView(EventContextMixin, TemplateView):
                         .select_related("run")
                         .order_by("-updated")
                     )
+            elif kind in {
+                "submitted",
+                "reviewed",
+                "decided",
+                "onboarded",
+                "scheduled",
+                "published",
+                "synchronized",
+            }:
+                rows = list(
+                    Submission.objects.filter(
+                        event=self.event, pk__in=_lifecycle_record_ids(self.event)[kind]
+                    )
+                )
             else:
                 rows = []
         context.update(event=self.event, kind=kind, rows=rows, today=timezone.localdate())
@@ -204,11 +898,21 @@ class ChecklistView(EventContextMixin, TemplateView):
             tasks = list(
                 OnboardingTask.objects.filter(event=self.event, speaker=self.request.user)
                 .select_related("definition", "submission")
+                .prefetch_related(
+                    Prefetch(
+                        "evidence_items",
+                        queryset=TaskEvidence.objects.prefetch_related("comments__author").order_by(
+                            "-created_at"
+                        ),
+                        to_attr="speakerops_evidence_items",
+                    )
+                )
                 .order_by("status", "due_date", "definition__position", "id")
             )
         today = timezone.localdate()
         pending, complete, waived = [], [], []
         for t in tasks:
+            t.upload_request_id = uuid.uuid4().hex
             if t.status == OnboardingTask.COMPLETE:
                 complete.append(t)
             elif t.status == OnboardingTask.WAIVED:
@@ -259,6 +963,8 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
             submission = self._submission(queue)
             review = None
             recommendation = None
+            program_decision = None
+            historical_matches = []
             criteria = []
             if submission:
                 review = (
@@ -288,6 +994,16 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
                     submission=submission,
                     reviewer=self.request.user,
                 ).first()
+                program_decision = ProgramDecision.objects.filter(
+                    event=self.event, submission=submission
+                ).first()
+                historical_matches = find_related_talks(submission)
+            acceptance_waves = list(
+                AcceptanceWave.objects.filter(event=self.event).order_by("position")
+            )
+            next_submission = None
+            if submission and len(queue) > 1:
+                next_submission = queue[(queue.index(submission) + 1) % len(queue)]
         context.update(
             event=self.event,
             queue=queue,
@@ -296,6 +1012,12 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
             criteria=criteria,
             recommendation=recommendation,
             recommendation_choices=ReviewRecommendation.CHOICES,
+            program_decision=program_decision,
+            program_decision_choices=ProgramDecision.STATUS_CHOICES,
+            acceptance_waves=acceptance_waves,
+            can_decide=can_manage(self.request.user, self.event),
+            historical_matches=historical_matches,
+            next_submission=next_submission,
         )
         return context
 
@@ -305,33 +1027,104 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
             submission = self._submission()
             if not submission:
                 raise Http404
-            review, _ = Review.objects.get_or_create(
-                submission=submission,
-                user=request.user,
-            )
-            chosen_scores = []
-            for category in submission.score_categories:
-                score_pk = request.POST.get(f"score_{category.pk}")
-                if score_pk:
-                    chosen_scores.append(
-                        get_object_or_404(ReviewScore, pk=score_pk, category=category)
+            if request.POST.get("decision_action") == "stage":
+                if not can_manage(request.user, self.event):
+                    raise Http404
+                wave = None
+                if wave_pk := request.POST.get("wave"):
+                    wave = get_object_or_404(AcceptanceWave, event=self.event, pk=wave_pk)
+                try:
+                    stage_program_decision(
+                        submission,
+                        request.POST.get("program_decision", ""),
+                        request.user,
+                        wave=wave,
+                        rationale=request.POST.get("decision_rationale", ""),
                     )
-            review.text = request.POST.get("comments", "").strip()
-            review.save(update_score=False)
-            review.scores.set(chosen_scores)
-            review.save()
-            recommendation_value = request.POST.get("recommendation", ReviewRecommendation.HOLD)
-            if recommendation_value not in dict(ReviewRecommendation.CHOICES):
-                recommendation_value = ReviewRecommendation.HOLD
-            ReviewRecommendation.objects.update_or_create(
-                event=self.event,
-                submission=submission,
-                reviewer=request.user,
-                defaults={"recommendation": recommendation_value},
-            )
+                except ValidationError as error:
+                    messages.error(request, "; ".join(error.messages))
+                else:
+                    messages.success(
+                        request,
+                        "Program decision staged. No speaker notification has been sent.",
+                    )
+                return redirect(request.path)
+            with transaction.atomic():
+                recommendation, _ = ReviewRecommendation.objects.select_for_update().get_or_create(
+                    event=self.event,
+                    submission=submission,
+                    reviewer=request.user,
+                )
+                save_session = request.POST.get("save_session", "")[:64]
+                try:
+                    client_revision = max(0, int(request.POST.get("client_revision", 0)))
+                except (TypeError, ValueError):
+                    client_revision = 0
+                try:
+                    save_version = max(0, int(request.POST.get("save_version", 0)))
+                except (TypeError, ValueError):
+                    save_version = 0
+                if (
+                    save_session
+                    and recommendation.save_session == save_session
+                    and client_revision <= recommendation.client_revision
+                ):
+                    return JsonResponse(
+                        {
+                            "saved": True,
+                            "stale": True,
+                            "revision": recommendation.client_revision,
+                            "save_version": recommendation.save_version,
+                            "updated": recommendation.updated,
+                        }
+                    )
+                if save_session and save_version != recommendation.save_version:
+                    return JsonResponse(
+                        {
+                            "saved": False,
+                            "conflict": True,
+                            "error": (
+                                "A newer review was saved in another tab or browser. "
+                                "Reload to compare it before retrying."
+                            ),
+                            "save_version": recommendation.save_version,
+                            "updated": recommendation.updated,
+                        },
+                        status=409,
+                    )
+                review, _ = Review.objects.get_or_create(
+                    submission=submission,
+                    user=request.user,
+                )
+                chosen_scores = []
+                for category in submission.score_categories:
+                    score_pk = request.POST.get(f"score_{category.pk}")
+                    if score_pk:
+                        chosen_scores.append(
+                            get_object_or_404(ReviewScore, pk=score_pk, category=category)
+                        )
+                review.text = request.POST.get("comments", "").strip()
+                review.save(update_score=False)
+                review.scores.set(chosen_scores)
+                review.save()
+                recommendation_value = request.POST.get("recommendation", ReviewRecommendation.HOLD)
+                if recommendation_value not in dict(ReviewRecommendation.CHOICES):
+                    recommendation_value = ReviewRecommendation.HOLD
+                recommendation.recommendation = recommendation_value
+                if save_session:
+                    recommendation.save_session = save_session
+                    recommendation.client_revision = client_revision
+                    recommendation.save_version += 1
+                recommendation.save()
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse(
-                {"saved": True, "score": review.display_score, "updated": timezone.now()}
+                {
+                    "saved": True,
+                    "score": review.display_score,
+                    "revision": recommendation.client_revision,
+                    "save_version": recommendation.save_version,
+                    "updated": recommendation.updated,
+                }
             )
         messages.success(request, "Review saved.")
         return redirect(
@@ -346,22 +1139,94 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
     permission = "manage"
     template_name = "pretalx_speakerops/agenda_release.html"
 
+    def _conflict_feedback(self, blocking):
+        session_key = f"speakerops:agenda-conflicts:{self.event.pk}"
+        current_keys = {warning["conflict_key"] for warning in blocking}
+        previous_keys = set(self.request.session.get(session_key, []))
+        feedback = None
+        if self.request.GET.get("recheck") == "1":
+            cleared = previous_keys - current_keys
+            if not current_keys:
+                feedback = {
+                    "cleared": True,
+                    "title": "Conflict check complete · release gate clear",
+                    "message": (
+                        f"{len(cleared)} conflict{'' if len(cleared) == 1 else 's'} "
+                        "cleared. The server found no remaining room or speaker conflicts."
+                    ),
+                }
+            elif cleared:
+                feedback = {
+                    "cleared": False,
+                    "title": "Conflict check complete · still blocked",
+                    "message": (
+                        f"{len(cleared)} conflict{'' if len(cleared) == 1 else 's'} "
+                        f"cleared; {len(current_keys)} still block"
+                        f"{'' if len(current_keys) != 1 else 's'} release."
+                    ),
+                }
+            else:
+                feedback = {
+                    "cleared": False,
+                    "title": "No conflicts cleared · still blocked",
+                    "message": (
+                        f"The server still finds {len(current_keys)} blocking conflict"
+                        f"{'' if len(current_keys) == 1 else 's'}. Edit a session and recheck."
+                    ),
+                }
+        self.request.session[session_key] = sorted(current_keys)
+        return feedback
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         with scope(event=self.event):
             schedule = self.event.wip_schedule
             slots = schedule_slots(schedule) if schedule else []
             warnings = classify_warnings(schedule, slots=slots) if schedule else []
+            for warning in warnings:
+                warning["resolve_url"] = warning["talk"].submission.orga_urls.quick_schedule
+                warning["competitor_resolve_url"] = warning[
+                    "competitor"
+                ].submission.orga_urls.quick_schedule
+        blocking = [warning for warning in warnings if warning["blocking"]]
         context.update(
             event=self.event,
             schedule=schedule,
             slots=slots,
             warnings=warnings,
-            blocking=[warning for warning in warnings if warning["blocking"]],
+            blocking=blocking,
+            gate_feedback=self._conflict_feedback(blocking),
+            proposed_placements=kwargs.get("proposed_placements"),
         )
         return context
 
     def post(self, request, event):
+        action = request.POST.get("action")
+        if action == "preview_assisted_schedule":
+            try:
+                with scope(event=self.event):
+                    proposal = build_schedule_proposal(self.event.wip_schedule)
+            except ValidationError as error:
+                messages.error(request, "; ".join(error.messages))
+                return redirect(request.path)
+            context = self.get_context_data(proposed_placements=proposal)
+            return self.render_to_response(context)
+        if action == "apply_assisted_schedule":
+            if request.POST.get("confirm_assisted_schedule") != "yes":
+                messages.error(request, "Confirm the assisted agenda proposal first.")
+                return redirect(request.path)
+            try:
+                with scope(event=self.event):
+                    placements, changed = apply_schedule_proposal(self.event.wip_schedule)
+            except ValidationError as error:
+                messages.error(request, "; ".join(error.messages))
+            else:
+                messages.success(
+                    request,
+                    f"Assisted agenda applied: {len(placements)} sessions placed, "
+                    f"{changed} changed, zero room or speaker overlaps.",
+                )
+            return redirect(f"{request.path}?recheck=1#conflicts")
         if request.POST.get("confirm_release") != "yes":
             messages.error(request, "Confirm the public schedule release first.")
             return redirect(request.path)
@@ -449,15 +1314,20 @@ class SyncConsoleView(EventContextMixin, TemplateView):
 class CompleteTaskView(EventContextMixin, View):
     def post(self, request, event, pk):
         task = get_object_or_404(OnboardingTask, pk=pk, event=self.event, speaker=request.user)
-        key = f"task:{task.pk}:complete"
+        request_id = request.POST.get("upload_request_id", "")[:64]
+        key = f"task:{task.pk}:evidence:{request_id}" if request_id else f"task:{task.pk}:complete"
+        evidence = None
         with transaction.atomic():
             if CommandReceipt.objects.filter(event=self.event, key=key).exists():
                 complete = True
+                evidence = (
+                    task.evidence_items.filter(upload__isnull=False).order_by("-created_at").first()
+                )
             else:
                 upload = request.FILES.get("upload")
                 value = {"response": request.POST.get("response", "")}
                 try:
-                    _, complete = record_evidence(
+                    evidence, complete = record_evidence(
                         task,
                         request.user,
                         task.definition.completion_evaluator,
@@ -465,31 +1335,70 @@ class CompleteTaskView(EventContextMixin, View):
                         upload=upload,
                     )
                 except ValueError as error:
+                    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                        return JsonResponse({"saved": False, "error": str(error)}, status=400)
                     messages.error(request, str(error))
                     return redirect(
                         reverse("plugins:speakerops:speakerops_checklist", kwargs={"event": event})
                     )
             if not complete:
+                if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                    return JsonResponse(
+                        {
+                            "saved": False,
+                            "error": "The supplied evidence does not complete this task.",
+                        },
+                        status=400,
+                    )
                 messages.error(request, "The supplied evidence does not complete this task.")
                 return redirect(
                     reverse("plugins:speakerops:speakerops_checklist", kwargs={"event": event})
                 )
-            execute(
-                Command(
+            if task.status != OnboardingTask.COMPLETE:
+                execute(
+                    Command(
+                        event=self.event,
+                        aggregate_model=OnboardingTask,
+                        aggregate_id=task.pk,
+                        action="onboarding.complete",
+                        target_state=OnboardingTask.COMPLETE,
+                        state_machine=TASK_MACHINE,
+                        actor_role="speaker",
+                    ),
+                    request.user,
+                    key=key,
+                    expected_version=task.version,
+                )
+            elif not CommandReceipt.objects.filter(event=self.event, key=key).exists():
+                CommandReceipt.objects.create(
                     event=self.event,
-                    aggregate_model=OnboardingTask,
-                    aggregate_id=task.pk,
-                    action="onboarding.complete",
-                    target_state=OnboardingTask.COMPLETE,
-                    state_machine=TASK_MACHINE,
-                    actor_role="speaker",
-                ),
-                request.user,
-                key=key,
-                expected_version=task.version,
+                    key=key,
+                    command="evidence.replace",
+                    aggregate_type="TaskEvidence",
+                    aggregate_id=evidence.pk,
+                    result={"evidence_id": evidence.pk, "version": evidence.version},
+                )
+        messages.success(
+            request,
+            "File version submitted for organizer review."
+            if evidence and evidence.upload
+            else "Task completed.",
+        )
+        redirect_url = reverse("plugins:speakerops:speakerops_checklist", kwargs={"event": event})
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse(
+                {
+                    "saved": True,
+                    "redirect": redirect_url,
+                    "filename": (
+                        evidence.upload.name.rsplit("/", 1)[-1]
+                        if evidence and evidence.upload
+                        else ""
+                    ),
+                    "created_at": evidence.created_at if evidence else timezone.now(),
+                }
             )
-        messages.success(request, "Task completed.")
-        return redirect(reverse("plugins:speakerops:speakerops_checklist", kwargs={"event": event}))
+        return redirect(redirect_url)
 
 
 class TaskAdminView(EventContextMixin, View):
@@ -526,6 +1435,72 @@ class TaskAdminView(EventContextMixin, View):
         return redirect(reverse("plugins:speakerops:speakerops_dashboard", kwargs={"event": event}))
 
 
+class EvidenceAdminView(EventContextMixin, View):
+    permission = "manage"
+
+    def post(self, request, event, pk, action):
+        evidence = get_object_or_404(
+            TaskEvidence.objects.select_related("task"), pk=pk, event=self.event
+        )
+        if action not in {"approve", "request-changes"}:
+            raise Http404
+        note = request.POST.get("review_note", "").strip()
+        if action == "request-changes" and not note:
+            messages.error(request, "Explain the requested change before returning the file.")
+            return redirect(
+                reverse(
+                    "plugins:speakerops:speakerops_drilldown",
+                    kwargs={"event": event, "kind": "content"},
+                )
+            )
+        with transaction.atomic():
+            evidence = TaskEvidence.objects.select_for_update().get(pk=evidence.pk)
+            evidence.review_status = (
+                TaskEvidence.APPROVED if action == "approve" else TaskEvidence.CHANGES_REQUESTED
+            )
+            evidence.review_note = note
+            evidence.reviewed_at = timezone.now()
+            evidence.reviewed_by = request.user
+            evidence.save(
+                update_fields=[
+                    "review_status",
+                    "review_note",
+                    "reviewed_at",
+                    "reviewed_by",
+                    "updated",
+                ]
+            )
+            task = evidence.task
+            if action == "request-changes" and task.status == OnboardingTask.COMPLETE:
+                execute(
+                    Command(
+                        event=self.event,
+                        aggregate_model=OnboardingTask,
+                        aggregate_id=task.pk,
+                        action="onboarding.request_changes",
+                        target_state=OnboardingTask.REOPENED,
+                        state_machine=TASK_MACHINE,
+                        actor_role="organiser",
+                        payload={"evidence_id": evidence.pk, "note": note},
+                    ),
+                    request.user,
+                    key=f"evidence:{evidence.pk}:request-changes",
+                    expected_version=task.version,
+                )
+        messages.success(
+            request,
+            f"Version {evidence.version} approved."
+            if action == "approve"
+            else f"Changes requested on version {evidence.version}; the speaker task reopened.",
+        )
+        return redirect(
+            reverse(
+                "plugins:speakerops:speakerops_drilldown",
+                kwargs={"event": event, "kind": "content"},
+            )
+        )
+
+
 class SyncPreviewView(EventContextMixin, View):
     permission = "manage"
 
@@ -548,9 +1523,31 @@ class ReminderView(EventContextMixin, View):
     permission = "manage"
 
     def post(self, request, event):
-        key = request.POST.get("reminder_key", "onboarding-due")
-        queued = queue_reminders(self.event, reminder_key=key)
-        return JsonResponse({"queued": queued, "reminder_key": key})
+        if request.POST.get("confirm_reminders") != "yes":
+            messages.error(request, "Confirm the overdue reminder recipients first.")
+            return redirect(
+                reverse("plugins:speakerops:speakerops_dashboard", kwargs={"event": event})
+            )
+        today = timezone.localdate()
+        with scope(event=self.event):
+            overdue_tasks = OnboardingTask.objects.filter(
+                event=self.event,
+                due_date__lt=today,
+                status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
+            ).select_related("speaker", "submission", "definition")
+            queued = queue_reminders(
+                self.event,
+                tasks=overdue_tasks,
+                reminder_key=f"onboarding-overdue:{today.isoformat()}",
+            )
+        if queued:
+            messages.success(
+                request,
+                f"Queued {queued} overdue reminder{'s' if queued != 1 else ''}.",
+            )
+        else:
+            messages.info(request, "No new overdue reminders were queued.")
+        return redirect(reverse("plugins:speakerops:speakerops_dashboard", kwargs={"event": event}))
 
 
 class ResourceView(TemplateView):
@@ -588,28 +1585,64 @@ class PublishedScheduleMixin:
                 raise Http404
             slots = list(
                 schedule.talks.filter(is_visible=True, submission__isnull=False)
-                .select_related("submission", "room")
+                .exclude(
+                    submission__speakerops_publication_approval__status__in=(
+                        SessionPublicationApproval.PENDING,
+                        SessionPublicationApproval.CHANGES_REQUESTED,
+                    )
+                )
+                .select_related("submission", "submission__track", "room")
                 .prefetch_related("submission__speakers")
                 .order_by("start", "room__position")
             )
+            days_by_key = {}
+            tracks_by_pk = {}
+            rooms_by_pk = {}
+            for slot in slots:
+                slot.public_start = timezone.localtime(slot.start, event.tz)
+                day_key = slot.public_start.date().isoformat()
+                day = days_by_key.setdefault(
+                    day_key,
+                    {
+                        "key": day_key,
+                        "label": slot.public_start.strftime("%A, %B %-d"),
+                        "slots": [],
+                    },
+                )
+                day["slots"].append(slot)
+                if slot.submission.track:
+                    tracks_by_pk[slot.submission.track.pk] = slot.submission.track
+                if slot.room:
+                    rooms_by_pk[slot.room.pk] = slot.room
             speakers = []
+            speaker_cards = []
+            cards_by_speaker = {}
             seen = set()
             for slot in slots:
                 for speaker in slot.submission.speakers.all():
                     if speaker.pk not in seen:
                         seen.add(speaker.pk)
                         speakers.append(speaker)
+                        cards_by_speaker[speaker.pk] = {"speaker": speaker, "sessions": []}
+                        speaker_cards.append(cards_by_speaker[speaker.pk])
+                    cards_by_speaker[speaker.pk]["sessions"].append(slot.submission)
         return TemplateView.as_view(
             template_name=self.template_name,
             extra_context={
                 "event": event,
                 "schedule": schedule,
                 "slots": slots,
+                "days": list(days_by_key.values()),
+                "tracks": sorted(tracks_by_pk.values(), key=lambda track: str(track.name)),
+                "rooms": sorted(rooms_by_pk.values(), key=lambda room: str(room.name)),
                 "speakers": speakers,
+                "speaker_cards": speaker_cards,
             },
         )(request)
 
 
+@method_decorator(xframe_options_exempt, name="dispatch")
+@method_decorator(csp_update({"frame-ancestors": ["*"]}), name="dispatch")
 class PublishedEmbedView(PublishedScheduleMixin, View):
     pass
 

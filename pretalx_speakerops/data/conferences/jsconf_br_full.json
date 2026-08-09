@@ -1,0 +1,4763 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-09T12:00:00Z",
+  "series": [
+    {
+      "slug": "jsconf-br",
+      "name": "JSConf BR / BrazilJS Conf",
+      "website": "https://brazil.js.org/",
+      "source_policy": {
+        "authority": "official-and-official-archive",
+        "scope": "complete-recoverable-official-program-records",
+        "repository": "https://github.com/braziljs",
+        "retrieved_at": "2026-08-09T12:00:00Z",
+        "known_gaps": [
+          {
+            "scope": "JSConf BR/BrazilJS continuity",
+            "item": "Brand lineage",
+            "reason": "The official JSConf BR domain redirected to BrazilJS in 2010; editions are stored under the BrazilJS name while retaining the federation provenance.",
+            "source_url": "https://web.archive.org/web/20101217213740id_/http://www.jsconfbr.org/"
+          },
+          {
+            "scope": "BrazilJS Conf 2015",
+            "item": "Three keynote titles",
+            "reason": "The official schedule identifies credited keynote slots only as “Keynote”; they are omitted rather than assigned invented titles.",
+            "source_url": "https://2015.braziljs.org/"
+          },
+          {
+            "scope": "BrazilJS Conf 2018",
+            "item": "Unrecorded talk titles and speaker-to-talk attribution",
+            "reason": "The official edition page retains the speaker roster but no schedule mapping. Ten deterministic title-to-speaker pairs are recovered from the organizer's official recordings; remaining roster entries have no recoverable title mapping.",
+            "source_url": "https://www.youtube.com/@BrazilJS/search?query=2018"
+          },
+          {
+            "scope": "BrazilJS Conf 2020",
+            "item": "Unpublished day-one titles and any unrecorded program rows",
+            "reason": "Six deterministic title-to-speaker pairs were recovered from the organizer's official day-two recording chapters. Day one publishes speaker names without talk titles; those rows remain excluded.",
+            "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088"
+          },
+          {
+            "scope": "BrazilJS Conf 2021",
+            "item": "Unrecorded program rows and the untitled Vinton Cerf segment",
+            "reason": "Twenty-three deterministic titled sessions were recovered from the organizer's official conference playlist. The Vinton Cerf recording publishes only his name, not a talk title, and remains excluded.",
+            "source_url": "https://www.youtube.com/playlist?list=PLg2lQYZDBwORv56I5aBOdW7yEoucDmhgY"
+          },
+          {
+            "scope": "BrazilJS Conf 2024",
+            "item": "Unrecorded program rows",
+            "reason": "Fifteen deterministic full-length title-to-speaker recordings were recovered from the organizer's official playlist. Short promotional clips and one unavailable video were excluded.",
+            "source_url": "https://www.youtube.com/playlist?list=PLg2lQYZDBwOSlOww9VQalSDGTmOHgYM9u"
+          },
+          {
+            "scope": "BrazilJS Conf 2025",
+            "item": "Held-edition verification and program",
+            "reason": "Official sources announce October 24–25, 2025, but no post-event held confirmation or recoverable program was discoverable, so it is not represented as a historical edition.",
+            "source_url": "https://www.braziljs.org/p/weekly-500-the-last-dance/"
+          }
+        ]
+      },
+      "editions": [
+        {
+          "external_key": "br-2011",
+          "name": "BrazilJS Conf 2011",
+          "date_from": "2011-05-13",
+          "date_to": "2011-05-14",
+          "location": "Fortaleza, Ceará, Brazil",
+          "source_url": "https://2011.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "an-indepth-look-at-one-of-the-most-important-coming-features-modules-7c80a23f",
+              "title": "An indepth look at one of the most important coming features: modules",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "David Herman",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "conhecendo-o-engine-o-servidor-javascript-do-erp-da-unum-845f13cc",
+              "title": "Conhecendo o Engine, o servidor Javascript do ERP da UNUM.",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Marcelo Campos Rocha",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "solucoes-web-para-dispositivos-da-nokia-bd2d93e9",
+              "title": "Soluções Web para dispositivos da Nokia",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Izabel Zanforlin",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "aplicacoes-para-ios-com-javascript-e-titanium-mobile-57d930af",
+              "title": "Aplicações para iOS com JavaScript e Titanium Mobile",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Guilherme Chapiewski",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "aprimorando-sua-aplicacao-java-com-extjs-1af60110",
+              "title": "Aprimorando sua aplicação Java com ExtJS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Loiane Groner",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "webapp-ja-posso-investir-nisso-5fccb83e",
+              "title": "Webapp, já posso investir nisso?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Bruno Fernandes (Porkaria)",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "usando-node-js-na-pratica-ou-como-fiz-o-presentta-8225c172",
+              "title": "Usando Node.js na prática; ou como fiz o Presentta",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nando Vieira",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "canvas-element-b16b0f09",
+              "title": "Canvas Element",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Davidson Fellipe",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "introducao-e-hands-on-ao-javascriptmvc-um-framework-full-stack-para-javascript-675a773d",
+              "title": "Introdução e hands-on ao JavascriptMVC, um framework full-stack para javascript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Pedro Pimentel",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "html5-web-messaging-c5284981",
+              "title": "HTML5 Web Messaging",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mike Taylor",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "realtime-web-applications-with-node-js-83d90e01",
+              "title": "Realtime Web Applications with Node.JS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Emerson Leite",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "desenvolvimento-indolor-com-jquery-mobile-50caccca",
+              "title": "Desenvolvimento indolor com JQuery Mobile",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Bruno Oliveira",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "global-e-do-mal-e-o-temido-escopo-local-entendendo-como-funciona-e-trabalhando-para-evitar-conflitos-mantendo-a-testabilidade-642ce4ae",
+              "title": "Global é do mal e o temido escopo local - Entendendo como funciona e trabalhando para evitar conflitos mantendo a testabilidade.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Bruno Mentges de Carvalho",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ecmascript-na-jvm-unindo-o-poder-da-plataforma-java-com-a-flexibilidade-do-ecmascript-d623d600",
+              "title": "ECMAScript na JVM - unindo o poder da plataforma Java com a Flexibilidade do ECMAScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Douglas Campos",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "programacao-funcional-novas-fronteiras-e-expansao-da-mente-93982fcb",
+              "title": "Programação Funcional: Novas Fronteiras e Expansão da Mente",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Andrei Formiga",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "capability-based-security-repensando-a-seguranca-com-ajuda-da-linguagem-16c3534c",
+              "title": "Capability Based Security: repensando a segurança com ajuda da linguagem",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Rafael Ferreira",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "programando-em-js-no-android-b160b02c",
+              "title": "Programando em JS no Android",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Daniel Passos",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "game-development-in-javascript-b6168a92",
+              "title": "Game Development in Javascript",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2011.braziljs.org/views/agenda.html",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Michal Budzynski",
+                  "biography": "",
+                  "source_url": "https://2011.braziljs.org/views/agenda.html",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2012",
+          "name": "BrazilJS Conf 2012",
+          "date_from": "2012-08-30",
+          "date_to": "2012-08-31",
+          "location": "Porto Alegre, Rio Grande do Sul, Brazil",
+          "source_url": "https://2012.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "jquery-the-next-5-years-c408ab1b",
+              "title": "jQuery: The Next 5 Years",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Richard Worth",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "testing-sucks-fb28c674",
+              "title": "Testing Sucks",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Leonardo Balter",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "breaking-limits-on-javascript-with-mobile-html5-25123427",
+              "title": "Breaking limits on JavaScript with mobile HTML5",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Maximiliano Firtman",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "web-app-ou-aplicativo-nativo-tenha-o-melhor-dos-dois-0396bb8c",
+              "title": "Web app ou aplicativo nativo? Tenha o melhor dos dois!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Renato Mangini",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tracking-js-6739fba2",
+              "title": "tracking.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Eduardo Lundgren",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "js-on-tv-a544ab44",
+              "title": "JS on TV",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mike Taylor",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "es6-deep-dive-symbols-generators-structs-533e2356",
+              "title": "ES6 Deep Dive: Symbols, Generators, Structs",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dave Herman",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "alta-performance-em-aplicacoes-javascript-8a3c4bb4",
+              "title": "Alta Performance em Aplicações JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Davidson Filipe",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "como-nao-virar-um-zumbi-kit-de-sobrevivencia-4740743b",
+              "title": "Como não virar um Zumbi: Kit de sobrevivência",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Zeno Rocha",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "i18n-78c32bec",
+              "title": "i18n",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Fat",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-next-console-generation-will-be-the-last-79c6e1b3",
+              "title": "The next console generation will be the last",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Michal Budzynski",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "interagindo-com-a-web-alem-do-teclado-e-mouse-0f47ad93",
+              "title": "Interagindo com a web além do teclado e mouse",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Daniel Filho",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "an-introduction-to-grunt-9ddc5cda",
+              "title": "An Introduction to Grunt",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Benjamin E Alman",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-state-of-javascript-dc6d90b1",
+              "title": "The State of JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2012.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Brendan Eich",
+                  "biography": "",
+                  "source_url": "https://2012.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2013",
+          "name": "BrazilJS Conf 2013",
+          "date_from": "2013-08-22",
+          "date_to": "2013-08-23",
+          "location": "Porto Alegre, Rio Grande do Sul, Brazil",
+          "source_url": "https://2013.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "utilizando-node-js-para-automacao-de-build-e-deploy-b29d2c32",
+              "title": "Utilizando node.js para automação de build e deploy",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mauricio Wolff",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "performance-as-a-twitter-feature-learning-to-fly-twitter-flight-and-mixin-eda7c891",
+              "title": "Performance as a Twitter feature && Learning to fly - Twitter Flight and mixin",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Marcel Duran",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Angus Croll",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "where-modern-front-end-tooling-has-gone-838be03c",
+              "title": "Where modern front-end tooling has gone",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Renato Mangini",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "crowdsourcing-heroku-s-node-buildpack-2ad8ab4d",
+              "title": "Crowdsourcing Heroku's Node Buildpack",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Zeke Sikelianos",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "um-futuro-chamado-web-components-76df8b59",
+              "title": "Um futuro chamado Web Components",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Zeno Rocha",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "bringing-the-open-web-and-apis-to-mobile-devices-with-firefox-os-199cd6eb",
+              "title": "Bringing the open web and APIs to mobile devices with Firefox OS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Robert Nyman",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "how-to-make-mobile-apps-web-developer-remix-128ad4b8",
+              "title": "How to make mobile apps:  Web developer REMIX",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Angelina Fabbro",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "buscando-a-melhor-performance-em-aplicativos-moveis-com-html5-32cb4092",
+              "title": "Buscando a melhor performance em Aplicativos Móveis com HTML5",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Demian Borba",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-perf-doctor-is-in-2dd79bdf",
+              "title": "The Perf Doctor is In",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Josh Holmes",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "api-sex-e7e1b91b",
+              "title": "API Sex",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Alexandre Gaigalas",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "o-fantastico-mundo-do-javascript-3e45d1af",
+              "title": "O fantástico mundo do JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jean Carlo Emer",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "workers-of-the-web-d5d3ad91",
+              "title": "Workers of the web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Thibault Imbert",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nodejs-the-good-the-bad-and-the-ugly-0cd758fe",
+              "title": "NodeJS, the good, the bad and the ugly",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Caridy Patino",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "reactive-javascript-e8d1263f",
+              "title": "Reactive JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Stoyan Stefanov",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "programming-style-and-your-brain-6757131b",
+              "title": "Programming Style and Your Brain",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2013.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Douglas Crockford",
+                  "biography": "",
+                  "source_url": "https://2013.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2014",
+          "name": "BrazilJS Conf 2014",
+          "date_from": "2014-08-21",
+          "date_to": "2014-08-22",
+          "location": "Porto Alegre, Rio Grande do Sul, Brazil",
+          "source_url": "https://2014.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "why-serviceworker-may-be-the-next-big-thing-4d9308d5",
+              "title": "Why ServiceWorker may be the next big thing",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Renato Mangini",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "frontend-at-scale-the-tumblr-story-2e0076c1",
+              "title": "Frontend at Scale - The Tumblr Story",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Chris Miller",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "intro-to-gfx-raw-webgl-81c0d759",
+              "title": "Intro to GFX: Raw WebGL",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nick Desaulniers",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "effective-jquery-7e81977d",
+              "title": "Effective jQuery",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jörn Zaefferer",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "web-versus-native-round-1-7f110b25",
+              "title": "Web versus native: round 1?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Chris Mills",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "limpando-css-gigantes-com-js-7b7a875e",
+              "title": "Limpando CSS gigantes com JS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mauricio Wolff",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "single-page-applications-done-right-6bb88b5e",
+              "title": "Single Page Applications Done Right",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Eduardo Lundgren",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "from-commit-to-prod-in-5-minutes-21a775b5",
+              "title": "From commit to prod in 5 minutes",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jacob Page",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "frontend-was-always-my-favorite-color-adc0b24e",
+              "title": "Frontend was always my favorite color",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ricardo Tomasi",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mastering-ies-updated-f12-tools-77a1535d",
+              "title": "Mastering IE’s updated F12 tools",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jonathan Sampson",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-web-component-ecosystem-e69f3e37",
+              "title": "The Web Component Ecosystem",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Rob Dodson",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "data-binding-r-evolution-2d8ba892",
+              "title": "Data-binding [R]evolution",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Leonardo Balter",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ast-cst-e-ferramentas-incriveis-b7d3cd65",
+              "title": "AST, CST e Ferramentas Incríveis",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Miller Medeiros",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "a-day-in-the-life-of-an-ember-developer-4016f526",
+              "title": "A Day in the Life of an Ember Developer",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yehuda Katz",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "making-3d-graphics-accesible-e7075079",
+              "title": "Making 3D Graphics Accesible",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2014.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ricardo Cabello (Mr. Doob)",
+                  "biography": "",
+                  "source_url": "https://2014.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2015",
+          "name": "BrazilJS Conf 2015",
+          "date_from": "2015-08-21",
+          "date_to": "2015-08-22",
+          "location": "Porto Alegre, Rio Grande do Sul, Brazil",
+          "source_url": "https://2015.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "es6-baseline-para-a-web-moderna-40faddf1",
+              "title": "ES6 - Baseline para a web moderna?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Christian Heilmann",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "use-lowlevel-a039a71e",
+              "title": "Use lowlevel",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Douglas Campos",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-spotify-326f92d3",
+              "title": "JavaScript @ Spotify",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Felipe Ribeiro",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "getting-over-moore-s-law-parallelization-using-javascript-in-the-browser-ff040817",
+              "title": "Getting over Moore's Law: Parallelization using JavaScript in the browser",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Damian Schenkelman",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "a-saga-dos-12-topicos-de-acessibilidade-3b4d464f",
+              "title": "A saga dos 12 tópicos de acessibilidade",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Reinaldo Ferraz",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-javascript-toolkit-e7b2ea1b",
+              "title": "The Javascript Toolkit",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tania Gonzalez",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "500-days-of-open-source-de5f8e02",
+              "title": "500 days of open source",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Raphael Amorim",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "high-performance-in-the-critical-rendering-path-ca2de9b9",
+              "title": "High Performance in the Critical Rendering Path",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nicolas Bevacqua",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "improving-game-performance-on-the-web-wasm-sharedarraybuffer-simd-webgl2-c925034a",
+              "title": "Improving game performance on the Web: WASM, SharedArrayBuffer, SIMD, WebGL2",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nick Desaulniers",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "what-you-can-build-with-a-log-740fd728",
+              "title": "what you can build with a log",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "James Halliday",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "writing-elegant-ui-code-with-frp-75724144",
+              "title": "Writing elegant UI code with FRP",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jacob Page",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "reduce-seu-novo-melhor-amigo-ba68812c",
+              "title": "Reduce: seu novo melhor amigo",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ju Gonçalves",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "js-3-agco-1ceaeea0",
+              "title": "JS <3 @AGCO",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Diogo Lucas",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "consolidation-of-tools-2f90a749",
+              "title": "Consolidation of tools",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sebastian McKenzie",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "a-historia-verdadeira-por-tras-do-desempenho-javascript-em-mobile-porque-e-ciencia-1e92ee80",
+              "title": "A História Verdadeira por trás do Desempenho JavaScript em mobile...Porque é Ciência!!!!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ryan Salva",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "placar-uol-copa-do-mundo-e-eleicoes-2014-ao-vivo-com-node-js-e-websockets-d0baad48",
+              "title": "Placar UOL: Copa do Mundo e Eleições 2014 ao vivo com Node.js e WebSockets",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Fernando Miçalli",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ecmascript-6-o-que-ha-de-novo-o-que-mudou-o-que-tem-de-bacana-ou-de-estranho-8791f66c",
+              "title": "ECMAScript 6: O que Há de Novo, O que Mudou, O que tem de  Bacana ou de Estranho!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jonathan Sampson",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-robotics-a-nodebots-show-79698956",
+              "title": "JavaScript Robotics: A NodeBots show",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2015.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Julián Duque",
+                  "biography": "",
+                  "source_url": "https://2015.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2016",
+          "name": "BrazilJS Conf 2016",
+          "date_from": "2016-08-26",
+          "date_to": "2016-08-27",
+          "location": "Porto Alegre, Rio Grande do Sul, Brazil",
+          "source_url": "https://2016.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "keynote-instant-loading-offline-first-progressive-web-apps-the-next-generation-part-ii-uncovered-b33041f7",
+              "title": "Keynote - Instant loading offline-first progressive web apps the next generation part II uncovered",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jake Archibald",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "let-s-talk-about-midi-299f210e",
+              "title": "Let's Talk About MIDI",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ruth John",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "we-can-work-it-out-from-web-workers-to-service-workers-fa97122e",
+              "title": "We Can Work It Out: from Web Workers to Service Workers",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nolan Lawson",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "taking-on-genetically-evolving-cellular-automata-with-javascript-19fea500",
+              "title": "Taking on Genetically Evolving Cellular Automata with JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Irina Shestak",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "video-na-web-indo-alem-do-elemento-video-058e0934",
+              "title": "Vídeo na Web: indo além do elemento video",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Newton Calegari",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nom-nom-consuming-rest-apis-2d22bb5a",
+              "title": "Nom Nom: Consuming REST APIs",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tessa Mero",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "js-loves-music-js-3-music-0da9ab45",
+              "title": "JS loves Music (JS <3 Music)",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Willian Justen de Vasconcellos",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "linked-data-json-ld-e-web-semantica-20ea1892",
+              "title": "Linked Data, JSON-LD e Web Semântica",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Diego Eis",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "on-scaling-react-applications-80876503",
+              "title": "On Scaling React Applications",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Stepan Parunashvili",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "client-side-development-in-2016-11db045d",
+              "title": "Client-side Development in 2016",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Caio Vaccaro",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "isomorfismo-pra-que-e706d6d7",
+              "title": "Isomorfismo pra que?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Fernanda Bernardo",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "keynote-if-you-know-map-i-will-teach-you-monads-75d370ef",
+              "title": "Keynote - If you know map, I will teach you monads",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mattias Petter Johansson",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "desafios-praticos-de-performance-web-d2e3d045",
+              "title": "Desafios práticos de Performance Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sérgio Lopes",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "acessibilidade-web-cognitiva-384a0bdb",
+              "title": "Acessibilidade Web Cognitiva",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Talita Pagani",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "type-is-your-right-performance-and-web-typography-0905494f",
+              "title": "Type is Your Right!: Performance and Web Typography",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Helen Holmes",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "webfonts-level-up-bdcc226b",
+              "title": "WebFonts: level up!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Chris Lilley",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "doing-the-unstuck-how-to-make-browsers-compatible-with-the-web-d7a5d445",
+              "title": "Doing the Unstuck: how to make browsers compatible with the Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mike Taylor",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "training-diverse-juniors-tricks-and-hints-b3943cec",
+              "title": "Training diverse juniors: tricks and hints",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Anna Lezhikova",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "hardware-hacking-com-javascript-e-firebase-a3ff70cd",
+              "title": "Hardware Hacking com JavaScript e Firebase",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Luis Leão",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "a-casa-dos-sonhos-automatizacao-residencial-com-javascript-fe500d94",
+              "title": "A casa dos sonhos: automatização residencial com JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Felipe Olivaes",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-new-york-times-flash-free-video-em-2016-d95640e6",
+              "title": "The New York Times: Flash-Free Video em 2016",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Flávio Ribeiro",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "keynote-js-ux-writing-code-for-humans-90ba743d",
+              "title": "Keynote - JS UX: Writing code for humans",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Lea Verou",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "empoderei-e-agora-8730210b",
+              "title": "Empoderei, e agora?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2016.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Alda Rocha",
+                  "biography": "",
+                  "source_url": "https://2016.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2017",
+          "name": "BrazilJS Conf 2017",
+          "date_from": "2017-08-25",
+          "date_to": "2017-09-02",
+          "location": "Porto Alegre and Fortaleza, Brazil",
+          "source_url": "https://2017.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "o-fim-da-internet-61885e14-porto-alegre",
+              "title": "O fim da internet",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "André Staltz",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "construindo-pwas-utilizando-vuejs-d2961842-porto-alegre",
+              "title": "Construindo PWAs utilizando VueJs",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Milene Lacerda",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "web-imersiva-oportunidades-e-desafios-3bfc7c7d-porto-alegre",
+              "title": "Web Imersiva: oportunidades e desafios",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Diogo Cortiz",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "microservices-using-node-js-and-rabbitmq-d4109f8b-porto-alegre",
+              "title": "Microservices using Node.js and RabbitMQ",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Carolina Pascale Campos",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "package-quest-the-journey-of-a-package-from-the-npm-registry-to-your-computer-fa59cfbb",
+              "title": "Package Quest: the journey of a package from the npm registry to your computer",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jeffrey Lembeck",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "types-and-immutability-why-you-should-care-f3c1b257-porto-alegre",
+              "title": "Types and Immutability: why you should care",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jean Carlo Emer",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "projetando-interfaces-inteligentes-machine-learning-como-ferramenta-de-personalizacao-99601470-porto-alegre",
+              "title": "Projetando interfaces inteligentes: machine learning como ferramenta de personalização.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Isabella Silveira de Souza",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ensinando-js-para-aprender-js-e9b63dd4-porto-alegre",
+              "title": "Ensinando JS para aprender JS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Artur Diniz",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "composing-the-cloud-e6e006d4-porto-alegre",
+              "title": "Composing the Cloud",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Matheus Fernandes",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "web-assembly-the-journey-81a950af-porto-alegre",
+              "title": "Web assembly - the journey",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Elia Maino",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Willian Martins",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "como-um-projeto-js-open-source-se-transformou-em-uma-empresa-de-60-milhoes-de-reais-e815f8cf-porto-alegre",
+              "title": "Como um projeto JS open source se transformou em uma empresa de 60 Milhões de Reais",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Gabriel Engel",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "continuous-production-2e10f9f7-porto-alegre",
+              "title": "Continuous Production",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Guilherme Rodrigues",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "estoicismo-e-javascript-686ac2b8-porto-alegre",
+              "title": "Estoicismo e JavaScript",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Zeno Rocha",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "zen-and-the-art-of-code-maintenance-eeab5cc3-porto-alegre",
+              "title": "Zen and the Art of Code Maintenance",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jem Young",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "angular-4-firebase-realtime-nao-precisa-ser-complicado-136b8a42-porto-alegre",
+              "title": "Angular 4 + Firebase - Realtime não precisa ser complicado!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Evelyn Mendes",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "map-visualization-iot-e-big-data-transformando-informacao-em-valor-latitude-e-longitude-42ed816a-porto-alegre",
+              "title": "Map visualization, IoT e Big Data. Transformando informação em valor, latitude e longitude.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Luigui Delyer",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ecmascript-7-4f040033-porto-alegre",
+              "title": "ECMAScript 7",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Fernanda Bernardo",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "how-to-be-a-compiler-2a0f6808-porto-alegre",
+              "title": "How to be a Compiler",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mariko Kosaka",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "typescript-the-fun-parts-77d7ae5d",
+              "title": "Typescript: the Fun Parts",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Loiane Groner",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "progressive-web-app-ja-e-possivel-bdcbdbbe-porto-alegre",
+              "title": "Progressive Web App já é possível?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Christiano Milfont",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "3d-experiences-the-web-platform-88ff4c1a",
+              "title": "3D experiences + the Web Platform",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Vlad Filippov",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "a-frame-101-3d2c1dff-porto-alegre",
+              "title": "A-Frame 101",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Salva de la Puente",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "weird-apis-648d4b69",
+              "title": "Weird APIs",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mike Taylor",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "fazendo-drinks-com-js-909a79e6-porto-alegre",
+              "title": "Fazendo Drinks com JS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Andre Alves Garzia",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "js-gives-you-superpowers-use-them-64f8b56a-porto-alegre",
+              "title": "JS gives you superpowers, use them",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Porto Alegre",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Guilherme Souza",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "o-fim-da-internet-61885e14-fortaleza",
+              "title": "O fim da internet",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "André Staltz",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "construindo-pwas-utilizando-vuejs-d2961842-fortaleza",
+              "title": "Construindo PWAs utilizando VueJs",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Milene Lacerda",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "web-imersiva-oportunidades-e-desafios-3bfc7c7d-fortaleza",
+              "title": "Web Imersiva: oportunidades e desafios",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Diogo Cortiz",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "microservices-using-node-js-and-rabbitmq-d4109f8b-fortaleza",
+              "title": "Microservices using Node.js and RabbitMQ",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Carolina Pascale Campos",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "creating-magic-with-houdini-c4887b71",
+              "title": "Creating magic with houdini",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Patrick Kettner",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "types-and-immutability-why-you-should-care-f3c1b257-fortaleza",
+              "title": "Types and Immutability: why you should care",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jean Carlo Emer",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "projetando-interfaces-inteligentes-machine-learning-como-ferramenta-de-personalizacao-99601470-fortaleza",
+              "title": "Projetando interfaces inteligentes: machine learning como ferramenta de personalização.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Isabella Silveira de Souza",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ensinando-js-para-aprender-js-e9b63dd4-fortaleza",
+              "title": "Ensinando JS para aprender JS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Artur Diniz",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "composing-the-cloud-e6e006d4-fortaleza",
+              "title": "Composing the Cloud",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Matheus Fernandes",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "web-assembly-the-journey-81a950af-fortaleza",
+              "title": "Web assembly - the journey",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Elia Maino",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Willian Martins",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "como-um-projeto-js-open-source-se-transformou-em-uma-empresa-de-60-milhoes-de-reais-e815f8cf-fortaleza",
+              "title": "Como um projeto JS open source se transformou em uma empresa de 60 Milhões de Reais",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Gabriel Engel",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "continuous-production-2e10f9f7-fortaleza",
+              "title": "Continuous Production",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Guilherme Rodrigues",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "estoicismo-e-javascript-686ac2b8-fortaleza",
+              "title": "Estoicismo e JavaScript",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Zeno Rocha",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "zen-and-the-art-of-code-maintenance-eeab5cc3-fortaleza",
+              "title": "Zen and the Art of Code Maintenance",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jem Young",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "angular-4-firebase-realtime-nao-precisa-ser-complicado-136b8a42-fortaleza",
+              "title": "Angular 4 + Firebase - Realtime não precisa ser complicado!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Evelyn Mendes",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "map-visualization-iot-e-big-data-transformando-informacao-em-valor-latitude-e-longitude-42ed816a-fortaleza",
+              "title": "Map visualization, IoT e Big Data. Transformando informação em valor, latitude e longitude.",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Luigui Delyer",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ecmascript-7-4f040033-fortaleza",
+              "title": "ECMAScript 7",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Fernanda Bernardo",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "how-to-be-a-compiler-2a0f6808-fortaleza",
+              "title": "How to be a Compiler",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mariko Kosaka",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "progressive-web-app-ja-e-possivel-bdcbdbbe-fortaleza",
+              "title": "Progressive Web App já é possível?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Christiano Milfont",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "por-uma-web-melhor-38d732b5",
+              "title": "Por uma web melhor",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Cezar Augusto",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "a-frame-101-3d2c1dff-fortaleza",
+              "title": "A-Frame 101",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Salva de la Puente",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "fazendo-drinks-com-js-909a79e6-fortaleza",
+              "title": "Fazendo Drinks com JS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Andre Alves Garzia",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "js-gives-you-superpowers-use-them-64f8b56a-fortaleza",
+              "title": "JS gives you superpowers, use them",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "Fortaleza",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2017.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Guilherme Souza",
+                  "biography": "",
+                  "source_url": "https://2017.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2018",
+          "name": "BrazilJS Conf 2018",
+          "date_from": "2018-08-24",
+          "date_to": "2018-08-25",
+          "location": "Porto Alegre, Rio Grande do Sul, Brazil",
+          "source_url": "https://2018.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "youtube-tDuKFBH4Kuw",
+              "title": "Honey, I Shrunk the Scripts! — the secret life of JS on microcontrollers",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=tDuKFBH4Kuw",
+              "source_url": "https://www.youtube.com/watch?v=tDuKFBH4Kuw",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "István Szmozsánszky",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-4AwqWDdxn4s",
+              "title": "How to sort your socks using JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=4AwqWDdxn4s",
+              "source_url": "https://www.youtube.com/watch?v=4AwqWDdxn4s",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Claudia Hernández",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-7-zsAiozjl0",
+              "title": "The Intersections of New Web APIs",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=7-zsAiozjl0",
+              "source_url": "https://www.youtube.com/watch?v=7-zsAiozjl0",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ada Rose Cannon",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-i3LRWERf74M",
+              "title": "V8 internals for JavaScript developers",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=i3LRWERf74M",
+              "source_url": "https://www.youtube.com/watch?v=i3LRWERf74M",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mathias Bynens",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-hxlEct_FCEk",
+              "title": "Becoming a security minded developer",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=hxlEct_FCEk",
+              "source_url": "https://www.youtube.com/watch?v=hxlEct_FCEk",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Adam Baldwin",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Wnughqps6i4",
+              "title": "TC39 and elegantly handling missing values in JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Wnughqps6i4",
+              "source_url": "https://www.youtube.com/watch?v=Wnughqps6i4",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Daniel Ehrenberg",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-qFYHOkuy35A",
+              "title": "Extendendo o CSS com JavaScript e magia — feat. Houdini",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=qFYHOkuy35A",
+              "source_url": "https://www.youtube.com/watch?v=qFYHOkuy35A",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mario Souto",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-CzTnQg5Mg2E",
+              "title": "The tech behind a design system that scales",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=CzTnQg5Mg2E",
+              "source_url": "https://www.youtube.com/watch?v=CzTnQg5Mg2E",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Monica Lent",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-R1611bVKlGU",
+              "title": "Construindo front-ends funcionais com ClojureScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=R1611bVKlGU",
+              "source_url": "https://www.youtube.com/watch?v=R1611bVKlGU",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Isa Silveira",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-JZsFVw_JTjg",
+              "title": "Building a blockchain with JS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=JZsFVw_JTjg",
+              "source_url": "https://www.youtube.com/watch?v=JZsFVw_JTjg",
+              "source_updated_at": "2026-08-09T22:00:00Z",
+              "speakers": [
+                {
+                  "name": "Caroline Soares",
+                  "biography": "",
+                  "source_url": "https://2018.braziljs.org/",
+                  "source_updated_at": "2026-08-09T22:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2019",
+          "name": "BrazilJS Conf 2019",
+          "date_from": "2019-08-23",
+          "date_to": "2019-08-24",
+          "location": "Porto Alegre, Rio Grande do Sul, Brazil",
+          "source_url": "https://2019.braziljs.org/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "build-a-neural-network-with-pure-javascript-no-libraries-no-math-notation-no-python-f68bb59f",
+              "title": "Build a neural network with pure javascript - no libraries, no math notation, no python",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mattias Johansson",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-como-primeira-linguagem-de-programacao-10b369a5",
+              "title": "JavaScript como primeira linguagem de programação",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Rodrigo Ribeiro",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "building-an-empire-how-to-use-programming-and-game-theory-to-make-strategic-decisions-871671e3",
+              "title": "Building an Empire: How To Use Programming and Game Theory to Make Strategic Decisions",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Eva Bojorges",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "project-fugu-reaching-parity-with-native-da9d14bb",
+              "title": "Project Fugu, reaching parity with native",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kenneth Christiansen",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "elementar-meu-caro-ivy-a4e25971",
+              "title": "Elementar, meu caro Ivy",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Keilla Menezes",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "graphql-apollo-server-azure-functions-magic-303fac65",
+              "title": "GraphQL + Apollo Server + Azure Functions = Magic",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Erick Wendel",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "we-built-an-e-commerce-site-with-amp-df17baff",
+              "title": "We Built an E-commerce Site with AMP",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ben Morss",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "o-front-end-como-voce-conhece-vai-morrer-d31b806e",
+              "title": "O front-end como você conhece vai morrer",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Carla Vieira",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "virtual-reality-for-all-7573baa2",
+              "title": "Virtual reality for all",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Drishti Jain",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "off-the-main-thread-web-workers-and-workerdom-7d49b121",
+              "title": "Off the main thread: Web Workers and WorkerDOM",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Filip Stanis",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "surviving-death-by-complexity-f589144c",
+              "title": "Surviving death by complexity",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mattias Johansson",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "full-featured-art-direction-for-the-web-b548f05c",
+              "title": "Full-Featured Art Direction for the Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mina Markham",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "conditional-modules-dynamic-bundling-a-netflix-original-bcb92325",
+              "title": "Conditional Modules & Dynamic Bundling, A Netflix Original",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Rajat Kumar",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "internacionalizacao-na-web-d443d80b",
+              "title": "Internacionalização na Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Leo Balter",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "criando-api-s-escalaveis-com-node-js-serverless-8ce58811",
+              "title": "Criando API's Escaláveis com Node.js & Serverless",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Glaucia Lemos",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "take-your-application-to-the-web-with-webassembly-60e09893",
+              "title": "Take your application to the web with WebAssembly",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Miguel Useche",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ivy-renderer-for-dummies-a86508bc",
+              "title": "Ivy Renderer for Dummies",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Gerard Sans",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mozilla-open-source-voz-e-inteligencia-artificial-6749e8b6",
+              "title": "Mozilla, Open Source, Voz, e Inteligência Artificial",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "André Natal",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "typescript-from-the-outside-in-7c14d658",
+              "title": "TypeScript: From the outside-in",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Orta Therox",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "digital-sovereignty-how-guardianship-of-data-and-technology-enables-communities-to-thrive-94b9ed94",
+              "title": "Digital Sovereignty - how guardianship of data and technology enables communities to thrive",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Keoni Mahelona",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ascensao-social-pelo-apoio-das-comunidades-de-programacao-e1318df3",
+              "title": "Ascensão social pelo apoio das comunidades de programação",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://2019.braziljs.org/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "William Oliveira",
+                  "biography": "",
+                  "source_url": "https://2019.braziljs.org/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2020",
+          "name": "BrazilJS Conf 2020",
+          "date_from": "2020-10-02",
+          "date_to": "2020-10-03",
+          "location": "Online",
+          "source_url": "https://www.braziljs.org/p/12-novidades-sobre-o-conteudo-da-braziljs-live",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "youtube-Cqr7BimZ088-karina-kohl",
+              "title": "Essa tal Engenharia de Software: Origens, Aspectos Humanos e Sociais",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-karina-kohl",
+              "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-karina-kohl",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Karina Kohl",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-karina-kohl",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Cqr7BimZ088-fabio-costa",
+              "title": "Front End entrevistando na gringa",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-fabio-costa",
+              "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-fabio-costa",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Fabio Costa",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-fabio-costa",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Cqr7BimZ088-gerard-sans",
+              "title": "Not a basic offline-first app using GraphQL, Amplify DataStore and Vue",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-gerard-sans",
+              "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-gerard-sans",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Gerard Sans",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-gerard-sans",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Cqr7BimZ088-guy-bedfort",
+              "title": "JSPM3 - Release Preview",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-guy-bedfort",
+              "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-guy-bedfort",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Guy Bedford",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-guy-bedfort",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Cqr7BimZ088-cynthia-zanoni",
+              "title": "Open Source behind the human firewall",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-cynthia-zanoni",
+              "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-cynthia-zanoni",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Cynthia Zanoni",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-cynthia-zanoni",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Cqr7BimZ088-fausto-vanin",
+              "title": "From Libertarianism to Ubuntu Philosophy: How Blockchain could shape Afrofutures?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-fausto-vanin",
+              "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-fausto-vanin",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Fausto Vanin",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088-fausto-vanin",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2021",
+          "name": "BrazilJS Conf 2021",
+          "date_from": "2021-10-21",
+          "date_to": "2021-10-23",
+          "location": "Online",
+          "source_url": "https://www.braziljs.org/p/faq-braziljs-conf-2021",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "youtube-xFAWR05oHVQ",
+              "title": "Acessibilidade Aplicada",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=xFAWR05oHVQ",
+              "source_url": "https://www.youtube.com/watch?v=xFAWR05oHVQ",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Sara Soueidan",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=xFAWR05oHVQ",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-cP7HPDsbYBo",
+              "title": "PWAs: Past, Present, Future",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=cP7HPDsbYBo",
+              "source_url": "https://www.youtube.com/watch?v=cP7HPDsbYBo",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Sam Richard",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=cP7HPDsbYBo",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-MoVBLWES_-8",
+              "title": "Smartlive: a tecnologia que prova que você é você",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=MoVBLWES_-8",
+              "source_url": "https://www.youtube.com/watch?v=MoVBLWES_-8",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Renan Franz",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=MoVBLWES_-8",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Xmlg6g9dTPM",
+              "title": "The Road to Web Performance Culture",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Xmlg6g9dTPM",
+              "source_url": "https://www.youtube.com/watch?v=Xmlg6g9dTPM",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Rafael Verger",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Xmlg6g9dTPM",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-9WpuPhAVA6Q",
+              "title": "Apps para SmartTv",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=9WpuPhAVA6Q",
+              "source_url": "https://www.youtube.com/watch?v=9WpuPhAVA6Q",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Paulo Oliveira",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=9WpuPhAVA6Q",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-E4QYIEIbMTQ",
+              "title": "O que é DevRel?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=E4QYIEIbMTQ",
+              "source_url": "https://www.youtube.com/watch?v=E4QYIEIbMTQ",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Pachi Codes",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=E4QYIEIbMTQ",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-_o5liNzApBE",
+              "title": "Programação Funcional - Javascript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=_o5liNzApBE",
+              "source_url": "https://www.youtube.com/watch?v=_o5liNzApBE",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Lyssa Cavalcanti",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=_o5liNzApBE",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-HwdX6Nm2vek",
+              "title": "Livecoding para integrar serviços de telecomunicações no navegador",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=HwdX6Nm2vek",
+              "source_url": "https://www.youtube.com/watch?v=HwdX6Nm2vek",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Luís Leão",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=HwdX6Nm2vek",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-eCQT9XRbWU4",
+              "title": "Um JS muito louco",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=eCQT9XRbWU4",
+              "source_url": "https://www.youtube.com/watch?v=eCQT9XRbWU4",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Leo Balter",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=eCQT9XRbWU4",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-qvkTfP9aZ_g",
+              "title": "Lean Game Development",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=qvkTfP9aZ_g",
+              "source_url": "https://www.youtube.com/watch?v=qvkTfP9aZ_g",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Julia Naomi",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=qvkTfP9aZ_g",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-rD1idGgHBYo",
+              "title": "Design System Eficiente",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=rD1idGgHBYo",
+              "source_url": "https://www.youtube.com/watch?v=rD1idGgHBYo",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Jean Lucas Camargo",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=rD1idGgHBYo",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Lz_AoZeFpj0",
+              "title": "Criando ambientes 3D com ReactJS",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Lz_AoZeFpj0",
+              "source_url": "https://www.youtube.com/watch?v=Lz_AoZeFpj0",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Ismael Ash",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Lz_AoZeFpj0",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Xu7dPqYYIzg",
+              "title": "Tiramos o Redux e olha no que deu...",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Xu7dPqYYIzg",
+              "source_url": "https://www.youtube.com/watch?v=Xu7dPqYYIzg",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Igor Felipe",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Xu7dPqYYIzg",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                },
+                {
+                  "name": "Vinicius Louzada",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Xu7dPqYYIzg",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-5B5NQXRXPbg",
+              "title": "Falando a língua da Nuvem no Javascript e Typescript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=5B5NQXRXPbg",
+              "source_url": "https://www.youtube.com/watch?v=5B5NQXRXPbg",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Ibrahim Cesar Bevilacqua",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=5B5NQXRXPbg",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube--xBkIpldoug",
+              "title": "Desenvolvendo a experiência O2O no site da Americanas",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=-xBkIpldoug",
+              "source_url": "https://www.youtube.com/watch?v=-xBkIpldoug",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Hillary Sousa",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=-xBkIpldoug",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                },
+                {
+                  "name": "Larissa M.",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=-xBkIpldoug",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-2vAO81_Ajs4",
+              "title": "Automatic Batching e mais novidades no React 18",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=2vAO81_Ajs4",
+              "source_url": "https://www.youtube.com/watch?v=2vAO81_Ajs4",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Hillary Sousa",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=2vAO81_Ajs4",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube--PITpg5dr60",
+              "title": "Como eu sobrevivi à transição de developer para gestão",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=-PITpg5dr60",
+              "source_url": "https://www.youtube.com/watch?v=-PITpg5dr60",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Cynthia Zanoni",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=-PITpg5dr60",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-R5igrnKIJ58",
+              "title": "ProdOps Engineering em Javascript/Typescript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=R5igrnKIJ58",
+              "source_url": "https://www.youtube.com/watch?v=R5igrnKIJ58",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Christiano Milfont",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=R5igrnKIJ58",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-FY22LVQV7Do",
+              "title": "Como a computação pode combater a discriminação algorítmica?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=FY22LVQV7Do",
+              "source_url": "https://www.youtube.com/watch?v=FY22LVQV7Do",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Carla Vieira",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=FY22LVQV7Do",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-4BIaRTlwSns",
+              "title": "Design Systems: o passado, presente e o futuro",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=4BIaRTlwSns",
+              "source_url": "https://www.youtube.com/watch?v=4BIaRTlwSns",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Brad Frost",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=4BIaRTlwSns",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-kDfRSQG645E",
+              "title": "BFF: o melhor amigo do front",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=kDfRSQG645E",
+              "source_url": "https://www.youtube.com/watch?v=kDfRSQG645E",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Bernardo Couto",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=kDfRSQG645E",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                },
+                {
+                  "name": "Camila Camilo",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=kDfRSQG645E",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-sI6uA8zlV2M",
+              "title": "Making Music on The Web",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=sI6uA8zlV2M",
+              "source_url": "https://www.youtube.com/watch?v=sI6uA8zlV2M",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Ben Mors",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=sI6uA8zlV2M",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                },
+                {
+                  "name": "Max Vogler",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=sI6uA8zlV2M",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-c-8wkjIeots",
+              "title": "Microservices New Word",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=c-8wkjIeots",
+              "source_url": "https://www.youtube.com/watch?v=c-8wkjIeots",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Alexandre Evangelista",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=c-8wkjIeots",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "br-2024",
+          "name": "BrazilJS Conf 2024",
+          "date_from": "2024-04-25",
+          "date_to": "2024-04-26",
+          "location": "Porto Alegre, Rio Grande do Sul, Brazil",
+          "source_url": "https://www.braziljs.org/p/a-maior-voltou-braziljs-conf-2024",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "youtube-2eorrrx_wDQ",
+              "title": "Usando a IA para gerar testes automatizados de forma contínua e autônoma",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=2eorrrx_wDQ",
+              "source_url": "https://www.youtube.com/watch?v=2eorrrx_wDQ",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Milson Júnior",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=2eorrrx_wDQ",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-ZQyDvsTKz3I",
+              "title": "Sinapse organizacional: conectando sua carreira, comunicação e código",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=ZQyDvsTKz3I",
+              "source_url": "https://www.youtube.com/watch?v=ZQyDvsTKz3I",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Paulo Silveira",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=ZQyDvsTKz3I",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-GLVUCd4uxoQ",
+              "title": "Away the toil",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=GLVUCd4uxoQ",
+              "source_url": "https://www.youtube.com/watch?v=GLVUCd4uxoQ",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Lays Rodrigues",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=GLVUCd4uxoQ",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-YTq7UqfshF4",
+              "title": "Do conceito à realização: tecnologias e decisões no Godot Playground",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=YTq7UqfshF4",
+              "source_url": "https://www.youtube.com/watch?v=YTq7UqfshF4",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Pedro Henrique",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=YTq7UqfshF4",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-lqtMyF0JHqQ",
+              "title": "Resolva o problema certo: como a comunicação estratégica ajuda em produtos melhores",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=lqtMyF0JHqQ",
+              "source_url": "https://www.youtube.com/watch?v=lqtMyF0JHqQ",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Thaís Pinheiro",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=lqtMyF0JHqQ",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-bTL3pW5YFDA",
+              "title": "Zero friction web dev",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=bTL3pW5YFDA",
+              "source_url": "https://www.youtube.com/watch?v=bTL3pW5YFDA",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Guilherme Rodrigues",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=bTL3pW5YFDA",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-b5fBg-0rxjE",
+              "title": "O que aprendi desenvolvendo em design systems: um diário de bordo",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=b5fBg-0rxjE",
+              "source_url": "https://www.youtube.com/watch?v=b5fBg-0rxjE",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Jules Barros Lima",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=b5fBg-0rxjE",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-rOX29mHjKPU",
+              "title": "Building the future of web applications",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=rOX29mHjKPU",
+              "source_url": "https://www.youtube.com/watch?v=rOX29mHjKPU",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Rafael Umann",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=rOX29mHjKPU",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-HhqkWinUHAI",
+              "title": "WebXR? Realidade virtual e aumentada nativamente em navegadores",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=HhqkWinUHAI",
+              "source_url": "https://www.youtube.com/watch?v=HhqkWinUHAI",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Erick Wendel",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=HhqkWinUHAI",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-GFEg2kS-cZE",
+              "title": "Modern web debugging with DevTools",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=GFEg2kS-cZE",
+              "source_url": "https://www.youtube.com/watch?v=GFEg2kS-cZE",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Jecelyn Yeen",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=GFEg2kS-cZE",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-E8fKJ1LE40E",
+              "title": "Crie aplicações inteligentes com JS: integrando RAG, Azure OpenAI e Langchain.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=E8fKJ1LE40E",
+              "source_url": "https://www.youtube.com/watch?v=E8fKJ1LE40E",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Glaucia Lemos",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=E8fKJ1LE40E",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-Qu4evAxhbP8",
+              "title": "From Zero to Hero: Strategies for a Successful Black Friday with Serverless and Node.js",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Qu4evAxhbP8",
+              "source_url": "https://www.youtube.com/watch?v=Qu4evAxhbP8",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Ana Neri",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=Qu4evAxhbP8",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-pu1G7D2Do0o",
+              "title": "Hard truths to swallow",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=pu1G7D2Do0o",
+              "source_url": "https://www.youtube.com/watch?v=pu1G7D2Do0o",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Mano Deyvin",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=pu1G7D2Do0o",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-vtC27z7Vx90",
+              "title": "O impacto da matemática, estatística e IA na mensuração de fraudes",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=vtC27z7Vx90",
+              "source_url": "https://www.youtube.com/watch?v=vtC27z7Vx90",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Evelyn Torezone",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=vtC27z7Vx90",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                },
+                {
+                  "name": "Bryan Prado",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=vtC27z7Vx90",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "youtube-v0qExniRLc4",
+              "title": "A tecnologia evolui como a vida",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=v0qExniRLc4",
+              "source_url": "https://www.youtube.com/watch?v=v0qExniRLc4",
+              "source_updated_at": "2026-08-09T22:15:00Z",
+              "speakers": [
+                {
+                  "name": "Atila Iamarino",
+                  "biography": "",
+                  "source_url": "https://www.youtube.com/watch?v=v0qExniRLc4",
+                  "source_updated_at": "2026-08-09T22:15:00Z"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

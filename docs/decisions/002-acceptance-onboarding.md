@@ -68,6 +68,6 @@ receiver activation on upgrade.
 
 ## Automated proof
 
-`tests/test_m1.py::test_acceptance_creates_one_task_per_speaker` verifies
+`tests/test_acceptance_journey.py::test_acceptance_creates_one_task_per_speaker` verifies
 repeated acceptance creates no duplicate plan. `ensure_acceptance_plan()` also
 instantiates later-added definitions idempotently.

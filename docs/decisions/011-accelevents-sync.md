@@ -53,6 +53,6 @@ obviously separate from production endpoints.
 
 ## Automated proof
 
-`tests/test_m4.py::test_mock_contract_auth_duplicate_and_bare_integer`,
-`tests/test_m4.py::test_partial_run_retry_does_not_resend_successful_item`, and
-`tests/test_m4.py::test_update_then_preview_is_noop_and_stale_preview_is_rejected`.
+`tests/test_accelevents_sync.py::test_mock_contract_auth_duplicate_and_bare_integer`,
+`tests/test_accelevents_sync.py::test_partial_run_retry_does_not_resend_successful_item`, and
+`tests/test_accelevents_sync.py::test_update_then_preview_is_noop_and_stale_preview_is_rejected`.

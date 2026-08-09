@@ -56,6 +56,6 @@ the need to re-audit upstream profile/question fields after upgrades.
 
 ## Automated proof
 
-`tests/test_m2.py::test_completion_uses_executor_and_evidence`,
+`tests/test_onboarding_operations.py::test_completion_uses_executor_and_evidence`,
 `test_upload_evaluator_rejects_unsafe_type`, and
 `test_resources_sanitize_and_only_publish_visible` cover evidence and safety.

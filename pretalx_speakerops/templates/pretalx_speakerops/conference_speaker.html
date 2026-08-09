@@ -1,0 +1,32 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+
+{% block content %}
+<div class="speakerops" aria-labelledby="speaker-memory-title">
+  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Speaker CRM · sourced history + AIE context</p><h1 id="speaker-memory-title">{{ speaker.name }}</h1><p>{{ speaker.biography|default:"No biography was published by the source." }}</p></div><a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_conference_memory' event.slug %}">Back to conference memory</a></header>
+
+  {% if profile.tags %}<p aria-label="Speaker tags">{% for tag in profile.tags %}<span class="speakerops-badge">{{ tag }}</span> {% endfor %}</p>{% endif %}
+  <p><a href="{{ speaker.source_url }}">Open source identity record</a> · evidence checked {{ memory_summary.source_checked|date:"M j, Y" }}</p>
+
+  <section class="speakerops-panel" aria-labelledby="speaker-brief-title">
+    <p class="speakerops__eyebrow">Decision brief · evidence, not a speaker score</p>
+    <h2 id="speaker-brief-title">Use the history without losing its limits</h2>
+    <div class="speakerops__grid speakerops-memory__signals">
+      <article><h3>Recurrence</h3><p><strong>{{ memory_summary.talk_count }}</strong> sourced talk{{ memory_summary.talk_count|pluralize }} across <strong>{{ memory_summary.edition_count }}</strong> edition{{ memory_summary.edition_count|pluralize }} and <strong>{{ memory_summary.series_count }}</strong> conference famil{{ memory_summary.series_count|pluralize:"y,ies" }}.</p><p>{{ memory_summary.first_appearance|date:"Y"|default:"Undated" }}–{{ memory_summary.latest_appearance|date:"Y"|default:"undated" }}. Use this to distinguish a returning voice from a one-off appearance and to check whether a new proposal advances the record.</p></article>
+      <article><h3>Published expertise signals</h3><p><strong>Topics:</strong> {% for item in memory_summary.topics|slice:":5" %}{{ item.label }} ({{ item.count }}){% if not forloop.last %}, {% endif %}{% empty %}none published{% endfor %}.</p><p><strong>Formats:</strong> {% for item in memory_summary.formats|slice:":5" %}{{ item.label }} ({{ item.count }}){% if not forloop.last %}, {% endif %}{% empty %}none published{% endfor %}. <strong>Tracks:</strong> {% for item in memory_summary.tracks|slice:":5" %}{{ item.label }} ({{ item.count }}){% if not forloop.last %}, {% endif %}{% empty %}none published{% endfor %}.</p><p>Use these labels for reviewer routing, invitation context, and repetition checks—not as proof of expertise or quality.</p></article>
+      <article><h3>Evidence confidence</h3><p><strong>{{ memory_summary.metadata_coverage|default:"No" }}{% if memory_summary.metadata_coverage is not None %}%{% endif %}</strong> of format, track, and topic fields were published across these talks.</p><p>{{ memory_summary.missing_format }} missing format · {{ memory_summary.missing_track }} missing track · {{ memory_summary.missing_topics }} missing topics. Missing labels remain gaps, not inferred facts.</p></article>
+    </div>
+    <h3>Cross-event identity cluster</h3>
+    <p>Credited as {% for alias in memory_summary.aliases %}<strong>{{ alias }}</strong>{% if not forloop.last %}, {% endif %}{% endfor %}. Cluster key: <code>{{ speaker.canonical_key }}</code>.</p>
+    <p class="speakerops-hint">A feed may supply the cluster key; otherwise the importer derives it from a normalized name. This is a reviewable evidence cluster, not verified legal identity. Confirm the linked source records before outreach or merging people.</p>
+  </section>
+
+  {% if can_edit_profile %}<section class="speakerops-panel" aria-labelledby="crm-context-title"><div><h2 id="crm-context-title">AIE-owned operator context</h2><p>Tags and notes are internal operating context. They never overwrite sourced history or automatically score a proposal.</p></div><form method="post">{% csrf_token %}<label for="speaker-tags">Tags <small>comma-separated</small></label><input class="form-control" id="speaker-tags" name="tags" value="{% if profile %}{{ profile.tags|join:', ' }}{% endif %}" placeholder="AIE alum, evals, invite again"><label for="speaker-notes">Internal notes</label><textarea class="form-control" id="speaker-notes" name="internal_notes" rows="5">{% if profile %}{{ profile.internal_notes }}{% endif %}</textarea><button class="btn btn-primary" type="submit">Save CRM context</button></form>{% if profile.updated %}<p>Last updated {{ profile.updated|date:"M j, Y, P" }}{% if profile.updated_by %} by {{ profile.updated_by }}{% endif %}.</p>{% endif %}</section>{% endif %}
+
+  <section aria-labelledby="history-title"><h2 id="history-title">Cross-event talk history · {{ historical_talks|length }}</h2><div class="speakerops-table-wrap"><table class="speakerops-table"><thead><tr><th>Edition</th><th>Credited as</th><th>Talk</th><th>Format</th><th>Track</th><th>Topics</th><th>Source</th></tr></thead><tbody>{% for talk in historical_talks %}<tr><td>{{ talk.edition.series.name }} · {{ talk.edition.name }}</td><td>{{ talk.speakerops_name_at_source }}</td><td>{{ talk.title }}</td><td>{{ talk.session_format|default:"Not published" }}</td><td>{{ talk.track|default:"Not published" }}</td><td>{{ talk.topics|join:", "|default:"Not published" }}</td><td><a href="{{ talk.source_url }}">Evidence</a><br><small>checked {{ talk.source_updated_at|date:"M j, Y" }}</small></td></tr>{% empty %}<tr><td colspan="7">No sourced talks are linked to this speaker.</td></tr>{% endfor %}</tbody></table></div></section>
+
+  {% if can_edit_profile %}<section aria-labelledby="review-history-title"><h2 id="review-history-title">Current-program review history</h2><p>Linked by an exact match to one of the sourced credited names above; verify identity before using this context.</p><ul class="speakerops-list">{% for review in current_reviews %}<li><strong>{{ review.submission.title }}</strong><span>{{ review.user }} · weighted score {{ review.display_score }} · {{ review.updated|date:"M j, Y, P" }}</span></li>{% empty %}<li>No current-event proposal is linked by a sourced credited name.</li>{% endfor %}</ul></section>{% endif %}
+</div>
+{% endblock content %}

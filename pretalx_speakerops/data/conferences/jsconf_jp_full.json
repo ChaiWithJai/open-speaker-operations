@@ -1,0 +1,4659 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-09T12:00:00Z",
+  "series": [
+    {
+      "slug": "jsconf-jp",
+      "name": "JSConf JP",
+      "website": "https://jsconf.jp/",
+      "source_policy": {
+        "authority": "official",
+        "scope": "complete-official-repository-talk-records",
+        "repository": "https://github.com/jsconfjp/jsconf.jp",
+        "retrieved_at": "2026-08-09T12:00:00Z",
+        "known_gaps": [
+          {
+            "scope": "JSConf JP 2019",
+            "item": "sponsor-talk-1",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2019",
+            "item": "sponsor-talk-2",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "sponsor-talk-kaonavi",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "sponsor-talk-nota",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "reflections-on-the-introduction-of-graph-ql-and-a-new-challenge",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "kaonavi-js-conf-jp-2021-sponsor-lt",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "frontend-development-for-ubie-discovery-creating-value-simultaneously-and-multiply",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "how-to-use-type-script-in-study-supplement-and-its-future-prospects",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "front-end-technology-supporting-stores-reservation",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "legal-force-s-front-end-development-past-and-future",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "js-conf-jp-2021-sponsor-lt-nota",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2021",
+            "item": "js-conf-jp-2021-sponsor-lt-twilio",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "sponsor-talk-miidas",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "sponsor-talk-nota",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "sponsor-talk-dwango",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "sponsor-talk-kaonavi",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "sponsor-talk-twillio",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "sponsor-talk-cybozu",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "sponsor-talk-wantedly",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "miidas-js-conf-jp-2022-sponsor-lt",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "nota-js-conf-jp-2022-sponsor-lt",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "dwango-js-conf-jp-2022-sponsor-lt",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "kaonavi-js-conf-jp-2022-sponsor-lt",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "twilio-js-conf-jp-2022-sponsor-lt",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "cybozu-js-conf-jp-2022-sponsor-lt",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2022",
+            "item": "wantedly-js-conf-jp-2022-sponsor-lt",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2023",
+            "item": "workshop-helpfeel",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "day1-",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "miidas",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "earthbrain",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "mercari",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "hireroo",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "lycorp",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "ivry",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "helpfeel",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "layerx",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          },
+          {
+            "scope": "JSConf JP 2024",
+            "item": "medley",
+            "reason": "The official record lacks individual speaker attribution, so a deterministic speaker credit cannot be imported.",
+            "source_url": "https://github.com/jsconfjp/jsconf.jp"
+          }
+        ]
+      },
+      "editions": [
+        {
+          "external_key": "jp-2019",
+          "name": "JSConf JP 2019",
+          "date_from": "2019-11-30",
+          "date_to": "2019-12-01",
+          "location": "Japan",
+          "source_url": "https://jsconf.jp/2019/schedule/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "andy-hall",
+              "title": "Four Years of JS Procedural Generation",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/andy-hall/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Andy Hall",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/andy-hall/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "andrew-betts",
+              "title": "Headers for Hackers",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/andrew-betts/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Andrew Betts",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/andrew-betts/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "benjamin-gruenbaum",
+              "title": "Anatomy of a Click",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/benjamin-gruenbaum/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Benjamin Gruenbaum",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/benjamin-gruenbaum/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "claudia-hernandez",
+              "title": "npm i -g @next-and-beyond: Building the future of package management",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/claudia-hernandez/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Claudia Hernández",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/claudia-hernandez/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "dynamis",
+              "title": "License violation of React Applications",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/dynamis/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "dynamis",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/dynamis/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "dominic-tarr",
+              "title": "Life of Streams",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/dominic-tarr/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dominic Tarr",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/dominic-tarr/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "eiji-kitamura",
+              "title": "Building secure and seamless sign-in experience using WebAuthn",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/eiji-kitamura/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Eiji Kitamura / えーじ",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/eiji-kitamura/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "fuji-goro",
+              "title": "How to Boost Your Code with WebAssembly",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/fuji-goro/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "FUJI Goro / @__gfx__",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/fuji-goro/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "fred-schott",
+              "title": "Pika: Reimagining the Registry",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/fred-schott/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Fred K. Schott",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/fred-schott/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "guillermo-rauch",
+              "title": "Building and Deploying for the Modern Web with JAMstack",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/guillermo-rauch/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Guillermo Rauch",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/guillermo-rauch/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ginpei-takanashi",
+              "title": "Starting TypeScript Leaving JavaScript as JS",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/ginpei-takanashi/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "高梨ギンペイ",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/ginpei-takanashi/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-9c01aa99bc448735"
+                }
+              ]
+            },
+            {
+              "external_key": "henry-zhu",
+              "title": "Defining Open Source",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/henry-zhu/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Henry Zhu",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/henry-zhu/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "hidetaka-okamoto",
+              "title": "Build and scale multiple Voice application by using TypeScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/hidetaka-okamoto/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Hidetaka Okamoto",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/hidetaka-okamoto/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "irina-shestak",
+              "title": "JavaScript, Rust and Wasm Walk into a Ramen Shop ...",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/irina-shestak/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Irina Shestak",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/irina-shestak/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jorge-bucaran",
+              "title": "Write What Not How",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/jorge-bucaran/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jorge Bucaran",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/jorge-bucaran/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jennifer-wong",
+              "title": "Time Is But an Illusion… in JavaScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/jennifer-wong/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jennifer Wong",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/jennifer-wong/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jxck",
+              "title": "Self volume of Web",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/jxck/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jxck",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/jxck/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jarrod-overson",
+              "title": "Analysis of an exploited npm package",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/jarrod-overson/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jarrod Overson",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/jarrod-overson/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jonny-kalambay",
+              "title": "Discovering Animals with AI and Javascript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/jonny-kalambay/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jonny Kalambay",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/jonny-kalambay/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kitson-kelly",
+              "title": "Deno - A new way to JavaScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/kitson-kelly/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kitson Kelly",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/kitson-kelly/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kohei-kido",
+              "title": "IoT development with modern web technologies",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/kohei-kido/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "木戸 康平",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/kohei-kido/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-a21e51bfbe1c70d8"
+                }
+              ]
+            },
+            {
+              "external_key": "lena-morita",
+              "title": "Awakened by Accessibility",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/lena-morita/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Lena Morita",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/lena-morita/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "martin-splitt",
+              "title": "Technical SEO for JavaScript developers",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/martin-splitt/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Martin Splitt",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/martin-splitt/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "maria-clara",
+              "title": "You might also like...",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/maria-clara/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Maria Clara",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/maria-clara/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "maxi-ferreira",
+              "title": "Cache Me If You Can",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/maxi-ferreira/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Maxi Ferreira",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/maxi-ferreira/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "masashi-ganeko",
+              "title": "Build tiny node.js - WASM/WASI compiler using node.js",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/masashi-ganeko/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "がねこまさし",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/masashi-ganeko/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-3091d7896cfdccd7"
+                }
+              ]
+            },
+            {
+              "external_key": "masato-ohba",
+              "title": "Migration from React Native to PWA",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/masato-ohba/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "ohbarye",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/masato-ohba/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mariko-kosaka",
+              "title": "points at random",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/mariko-kosaka/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mariko Kosaka",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/mariko-kosaka/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nadieh-bremer",
+              "title": "Visualizing Connections",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/nadieh-bremer/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nadieh Bremer",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/nadieh-bremer/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nazanin-delam",
+              "title": "Web Accessibility in a Nutshell",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/nazanin-delam/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nazanin Delam",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/nazanin-delam/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nobuhiko-sawai",
+              "title": "Performance tuning in EC site with GraphQL",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/nobuhiko-sawai/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "澤井宣彦",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/nobuhiko-sawai/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-7b0151c4465995cb"
+                }
+              ]
+            },
+            {
+              "external_key": "okuno-kentaro",
+              "title": "Building the layered server application achieved by InversifyJS",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/okuno-kentaro/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "奥野 賢太郎",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/okuno-kentaro/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-5c9bacda0e062d4e"
+                }
+              ]
+            },
+            {
+              "external_key": "praveen-yedidi",
+              "title": "Predictive Prefetching for improved performance",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/praveen-yedidi/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Praveen Yedidi",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/praveen-yedidi/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "rowdy-rabouw",
+              "title": "Browser APIs: the unknown Super Heroes",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/rowdy-rabouw/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Rowdy Rabouw",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/rowdy-rabouw/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "s-greif-r-benitte",
+              "title": "The State of JavaScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/s-greif-r-benitte/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Raphaël Benitte",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/s-greif-r-benitte/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Sacha Greif",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/s-greif-r-benitte/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sho-miyamoto",
+              "title": "Wrap-up: Runtime-friendly JavaScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/sho-miyamoto/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sho Miyamoto",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/sho-miyamoto/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "samuel-agnew",
+              "title": "Playing Pokémon Together with Node.js",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/samuel-agnew/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Samuel Agnew",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/samuel-agnew/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "shirley-wu",
+              "title": "Build an interactive data visualization with Vue.js and D3.js",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/shirley-wu/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Shirley Wu",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/shirley-wu/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sam-bellen",
+              "title": "Passwords are so 1990",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/sam-bellen/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sam Bellen",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/sam-bellen/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sponsor-yahoo",
+              "title": "Minimum Hands-on Node.js",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/sponsor-yahoo/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "栗山 太希",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/sponsor-yahoo/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-361865c7005e883c"
+                }
+              ]
+            },
+            {
+              "external_key": "sponsor-recruit",
+              "title": "Recruit Speed Hackathon",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/sponsor-recruit/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "新井 智士",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/sponsor-recruit/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-134216711c8fd2a2"
+                }
+              ]
+            },
+            {
+              "external_key": "sakakibara",
+              "title": "Capacitor: linking JavaScript with Swift/Java, and the future of Web Frontend",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/sakakibara/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "榊原昌彦",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/sakakibara/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-e3ebeab06e10bd98"
+                }
+              ]
+            },
+            {
+              "external_key": "satoshi-ebihara",
+              "title": "Developing with Elm in a large application",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/satoshi-ebihara/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "海老原 圭吾",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/satoshi-ebihara/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-f8cfc26204db504b"
+                }
+              ]
+            },
+            {
+              "external_key": "takuto-wada",
+              "title": "JavaScript AST programming: Introduction and beyond",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/takuto-wada/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Takuto Wada",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/takuto-wada/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "takeshi-kato",
+              "title": "Understanding Streams API",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/takeshi-kato/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "加藤 健志",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/takeshi-kato/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-747da2f2a3e4709f"
+                }
+              ]
+            },
+            {
+              "external_key": "toru-kobayashi",
+              "title": "Make it Declarative with React",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/toru-kobayashi/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Toru Kobayashi",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/toru-kobayashi/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tetsuharu-ohzeki",
+              "title": "Your benchmark may not guide a real application performance",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/tetsuharu-ohzeki/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tetsuharu OHZEKI",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/tetsuharu-ohzeki/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "yoshiki-shibukawa",
+              "title": "Web Components era phase 2",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/yoshiki-shibukawa/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yoshiki Shibukawa",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/yoshiki-shibukawa/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "yosuke-furukawa",
+              "title": "JSConf Panel Talks",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2019/talk/yosuke-furukawa/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jan Lehnardt",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/yosuke-furukawa/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Lena Morita",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/yosuke-furukawa/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Mariko Kosaka",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/yosuke-furukawa/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Yosuke Furukawa",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2019/talk/yosuke-furukawa/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "jp-2021",
+          "name": "JSConf JP 2021",
+          "date_from": "2021-11-27",
+          "date_to": "2021-11-27",
+          "location": "Japan",
+          "source_url": "https://jsconf.jp/2021/schedule/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "how-to-build-a-media-site-from-the-infrastructure-up-using-only-java-script-type-script",
+              "title": "JavaScript(TypeScript)だけでメディアサイトをインフラから構築する方法",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/4DgZFw74M9c",
+              "source_url": "https://jsconf.jp/2021/talk/how-to-build-a-media-site-from-the-infrastructure-up-using-only-java-script-type-script/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Hidetaka Okamoto",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/how-to-build-a-media-site-from-the-infrastructure-up-using-only-java-script-type-script/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-2021-edition-of-dealing-with-files-on-the-web",
+              "title": "The 2021 edition of dealing with files on the Web",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/vdYN41jLXLA",
+              "source_url": "https://jsconf.jp/2021/talk/the-2021-edition-of-dealing-with-files-on-the-web/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Thomas Steiner",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/the-2021-edition-of-dealing-with-files-on-the-web/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-past-and-future-of-accessible-front-end-development",
+              "title": "アクセシブルなフロントエンド開発のこれまでとこれから",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/58TkWIsH20E",
+              "source_url": "https://jsconf.jp/2021/talk/the-past-and-future-of-accessible-front-end-development/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Okuto Oyama",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/the-past-and-future-of-accessible-front-end-development/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "how-to-implement-a-system-that-goes-beyond-amp-caching-on-your-domain",
+              "title": "AMP キャッシュを超えるシステムを自社ドメインで実現する方法",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/QEd_7FzzGa4",
+              "source_url": "https://jsconf.jp/2021/talk/how-to-implement-a-system-that-goes-beyond-amp-caching-on-your-domain/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "可児 潤也",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/how-to-implement-a-system-that-goes-beyond-amp-caching-on-your-domain/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-3fc4cd06e25bb036"
+                }
+              ]
+            },
+            {
+              "external_key": "implementation-and-business-of-block-pong-a-web-based-casual-game",
+              "title": "Web ベースのカジュアルゲーム「Block Pong」の実装とビジネス",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/iP8bjAzCwPo",
+              "source_url": "https://jsconf.jp/2021/talk/implementation-and-business-of-block-pong-a-web-based-casual-game/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "紀平 拓男 (Takuo Kihira)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/implementation-and-business-of-block-pong-a-web-based-casual-game/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "testing-approach-to-support-web-front-end-replacement",
+              "title": "Webフロントエンドのリプレースを支えるテストの考え方",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/16ux8nTqJ7k",
+              "source_url": "https://jsconf.jp/2021/talk/testing-approach-to-support-web-front-end-replacement/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "berlysia",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/testing-approach-to-support-web-front-end-replacement/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "the-past-and-future-of-deno",
+              "title": "Deno の これまで と これから",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/hIEbOUbdLNs",
+              "source_url": "https://jsconf.jp/2021/talk/the-past-and-future-of-deno/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "日野澤歓也",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/the-past-and-future-of-deno/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-bf0e02cca1b5e1d3"
+                }
+              ]
+            },
+            {
+              "external_key": "about-the-state-management-library",
+              "title": "状態管理ライブラリについて",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/u26b4YcgUeI",
+              "source_url": "https://jsconf.jp/2021/talk/about-the-state-management-library/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Daishi Kato",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/about-the-state-management-library/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "static-site-generator-is-a-compiler",
+              "title": "Static Site Generator is a Compiler",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/9xe0Qzgf58o",
+              "source_url": "https://jsconf.jp/2021/talk/static-site-generator-is-a-compiler/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yuta Ide",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/static-site-generator-is-a-compiler/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "summary-of-the-latest-information-on-tracking-restrictions-and-alternative-api-by-cookies-etc",
+              "title": "Cookie等によるトラッキング規制と代替APIの最新情報まとめ",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/DvJaObZEEvA",
+              "source_url": "https://jsconf.jp/2021/talk/summary-of-the-latest-information-on-tracking-restrictions-and-alternative-api-by-cookies-etc/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Antoine Bourlon",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/summary-of-the-latest-information-on-tracking-restrictions-and-alternative-api-by-cookies-etc/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "technology-selection-for-the-next-n-years-based-on-graphql-and-prisma",
+              "title": "GraphQL と Prisma から考える次のN年を見据えた技術選定",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/AZEov86vKXM",
+              "source_url": "https://jsconf.jp/2021/talk/technology-selection-for-the-next-n-years-based-on-graphql-and-prisma/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "森 久太郎 / qsona",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/technology-selection-for-the-next-n-years-based-on-graphql-and-prisma/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-maintaining-ecosystem-oss-struggles-and-challenges",
+              "title": "JavaScript エコシステムを維持する OSS の努力と課題",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/yhieejm0we4",
+              "source_url": "https://jsconf.jp/2021/talk/javascript-maintaining-ecosystem-oss-struggles-and-challenges/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sosuke Suzuki",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/javascript-maintaining-ecosystem-oss-struggles-and-challenges/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "case-study-of-production-development-of-a-client-side-ml-application-in-a-mobile-browser",
+              "title": "モバイルブラウザにおけるClient-side MLアプリケーションのプロダクション開発事例",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/GVgKncxbMsE",
+              "source_url": "https://jsconf.jp/2021/talk/case-study-of-production-development-of-a-client-side-ml-application-in-a-mobile-browser/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "加藤 倫弘 / Tomohiro Kato",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/case-study-of-production-development-of-a-client-side-ml-application-in-a-mobile-browser/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "universal-devtools-for-all-environments",
+              "title": "Universal DevTools for all environments",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/Ha0fk8VwZqQ",
+              "source_url": "https://jsconf.jp/2021/talk/universal-devtools-for-all-environments/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kohei Ueno",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/universal-devtools-for-all-environments/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "machine-learning-with-js",
+              "title": "Machine Learning with JS",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/8tMdpQHUsI8",
+              "source_url": "https://jsconf.jp/2021/talk/machine-learning-with-js/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Asiya",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/machine-learning-with-js/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "a-tour-of-design-patterns-for-functional-programming-with-ramdajs",
+              "title": "関数型プログラミングのデザインパターンひとめぐり with Ramda.js",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/F-zVwqhleMc",
+              "source_url": "https://jsconf.jp/2021/talk/a-tour-of-design-patterns-for-functional-programming-with-ramdajs/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kazuyuki TAKASE (@Guvalif)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/a-tour-of-design-patterns-for-functional-programming-with-ramdajs/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "web-front-end-architecture-and-transition-with-an-eye-on-organizational-phases",
+              "title": "組織フェーズを見据えたWebフロントエンドのアーキテクチャと変遷",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/LGi8v-a3kU4",
+              "source_url": "https://jsconf.jp/2021/talk/web-front-end-architecture-and-transition-with-an-eye-on-organizational-phases/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tetsuya Shibutani",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/web-front-end-architecture-and-transition-with-an-eye-on-organizational-phases/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "bundle-size-optimization-in-future-javascript",
+              "title": "Bundle Size Optimization in Future JavaScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/u-f3licytbI",
+              "source_url": "https://jsconf.jp/2021/talk/bundle-size-optimization-in-future-javascript/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yuku Kotani",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/bundle-size-optimization-in-future-javascript/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "accelerating-edge-computing",
+              "title": "加速するEdge Computing",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/gBu2Fd8LuFg",
+              "source_url": "https://jsconf.jp/2021/talk/accelerating-edge-computing/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "しにゃい/Shinyaigeek",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/accelerating-edge-computing/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "building-markdown-editor-using-rusts-parser",
+              "title": "Building markdown editor using Rust's parser",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/VZKK3p-pHnw",
+              "source_url": "https://jsconf.jp/2021/talk/building-markdown-editor-using-rusts-parser/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Hiroyuki Yagihashi",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/building-markdown-editor-using-rusts-parser/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "asynchronicity-the-right-way-understanding-the-basics-of-asynchronous-javascript-when-to-and-when-not-to-use-it",
+              "title": "Asynchronicity, the right way: Understanding the basics of asynchronous JavaScript, when to and when not to use it.",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/4ut32ryNL_Y",
+              "source_url": "https://jsconf.jp/2021/talk/asynchronicity-the-right-way-understanding-the-basics-of-asynchronous-javascript-when-to-and-when-not-to-use-it/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Julien Hora",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/asynchronicity-the-right-way-understanding-the-basics-of-asynchronous-javascript-when-to-and-when-not-to-use-it/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "state-of-css-2021-survey-results",
+              "title": "State of CSS 2021 Survey Results",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/m2IuTFyB-QI",
+              "source_url": "https://jsconf.jp/2021/talk/state-of-css-2021-survey-results/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sacha Greif",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/state-of-css-2021-survey-results/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "opening",
+              "title": "Opening by Yosuke Furukawa",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2021/talk/opening/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yosuke Furukawa",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/opening/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sponsor-talk-wantedly",
+              "title": "5分でできる生産性改善 〜ESLint Custom Rule を作ろう〜 by Wantedly (原剛士、小林直樹)",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/Xc2yz5maSUQ",
+              "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-wantedly/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "原剛士",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-wantedly/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-d18ca1405f91ec8c"
+                },
+                {
+                  "name": "小林直樹",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-wantedly/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-4f0a13856402e740"
+                }
+              ]
+            },
+            {
+              "external_key": "sponsor-talk-recruit",
+              "title": "Next.js でリアーキテクトした話 by リクルート (吉井健文)",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/O8mHPJu1I2A",
+              "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-recruit/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "吉井健文",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-recruit/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-36c98a6010b3ad40"
+                }
+              ]
+            },
+            {
+              "external_key": "sponsor-talk-hey",
+              "title": "STORES 予約を支えるフロントエンドの技術 by Hey (岩本 卓朗)",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/5t8PM9c9KnY",
+              "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-hey/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "岩本 卓朗",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-hey/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-0cf22e0a32f64f42"
+                }
+              ]
+            },
+            {
+              "external_key": "sponsor-talk-twilio",
+              "title": "Open API Specificationを使ったTwilio APIテスト用モッキングサーバーの構築 by Twilio (Daizen Ikehara)",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/jeElYzm-Bzk",
+              "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-twilio/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Daizen Ikehara",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/sponsor-talk-twilio/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "how-projects-are-born-and-run-in-a-web-browser-engine",
+              "title": "How projects are born and run in a web browser engine",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube-nocookie.com/embed/nzHSYARtzCc",
+              "source_url": "https://jsconf.jp/2021/talk/how-projects-are-born-and-run-in-a-web-browser-engine/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kinuko Yasuda",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2021/talk/how-projects-are-born-and-run-in-a-web-browser-engine/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "jp-2022",
+          "name": "JSConf JP 2022",
+          "date_from": "2022-11-26",
+          "date_to": "2022-11-26",
+          "location": "Japan",
+          "source_url": "https://jsconf.jp/2022/schedule/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "tips-for-developing-a-blogging-platform",
+              "title": "ブログ系プラットフォームを開発するときのTips",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Gz-wi83yh2A",
+              "source_url": "https://jsconf.jp/2022/talk/tips-for-developing-a-blogging-platform/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Catnose",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/tips-for-developing-a-blogging-platform/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "optimizing-interaction-to-next-paint-imp",
+              "title": "Optimizing Interaction to Next Paint (INP)",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=xoWAJ17UK1A",
+              "source_url": "https://jsconf.jp/2022/talk/optimizing-interaction-to-next-paint-imp/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jeremy Wagner",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/optimizing-interaction-to-next-paint-imp/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "organizational-development-streamlined-by-the-front-end-ecosystem",
+              "title": "フロントエンドエコシステムで効率化する組織開発",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=JNAE0i6sYjg",
+              "source_url": "https://jsconf.jp/2022/talk/organizational-development-streamlined-by-the-front-end-ecosystem/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "okmttdhr",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/organizational-development-streamlined-by-the-front-end-ecosystem/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "optional-chaining-from-specification-to-implementation",
+              "title": "Optional Chaining: From Specification to Implementation",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=bFlzeI8VGnU",
+              "source_url": "https://jsconf.jp/2022/talk/optional-chaining-from-specification-to-implementation/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ross Kirsling",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/optional-chaining-from-specification-to-implementation/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "client-side-ddd-in-the-age-of-declarative-ui-grand-considerations",
+              "title": "宣言的 UI 時代のクライアントサイド DDD 大考察",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Fj5mK3ODhRw",
+              "source_url": "https://jsconf.jp/2022/talk/client-side-ddd-in-the-age-of-declarative-ui-grand-considerations/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kazuyuki TAKASE (@Guvalif)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/client-side-ddd-in-the-age-of-declarative-ui-grand-considerations/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "hono-ultrafast-web-framework-for-cloudflare-workers-deno-bun-and-nodejs",
+              "title": "Hono - Ultrafast web framework for Cloudflare Workers, Deno, Bun, and Node.js",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Ws0E0ShHHEk",
+              "source_url": "https://jsconf.jp/2022/talk/hono-ultrafast-web-framework-for-cloudflare-workers-deno-bun-and-nodejs/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yusuke Wada",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/hono-ultrafast-web-framework-for-cloudflare-workers-deno-bun-and-nodejs/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "passkey-and-how-it-works-on-google-ecosystem",
+              "title": "Passkey and how it works on Google ecosystem",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=K0eg0jkbxYQ",
+              "source_url": "https://jsconf.jp/2022/talk/passkey-and-how-it-works-on-google-ecosystem/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "えーじ (Eiji Kitamura)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/passkey-and-how-it-works-on-google-ecosystem/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "reducing-bugs-in-a-react-codebase",
+              "title": "Reducing bugs in a React codebase",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2022/talk/reducing-bugs-in-a-react-codebase/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Shyam Swaroop",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/reducing-bugs-in-a-react-codebase/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "names-and-other-lies",
+              "title": "Names, and other lies",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2022/talk/names-and-other-lies/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dylan Lacey",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/names-and-other-lies/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "current-state-of-npm-support-in-deno",
+              "title": "About `npm:` support of Deno",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=qskcjFcuzJY",
+              "source_url": "https://jsconf.jp/2022/talk/current-state-of-npm-support-in-deno/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "日野澤 歓也",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/current-state-of-npm-support-in-deno/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-25bf319fbefe9acf"
+                }
+              ]
+            },
+            {
+              "external_key": "creating-accessibility-environments-to-help-diverse-participation-in-tech",
+              "title": "Creating accessibility environments to help diverse participation in tech",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=OsaJK0I6d9A",
+              "source_url": "https://jsconf.jp/2022/talk/creating-accessibility-environments-to-help-diverse-participation-in-tech/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Bhuvana Meenakshi Koteeswaran",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/creating-accessibility-environments-to-help-diverse-participation-in-tech/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "secret-shortcuts-of-loading-web-performance",
+              "title": "Secret Shortcuts of Loading Web Performance",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=SOCdb8SufhU",
+              "source_url": "https://jsconf.jp/2022/talk/secret-shortcuts-of-loading-web-performance/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Nikola Mitrovic",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/secret-shortcuts-of-loading-web-performance/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "svelte-runtime-101",
+              "title": "Svelte Runtime 101",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=QytTIMwGAOw",
+              "source_url": "https://jsconf.jp/2022/talk/svelte-runtime-101/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "baseballyama",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/svelte-runtime-101/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "js-panel-talk",
+              "title": "JSConfJP Panel Talk",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=yxId3ghim-w",
+              "source_url": "https://jsconf.jp/2022/talk/js-panel-talk/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "JSConf.jp Experts",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/js-panel-talk/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "remixing-usability-with-performance",
+              "title": "Remixing Usability with Performance",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=xicuWsVcbnU",
+              "source_url": "https://jsconf.jp/2022/talk/remixing-usability-with-performance/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Atila Fassina",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/remixing-usability-with-performance/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "what-is-a-web-interoperable-runtime",
+              "title": "What is a Web-interoperable Runtime?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=zZGg8lzaPVg",
+              "source_url": "https://jsconf.jp/2022/talk/what-is-a-web-interoperable-runtime/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "James M Snell",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/what-is-a-web-interoperable-runtime/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "flawless-flows-the-psychology-of-harmonious-teamwork",
+              "title": "Flawless flows - the psychology of harmonious teamwork",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=wik_8JOuYdU",
+              "source_url": "https://jsconf.jp/2022/talk/flawless-flows-the-psychology-of-harmonious-teamwork/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "DORA (Dora Makszy)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/flawless-flows-the-psychology-of-harmonious-teamwork/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-testing-framework-under-the-hood",
+              "title": "JavaScript Testing Framework: Under the Hood",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=qBcucQqUYS4",
+              "source_url": "https://jsconf.jp/2022/talk/javascript-testing-framework-under-the-hood/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "戸上 義章 / Yoshiaki Togami",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/javascript-testing-framework-under-the-hood/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "small-tips-to-use-bun-with-websocket-server-and-webassembly-modules",
+              "title": "Small Tips to use Bun with WebSocket Server and  WebAssembly Modules. / Bun と WebSocket Server とオマケのWebAssembly",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=LBb5CgMoJ3w",
+              "source_url": "https://jsconf.jp/2022/talk/small-tips-to-use-bun-with-websocket-server-and-webassembly-modules/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Masashi GANEKO / がねこまさし",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/small-tips-to-use-bun-with-websocket-server-and-webassembly-modules/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "pack-front-end-practices-into-the-design-system-and-redistribute",
+              "title": "デザインシステムにフロントエンドのプラクティスを詰め込んで再配布する",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=zBrHQKD6NXE",
+              "source_url": "https://jsconf.jp/2022/talk/pack-front-end-practices-into-the-design-system-and-redistribute/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "sakito mukai",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/pack-front-end-practices-into-the-design-system-and-redistribute/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "internal-implementation-of-react",
+              "title": "Reactの内部実装",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Q5Qd02vsxDk",
+              "source_url": "https://jsconf.jp/2022/talk/internal-implementation-of-react/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "noyan",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/internal-implementation-of-react/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "seeking-technology-to-make-ecmascript-specifications-readable-to-everyone",
+              "title": "ECMAScript仕様書を誰でも読めるようにする技術を求めて",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=V9ikneHSDTw",
+              "source_url": "https://jsconf.jp/2022/talk/seeking-technology-to-make-ecmascript-specifications-readable-to-everyone/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "yebis0942",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/seeking-technology-to-make-ecmascript-specifications-readable-to-everyone/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "web-runtime",
+              "title": "Web Runtime",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=qpRiqdVPRlQ",
+              "source_url": "https://jsconf.jp/2022/talk/web-runtime/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "dynamis (ASAI Tomoya)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/web-runtime/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "start-talk",
+              "title": "Start talk by Yosuke Furukawa",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2022/talk/start-talk/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yosuke Furukawa",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/start-talk/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "building-offline-and-real-time-applications-the-magic-of-crdts",
+              "title": "Building Offline and Real-Time Applications – The Magic of CRDTs",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=LQ51CbfD1GM",
+              "source_url": "https://jsconf.jp/2022/talk/building-offline-and-real-time-applications-the-magic-of-crdts/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Matan Kushner",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2022/talk/building-offline-and-real-time-applications-the-magic-of-crdts/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "jp-2023",
+          "name": "JSConf JP 2023",
+          "date_from": "2023-11-19",
+          "date_to": "2023-11-19",
+          "location": "Japan",
+          "source_url": "https://jsconf.jp/2023/schedule/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "anirudh-sharma-1",
+              "title": "Web Internals: Mastering the JavaScript Engine",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=N5hczoxUzMU",
+              "source_url": "https://jsconf.jp/2023/talk/anirudh-sharma-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Anirudh Sharma",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/anirudh-sharma-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "aileen-villanueva-lecuona-1",
+              "title": "Machine learning with Javascript using Tensorflow.JS",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=rj62gsG-Tj4",
+              "source_url": "https://jsconf.jp/2023/talk/aileen-villanueva-lecuona-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Aileen Villanueva Lecuona",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/aileen-villanueva-lecuona-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "aakansha-1",
+              "title": "Building Text Containers in Canvas :)",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Xd2kmqyMwj4",
+              "source_url": "https://jsconf.jp/2023/talk/aakansha-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Aakansha Doshi",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/aakansha-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ankur-datta-1",
+              "title": "React Server Components: The Back-end Killer?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=7uD6_n5w-uY",
+              "source_url": "https://jsconf.jp/2023/talk/ankur-datta-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ankur Datta",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/ankur-datta-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "christoph-nakazawa-1",
+              "title": "Game Development with JavaScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=2cOxefuzuls",
+              "source_url": "https://jsconf.jp/2023/talk/christoph-nakazawa-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Christoph Nakazawa",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/christoph-nakazawa-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "canalun-1",
+              "title": "Tearing down the game 'Brick-Break-Anywhere': Journey into the Uncharted Territories of DOM Scripting",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=MK0leZt1N30",
+              "source_url": "https://jsconf.jp/2023/talk/canalun-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "canalun (Kanaru Sato)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/canalun-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "josh-goldberg-1",
+              "title": "Static Analysis: Shockingly Awesome! ⚡️",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=9ZBkN1ciLrU",
+              "source_url": "https://jsconf.jp/2023/talk/josh-goldberg-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Josh Goldberg",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/josh-goldberg-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "jon-zhang-1",
+              "title": "Unleash Your Product's Potential: A Beginner's Guide to Growth Engineering",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=9pOyzjHSQD0",
+              "source_url": "https://jsconf.jp/2023/talk/jon-zhang-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jon Zhang",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/jon-zhang-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kenneth-rohde-christiansen-1",
+              "title": "Beyond the Web of Today",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=87vEbZXFG30",
+              "source_url": "https://jsconf.jp/2023/talk/kenneth-rohde-christiansen-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kenneth Rohde Christiansen",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/kenneth-rohde-christiansen-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kian-jamali-1",
+              "title": "Trusted Types: DOM XSS Proteciton at Scale",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=X7czn28EzZo",
+              "source_url": "https://jsconf.jp/2023/talk/kian-jamali-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kian Jamali",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/kian-jamali-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "koji-ota-1",
+              "title": "On-browser advertisement auctions using PrivacySandboxAPI",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=VNYsJLMLA8U",
+              "source_url": "https://jsconf.jp/2023/talk/koji-ota-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Koji Ota",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/koji-ota-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kkeeth-1",
+              "title": "Visually experience the beauty of mathematics with p5.js",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=bD-etQwyL4Y",
+              "source_url": "https://jsconf.jp/2023/talk/kkeeth-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "kkeeth",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/kkeeth-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kateryna-porshnieva-1",
+              "title": "Practical guide to building accessible forms in React",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=NdqsiUUV8hk",
+              "source_url": "https://jsconf.jp/2023/talk/kateryna-porshnieva-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kateryna Porshnieva",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/kateryna-porshnieva-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "luca-mugnaini-1",
+              "title": "Hope is postponed disappointment",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=l_-5jsJrR2o",
+              "source_url": "https://jsconf.jp/2023/talk/luca-mugnaini-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Luca Mugnaini",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/luca-mugnaini-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "peter-eijgermans-1",
+              "title": "Micro frontends in Action!",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=XEioyYxGaX4",
+              "source_url": "https://jsconf.jp/2023/talk/peter-eijgermans-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Peter Eijgermans",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/peter-eijgermans-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "poteboy-1",
+              "title": "The Past and Future of Kuma UI",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=FGvVg09dFs0",
+              "source_url": "https://jsconf.jp/2023/talk/poteboy-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "poteboy",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/poteboy-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "vasilika-klimova-1",
+              "title": "Let’s expand reality",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=Wa4uJQci1u8",
+              "source_url": "https://jsconf.jp/2023/talk/vasilika-klimova-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Vasilika Klimova",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/vasilika-klimova-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "yulia-startsev-1",
+              "title": "There and Back Again: A Proposal's Tale",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=kEeSgRya-aw",
+              "source_url": "https://jsconf.jp/2023/talk/yulia-startsev-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yulia Startsev",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/yulia-startsev-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "yonatan-mevorach-1",
+              "title": "Mastering Cryptography Fundamentals with Node's crypto module",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=bhyPIQSSMVI",
+              "source_url": "https://jsconf.jp/2023/talk/yonatan-mevorach-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yonatan Mevorach",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/yonatan-mevorach-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "yusuke-wada-1",
+              "title": "Hono v3 and v4",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "https://www.youtube.com/watch?v=sP7SBWsHSDE",
+              "source_url": "https://jsconf.jp/2023/talk/yusuke-wada-1/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yusuke Wada",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2023/talk/yusuke-wada-1/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "jp-2024",
+          "name": "JSConf JP 2024",
+          "date_from": "2024-11-23",
+          "date_to": "2024-11-23",
+          "location": "Japan",
+          "source_url": "https://jsconf.jp/2024/schedule/",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "sahil-khokhar",
+              "title": "LT: Connecting the dots – Web Accessibility through Internationalization and Localization",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/sahil-khokhar/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sahil Khokhar",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/sahil-khokhar/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "phumrapee-limpianchop",
+              "title": "LT: Web can be fun!",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/phumrapee-limpianchop/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Phumrapee Limpianchop",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/phumrapee-limpianchop/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "csaba-tamas",
+              "title": "LT: Stay Fit, Code Better: A Sportsman’s Practical Tips for JavaScript Developers",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/csaba-tamas/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Csaba Tamas",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/csaba-tamas/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "anushka-trivedi",
+              "title": "LT: Building a Creative Coding Library for Fun and Learning",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/anushka-trivedi/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Anushka Trivedi, opheliagame",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/anushka-trivedi/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "chris-fuentes",
+              "title": "WebAssembly Unleashed: Powering Server-Side Applications",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/chris-fuentes/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Chris Fuentes",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/chris-fuentes/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "trung-vo",
+              "title": "Creating Fast-Feeling Web Apps",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/trung-vo/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Trung Vo",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/trung-vo/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "aileen-villanueva-lecuona",
+              "title": "Building AI apps with JavaScript",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/aileen-villanueva-lecuona/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Aileen Villanueva Lecuona",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/aileen-villanueva-lecuona/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "vj",
+              "title": "Why Build a Secure Supply Chain Management ?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/vj/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "VJ",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/vj/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "akfm-sato",
+              "title": "React Server Componentsとは何であって何でないか",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/akfm-sato/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "akfm_sato",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/akfm-sato/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "aakansha-doshi",
+              "title": "Encrypting data in the Browser - Exploring Web Crypto APIs",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/aakansha-doshi/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Aakansha Doshi",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/aakansha-doshi/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mariko-kosaka",
+              "title": "Web標準の進化を止めない！Baselineというブラウザサポートの考え方",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/mariko-kosaka/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mariko Kosaka",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/mariko-kosaka/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mrdoob",
+              "title": "Moving Three.js from WebGL to WebGPU",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/mrdoob/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mr.doob",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/mrdoob/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "eiji-kitamura",
+              "title": "啓蒙者の視点で振り返るウェブ",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/eiji-kitamura/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Eiji Kitamura / えーじ",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/eiji-kitamura/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "saku",
+              "title": "LT: Promise.try: シンプルで強力な同期/非同期統合の未来 - 実装の深層とPromiseの進化",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/saku/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "saku",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/saku/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ecma-boys",
+              "title": "LT: JavaScriptを支えるエコシステム（漫才）",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/ecma-boys/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "ECMAボーイ (@uhyo_)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/ecma-boys/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "ECMAボーイ (@shqld)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/ecma-boys/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kang-sangun",
+              "title": "LT: romajip: 日本の住所CSVデータを活用した英語住所変換ライブラリを作った話",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/kang-sangun/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "カンサンウン(Kang Sangun)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/kang-sangun/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "koki-tsumura",
+              "title": "LT: ステップバイステップで進めるYahoo!知恵袋のフロントエンドリアーキテクト",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/koki-tsumura/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Koki Tsumura",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/koki-tsumura/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "takashi-onda",
+              "title": "React への依存を最小にするフロントエンドの設計",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/takashi-onda/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "恩田 崇",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/takashi-onda/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-9153f4d13eb0f2c1"
+                }
+              ]
+            },
+            {
+              "external_key": "ssssota",
+              "title": "React CompilerとFine Grained Reactivityと宣言的UIのこれから",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/ssssota/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "ssssota (TOMIKAWA Sotaro)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/ssssota/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kazupon",
+              "title": "Vapor Revolution: Unleashing Vue evolution and Potential with Vapor Mode",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/kazupon/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "kazupon",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/kazupon/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mizchi",
+              "title": "幸せの形はどれも似ているが、不幸なプロジェクトはそれぞれの形がある",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/mizchi/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "mizchi",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/mizchi/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "maxmellon",
+              "title": "リアルアセットとWebのシームレスな活用のためのパスキー",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/maxmellon/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "maxmellon (Kento TSUJI)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/maxmellon/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "berlysia",
+              "title": "JavaScriptのモジュール解決の相互運用性",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/berlysia/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "berlysia",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/berlysia/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "yui_tang",
+              "title": "Modular Monolith Monorepo",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/yui_tang/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "坂本結衣(yui_tang)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/yui_tang/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sosuke-suzuki",
+              "title": "JavaScriptのイテレータとイテラブルの概要と課題、未来",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/sosuke-suzuki/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sosuke Suzuki",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/sosuke-suzuki/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "azukiazusa",
+              "title": "LT: UI 開発における ヘッドレス UI ライブラリの重要性とデザインシステムへの取り入れ方",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/azukiazusa/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "azukiazusa",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/azukiazusa/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "guvalif",
+              "title": "LT: A Tour of Anti-patterns for Functional Programming",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/guvalif/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "TAKASE Kazuyuki (@Guvalif)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/guvalif/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "re-taro",
+              "title": "LT: Storybook との上手な向き合い方を考える",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/re-taro/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "りんたろー",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/re-taro/",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-a6ca21ef525f6d6e"
+                }
+              ]
+            },
+            {
+              "external_key": "mizdra",
+              "title": "LT: あなたの知らない Function.prototype.toString() の世界",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/mizdra/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "mizdra",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/mizdra/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "hiroki-tani-corey-lee",
+              "title": "You Don’t Know Figma Yet - FigmaをJSでハックする",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/hiroki-tani-corey-lee/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Hiroki Tani",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/hiroki-tani-corey-lee/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Corey Lee",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/hiroki-tani-corey-lee/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "yuji-sugiura",
+              "title": "30 Minutes to Understand All of `RegExp` Syntax",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/yuji-sugiura/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Yuji Sugiura",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/yuji-sugiura/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "alexey-taktarov",
+              "title": "The challenges of web apps: what we’ve solved and what’s next?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/alexey-taktarov/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Alexey Taktarov",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/alexey-taktarov/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mesut-durukal",
+              "title": "Boost your Test Implementation in Javascript by 10x?",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/mesut-durukal/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Mesut Durukal",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/mesut-durukal/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "masanari-hamada-tomoki-kiraku",
+              "title": "LINEヤフーにおけるPrerender技術の導入とその効果",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/masanari-hamada-tomoki-kiraku/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Masanari Hamada / Tomoki Kiraku",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/masanari-hamada-tomoki-kiraku/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tiger-daphne-oakes",
+              "title": "How to automate your murder mystery: immersive games in your home",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/tiger-daphne-oakes/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Tiger & Daphne Oakes",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/tiger-daphne-oakes/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "kinto-technologies",
+              "title": "クルマのサブスクサービスをNext.jsで内製化した経験とその1年後",
+              "abstract": "",
+              "session_format": "Talk",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2024/talk/kinto-technologies/",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "N Okawara",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/kinto-technologies/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "ahomu",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2024/talk/kinto-technologies/",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "external_key": "jp-2025",
+          "name": "JSConf JP 2025",
+          "date_from": "2025-11-16",
+          "date_to": "2025-11-16",
+          "location": "Japan",
+          "source_url": "https://jsconf.jp/2025/en/schedule",
+          "source_updated_at": "2026-08-09T12:00:00Z",
+          "talks": [
+            {
+              "external_key": "aapo-alasuutari",
+              "title": "Out the cave, off the cliff  — data-oriented design in Nova JavaScript engine",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/aapo-alasuutari",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Aapo Alasuutari",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/aapo-alasuutari",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ai-browser-builtin-apis",
+              "title": "AI right in the browser with built-in AI APIs",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/ai-browser-builtin-apis",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Thomas Steiner",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/ai-browser-builtin-apis",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "andromeda-future-of-typescript",
+              "title": "Andromeda - The Future Of TypeScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/andromeda-future-of-typescript",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Dean Srebnik",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/andromeda-future-of-typescript",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "ast-reporter-test-catalog",
+              "title": "AST×Reporterでテストから\"観点カタログ\"を自動生成し、LLMと人間の共通Specにする",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/ast-reporter-test-catalog",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "小山 功二(koji-koji)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/ast-reporter-test-catalog",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "async-await-stack-trace",
+              "title": "JavaScriptにおけるasync/await呼び出しのスタックトレースの困難と実装",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/async-await-stack-trace",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sosuke Suzuki",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/async-await-stack-trace",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "beyond-console-log",
+              "title": "Beyond console.log: Developing and Debugging with Observable Side Effects",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/beyond-console-log",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Luca Mugnaini",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/beyond-console-log",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "by-allen",
+              "title": "From Chaos to Harmony: A History of JavaScript（混沌から調和へ ― JavaScriptの歴史）",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/by-allen",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Allen Wirfs Brock",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/by-allen",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "cloudinary-sponsor-session",
+              "title": "When AI Stops Talking and Starts Doing",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/cloudinary-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Cloudinary",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/cloudinary-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "cross-platform-tv-development",
+              "title": "Cross-Platform Television Application Development: JavaScript Frameworks for Smart TV Ecosystems",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/cross-platform-tv-development",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Giovanni Laquidara",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/cross-platform-tv-development",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "cybozu-sponsor-session",
+              "title": "大規模プロダクトで実践するAI活用の仕組みづくり",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/cybozu-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "サイボウズ株式会社",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/cybozu-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-fc5db8ec4bde8cc1"
+                }
+              ]
+            },
+            {
+              "external_key": "denkiyagi-sponsor-session",
+              "title": "なぜブラウザで帳票を生成したいのか、どのようにブラウザで帳票を生成するのか",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/denkiyagi-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "デンキヤギ株式会社",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/denkiyagi-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-42c6cd2211549abc"
+                }
+              ]
+            },
+            {
+              "external_key": "dwango-sponsor-session",
+              "title": "Media Capture and Streams: W3C仕様と現場での知見",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/dwango-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "株式会社ドワンゴ",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/dwango-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-9f645fdb6b2bd0ee"
+                }
+              ]
+            },
+            {
+              "external_key": "embracing-technical-welfare-and-rediscovering-web-development",
+              "title": "技術的福祉の受容、および Web 開発との「出会い直し」",
+              "abstract": "",
+              "session_format": "Keynote",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/embracing-technical-welfare-and-rediscovering-web-development",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jxck",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/embracing-technical-welfare-and-rediscovering-web-development",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "error-prototype-stack",
+              "title": "`Error.prototype.stack` の今と未来",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/error-prototype-stack",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "progfay",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/error-prototype-stack",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "evolution-nodejs-inspector",
+              "title": "Evolution of the Node.js Inspector",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/evolution-nodejs-inspector",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "嶋龍平",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/evolution-nodejs-inspector",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-485bbb182d114ac2"
+                }
+              ]
+            },
+            {
+              "external_key": "evolving-nodejs-module-loader",
+              "title": "Evolving the Node.js module loader",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/evolving-nodejs-module-loader",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Joyee Cheung",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/evolving-nodejs-module-loader",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "findy-sponsor-session",
+              "title": "大規模モノレポの秩序管理  失速しない多言語化フロントエンドの運用",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/findy-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "ファインディ株式会社",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/findy-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-52fc51de5bf14b43"
+                }
+              ]
+            },
+            {
+              "external_key": "great-migration-webassembly",
+              "title": "The Great Migration: Identifying and Offloading Your App's Bottlenecks to WebAssembly",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/great-migration-webassembly",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Anam Ahmed",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/great-migration-webassembly",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "handling-time-in-javascript-with-temporal",
+              "title": "Now and Next – Handling Time in JavaScript with Temporal",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/handling-time-in-javascript-with-temporal",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Trung Vo",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/handling-time-in-javascript-with-temporal",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "i-cant-believe-its-not-javascript",
+              "title": "I Can't Believe It's Not JavaScript!",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/i-cant-believe-its-not-javascript",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Jemima Abu",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/i-cant-believe-its-not-javascript",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "in-doubt-what-to-pick-choose-qwik",
+              "title": "In doubt what to pick? Choose Qwik!",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/in-doubt-what-to-pick-choose-qwik",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Blagoj Jovanov",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/in-doubt-what-to-pick-choose-qwik",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-parser-using-support",
+              "title": "JavaScript パーサーに using 対応をする過程で与えたエコシステムへの影響",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/javascript-parser-using-support",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "ota-meshi",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/javascript-parser-using-support",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "baseballyama",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/javascript-parser-using-support",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-pattern-matching",
+              "title": "混沌としたJavaScriptにパターンマッチングが！",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/javascript-pattern-matching",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "永山俊明",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/javascript-pattern-matching",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-0cb1aa83a7c92a37"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-prototype-override",
+              "title": "Tragedy or Hope in the Commons: The Race for JavaScript Prototype Override",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/javascript-prototype-override",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "canalun",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/javascript-prototype-override",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "javascript-typespec-safety-karuta",
+              "title": "JavaScript/TypeSpec安全開発カルタ (カルタで安全な開発をするテクニックを学ぼう!)",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/javascript-typespec-safety-karuta",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "林 恭央",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/javascript-typespec-safety-karuta",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-b15b2ab78f29958c"
+                }
+              ]
+            },
+            {
+              "external_key": "layerx-sponsor-session",
+              "title": "Web エンジニアが JavaScript で AI Agent を作る",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/layerx-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "株式会社LayerX",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/layerx-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "line-yahoo-sponsor-session",
+              "title": "老舗の知恵とAIの二刀流で挑むYahoo!知恵袋の事故らない進化",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/line-yahoo-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "LINEヤフー株式会社",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/line-yahoo-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "mcp-ui-intent-driven-frontend",
+              "title": "MCP UI で作るインテント駆動フロントエンド",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/mcp-ui-intent-driven-frontend",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "奥村雄太",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/mcp-ui-intent-driven-frontend",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-18c57ab084ce6238"
+                }
+              ]
+            },
+            {
+              "external_key": "miidas-sponsor-session",
+              "title": "E2Eから始める自動テスト",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/miidas-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "ミイダス株式会社",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/miidas-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-88cd91f7ef31c0e0"
+                }
+              ]
+            },
+            {
+              "external_key": "modern-js-framework-build-process",
+              "title": "モダンJSフレームワークのビルドプロセス 〜なぜReactは503行、Svelteは12行なのか〜",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/modern-js-framework-build-process",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Maple",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/modern-js-framework-build-process",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "module-harmony",
+              "title": "Module Harmony",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/module-harmony",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "森内建太 (@petamoriken)",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/module-harmony",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "money-forward-sponsor-session",
+              "title": "Micro Frontendsで築いた共通基盤の成長と、運用で積み重ねた試行の軌跡",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/money-forward-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "株式会社マネーフォワード",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/money-forward-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-f18c745c4f42214a"
+                }
+              ]
+            },
+            {
+              "external_key": "music-visualization-javascript",
+              "title": "Bringing Songs to Life: Music Visualization with JavaScript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/music-visualization-javascript",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ursula Cervantes",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/music-visualization-javascript",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "nextjs-caching-re-architecture",
+              "title": "Next.js Caching - Legacy, Improvement, Re-Architecture",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/nextjs-caching-re-architecture",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "akfm_sato",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/nextjs-caching-re-architecture",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "passwordless-in-production",
+              "title": "Passwordless in Production: Implementing FIDO Passkeys for Frontend",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/passwordless-in-production",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Manish Kumar",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/passwordless-in-production",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "profiling-typescript-at-scale",
+              "title": "Tracing the TypeScript compiler at Scale",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/profiling-typescript-at-scale",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Itai Satati",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/profiling-typescript-at-scale",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "proposal-composites-object-comparison",
+              "title": "Proposal-CompositesによるObject比較の未来",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/proposal-composites-object-comparison",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "jiko21",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/proposal-composites-object-comparison",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "reiwa-travel-sponsor-session",
+              "title": "AIにNext.js App Router移行を依頼して、失敗した話。 Evolving NEWT’s TypeScript Backend for the AI-Driven",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/reiwa-travel-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "株式会社令和トラベル",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/reiwa-travel-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-52405f587c5ebc5c"
+                }
+              ]
+            },
+            {
+              "external_key": "running-typescript-natively-nodejs",
+              "title": "Running TypeScript Natively in Node.js",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/running-typescript-natively-nodejs",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Marco Ippolito",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/running-typescript-natively-nodejs",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "shrink-supply-chain-risk-in-js",
+              "title": "Shrink Supply Chain Risk in JS",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/shrink-supply-chain-risk-in-js",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ruben Bridgewater",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/shrink-supply-chain-risk-in-js",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sponsor-lt-session",
+              "title": "Sponsor LT x 12",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/sponsor-lt-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Various Sponsors",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/sponsor-lt-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "state-of-deno",
+              "title": "Deno Wrapped: What happened in Deno this year",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/state-of-deno",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Leo Kettmeir",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/state-of-deno",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "state-of-the-web",
+              "title": "The State of the Web",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/state-of-the-web",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sacha Greif",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/state-of-the-web",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "sustainable-oss-policy",
+              "title": "\"善意\"だけでは続かない──持続可能性の問題に取り組む世界のOSS政策の話",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/sustainable-oss-policy",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "今村かずき",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/sustainable-oss-policy",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-f844f11c236712f9"
+                }
+              ]
+            },
+            {
+              "external_key": "talks-arent-most-important",
+              "title": "Talks Aren’t the Most Important Thing at JSConf",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/talks-arent-most-important",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Ricky Kim",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/talks-arent-most-important",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "technical-discussion-tc39",
+              "title": "Technical Discussion with TC39",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/technical-discussion-tc39",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Chengzhong Wu",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/technical-discussion-tc39",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Chris de Almedia",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/technical-discussion-tc39",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Dmitry Makhnev",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/technical-discussion-tc39",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Gus Caplan",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/technical-discussion-tc39",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                },
+                {
+                  "name": "Rob Palmer",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/technical-discussion-tc39",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "tver-sponsor-session",
+              "title": "TVerのWeb内製化 - 開発スピードと品質を両立させるまでの道のり",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/tver-sponsor-session",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "株式会社TVer",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/tver-sponsor-session",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "understanding-atomics-api",
+              "title": "Atomics APIを知る",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/understanding-atomics-api",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "TOMIKAWA Sotaro",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/understanding-atomics-api",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "understanding-directives-and-build-systems",
+              "title": "自作して理解する、ディレクティブとビルドシステムの役割",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "B",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/understanding-directives-and-build-systems",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "池奥裕太",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/understanding-directives-and-build-systems",
+                  "source_updated_at": "2026-08-09T12:00:00Z",
+                  "canonical_key": "jsconf-jp-name-d4eeed2562695961"
+                }
+              ]
+            },
+            {
+              "external_key": "v8-from-script-to-call-rcx",
+              "title": "V8: from <script> to `call $rcx`",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/v8-from-script-to-call-rcx",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Olivier Flückiger",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/v8-from-script-to-call-rcx",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "vertical-text-web-javascript",
+              "title": "縦書きWebの実用を支えるJavaScript",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "D",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/vertical-text-web-javascript",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "berlysia",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/vertical-text-web-javascript",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "visual-regression-testing-chromatic",
+              "title": "横断組織が向き合うVisual Regression Testing —Chromaticは使い続けるべきなのか—",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/visual-regression-testing-chromatic",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Taiga Kiyokawa",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/visual-regression-testing-chromatic",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "whats-new-in-ecma-402",
+              "title": "What's New in ECMA-402",
+              "abstract": "",
+              "session_format": "Lightning Talk",
+              "track": "A",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/whats-new-in-ecma-402",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Shane Carr",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/whats-new-in-ecma-402",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            },
+            {
+              "external_key": "wintertc-server-side-standards",
+              "title": "WinterTC: Standards for server-side runtimes",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "C",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://jsconf.jp/2025/en/talks/wintertc-server-side-standards",
+              "source_updated_at": "2026-08-09T12:00:00Z",
+              "speakers": [
+                {
+                  "name": "Andreu Botella",
+                  "biography": "",
+                  "source_url": "https://jsconf.jp/2025/en/talks/wintertc-server-side-standards",
+                  "source_updated_at": "2026-08-09T12:00:00Z"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

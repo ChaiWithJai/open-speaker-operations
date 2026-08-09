@@ -1,17 +1,45 @@
 from django.urls import path
 
+from .abstract_views import AbstractManagementView, RoundReviewView
+from .content_ops import (
+    ContentOperationsView,
+    ContentRevisionRestoreView,
+    CreateFileRequestView,
+    EvidenceDownloadView,
+    LatestEvidenceZipView,
+    OrganiserEvidenceCommentView,
+    SessionContentEditView,
+    SessionPublicationApprovalView,
+    SpeakerContentEditView,
+    SpeakerEvidenceCommentView,
+)
+from .crm import CRMDirectoryView
+from .public_widgets import (
+    EmbedBuilderView,
+    PublicSpeakerDetailView,
+    PublicWidgetView,
+    SelectedScheduleIcsView,
+)
+from .speaker_operations import SpeakerImportView, SpeakerOperationsView
 from .views import (
     AgendaReleaseView,
+    CfpRoutingView,
     ChecklistView,
     CompleteTaskView,
+    ConferenceMemoryView,
+    ConferenceSpeakerView,
     DashboardView,
     DrilldownView,
+    EvidenceAdminView,
+    ProgramDecisionsView,
+    PublicCfpGuideView,
     PublishedEmbedView,
     PublishedGalleryView,
     PublishedIcsView,
     ReminderView,
     ResourceView,
     ReviewerScoringView,
+    RoleEntryView,
     StatusView,
     SyncConsoleView,
     SyncPreviewView,
@@ -22,6 +50,51 @@ from .views import (
 app_name = "speakerops"
 
 urlpatterns = [
+    path(
+        "orga/organiser/<slug:organiser>/speaker-crm/",
+        CRMDirectoryView.as_view(),
+        name="speakerops_crm_org",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/crm/",
+        CRMDirectoryView.as_view(),
+        name="speakerops_crm",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/speakers/",
+        SpeakerOperationsView.as_view(),
+        name="speakerops_speakers",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/speakers/import/",
+        SpeakerImportView.as_view(),
+        name="speakerops_speaker_import",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/abstract-management/",
+        AbstractManagementView.as_view(),
+        name="speakerops_abstract_management",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/round-review/",
+        RoundReviewView.as_view(),
+        name="speakerops_round_review_queue",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/round-review/<int:assignment>/",
+        RoundReviewView.as_view(),
+        name="speakerops_round_review",
+    ),
+    path(
+        "<slug:event>/speaker-operations/cfp-guide/",
+        PublicCfpGuideView.as_view(),
+        name="speakerops_cfp_guide",
+    ),
+    path(
+        "<slug:event>/speaker-operations/start/",
+        RoleEntryView.as_view(),
+        name="speakerops_entry",
+    ),
     path(
         "<slug:event>/speaker-operations/schedule.ics",
         PublishedIcsView.as_view(),
@@ -38,9 +111,49 @@ urlpatterns = [
         name="speakerops_gallery",
     ),
     path(
+        "<slug:event>/speaker-operations/widgets/<slug:widget>/",
+        PublicWidgetView.as_view(),
+        name="speakerops_public_widget",
+    ),
+    path(
+        "<slug:event>/speaker-operations/widgets/speakers/<slug:code>/",
+        PublicSpeakerDetailView.as_view(),
+        name="speakerops_public_speaker",
+    ),
+    path(
+        "<slug:event>/speaker-operations/my-schedule.ics",
+        SelectedScheduleIcsView.as_view(),
+        name="speakerops_selected_ics",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/embed-builder/",
+        EmbedBuilderView.as_view(),
+        name="speakerops_embed_builder",
+    ),
+    path(
         "orga/<slug:event>/speaker-operations/reminders/",
         ReminderView.as_view(),
         name="speakerops_reminders",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/conference-memory/",
+        ConferenceMemoryView.as_view(),
+        name="speakerops_conference_memory",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/conference-memory/speakers/<int:pk>/",
+        ConferenceSpeakerView.as_view(),
+        name="speakerops_conference_speaker",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/program-decisions/",
+        ProgramDecisionsView.as_view(),
+        name="speakerops_program_decisions",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/cfp-routing/",
+        CfpRoutingView.as_view(),
+        name="speakerops_cfp_routing",
     ),
     path(
         "orga/<slug:event>/speaker-operations/sync/preview/",
@@ -73,6 +186,51 @@ urlpatterns = [
         name="speakerops_agenda",
     ),
     path(
+        "orga/<slug:event>/speaker-operations/content/",
+        ContentOperationsView.as_view(),
+        name="speakerops_content_operations",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/file-requests/",
+        CreateFileRequestView.as_view(),
+        name="speakerops_create_file_request",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/latest.zip",
+        LatestEvidenceZipView.as_view(),
+        name="speakerops_latest_evidence_zip",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/submissions/<int:pk>/approval/",
+        SessionPublicationApprovalView.as_view(),
+        name="speakerops_session_publication_approval",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/submissions/<int:pk>/edit/",
+        SessionContentEditView.as_view(),
+        name="speakerops_session_content_edit",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/speakers/<int:pk>/edit/",
+        SpeakerContentEditView.as_view(),
+        name="speakerops_speaker_content_edit",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/revisions/<int:pk>/restore/",
+        ContentRevisionRestoreView.as_view(),
+        name="speakerops_content_revision_restore",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/evidence/<int:pk>/download/",
+        EvidenceDownloadView.as_view(),
+        name="speakerops_evidence_download",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/evidence/<int:pk>/comments/",
+        OrganiserEvidenceCommentView.as_view(),
+        name="speakerops_organiser_evidence_comment",
+    ),
+    path(
         "orga/<slug:event>/speaker-operations/",
         DashboardView.as_view(),
         name="speakerops_dashboard",
@@ -93,6 +251,11 @@ urlpatterns = [
         name="speakerops_complete_task",
     ),
     path(
+        "<slug:event>/speaker-operations/checklist/evidence/<int:pk>/comments/",
+        SpeakerEvidenceCommentView.as_view(),
+        name="speakerops_speaker_evidence_comment",
+    ),
+    path(
         "<slug:event>/speaker-operations/resources/<slug:resource>/",
         ResourceView.as_view(),
         name="speakerops_resource",
@@ -101,6 +264,11 @@ urlpatterns = [
         "orga/<slug:event>/speaker-operations/tasks/<int:pk>/<slug:action>/",
         TaskAdminView.as_view(),
         name="speakerops_task_admin",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/evidence/<int:pk>/<slug:action>/",
+        EvidenceAdminView.as_view(),
+        name="speakerops_evidence_admin",
     ),
     path(
         "<slug:event>/speaker-operations/status.json",

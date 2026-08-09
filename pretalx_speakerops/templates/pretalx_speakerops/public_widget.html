@@ -1,0 +1,39 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ widget_label }} · {{ event.name }}</title><link rel="stylesheet" href="{% static 'pretalx_speakerops/public_widgets.css' %}"></head>
+<body{% if theme == 'dark' %} class="theme-dark"{% endif %}><main data-public-widget data-event="{{ event.slug }}" data-widget="{{ widget }}" data-selected-track="{{ selected_track }}" aria-labelledby="widget-title">
+  <header class="masthead"><div><p class="eyebrow">Published program</p><h1 id="widget-title">{{ widget_label }}</h1><p>{{ event.name }}</p></div><a href="{% url 'plugins:speakerops:speakerops_ics' event.slug %}">Full program calendar</a></header>
+  <nav class="widget-nav" aria-label="Published program views">
+    <a href="{% url 'plugins:speakerops:speakerops_public_widget' event.slug 'sessions' %}"{% if widget == 'sessions' %} aria-current="page"{% endif %}>Sessions</a>
+    <a href="{% url 'plugins:speakerops:speakerops_public_widget' event.slug 'speakers' %}"{% if widget == 'speakers' %} aria-current="page"{% endif %}>Speakers</a>
+    <a href="{% url 'plugins:speakerops:speakerops_public_widget' event.slug 'agenda' %}"{% if widget == 'agenda' %} aria-current="page"{% endif %}>Agenda</a>
+    <a href="{% url 'plugins:speakerops:speakerops_public_widget' event.slug 'itinerary' %}"{% if widget == 'itinerary' %} aria-current="page"{% endif %}>My itinerary</a>
+    <a href="{% url 'plugins:speakerops:speakerops_public_widget' event.slug 'gallery' %}"{% if widget == 'gallery' %} aria-current="page"{% endif %}>Gallery</a>
+  </nav>
+
+  {% if widget == 'sessions' or widget == 'speakers' or widget == 'gallery' %}
+  <section class="toolbar" aria-label="Filter {{ widget_label|lower }}">
+    <div class="control"><label for="widget-search">Search {{ widget_label|lower }}</label><input id="widget-search" type="search" autocomplete="off" placeholder="{% if widget == 'sessions' %}Title or speaker{% else %}Name, company, title, or session{% endif %}"></div>
+    {% if widget == 'sessions' %}<div class="control"><label for="widget-track">Track</label><select id="widget-track"><option value="">All tracks</option>{% for track in tracks %}<option value="{{ track.pk }}">{{ track.name }}</option>{% endfor %}</select></div><div class="control"><label for="widget-room">Room</label><select id="widget-room"><option value="">All rooms</option>{% for room in rooms %}<option value="{{ room.pk }}">{{ room.name }}</option>{% endfor %}</select></div>{% endif %}
+  </section><p id="widget-status" class="status" role="status" aria-live="polite">{% if widget == 'sessions' %}{{ slots|length }} result{{ slots|length|pluralize }}{% else %}{{ speaker_cards|length }} result{{ speaker_cards|length|pluralize }}{% endif %}</p>
+  {% endif %}
+
+  {% if widget == 'sessions' or widget == 'itinerary' %}
+    {% if widget == 'itinerary' %}<div class="itinerary-actions"><strong><span data-selected-count>0</span> selected</strong><label><input id="selected-only" type="checkbox"> Show only my sessions</label><a class="button" data-calendar-export data-base="{% url 'plugins:speakerops:speakerops_selected_ics' event.slug %}" aria-disabled="true">Export selected sessions (.ics)</a></div><p class="helper">Browse the complete chronological itinerary, then star sessions. Selections stay in this browser.</p>{% endif %}
+    <div class="cards">{% for slot in slots %}<article class="card" data-filter-card data-search="{{ slot.submission.title|lower }} {{ slot.submission.display_speaker_names|lower }} {{ slot.submission.abstract|default:''|striptags|lower }}" data-track="{{ slot.submission.track_id|default:'' }}" data-room="{{ slot.room_id|default:'' }}">
+      <div class="meta"><time datetime="{{ slot.start|date:'c' }}">{{ slot.public_start|date:'l, F j' }} · {{ slot.public_start|time:'g:i A' }}–{{ slot.public_end|time:'g:i A' }}</time></div>
+      <h2><a href="{{ slot.submission.urls.public }}">{{ slot.submission.title }}</a></h2><div class="speaker-line">{% for public_speaker in slot.public_speaker_cards %}<p><a href="{% url 'plugins:speakerops:speakerops_public_speaker' event.slug public_speaker.speaker.code %}">{{ public_speaker.speaker.get_display_name }}</a> <span class="meta">· {{ public_speaker.job_title }} · {{ public_speaker.company }}</span></p>{% endfor %}</div>
+      <p>{% if slot.submission.submission_type %}<span class="pill">{{ slot.submission.submission_type.name }} · {{ slot.submission.get_duration }} min</span>{% endif %}{% if slot.submission.track %}<span class="pill pill--track">{{ slot.submission.track.name }}</span>{% endif %}{% if slot.room %}<span class="pill">{{ slot.room.name }}</span>{% endif %}</p>
+      {% if not compact %}<details class="description"><summary>Show more</summary><p>{{ slot.submission.description|default:slot.submission.abstract|default:"Description not provided." }}</p></details>{% endif %}
+      <p><button class="star" type="button" data-star="{{ slot.submission.code }}" aria-pressed="false">☆ Add to my schedule</button></p>
+    </article>{% empty %}<p>No published sessions yet.</p>{% endfor %}</div>
+  {% elif widget == 'agenda' %}
+    {% for day in days %}<section class="agenda-day" aria-labelledby="day-{{ day.key }}"><h2 id="day-{{ day.key }}">{{ day.label }}</h2><table class="agenda"><caption class="helper">{{ day.slots|length }} published session{{ day.slots|length|pluralize }}</caption><thead><tr><th scope="col">Time</th><th scope="col">Session</th><th scope="col">Speakers</th><th scope="col">Room</th><th scope="col">Track</th></tr></thead><tbody>{% for slot in day.slots %}<tr><td data-label="Time"><time datetime="{{ slot.start|date:'c' }}">{{ slot.public_start|time:'g:i A' }}</time></td><td data-label="Session"><a href="{{ slot.submission.urls.public }}">{{ slot.submission.title }}</a></td><td data-label="Speakers">{{ slot.submission.display_speaker_names }}</td><td data-label="Room">{{ slot.room.name|default:"TBA" }}</td><td data-label="Track">{{ slot.submission.track.name|default:"General" }}</td></tr>{% endfor %}</tbody></table></section>{% empty %}<p>No published sessions yet.</p>{% endfor %}
+  {% else %}
+    <div class="speaker-grid">{% for card in speaker_cards %}<article class="card" data-filter-card data-search="{{ card.search_text }}">
+      {% if card.avatar_url %}<img class="avatar" src="{{ card.avatar_url }}" alt="Headshot of {{ card.speaker.get_display_name }}">{% else %}<div class="avatar avatar-fallback" aria-hidden="true">{{ card.speaker.name|first|upper }}</div>{% endif %}
+      <h2><a href="{% url 'plugins:speakerops:speakerops_public_speaker' event.slug card.speaker.code %}">{{ card.speaker.get_display_name }}</a></h2><p class="speaker-role">{{ card.job_title }} · {{ card.company }}</p>
+      {% if widget == 'gallery' %}<p class="bio">{{ card.biography|default:"Biography not provided."|truncatewords:28 }}</p>{% endif %}
+      <p class="meta">{{ card.slots|length }} session{{ card.slots|length|pluralize }}</p><ul class="session-list">{% for slot in card.slots %}<li><a href="{{ slot.submission.urls.public }}">{{ slot.submission.title }}</a></li>{% endfor %}</ul>
+    </article>{% empty %}<p>No published speakers yet.</p>{% endfor %}</div>
+  {% endif %}
+</main><script src="{% static 'pretalx_speakerops/public_widgets.js' %}" defer></script></body></html>

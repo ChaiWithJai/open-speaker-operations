@@ -53,6 +53,6 @@ explicit sanitizer policy that must be maintained as embeds evolve.
 
 ## Automated proof
 
-`tests/test_m2.py::test_reminder_replay_is_deduplicated` and
+`tests/test_onboarding_operations.py::test_reminder_replay_is_deduplicated` and
 `test_resources_sanitize_and_only_publish_visible` prove queue dedupe and
 publication/sanitization boundaries.

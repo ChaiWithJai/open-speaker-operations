@@ -1,0 +1,42 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+
+{% block content %}
+<div class="speakerops speakerops--review" aria-labelledby="round-review-title">
+  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Reviewer portal</p><h1 id="round-review-title">Assigned round evaluations</h1><p>Your queue contains only submissions explicitly assigned to you in a round.</p></div></header>
+  <div class="speakerops-review-layout">
+    <aside class="speakerops-queue" aria-label="Exactly assigned proposals">
+      <h2>Queue <span>{{ assignments|length }}</span></h2>
+      {% for item in assignments %}<a href="{% url 'plugins:speakerops:speakerops_round_review' event.slug item.pk %}"{% if item.pk == assignment.pk %} aria-current="page"{% endif %}><small>{{ item.round.name }} · {{ item.get_status_display }}</small><strong>{{ item.submission.title }}</strong></a>{% empty %}<p>No round assignments.</p>{% endfor %}
+    </aside>
+    {% if assignment %}<main>
+      <section class="speakerops-panel">
+        <div>
+          <p class="speakerops__eyebrow">{{ assignment.round.name }} · {% if assignment.round.blinded %}Blind review active{% else %}Identity-visible review{% endif %}</p>
+          <h2>{{ assignment.submission.title }}</h2>
+          {% if assignment.round.blinded %}<p><strong>Author identity hidden.</strong> Speaker and co-author names, affiliations, and other reviewers’ answers are not available in this view.</p>{% else %}<p><strong>Presenters:</strong> {% for speaker in assignment.submission.speakers.all %}{{ speaker.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+        </div>
+      </section>
+      <section class="speakerops-proposal-copy"><h3>Abstract</h3><p>{{ assignment.submission.abstract }}</p>{% if assignment.submission.description %}<h3>Description</h3><p>{{ assignment.submission.description }}</p>{% endif %}</section>
+      {% if assignment.status != 'recused' %}<form class="speakerops-review-form" method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="save">
+        <h3>Scorecard</h3>
+        {% for field in fields %}
+          {% if field.criterion.field_type == 'numeric' %}<label for="criterion-{{ field.criterion.pk }}"><strong>{{ field.criterion.name }}</strong> · {{ field.criterion.minimum|floatformat:"-2" }}–{{ field.criterion.maximum|floatformat:"-2" }} · weight {{ field.criterion.weight|floatformat:"-2" }}</label><input class="form-control" id="criterion-{{ field.criterion.pk }}" name="criterion_{{ field.criterion.pk }}" type="number" min="{{ field.criterion.minimum|floatformat:'-2' }}" max="{{ field.criterion.maximum|floatformat:'-2' }}" step="1" value="{{ field.value|default:'' }}" required>
+          {% elif field.criterion.field_type == 'dropdown' %}<label for="criterion-{{ field.criterion.pk }}"><strong>{{ field.criterion.name }}</strong></label><select class="form-control" id="criterion-{{ field.criterion.pk }}" name="criterion_{{ field.criterion.pk }}" required><option value="">Choose…</option>{% for option in field.criterion.options %}<option value="{{ option }}"{% if field.value == option %} selected{% endif %}>{{ option }}</option>{% endfor %}</select>
+          {% else %}<label for="criterion-{{ field.criterion.pk }}"><strong>{{ field.criterion.name }}</strong></label><textarea class="form-control" id="criterion-{{ field.criterion.pk }}" name="criterion_{{ field.criterion.pk }}" rows="5" required>{{ field.value|default:'' }}</textarea>{% endif %}
+        {% endfor %}
+        <button class="btn btn-primary" type="submit">Save round evaluation</button>
+      </form>
+      <form class="speakerops-panel speakerops-panel--quiet" method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="recuse">
+        <div><h3>Conflict of interest</h3><p>Declare a conflict to remove this proposal from your actionable queue while preserving an auditable recusal status.</p></div>
+        <label for="recusal-reason">Reason (optional)</label><input class="form-control" id="recusal-reason" name="recusal_reason">
+        <button class="btn btn-outline-primary" type="submit">Declare conflict and recuse</button>
+      </form>{% else %}<div class="speakerops-empty"><h3>Conflict declared</h3><p>This assignment is no longer actionable.</p></div>{% endif %}
+    </main>{% else %}<section class="speakerops-empty"><h2>Queue complete</h2><p>No proposals are assigned to you in any evaluation round.</p></section>{% endif %}
+  </div>
+</div>
+{% endblock content %}

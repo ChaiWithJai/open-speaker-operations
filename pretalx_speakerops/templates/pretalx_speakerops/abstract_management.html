@@ -1,0 +1,86 @@
+{% extends "orga/base.html" %}
+{% load static %}
+
+{% block stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="speakerops" aria-labelledby="abstract-management-title">
+  <header class="speakerops__header">
+    <div>
+      <p class="speakerops__eyebrow">Abstract management</p>
+      <h1 id="abstract-management-title">Review rounds, assignments &amp; results</h1>
+      <p>Independent rounds keep scorecards, reviewer pools, visibility, assignments, and results isolated. Human scores inform the chair; they never decide automatically.</p>
+    </div>
+    <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_round_review_queue' event.slug %}">View reviewer portal</a>
+  </header>
+
+  <section id="evaluation-rounds" aria-labelledby="rounds-title">
+    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Evaluation plans</p><h2 id="rounds-title">Independent review rounds</h2></div><p>Each round has its own dates, scorecard, blind-review policy, and reviewer pool.</p></div>
+    <div class="speakerops__grid">
+      {% for round in rounds %}
+      <article class="speakerops-card">
+        <p class="speakerops__eyebrow">Round {{ forloop.counter }} · {% if round.blinded %}Blind review{% else %}Identity visible{% endif %}</p>
+        <h3>{{ round.name }}</h3>
+        <p>{{ round.opens_at|date:"M j, Y" }}–{{ round.closes_at|date:"M j, Y" }}</p>
+        <h4>Scorecard</h4>
+        <ul>{% for criterion in round.criteria.all %}<li><strong>{{ criterion.name }}</strong> · {{ criterion.get_field_type_display }}{% if criterion.field_type == 'numeric' %} {{ criterion.minimum|floatformat:"-2" }}–{{ criterion.maximum|floatformat:"-2" }} · weight {{ criterion.weight|floatformat:"-2" }}{% elif criterion.field_type == 'dropdown' %} · {{ criterion.options|join:" / " }}{% endif %}</li>{% endfor %}</ul>
+        <h4>Reviewer pool</h4>
+        <ul>{% for membership in round.reviewer_memberships.all %}<li>{{ membership.reviewer.get_display_name }} · cap {{ membership.assignment_limit }}</li>{% empty %}<li>Separate pool currently empty</li>{% endfor %}</ul>
+      </article>
+      {% empty %}<div class="speakerops-empty"><p>No evaluation rounds yet. Create Initial Review first.</p></div>{% endfor %}
+    </div>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="create-round-title">
+    <div><h2 id="create-round-title">Create or update a round</h2><p>Choose a complete scorecard preset. Saving a matching name updates that round and preserves independence from every other round.</p></div>
+    <form method="post">
+      {% csrf_token %}<input type="hidden" name="action" value="create_round">
+      <label for="round-name">Round name</label><input class="form-control" id="round-name" name="name" required placeholder="Initial Review">
+      <label for="round-open">Open date</label><input class="form-control" id="round-open" name="opens_at" type="date" required>
+      <label for="round-close">Close date</label><input class="form-control" id="round-close" name="closes_at" type="date" required>
+      <label for="scorecard-preset">Scorecard</label>
+      <select class="form-control" id="scorecard-preset" name="scorecard_preset" required>
+        <option value="initial">Initial mixed scorecard: Originality 1–5 ×2, Relevance 1–5 ×1, Recommendation dropdown, Comments text</option>
+        <option value="final">Final scorecard: Final Score 1–10 ×1, Comments text</option>
+      </select>
+      <label class="speakerops-check"><input type="checkbox" name="blinded" value="yes"> Blind review — hide all author and co-author identity from reviewers</label>
+      <button class="btn btn-primary" type="submit">Save evaluation round</button>
+    </form>
+  </section>
+
+  <section id="assignments" aria-labelledby="assignments-title">
+    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Reviewer operations</p><h2 id="assignments-title">Targeted and bulk assignment</h2></div><p>Reviewers belong to one selected round. Auto-distribution respects the per-reviewer cap and optional track filter.</p></div>
+    {% for round in rounds %}
+    <article class="speakerops-panel">
+      <div><h3>{{ round.name }}</h3><p>{{ round.assignments.all|length }} assignment{{ round.assignments.all|length|pluralize }} confirmed in this round.</p></div>
+      <form method="post">
+        {% csrf_token %}<input type="hidden" name="round_id" value="{{ round.pk }}">
+        <label for="reviewer-{{ round.pk }}">Reviewer</label><select class="form-control" id="reviewer-{{ round.pk }}" name="reviewer_id" required>{% for reviewer in reviewers %}<option value="{{ reviewer.pk }}">{{ reviewer.get_display_name }} · {{ reviewer.email }}</option>{% endfor %}</select>
+        <label for="cap-{{ round.pk }}">Per-reviewer assignment cap</label><input class="form-control" id="cap-{{ round.pk }}" type="number" min="1" max="500" name="assignment_limit" value="5" required>
+        <label for="track-{{ round.pk }}">Track filter for auto-distribution</label><select class="form-control" id="track-{{ round.pk }}" name="track_id"><option value="">All tracks</option>{% for track in tracks %}<option value="{{ track.pk }}">{{ track.name }}</option>{% endfor %}</select>
+        <fieldset><legend>Specific submissions</legend>{% for submission in submissions %}<label class="speakerops-check"><input type="checkbox" name="submissions" value="{{ submission.pk }}"> {{ submission.title }}{% if submission.track %} · {{ submission.track.name }}{% endif %}</label>{% endfor %}</fieldset>
+        <div class="speakerops__actions"><button class="btn btn-outline-primary" name="action" value="assign_selected" type="submit">Add selected</button><button class="btn btn-outline-primary" name="action" value="assign_exact" type="submit">Replace with selected — exact queue</button><button class="btn btn-primary" name="action" value="auto_assign" type="submit">Auto-distribute to cap</button></div>
+      </form>
+      <div class="speakerops-table-wrap"><table class="speakerops-table"><thead><tr><th>Reviewer</th><th>Assigned submission</th><th>Status</th></tr></thead><tbody>{% for assignment in round.assignments.all %}<tr><td>{{ assignment.reviewer.get_display_name }}</td><td>{{ assignment.submission.title }}</td><td>{{ assignment.get_status_display }}</td></tr>{% empty %}<tr><td colspan="3">No assignments yet.</td></tr>{% endfor %}</tbody></table></div>
+    </article>
+    {% endfor %}
+  </section>
+
+  <section id="progress" aria-labelledby="progress-title">
+    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Live committee control</p><h2 id="progress-title">Review progress &amp; reminders</h2></div><p>Counts are derived from persisted per-round assignments and update as reviews complete or reviewers recuse.</p></div>
+    <form method="post">
+      {% csrf_token %}<input type="hidden" name="action" value="send_reminders">
+      <div class="speakerops-table-wrap"><table class="speakerops-table"><thead><tr><th scope="col">Select</th><th scope="col">Round</th><th scope="col">Reviewer</th><th scope="col">Progress</th><th scope="col">Last reminder</th></tr></thead><tbody>{% for item in progress %}<tr><td><input aria-label="Remind {{ item.membership.reviewer.get_display_name }} for {{ item.membership.round.name }}" type="checkbox" name="memberships" value="{{ item.membership.pk }}"{% if item.completed == item.assigned %} disabled{% endif %}></td><td>{{ item.membership.round.name }}</td><td>{{ item.membership.reviewer.get_display_name }}</td><td><strong>{{ item.completed }} of {{ item.assigned }}</strong> complete · {{ item.percent }}%</td><td>{{ item.membership.last_reminded_at|date:"M j, Y, P"|default:"Never" }}</td></tr>{% empty %}<tr><td colspan="5">Add reviewers and assignments to see progress.</td></tr>{% endfor %}</tbody></table></div>
+      <button class="btn btn-primary" type="submit">Send reminders to selected lagging reviewers</button>
+    </form>
+  </section>
+
+  <section id="review-results" aria-labelledby="results-title">
+    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Human evaluation evidence</p><h2 id="results-title">Weighted aggregate results</h2></div><div class="speakerops__actions"><a href="?sort=desc#review-results">Highest first</a><a href="?sort=asc#review-results">Lowest first</a><a href="?export=csv">Export round results CSV</a></div></div>
+    <p>Numeric criteria are multiplied by their persisted weight, summed, then divided by total numeric weight. Dropdown and text answers remain qualitative evidence.</p>
+    {% for round, results in round_results %}<h3>{{ round.name }}</h3><div class="speakerops-table-wrap"><table class="speakerops-table"><thead><tr><th>Proposal</th><th>Presenters</th><th>Weighted average</th><th>Completed reviews</th></tr></thead><tbody>{% for row in results %}<tr><td>{{ row.submission.title }}</td><td>{% for speaker in row.submission.speakers.all %}{{ speaker.get_display_name }} — Presenter{% if not forloop.last %}; {% endif %}{% empty %}No presenter attached{% endfor %}</td><td>{{ row.aggregate|floatformat:2 }}</td><td>{{ row.review_count }}</td></tr>{% empty %}<tr><td colspan="4">No completed evaluations in this round.</td></tr>{% endfor %}</tbody></table></div>{% endfor %}
+  </section>
+</div>
+{% endblock content %}

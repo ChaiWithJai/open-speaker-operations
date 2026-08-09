@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-09T12:00:00Z",
+  "series": [
+    {
+      "slug": "ai-engineer",
+      "name": "AI Engineer",
+      "website": "https://www.ai.engineer/",
+      "source_policy": {"authority": "official", "scope": "starter-records"},
+      "editions": [{
+        "external_key": "europe-2026",
+        "name": "AI Engineer Europe 2026",
+        "date_from": "2026-04-08",
+        "date_to": "2026-04-10",
+        "location": "London, UK",
+        "source_url": "https://www.ai.engineer/europe/schedule",
+        "source_updated_at": "2026-08-09T12:00:00Z",
+        "talks": [{
+          "external_key": "the-friction-is-your-judgment",
+          "title": "The Friction Is Your Judgment",
+          "session_format": "Keynote",
+          "track": "Keynote Stage",
+          "topics": ["software engineering", "judgment"],
+          "source_url": "https://www.ai.engineer/europe/schedule",
+          "speakers": [{"name": "Armin Ronacher"}, {"name": "Cristina Poncela Cubeiro"}]
+        }]
+      }]
+    },
+    {
+      "slug": "pycon-us",
+      "name": "PyCon US",
+      "website": "https://us.pycon.org/",
+      "source_policy": {"authority": "official", "scope": "starter-records"},
+      "editions": [{
+        "external_key": "2026",
+        "name": "PyCon US 2026",
+        "date_from": "2026-05-13",
+        "date_to": "2026-05-19",
+        "location": "Long Beach, California",
+        "source_url": "https://us.pycon.org/2026/schedule/talks/",
+        "source_updated_at": "2026-08-09T12:00:00Z",
+        "talks": [{
+          "external_key": "presentation-105",
+          "title": "AI-Assisted Contributions and Maintainer Load",
+          "session_format": "Talk",
+          "track": "Artificial Intelligence",
+          "level": "Just starting out",
+          "topics": ["AI", "open source maintenance"],
+          "source_url": "https://us.pycon.org/2026/schedule/presentation/105/",
+          "speakers": [{"name": "Paolo Melchiorre"}]
+        }]
+      }]
+    },
+    {
+      "slug": "jsconf",
+      "name": "JSConf",
+      "website": "https://jsconf.com/",
+      "source_policy": {"authority": "official", "scope": "starter-records"},
+      "editions": [{
+        "external_key": "jp-2025",
+        "name": "JSConf JP 2025",
+        "location": "Japan",
+        "source_url": "https://jsconf.jp/2025/en/schedule",
+        "source_updated_at": "2026-08-09T12:00:00Z",
+        "talks": [{
+          "external_key": "i-cant-believe-its-not-javascript",
+          "title": "I Can't Believe It's Not JavaScript!",
+          "session_format": "Session",
+          "track": "Track B",
+          "topics": ["web platform", "performance", "accessibility"],
+          "source_url": "https://jsconf.jp/2025/en/talks/i-cant-believe-its-not-javascript",
+          "speakers": [{"name": "Jemima Abu"}]
+        }]
+      }]
+    },
+    {
+      "slug": "gdc",
+      "name": "Game Developers Conference",
+      "website": "https://gdconf.com/",
+      "source_policy": {"authority": "official", "scope": "starter-records"},
+      "editions": [{
+        "external_key": "2026",
+        "name": "GDC Festival of Gaming 2026",
+        "date_from": "2026-03-09",
+        "date_to": "2026-03-13",
+        "location": "San Francisco, California",
+        "source_url": "https://schedule.gdconf.com/search",
+        "source_updated_at": "2026-08-09T12:00:00Z",
+        "talks": [{
+          "external_key": "914454",
+          "title": "Rules of the Game 2026: Revealing Techniques from Resourceful Designers",
+          "session_format": "Microtalks",
+          "track": "Design",
+          "level": "Intermediate",
+          "topics": ["game design"],
+          "source_url": "https://schedule.gdconf.com/session/rules-of-the-game-2026-revealing-techniques-from-resourceful-designers/914454",
+          "speakers": [{"name": "Richard Rouse III"}, {"name": "Xalavier Nelson Jr"}, {"name": "Ashley Ruhl"}, {"name": "Theresa Duringer"}, {"name": "Joel Burgess"}, {"name": "Steve Meretzky"}]
+        }]
+      }]
+    },
+    {
+      "slug": "goto",
+      "name": "GOTO",
+      "website": "https://gotopia.tech/",
+      "source_policy": {"authority": "official", "scope": "starter-records"},
+      "editions": [{
+        "external_key": "copenhagen-2025",
+        "name": "GOTO Copenhagen 2025",
+        "location": "Copenhagen, Denmark",
+        "source_url": "https://gotopia.tech/conferences/105/goto-copenhagen-2025",
+        "source_updated_at": "2026-08-09T12:00:00Z",
+        "talks": [{
+          "external_key": "3672",
+          "title": "Platforms: Build Abstractions, not Illusions",
+          "session_format": "Talk",
+          "track": "Platform engineering",
+          "topics": ["architecture", "platform engineering", "platforms"],
+          "source_url": "https://gotopia.tech/sessions/3672/platforms-build-abstractions-not-illusions",
+          "speakers": [{"name": "Gregor Hohpe"}]
+        }]
+      }]
+    },
+    {
+      "slug": "strange-loop",
+      "name": "Strange Loop",
+      "website": "https://www.thestrangeloop.com/",
+      "source_policy": {"authority": "official", "scope": "starter-records", "status": "retired"},
+      "editions": [{
+        "external_key": "2023",
+        "name": "Strange Loop 2023",
+        "date_from": "2023-09-21",
+        "date_to": "2023-09-22",
+        "location": "St. Louis, Missouri",
+        "source_url": "https://www.thestrangeloop.com/schedule.html",
+        "source_updated_at": "2026-08-09T12:00:00Z",
+        "talks": [{
+          "external_key": "lessons-from-building-github-code-search",
+          "title": "Lessons from building GitHub code search",
+          "session_format": "Talk",
+          "track": "US Grand F",
+          "topics": ["search", "software engineering"],
+          "source_url": "https://www.thestrangeloop.com/schedule.html",
+          "speakers": [{"name": "Luke Francl"}]
+        }]
+      }]
+    }
+  ]
+}

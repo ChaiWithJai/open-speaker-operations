@@ -1,0 +1,10 @@
+{% if speakerops_navigation %}
+<nav class="speakerops-role-nav" aria-label="Speaker Operations">
+  <a class="speakerops-role-nav__home" href="{% url 'plugins:speakerops:speakerops_entry' event.slug %}">Speaker Operations</a>
+  <ul>
+    {% for item in speakerops_navigation %}
+    <li><a href="{{ item.url }}"{% if item.active %} aria-current="page"{% endif %}>{{ item.label }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endif %}

@@ -58,6 +58,6 @@ speaker hook could make this decision obsolete.
 
 ## Automated proof
 
-`tests/test_m1.py::test_golden_path_crosses_plugin_boundaries` and
-`tests/test_m2.py::test_roles_are_scoped_to_surfaces` prove speaker access and
+`tests/test_acceptance_journey.py::test_golden_path_crosses_plugin_boundaries` and
+`tests/test_onboarding_operations.py::test_roles_are_scoped_to_surfaces` prove speaker access and
 organiser/reviewer denial.

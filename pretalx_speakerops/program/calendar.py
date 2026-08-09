@@ -5,7 +5,7 @@ from django.http import Http404
 from django_scopes import scope
 from pretalx.schedule.ical import get_slots_ical
 
-from ..models import ScheduleIcsIdentity
+from ..models import ScheduleIcsIdentity, SessionPublicationApproval
 
 
 def _fingerprint(slot):
@@ -18,7 +18,16 @@ def released_ical(event):
         schedule = event.current_schedule
         if not schedule:
             raise Http404
-        slots = list(schedule.talks.filter(is_visible=True).select_related("submission", "room"))
+        slots = list(
+            schedule.talks.filter(is_visible=True)
+            .exclude(
+                submission__speakerops_publication_approval__status__in=(
+                    SessionPublicationApproval.PENDING,
+                    SessionPublicationApproval.CHANGES_REQUESTED,
+                )
+            )
+            .select_related("submission", "room")
+        )
         seen = set()
         for slot in slots:
             identity, created = ScheduleIcsIdentity.objects.get_or_create(

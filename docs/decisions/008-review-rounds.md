@@ -54,4 +54,4 @@ pretalx review records remain authoritative.
 
 ## Automated proof
 
-`tests/test_m3.py::test_review_configuration_has_two_rounds_and_auditable_history`.
+`tests/test_schedule_publication.py::test_review_configuration_has_two_rounds_and_auditable_history`.

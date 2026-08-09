@@ -8,48 +8,27 @@ permissions:
   contents: read
 
 jobs:
-  context-graph:
+  validation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Enforce P0 proof coverage
-        run: python scripts/check_context_graph.py
-
-  python:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.11"
+          enable-cache: true
       - name: Install dependencies
-        run: pip install ".[dev]" pytest pytest-django faker
-      - name: Ruff lint
-        run: ruff check pretalx_speakerops tests mock_accelevents
-      - name: Ruff format
-        run: ruff format --check pretalx_speakerops tests mock_accelevents
-      - name: Tests
+        run: uv sync --frozen --extra dev
+      - name: Canonical contributor validation
         env:
           DJANGO_SETTINGS_MODULE: pretalx.common.settings.test_settings
-        run: pytest -q tests
-
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate deployment scripts
-        run: bash -n scripts/ci-compose-smoke.sh scripts/deploy-digitalocean.sh
-      - name: Clean-volume deployment smoke test
-        env:
           COMPOSE_PROJECT_NAME: speakerops-ci-${{ github.run_id }}
-        run: scripts/ci-compose-smoke.sh
+        run: make check
 
   image:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [context-graph, python, docker]
+    needs: [validation]
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -30,6 +30,6 @@ shows what is not yet demoable and the shortest path to making it so.
 
 ## CI contract
 
-`python scripts/check_context_graph.py` fails if any P0 entry in
+`python tools/check_context_graph.py` fails if any P0 entry in
 `requirements` lacks a test or seeded demo step. Explicit future gaps remain in
 the separate `gaps` list so they cannot be mistaken for completed coverage.
