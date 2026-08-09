@@ -2,36 +2,57 @@
 {% load static %}
 
 {% block stylesheets %}{{ block.super }}
-<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/carbon/carbon-styles.css' %}">
+<style>
+  :root {
+    --carbon-interactive: #175cd3;
+    --carbon-ink: #17202a;
+  }
+  .speakerops-page { max-width: 72rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .speakerops-page h1 { font-size: 1.75rem; font-weight: 600; margin: 0 0 .25rem; }
+  .speakerops-page .subtitle { color: var(--cds-text-secondary,#525252); margin: 0 0 2rem; }
+  .speakerops-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .speakerops-card {
+    display: flex; flex-direction: column; padding: 1.25rem;
+    border: 1px solid var(--cds-border-subtle,#e0e0e0);
+    border-top: 3px solid var(--carbon-interactive);
+    background: var(--cds-layer-01,#fff); text-decoration: none; color: inherit;
+    transition: box-shadow .15s ease; border-radius: 0 0 4px 4px;
+  }
+  .speakerops-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+  .speakerops-card__value { font-size: 2.25rem; font-weight: 600; line-height: 1.2; }
+  .speakerops-card__value small { font-size: 1rem; color: var(--cds-text-secondary,#525252); font-weight: 400; }
+  .speakerops-card__label { margin-top: .5rem; font-weight: 600; font-size: .875rem; }
+  .speakerops-card__link { margin-top: auto; padding-top: .75rem; font-size: .875rem; color: var(--carbon-interactive); }
+  .speakerops-section-title { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 1rem; }
+  .speakerops-actions { display: flex; gap: .75rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  @media(max-width:62rem){ .speakerops-grid{ grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:38rem){ .speakerops-grid{ grid-template-columns: 1fr; } }
+</style>
 {% endblock stylesheets %}
 
 {% block content %}
-<main class="speakerops" aria-labelledby="speakerops-title">
-  <header class="speakerops__header">
-    <div>
-      <p class="speakerops__eyebrow">Program command center</p>
-      <h1 id="speakerops-title">Speaker Operations</h1>
-      <p>Move the program from proposal to published schedule without losing the thread.</p>
-    </div>
-    <nav class="speakerops__actions" aria-label="Speaker Operations views">
-      <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}">Review queue</a>
-      <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_agenda' event.slug %}">Agenda &amp; release</a>
-      <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_sync_console' event.slug %}">Accelevents sync</a>
-    </nav>
+<main class="speakerops-page" aria-labelledby="dashboard-title">
+  <header style="margin-bottom:2rem;">
+    <h1 id="dashboard-title">Speaker Operations</h1>
+    <p class="subtitle">Move the program from proposal to published schedule without losing the thread.</p>
   </header>
 
   {% if attention.overdue or attention.blocked_release or attention.sync_errors %}
-  <section class="speakerops__alert" aria-label="Needs attention">
-    <strong>Needs attention</strong>
-    <ul>
-      {% if attention.blocked_release %}<li>Public release is blocked by schedule conflicts.</li>{% endif %}
-      {% if attention.overdue %}<li>{{ attention.overdue }} onboarding task{{ attention.overdue|pluralize }} overdue.</li>{% endif %}
-      {% if attention.sync_errors %}<li>{{ attention.sync_errors }} synchronization error{{ attention.sync_errors|pluralize }} ready to retry.</li>{% endif %}
-    </ul>
+  <section class="cds--notification cds--notification--warning" role="alert" style="margin-bottom:1.5rem;">
+    <div class="cds--notification__details">
+      <h3 class="cds--notification__title">Needs attention</h3>
+      <ul class="cds--notification__item">
+        {% if attention.blocked_release %}<li>Public release is blocked by schedule conflicts.</li>{% endif %}
+        {% if attention.overdue %}<li>{{ attention.overdue }} onboarding task{{ attention.overdue|pluralize }} overdue.</li>{% endif %}
+        {% if attention.sync_errors %}<li>{{ attention.sync_errors }} synchronization error{{ attention.sync_errors|pluralize }} ready to retry.</li>{% endif %}
+      </ul>
+    </div>
   </section>
   {% endif %}
 
-  <section class="speakerops__grid" aria-label="Operational counts">
+  <h2 class="speakerops-section-title">Operational overview</h2>
+  <div class="speakerops-grid">
     <a class="speakerops-card" href="{% url 'plugins:speakerops:speakerops_drilldown' event.slug 'tasks' %}">
       <span class="speakerops-card__value">{{ counts.tasks }}</span>
       <span class="speakerops-card__label">Outstanding tasks</span>
@@ -62,23 +83,27 @@
       <span class="speakerops-card__label">Synchronization errors</span>
       <span class="speakerops-card__link">Inspect failures →</span>
     </a>
-  </section>
+  </div>
 
-  <section class="speakerops-panel">
+  <h2 class="speakerops-section-title">Accelevents integration</h2>
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1.25rem; border:1px solid var(--cds-border-subtle,#e0e0e0); background:var(--cds-layer-01,#fff); border-radius:4px; flex-wrap:wrap;">
     <div>
-      <p class="speakerops__eyebrow">Integration health</p>
-      <h2>Accelevents: {{ counts.sync_status|title }}</h2>
-      <p>Preview the exact create, update, and no-op plan before authorizing writes.</p>
+      <p style="margin:0; font-weight:600;">{% if counts.sync_status %}{{ counts.sync_status|title }}{% else %}Not configured{% endif %}</p>
+      <p style="margin:.25rem 0 0; color:var(--cds-text-secondary,#525252); font-size:.875rem;">Preview the exact create, update, and no-op plan before authorizing writes.</p>
     </div>
-    <form method="post" action="{% url 'plugins:speakerops:speakerops_sync_preview' event.slug %}">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-primary">Create sync preview</button>
+    <form method="post" action="{% url 'plugins:speakerops:speakerops_sync_preview' event.slug %}" style="margin:0;">
+      {% csrf_token %}<input type="hidden" name="action" value="preview">
+      <button type="submit" class="cds--btn cds--btn--primary">Create sync preview</button>
     </form>
-  </section>
+  </div>
 
-  <form method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-secondary">Queue due reminders</button>
-  </form>
+  <div class="speakerops-actions">
+    <a href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}" class="cds--btn cds--btn--secondary">Review queue</a>
+    <a href="{% url 'plugins:speakerops:speakerops_agenda' event.slug %}" class="cds--btn cds--btn--secondary">Agenda &amp; release</a>
+    <form method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}" style="margin:0;">
+      {% csrf_token %}
+      <button type="submit" class="cds--btn cds--btn--tertiary">Queue due reminders</button>
+    </form>
+  </div>
 </main>
 {% endblock content %}

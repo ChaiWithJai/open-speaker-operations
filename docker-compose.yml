@@ -27,12 +27,6 @@ services:
     build: .
     environment:
       PRETALX_CONFIG_FILE: /app/docker/pretalx.cfg
-    command: >
-      sh -c "python -m pretalx migrate &&
-      (python -m pretalx init --noinput || true) &&
-      (python -m pretalx create_test_event --stage schedule --slug speakerops-demo --seed 42 || true) &&
-      python -m pretalx speakerops_seed &&
-      python -m pretalx runserver 0.0.0.0:8000 --noreload"
     volumes:
       - pretalx-data:/data
     ports:
