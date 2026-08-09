@@ -42,6 +42,28 @@ curl --fail --silent --show-error https://loop.dharmicdata.org/speakerops-demo/c
 Also exercise the speaker, reviewer, chair, agenda, and synchronization journeys
 in a real browser and confirm that no first-party static assets fail.
 
+## Measured demo sizing
+
+The 2-vCPU/4-GB demo Droplet uses two Gunicorn workers with three threads each
+and one Celery worker process. This provides six HTTP request slots without the
+CPU contention observed with three Gunicorn processes.
+
+On the deterministic seed, commit `3347537be25acc55fac0f83761225f2c88faece8`
+produced these warm Django query counts: dashboard 17, task drilldown 19, agenda
+13, reviewer 14, and sync console 15. Query-budget tests enforce fewer than 40
+queries for the chair views and a maximum of 30 for a reviewer screen with 11
+criteria.
+
+A live authenticated run of 100 dashboard requests from five persistent HTTPS
+clients measured p50 response-start at 296 ms and p95 at 480 ms. Web memory
+remained below 245 MiB during the selected two-worker test; PostgreSQL remained
+below 76 MiB, the Celery worker below 126 MiB, and host swap use was zero.
+
+The PostgreSQL hot-path plans completed in 0.05–0.14 ms on demo-shaped data.
+Existing event and foreign-key indexes covered selective lookups, while the small
+proposal and schedule tables were cheaper to scan. No speculative indexes were
+added.
+
 ## Back up and restore
 
 Create a database backup before upgrades:
