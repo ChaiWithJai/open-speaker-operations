@@ -121,6 +121,11 @@ smoke_password="${SPEAKEROPS_SMOKE_PASSWORD:-}"
 if [ -z "$smoke_password" ]; then
   smoke_password="$(sed -n 's/^SPEAKEROPS_DEMO_PASSWORD=//p' .env | tail -n 1)"
 fi
+if [ -z "$smoke_password" ]; then
+  smoke_password="$(
+    "${compose[@]}" exec -T web sh -c 'printf %s "$SPEAKEROPS_DEMO_PASSWORD"'
+  )"
+fi
 test -n "$smoke_password" || { echo "SPEAKEROPS_DEMO_PASSWORD is required for protected smoke." >&2; exit 1; }
 SPEAKEROPS_SMOKE_PASSWORD="$smoke_password" \
   python3 "$smoke_script" --base-url "$public_url"
