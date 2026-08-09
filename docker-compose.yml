@@ -52,7 +52,7 @@ services:
       PRETALX_INIT_ORGANISER_NAME: ${PRETALX_INIT_ORGANISER_NAME:-Demo Organiser}
       PRETALX_INIT_ORGANISER_SLUG: ${PRETALX_INIT_ORGANISER_SLUG:-demo-organiser}
       WEB_WORKERS: ${WEB_WORKERS:-2}
-      WEB_THREADS: ${WEB_THREADS:-2}
+      WEB_THREADS: ${WEB_THREADS:-3}
       SEED_DEMO: ${SEED_DEMO:-true}
     volumes:
       - pretalx-data:/data
