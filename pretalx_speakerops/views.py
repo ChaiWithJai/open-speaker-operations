@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Count, Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -92,28 +93,36 @@ class DashboardView(EventContextMixin, TemplateView):
             proposals = Submission.objects.filter(event=self.event)
             schedule = self.event.wip_schedule
             conflicts = len(classify_warnings(schedule)) if schedule else 0
-            overdue_tasks = tasks.filter(
-                due_date__lt=today,
-                status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
-            ).count()
-            review_rows = proposals.filter(reviews__isnull=False).distinct()
-            missing_assets = tasks.filter(
-                definition__completion_evaluator="upload",
-                status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
+            active_states = (OnboardingTask.PENDING, OnboardingTask.REOPENED)
+            task_stats = tasks.aggregate(
+                active=Count("pk", filter=Q(status__in=active_states)),
+                overdue=Count("pk", filter=Q(due_date__lt=today, status__in=active_states)),
+                missing_assets=Count(
+                    "pk",
+                    filter=Q(
+                        definition__completion_evaluator="upload",
+                        status__in=active_states,
+                    ),
+                ),
             )
-            sync_errors = SyncItem.objects.filter(event=self.event, status=SyncItem.FAILED)
+            proposal_stats = proposals.aggregate(
+                total=Count("pk", distinct=True),
+                undecided=Count("pk", filter=Q(state=SubmissionStates.SUBMITTED), distinct=True),
+                reviewed=Count("pk", filter=Q(reviews__isnull=False), distinct=True),
+            )
+            sync_error_count = SyncItem.objects.filter(
+                event=self.event, status=SyncItem.FAILED
+            ).count()
             context.update(
                 event=self.event,
                 counts={
-                    "tasks": tasks.filter(
-                        status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED)
-                    ).count(),
-                    "undecided": proposals.filter(state=SubmissionStates.SUBMITTED).count(),
-                    "reviewed": review_rows.count(),
-                    "proposals": proposals.count(),
+                    "tasks": task_stats["active"],
+                    "undecided": proposal_stats["undecided"],
+                    "reviewed": proposal_stats["reviewed"],
+                    "proposals": proposal_stats["total"],
                     "conflicts": conflicts,
-                    "missing_assets": missing_assets.count(),
-                    "sync": sync_errors.count(),
+                    "missing_assets": task_stats["missing_assets"],
+                    "sync": sync_error_count,
                     "sync_status": (
                         AcceleventsConnection.objects.filter(event=self.event)
                         .values_list("status", flat=True)
@@ -122,9 +131,9 @@ class DashboardView(EventContextMixin, TemplateView):
                     ),
                 },
                 attention={
-                    "overdue": overdue_tasks,
+                    "overdue": task_stats["overdue"],
                     "blocked_release": conflicts > 0,
-                    "sync_errors": sync_errors.count(),
+                    "sync_errors": sync_error_count,
                 },
             )
             return context

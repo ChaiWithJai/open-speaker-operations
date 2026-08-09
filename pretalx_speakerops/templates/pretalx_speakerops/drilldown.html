@@ -1,90 +1,21 @@
 {% extends "orga/base.html" %}
 {% load static %}
-
-{% block stylesheets %}{{ block.super }}
-<link rel="stylesheet" href="{% static 'pretalx_speakerops/carbon/carbon-styles.css' %}">
-<style>
-  .speakerops-page { max-width: 72rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
-  .speakerops-page h1 { font-size: 1.75rem; font-weight: 600; margin: 0 0 .25rem; }
-  .speakerops-back { display:inline-block; margin-bottom:1.5rem; color:#175cd3; text-decoration:none; font-size:.875rem; }
-  .speakerops-back:hover { text-decoration:underline; }
-</style>
-{% endblock stylesheets %}
-
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
 {% block content %}
-<main class="speakerops-page">
-  <a class="speakerops-back" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">← Back to operations</a>
-  <h1>{{ kind|title }}</h1>
+<main class="speakerops">
+<h1>{{ kind|title }}</h1>
+<a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">&larr; Back to dashboard</a>
 
-  {% if kind == 'tasks' %}
-  <div class="cds--data-table-container">
-    <table class="cds--data-table cds--data-table--sm">
-      <thead><tr><th>Speaker</th><th>Task</th><th>Status</th><th>Due</th></tr></thead>
-      <tbody>
-        {% for row in rows %}
-        <tr>
-          <td>{{ row.speaker }}</td>
-          <td>{{ row.definition.name }}</td>
-          <td><span class="cds--tag cds--tag--gray">{{ row.get_status_display }}</span></td>
-          <td>{% if row.due_date %}{% if row.due_date < today %}<span style="color:#b42318;">{{ row.due_date }} (overdue)</span>{% else %}{{ row.due_date }}{% endif %}{% else %}—{% endif %}</td>
-        </tr>
-        {% empty %}<tr><td colspan="4">Nothing here yet.</td></tr>{% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  {% elif kind == 'missing-assets' %}
-  <div class="cds--data-table-container">
-    <table class="cds--data-table cds--data-table--sm">
-      <thead><tr><th>Speaker</th><th>Task</th><th>Status</th><th>Due</th></tr></thead>
-      <tbody>
-        {% for row in rows %}
-        <tr>
-          <td>{{ row.speaker }}</td>
-          <td>{{ row.definition.name }}</td>
-          <td><span class="cds--tag cds--tag--gray">{{ row.get_status_display }}</span></td>
-          <td>{% if row.due_date %}{{ row.due_date }}{% else %}—{% endif %}</td>
-        </tr>
-        {% empty %}<tr><td colspan="4">Nothing here yet.</td></tr>{% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  {% elif kind == 'undecided' or kind == 'review' %}
-  <div class="cds--data-table-container">
-    <table class="cds--data-table cds--data-table--sm">
-      <thead><tr><th>Code</th><th>Title</th><th>State</th></tr></thead>
-      <tbody>
-        {% for row in rows %}<tr><td>{{ row.code }}</td><td>{{ row.title }}</td><td><span class="cds--tag cds--tag--blue">{{ row.get_state_display }}</span></td></tr>
-        {% empty %}<tr><td colspan="3">Nothing here yet.</td></tr>{% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  {% elif kind == 'conflicts' %}
-  <div class="cds--data-table-container">
-    <table class="cds--data-table cds--data-table--sm">
-      <thead><tr><th>Detail</th></tr></thead>
-      <tbody>
-        {% for row in rows %}<tr><td><span class="cds--tag cds--tag--red">{{ row }}</span></td></tr>
-        {% empty %}<tr><td>Nothing here yet.</td></tr>{% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  {% elif kind == 'sync' %}
-  <div class="cds--data-table-container">
-    <table class="cds--data-table cds--data-table--sm">
-      <thead><tr><th>ID</th><th>Status</th><th>Created</th></tr></thead>
-      <tbody>
-        {% for row in rows %}<tr><td>{{ row.pk }}</td><td><span class="cds--tag {% if row.status == 'failed' %}cds--tag--red{% elif row.status == 'succeeded' %}cds--tag--green{% else %}cds--tag--gray{% endif %}">{{ row.status }}</span></td><td>{{ row.created_at }}</td></tr>
-        {% empty %}<tr><td colspan="3">Nothing here yet.</td></tr>{% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  {% else %}
-  <p>Nothing here yet.</p>
-  {% endif %}
+{% if kind == 'tasks' or kind == 'missing-assets' %}
+<table class="table"><thead><tr><th>Speaker</th><th>Task</th><th>Status</th><th>Due</th><th>Submission</th></tr></thead><tbody>
+{% for row in rows %}<tr><td>{{ row.speaker }}</td><td>{{ row.definition.name }}</td><td>{% if row.status == 'complete' %}<span class="badge bg-success">{{ row.get_status_display }}</span>{% elif row.status == 'waived' %}<span class="badge bg-warning text-dark">{{ row.get_status_display }}</span>{% elif row.due_date and row.due_date < today %}<span class="badge bg-danger">{{ row.get_status_display }}</span>{% else %}<span class="badge bg-secondary">{{ row.get_status_display }}</span>{% endif %}</td><td>{% if row.due_date %}{{ row.due_date }}{% else %}—{% endif %}</td><td>{% if row.submission %}{{ row.submission.title }}{% else %}—{% endif %}</td></tr>{% empty %}<tr><td colspan="5">Nothing here yet.</td></tr>{% endfor %}
+</tbody></table>
+{% elif kind == 'undecided' or kind == 'review' %}
+<table class="table"><thead><tr><th>Code</th><th>Title</th><th>State</th></tr></thead><tbody>{% for row in rows %}<tr><td>{{ row.code }}</td><td>{{ row.title }}</td><td>{{ row.get_state_display }}</td></tr>{% empty %}<tr><td colspan="3">Nothing here yet.</td></tr>{% endfor %}</tbody></table>
+{% elif kind == 'conflicts' %}
+<table class="table"><thead><tr><th>Detail</th></tr></thead><tbody>{% for row in rows %}<tr><td><span class="text-danger">{{ row.message }}</span></td></tr>{% empty %}<tr><td>Nothing here yet.</td></tr>{% endfor %}</tbody></table>
+{% elif kind == 'sync' %}
+<table class="table"><thead><tr><th>Record</th><th>Status</th><th>Error</th><th>Attempts</th></tr></thead><tbody>{% for row in rows %}<tr><td>{{ row.local_type }} #{{ row.local_id }}</td><td>{{ row.status }}</td><td>{{ row.error }}</td><td>{{ row.attempts }}</td></tr>{% empty %}<tr><td colspan="4">Nothing here yet.</td></tr>{% endfor %}</tbody></table>
+{% else %}<p>Nothing here yet.</p>{% endif %}
 </main>
 {% endblock content %}

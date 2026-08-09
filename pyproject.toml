@@ -6,7 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "open-speaker-operations"
 version = "0.0.0"
 requires-python = ">=3.11"
-dependencies = ["pretalx==2025.2.2"]
+dependencies = [
+    "celery",
+    "gunicorn",
+    "pretalx==2025.2.2",
+    "psycopg[binary]",
+    "redis",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -15,6 +21,8 @@ dev = [
     "drf-spectacular",
     "Faker",
     "freezegun",
+    "pytest",
+    "pytest-django",
     "redis",
     "ruff",
 ]

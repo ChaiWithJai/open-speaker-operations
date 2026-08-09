@@ -43,11 +43,14 @@
             <input class="form-control" id="upload-{{ task.pk }}" name="upload" type="file" required>
           {% elif task.definition.completion_evaluator == "acknowledgement" %}
             <label class="speakerops-check"><input name="response" type="checkbox" value="yes" required> I have read and acknowledge this item.</label>
+          {% elif task.definition.completion_evaluator == "profile_field" %}
+            <label for="response-{{ task.pk }}">Speaker biography</label>
+            <textarea class="form-control" id="response-{{ task.pk }}" name="response" rows="5" required placeholder="Tell attendees who you are and what perspective you bring."></textarea>
           {% else %}
             <label for="response-{{ task.pk }}">Evidence response</label>
             <input class="form-control" id="response-{{ task.pk }}" name="response" type="text" required>
           {% endif %}
-          <button type="submit" class="btn btn-primary">Submit evidence</button>
+          <button type="submit" class="btn btn-primary">{% if task.definition.completion_evaluator == "profile_field" %}Save biography and complete{% else %}Submit evidence{% endif %}</button>
         </form>
       </article>
     {% endfor %}
