@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Count, Prefetch, Q
@@ -53,6 +54,8 @@ TASK_MACHINE = StateMachine(
     ),
 )
 
+DASHBOARD_SNAPSHOT_SECONDS = 2
+
 
 class EventContextMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
@@ -85,57 +88,62 @@ class DashboardView(EventContextMixin, TemplateView):
     permission = "dashboard"
     template_name = "pretalx_speakerops/dashboard.html"
 
+    def _snapshot(self):
+        today = timezone.localdate()
+        tasks = OnboardingTask.objects.filter(event=self.event)
+        proposals = Submission.objects.filter(event=self.event)
+        schedule = self.event.wip_schedule
+        conflicts = len(classify_warnings(schedule)) if schedule else 0
+        active_states = (OnboardingTask.PENDING, OnboardingTask.REOPENED)
+        task_stats = tasks.aggregate(
+            active=Count("pk", filter=Q(status__in=active_states)),
+            overdue=Count("pk", filter=Q(due_date__lt=today, status__in=active_states)),
+            missing_assets=Count(
+                "pk",
+                filter=Q(
+                    definition__completion_evaluator="upload",
+                    status__in=active_states,
+                ),
+            ),
+        )
+        proposal_stats = proposals.aggregate(
+            total=Count("pk", distinct=True),
+            undecided=Count("pk", filter=Q(state=SubmissionStates.SUBMITTED), distinct=True),
+            reviewed=Count("pk", filter=Q(reviews__isnull=False), distinct=True),
+        )
+        sync_error_count = SyncItem.objects.filter(event=self.event, status=SyncItem.FAILED).count()
+        return {
+            "counts": {
+                "tasks": task_stats["active"],
+                "undecided": proposal_stats["undecided"],
+                "reviewed": proposal_stats["reviewed"],
+                "proposals": proposal_stats["total"],
+                "conflicts": conflicts,
+                "missing_assets": task_stats["missing_assets"],
+                "sync": sync_error_count,
+                "sync_status": (
+                    AcceleventsConnection.objects.filter(event=self.event)
+                    .values_list("status", flat=True)
+                    .first()
+                    or "not configured"
+                ),
+            },
+            "attention": {
+                "overdue": task_stats["overdue"],
+                "blocked_release": conflicts > 0,
+                "sync_errors": sync_error_count,
+            },
+        }
+
     def get_context_data(self, **kwargs):
         with scope(event=self.event):
             context = super().get_context_data(**kwargs)
-            today = timezone.localdate()
-            tasks = OnboardingTask.objects.filter(event=self.event)
-            proposals = Submission.objects.filter(event=self.event)
-            schedule = self.event.wip_schedule
-            conflicts = len(classify_warnings(schedule)) if schedule else 0
-            active_states = (OnboardingTask.PENDING, OnboardingTask.REOPENED)
-            task_stats = tasks.aggregate(
-                active=Count("pk", filter=Q(status__in=active_states)),
-                overdue=Count("pk", filter=Q(due_date__lt=today, status__in=active_states)),
-                missing_assets=Count(
-                    "pk",
-                    filter=Q(
-                        definition__completion_evaluator="upload",
-                        status__in=active_states,
-                    ),
-                ),
+            snapshot = cache.get_or_set(
+                f"speakerops:dashboard:{self.event.pk}",
+                self._snapshot,
+                DASHBOARD_SNAPSHOT_SECONDS,
             )
-            proposal_stats = proposals.aggregate(
-                total=Count("pk", distinct=True),
-                undecided=Count("pk", filter=Q(state=SubmissionStates.SUBMITTED), distinct=True),
-                reviewed=Count("pk", filter=Q(reviews__isnull=False), distinct=True),
-            )
-            sync_error_count = SyncItem.objects.filter(
-                event=self.event, status=SyncItem.FAILED
-            ).count()
-            context.update(
-                event=self.event,
-                counts={
-                    "tasks": task_stats["active"],
-                    "undecided": proposal_stats["undecided"],
-                    "reviewed": proposal_stats["reviewed"],
-                    "proposals": proposal_stats["total"],
-                    "conflicts": conflicts,
-                    "missing_assets": task_stats["missing_assets"],
-                    "sync": sync_error_count,
-                    "sync_status": (
-                        AcceleventsConnection.objects.filter(event=self.event)
-                        .values_list("status", flat=True)
-                        .first()
-                        or "not configured"
-                    ),
-                },
-                attention={
-                    "overdue": task_stats["overdue"],
-                    "blocked_release": conflicts > 0,
-                    "sync_errors": sync_error_count,
-                },
-            )
+            context.update(event=self.event, **snapshot)
             return context
 
 
