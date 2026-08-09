@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Count, Prefetch, Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -31,7 +31,7 @@ from .models import (
 from .onboarding.reminders import queue_reminders
 from .onboarding.services import record_evidence
 from .program.calendar import released_ical
-from .program.policy import classify_warnings, release_schedule
+from .program.policy import classify_warnings, release_schedule, schedule_slots
 from .program.reviews import configure_review_rounds
 
 TASK_MACHINE = StateMachine(
@@ -139,7 +139,7 @@ class DashboardView(EventContextMixin, TemplateView):
             return context
 
 
-class DrilldownView(DashboardView):
+class DrilldownView(EventContextMixin, TemplateView):
     template_name = "pretalx_speakerops/drilldown.html"
 
     def get_context_data(self, **kwargs):
@@ -182,7 +182,7 @@ class DrilldownView(DashboardView):
                     )
             else:
                 rows = []
-        context.update(kind=kind, rows=rows)
+        context.update(event=self.event, kind=kind, rows=rows, today=timezone.localdate())
         return context
 
 
@@ -226,40 +226,54 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
         queue = Submission.objects.filter(
             event=self.event,
             state=SubmissionStates.SUBMITTED,
-        ).prefetch_related("assigned_reviewers", "reviews")
+        )
         if not self.request.user.has_perm("submission.orga_update_submission", self.event):
             queue = queue.filter(assigned_reviewers=self.request.user)
         return queue.distinct().order_by("title")
 
-    def _submission(self):
-        queue = self._queue()
+    def _submission(self, queue=None):
+        queue = list(self._queue()) if queue is None else queue
         if self.kwargs.get("pk"):
-            return get_object_or_404(queue, pk=self.kwargs["pk"])
-        return queue.first()
+            requested = int(self.kwargs["pk"])
+            submission = next(
+                (submission for submission in queue if submission.pk == requested), None
+            )
+            if submission is None:
+                raise Http404
+            return submission
+        return queue[0] if queue else None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         with scope(event=self.event):
             configure_review_rounds(self.event)
             queue = list(self._queue())
-            submission = self._submission()
+            submission = self._submission(queue)
             review = None
             recommendation = None
             criteria = []
             if submission:
-                review = Review.objects.filter(
-                    submission=submission, user=self.request.user
-                ).first()
+                review = (
+                    Review.objects.filter(submission=submission, user=self.request.user)
+                    .prefetch_related("scores")
+                    .first()
+                )
                 selected = (
                     {score.category_id: score.pk for score in review.scores.all()} if review else {}
                 )
                 criteria = [
                     {
                         "category": category,
-                        "options": list(category.scores.all()),
+                        "options": category.speakerops_score_options,
                         "selected": selected.get(category.pk),
                     }
-                    for category in submission.score_categories.prefetch_related("scores")
+                    for category in submission.score_categories.prefetch_related(
+                        Prefetch(
+                            "scores",
+                            queryset=ReviewScore.objects.order_by("value"),
+                            to_attr="speakerops_score_options",
+                        )
+                    )
                 ]
                 recommendation = ReviewRecommendation.objects.filter(
                     event=self.event,
@@ -328,17 +342,8 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         with scope(event=self.event):
             schedule = self.event.wip_schedule
-            slots = (
-                list(
-                    schedule.talks.filter(submission__isnull=False)
-                    .select_related("submission", "room")
-                    .prefetch_related("submission__speakers")
-                    .order_by("start", "room__position")
-                )
-                if schedule
-                else []
-            )
-            warnings = classify_warnings(schedule) if schedule else []
+            slots = schedule_slots(schedule) if schedule else []
+            warnings = classify_warnings(schedule, slots=slots) if schedule else []
         context.update(
             event=self.event,
             schedule=schedule,

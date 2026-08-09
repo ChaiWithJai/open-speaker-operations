@@ -25,36 +25,46 @@ def configure_review_rounds(event, second_round=True):
                 phase.position = position
                 phase.save(update_fields=["position"])
             phases.append(phase)
-        configured_names = {"Program fit", "Speaker value", "Practicality"}
-        for existing in list(event.score_categories.all()):
+        configured = (("Program fit", 2), ("Speaker value", 1), ("Practicality", 1))
+        configured_names = {name for name, _weight in configured}
+        existing_categories = list(event.score_categories.prefetch_related("scores"))
+        for existing in existing_categories:
             if str(existing.name) == "Score" and str(existing.name) not in configured_names:
                 existing.delete()
 
         criteria = []
-        for _position, (name, weight) in enumerate(
-            (("Program fit", 2), ("Speaker value", 1), ("Practicality", 1))
-        ):
-            category = next(
-                (item for item in event.score_categories.all() if str(item.name) == name),
-                None,
-            )
+        categories_by_name = {
+            str(category.name): category
+            for category in existing_categories
+            if str(category.name) in configured_names
+        }
+        score_labels = ("Not demonstrated", "Weak", "Adequate", "Strong", "Exceptional")
+        for name, weight in configured:
+            category = categories_by_name.get(name)
             if category is None:
                 category = ReviewScoreCategory.objects.create(
                     event=event, name=name, weight=weight, required=True
                 )
+                existing_scores = {}
             else:
-                category.weight = weight
-                category.required = True
-                category.active = True
-                category.save(update_fields=["weight", "required", "active", "updated"])
-            for value, label in enumerate(
-                ("Not demonstrated", "Weak", "Adequate", "Strong", "Exceptional"), start=1
-            ):
-                ReviewScore.objects.update_or_create(
-                    category=category,
-                    value=value,
-                    defaults={"label": label},
-                )
+                changed = []
+                for field, value in (("weight", weight), ("required", True), ("active", True)):
+                    if getattr(category, field) != value:
+                        setattr(category, field, value)
+                        changed.append(field)
+                if changed:
+                    category.save(update_fields=[*changed, "updated"])
+                existing_scores = {score.value: score for score in category.scores.all()}
+            missing_scores = []
+            for value, label in enumerate(score_labels, start=1):
+                score = existing_scores.get(value)
+                if score is None:
+                    missing_scores.append(ReviewScore(category=category, value=value, label=label))
+                elif str(score.label) != label:
+                    score.label = label
+                    score.save(update_fields=["label", "updated"])
+            if missing_scores:
+                ReviewScore.objects.bulk_create(missing_scores)
             criteria.append(category)
         return phases, criteria
 

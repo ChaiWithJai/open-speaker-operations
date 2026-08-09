@@ -16,9 +16,9 @@ class WarningPolicy:
 POLICY = WarningPolicy()
 
 
-def classify_warnings(schedule):
-    """Return canonical room/speaker overlap rows using one prefetched slot set."""
-    slots = list(
+def schedule_slots(schedule):
+    """Load the schedule data needed for overlap checks in bounded queries."""
+    return list(
         schedule.talks.filter(
             submission__isnull=False,
             start__isnull=False,
@@ -28,6 +28,11 @@ def classify_warnings(schedule):
         .prefetch_related("submission__speakers")
         .order_by("start", "pk")
     )
+
+
+def classify_warnings(schedule, *, slots=None):
+    """Return canonical room/speaker overlap rows using one prefetched slot set."""
+    slots = schedule_slots(schedule) if slots is None else slots
     speakers_by_slot = {
         slot.pk: {speaker.pk: speaker for speaker in slot.submission.speakers.all()}
         for slot in slots

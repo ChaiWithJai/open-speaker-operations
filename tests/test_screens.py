@@ -100,7 +100,8 @@ def test_reviewer_screen_saves_scores_comments_and_recommendation(event, users, 
 def test_agenda_names_competing_sessions_and_blocks_release(event, users, client):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")
-        talks = list(event.wip_schedule.talks.filter(submission__isnull=False)[:2])
+        all_talks = list(event.wip_schedule.talks.filter(submission__isnull=False))
+        talks = all_talks[:2]
         start = timezone.now()
         for talk in talks:
             talk.room = event.rooms.first()
@@ -108,6 +109,10 @@ def test_agenda_names_competing_sessions_and_blocks_release(event, users, client
             talk.end = start + timedelta(minutes=30)
             talk.submission.speakers.add(users["speaker"])
             talk.save(update_fields=["room", "start", "end", "updated"])
+        for offset, talk in enumerate(all_talks[2:], start=1):
+            talk.start = start + timedelta(days=offset)
+            talk.end = talk.start + timedelta(minutes=30)
+            talk.save(update_fields=["start", "end", "updated"])
     client.force_login(users["chair"])
     url = f"/orga/{event.slug}/speaker-operations/agenda/"
     response = client.get(url)
