@@ -34,6 +34,8 @@ Extend pretalx as a disclosed, license-compliant modular monolith. Use Rails 8 o
 - [Context graph](./docs/context-graph.md)
 - [Working log](./docs/log/)
 - [Auditable seam decisions](./docs/decisions/)
+- [Contributing and production workflow](./CONTRIBUTING.md)
+- [DigitalOcean deployment runbook](./docs/digitalocean.md)
 
 ## Run the seeded judge journey locally
 
@@ -75,10 +77,14 @@ Follow this numbered journey:
 
 ### Docker stack
 
-For the deployment-shaped local stack:
+Docker Compose is the recommended contributor path because it matches the
+production service topology. Copy the example environment, use an explicit
+project name, and wait for health checks:
 
 ```bash
-docker compose up --build
+cp .env.local.example .env
+docker compose --project-name speakerops-local up -d --build --wait
+curl --fail http://127.0.0.1:8001/speakerops-demo/cfp
 ```
 
 This starts Postgres, Redis, pretalx web, a Celery worker, and the standalone
@@ -86,6 +92,37 @@ mock Accelevents service. No cloud, AI, or Accelevents credentials are needed.
 The mock is intentionally not production Accelevents: it implements only the
 captured speaker/session contract, `Key` authentication, duplicate detection,
 and deterministic failure injection for retry demonstrations.
+
+Useful local commands:
+
+```bash
+docker compose --project-name speakerops-local ps
+docker compose --project-name speakerops-local logs -f web worker
+docker compose --project-name speakerops-local restart web
+docker compose --project-name speakerops-local down
+```
+
+`down` preserves the named database/media volume. Use `down --volumes` only
+when you intentionally want to erase local demo data. If ports `8001` or `9001`
+are already occupied, set `WEB_BIND=127.0.0.1:18001` and
+`MOCK_BIND=127.0.0.1:19001` in `.env`; do not stop unrelated projects.
+
+## CI/CD in one minute
+
+- Pull requests run the context-graph gate, Ruff, the full Python test suite,
+  and a clean-volume Compose smoke test. They never deploy.
+- A green push to `main` publishes one immutable image tagged with the commit
+  SHA to GHCR.
+- The `Deploy DigitalOcean` workflow deploys that SHA through the protected
+  `production` GitHub Environment. It backs up PostgreSQL, updates the Compose
+  definition, waits for health, checks the public URL, and rolls back the image
+  setting if verification fails.
+- A previous SHA can be redeployed from **Actions → Deploy DigitalOcean → Run
+  workflow**. Production is never built from an uncommitted Droplet checkout.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for required checks and
+[docs/digitalocean.md](./docs/digitalocean.md) for secrets, first-time setup,
+deployment, backup, restore, and rollback details.
 
 ## Requirements authority
 
