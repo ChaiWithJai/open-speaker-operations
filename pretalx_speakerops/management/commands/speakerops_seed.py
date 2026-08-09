@@ -54,14 +54,10 @@ class Command(BaseCommand):
     help = "Create or update the Speaker Operations judge dataset."
 
     def handle(self, *args, **options):
-        from django.db import IntegrityError
-        try:
-            self._seed()
-        except IntegrityError as e:
-            self.stdout.write(self.style.WARNING(f"Seed: skipping duplicate data ({e})"))
+        self._seed()
 
-    @transaction.atomic
     def _seed(self):
+        administrator, _ = User.objects.get_or_create(
             email="admin@example.org",
             defaults={"name": "SpeakerOps Administrator", "is_administrator": True},
         )
@@ -69,7 +65,19 @@ class Command(BaseCommand):
         administrator.is_staff = True
         administrator.set_password("speakerops-demo")
         administrator.save()
-        if not Event.objects.filter(slug="speakerops-demo").exists():
+        event = self._get_or_create_event()
+        if event is None:
+            self.stdout.write(self.style.ERROR("Could not create or find event — seed aborted."))
+            return
+        event.enable_plugin("pretalx_speakerops")
+        event.save(update_fields=["plugins", "updated"])
+
+    def _get_or_create_event(self):
+        event = Event.objects.filter(slug="speakerops-demo").first()
+        if event:
+            return event
+        from django.db import IntegrityError
+        try:
             call_command(
                 "create_test_event",
                 slug="speakerops-demo",
@@ -77,9 +85,9 @@ class Command(BaseCommand):
                 seed=42,
                 verbosity=0,
             )
-        event = Event.objects.get(slug="speakerops-demo")
-        event.enable_plugin("pretalx_speakerops")
-        event.save(update_fields=["plugins", "updated"])
+        except IntegrityError:
+            self.stdout.write(self.style.WARNING("Event creation conflict — reusing existing."))
+        return Event.objects.filter(slug="speakerops-demo").first()
         users = {}
         for role, email, name in (
             ("chair", "chair@example.org", "Program Chair"),
