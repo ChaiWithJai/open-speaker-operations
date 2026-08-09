@@ -1,18 +1,37 @@
 # Contributing to Open Speaker Operations
 
-## Quick start
+## Development contract
+
+Production is a pinned Docker image running under Compose on DigitalOcean.
+Changes must therefore pass both Python tests and the deployment-shaped Compose
+smoke test. Do not validate only with Django's development server.
+
+1. Branch from the latest `main`.
+2. Keep each pull request focused and link the issue or acceptance criterion it proves.
+3. Run the local checks below.
+4. Push the branch and open a pull request. Do not merge with red or pending required checks.
+5. Merge through GitHub. Never copy source files directly to the Droplet.
+
+## Quick start (local, production-shaped)
+
+Docker Desktop with Compose v2 is the supported production-shaped setup:
 
 ```bash
 git clone https://github.com/ChaiWithJai/open-speaker-operations.git
 cd open-speaker-operations
-cp .env.example .env
-docker compose up --build
+cp .env.local.example .env
+docker compose --project-name speakerops-local up -d --build --wait
+curl --fail http://127.0.0.1:8001/speakerops-demo/cfp
 ```
+
+The local environment is deliberately non-production and binds web/mock ports to loopback.
+The seed is deterministic. The speaker, reviewer, chair, and admin accounts use the
+documented demo password `speakerops-demo` locally. **Never reuse that password in production.**
 
 Visit `http://127.0.0.1:8001/`. Demo accounts (password `speakerops-demo`):
 `chair@example.org`, `reviewer@example.org`, `speaker@example.org`.
 
-## Local development (without Docker)
+## Local development (Python-only)
 
 ```bash
 python -m venv .venv
