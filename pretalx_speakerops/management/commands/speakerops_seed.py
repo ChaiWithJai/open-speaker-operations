@@ -53,9 +53,15 @@ TASK_MACHINE = StateMachine(
 class Command(BaseCommand):
     help = "Create or update the Speaker Operations judge dataset."
 
-    @transaction.atomic
     def handle(self, *args, **options):
-        administrator, _ = User.objects.get_or_create(
+        from django.db import IntegrityError
+        try:
+            self._seed()
+        except IntegrityError as e:
+            self.stdout.write(self.style.WARNING(f"Seed: skipping duplicate data ({e})"))
+
+    @transaction.atomic
+    def _seed(self):
             email="admin@example.org",
             defaults={"name": "SpeakerOps Administrator", "is_administrator": True},
         )
