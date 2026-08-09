@@ -1,0 +1,135 @@
+name: Production Continuity Drill
+
+on:
+  workflow_dispatch:
+    inputs:
+      current_sha:
+        description: Current production image commit SHA
+        required: true
+        type: string
+      previous_sha:
+        description: Previous known-good image commit SHA
+        required: true
+        type: string
+      confirmation:
+        description: Type RUN_CONTINUITY_DRILL to authorize the restore and rollback rehearsal
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: speakerops-production
+  cancel-in-progress: false
+
+jobs:
+  continuity:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      APP_DIR: ${{ vars.DIGITALOCEAN_APP_DIR || '/opt/open-speaker-operations' }}
+      PUBLIC_URL: ${{ vars.SPEAKEROPS_PUBLIC_URL || 'https://loop.dharmicdata.org' }}
+      CURRENT_SHA: ${{ inputs.current_sha }}
+      PREVIOUS_SHA: ${{ inputs.previous_sha }}
+    steps:
+      - name: Validate explicit authorization and immutable image SHAs
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          test "$CONFIRMATION" = RUN_CONTINUITY_DRILL
+          for sha in "$CURRENT_SHA" "$PREVIOUS_SHA"; do
+            test "$(printf '%s' "$sha" | sed 's/[^0-9a-f]//g')" = "$sha"
+            test "${#sha}" -eq 40
+          done
+          test "$CURRENT_SHA" != "$PREVIOUS_SHA"
+
+      - name: Check out continuity tooling
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DIGITALOCEAN_SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 0700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0600 ~/.ssh/known_hosts
+
+      - name: Upload reviewed continuity contract
+        env:
+          HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+          USER: ${{ secrets.DIGITALOCEAN_USER }}
+        run: |
+          scp docker-compose.yml deploy/smoke_journey.py deploy/scripts/{deploy-digitalocean.sh,backup-nightly.sh,verify-restore.sh,drill-image-rollback.sh} deploy/systemd/{speakerops-backup.service,speakerops-backup.timer} "$USER@$HOST:/tmp/"
+          ssh "$USER@$HOST" "install -m 0644 /tmp/docker-compose.yml '$APP_DIR/docker-compose.yml' && install -m 0755 /tmp/deploy-digitalocean.sh '$APP_DIR/deploy-digitalocean.sh' && install -m 0755 /tmp/smoke_journey.py '$APP_DIR/smoke_journey.py' && install -m 0755 /tmp/backup-nightly.sh '$APP_DIR/backup-nightly.sh' && install -m 0755 /tmp/verify-restore.sh '$APP_DIR/verify-restore.sh' && install -m 0755 /tmp/drill-image-rollback.sh '$APP_DIR/drill-image-rollback.sh'"
+
+      - name: Install nightly backup schedule and prove one successful run
+        env:
+          HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+          USER: ${{ secrets.DIGITALOCEAN_USER }}
+        run: |
+          ssh "$USER@$HOST" "APP_DIR='$APP_DIR' bash -se" <<'REMOTE'
+          set -euo pipefail
+          deploy_user="$(id -un)"
+          sed -e "s/^User=.*/User=$deploy_user/" \
+            -e "s#/opt/open-speaker-operations#$APP_DIR#g" \
+            /tmp/speakerops-backup.service > /tmp/speakerops-backup.installed.service
+          sudo -n install -d -m 0755 /etc/speakerops
+          printf 'SPEAKEROPS_APP_DIR=%s\nSPEAKEROPS_COMPOSE_PROJECT=speakerops\nSPEAKEROPS_BACKUP_RETENTION_DAYS=14\n' "$APP_DIR" \
+            | sudo -n tee /etc/speakerops/backup.env >/dev/null
+          sudo -n chmod 0600 /etc/speakerops/backup.env
+          sudo -n install -m 0644 /tmp/speakerops-backup.installed.service /etc/systemd/system/speakerops-backup.service
+          sudo -n install -m 0644 /tmp/speakerops-backup.timer /etc/systemd/system/speakerops-backup.timer
+          sudo -n systemctl daemon-reload
+          sudo -n systemctl start speakerops-backup.service
+          sudo -n systemctl enable --now speakerops-backup.timer
+          sudo -n systemctl is-active speakerops-backup.timer
+          sudo -n systemctl show speakerops-backup.service -p Result --value | grep -Fx success
+          sudo -n systemctl list-timers speakerops-backup.timer --no-pager
+          REMOTE
+
+      - name: Create backup and verify isolated restore
+        env:
+          HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+          USER: ${{ secrets.DIGITALOCEAN_USER }}
+        run: |
+          ssh "$USER@$HOST" "APP_DIR='$APP_DIR' bash -se" <<'REMOTE'
+          set -euo pipefail
+          cd "$APP_DIR"
+          smoke_password="$(docker compose --project-name speakerops --file docker-compose.yml exec -T web sh -c 'printf %s "$SPEAKEROPS_DEMO_PASSWORD"')"
+          test -n "$smoke_password"
+          ./backup-nightly.sh --app-dir "$APP_DIR" --project speakerops --retention-days 14
+          backup_path="$(find "$APP_DIR/backups" -mindepth 1 -maxdepth 1 -type d -name 'speakerops-????????T??????Z' -print | sort | tail -n 1)"
+          test -n "$backup_path"
+          SPEAKEROPS_SMOKE_PASSWORD="$smoke_password" ./verify-restore.sh \
+            --app-dir "$APP_DIR" --project speakerops \
+            --bind 127.0.0.1:48001 --backup "$backup_path" --yes
+          REMOTE
+
+      - name: Verify previous image and return to current image
+        env:
+          HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+          USER: ${{ secrets.DIGITALOCEAN_USER }}
+          CURRENT_IMAGE: ghcr.io/chaiwithjai/open-speaker-operations:${{ inputs.current_sha }}
+          PREVIOUS_IMAGE: ghcr.io/chaiwithjai/open-speaker-operations:${{ inputs.previous_sha }}
+        run: |
+          ssh "$USER@$HOST" "APP_DIR='$APP_DIR' PUBLIC_URL='$PUBLIC_URL' CURRENT_IMAGE='$CURRENT_IMAGE' PREVIOUS_IMAGE='$PREVIOUS_IMAGE' bash -se" <<'REMOTE'
+          set -euo pipefail
+          cd "$APP_DIR"
+          smoke_password="$(docker compose --project-name speakerops --file docker-compose.yml exec -T web sh -c 'printf %s "$SPEAKEROPS_DEMO_PASSWORD"')"
+          test -n "$smoke_password"
+          SPEAKEROPS_SMOKE_PASSWORD="$smoke_password" ./drill-image-rollback.sh \
+            --app-dir "$APP_DIR" --public-url "$PUBLIC_URL" \
+            --current "$CURRENT_IMAGE" --previous "$PREVIOUS_IMAGE" --yes
+          test "$(sed -n 's/^APP_IMAGE=//p' .env | tail -n 1)" = "$CURRENT_IMAGE"
+          REMOTE
+
+      - name: Verify current public health after the drill
+        run: |
+          for attempt in 1 2 3 4 5; do
+            curl --fail --silent --show-error "$PUBLIC_URL/speakerops-demo/speaker-operations/status.json" >/dev/null
+            sleep 2
+          done
