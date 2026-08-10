@@ -70,7 +70,35 @@ def test_smoke_parser_handles_minified_unquoted_csrf_and_covers_six_surfaces():
     ):
         assert fragment in source
     assert 'f"/orga/{event}/speaker-operations/round-review/"' in source
-    assert 'f"/orga/{event}/speaker-operations/reviewer/"' not in source
+    assert 'f"/orga/{event}/speaker-operations/reviewer/"' in source
+    assert '"Assigned round evaluations"' in source
+
+    class Response:
+        status = 200
+
+        def __init__(self, path):
+            self.path = path
+
+        def geturl(self):
+            return f"https://loop.example{self.path}"
+
+    round_path = "/orga/demo/speaker-operations/round-review/"
+    legacy_path = "/orga/demo/speaker-operations/reviewer/"
+    alternatives = {legacy_path: "Score assigned proposals"}
+    for path, body in (
+        (round_path, "Assigned round evaluations"),
+        (legacy_path, "Score assigned proposals"),
+    ):
+        result = module.assert_surface(
+            "reviewer",
+            Response(path),
+            body,
+            1.0,
+            round_path,
+            "Assigned round evaluations",
+            alternatives=alternatives,
+        )
+        assert result.status == 200
 
 
 def test_nightly_timer_and_rotation_inputs_are_explicit():
