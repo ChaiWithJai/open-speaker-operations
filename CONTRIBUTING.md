@@ -14,13 +14,65 @@ smoke test. Do not validate only with Django's development server.
 
 ## Quick start (local, production-shaped)
 
+### macOS workspace and cache placement
+
+Keep active checkouts, virtual environments, browser runtimes, and evaluator
+artifacts outside iCloud Drive, Desktop, and Documents. File Provider can leave
+large dependency trees as `dataless` placeholders, which makes ordinary Git,
+Python, and browser operations repeatedly hydrate files and appear to hang.
+The supported macOS layout is:
+
+```text
+$HOME/Developer/speakerops-workspace/       active repositories and worktrees
+$HOME/.config/speakerops/                   private local environment files
+$HOME/Library/Caches/speakerops/            disposable package/browser caches
+```
+
+Create those directories with private defaults and point disposable caches at
+the non-cloud location:
+
+```bash
+mkdir -p "$HOME/Developer/speakerops-workspace" \
+  "$HOME/.config/speakerops" \
+  "$HOME/Library/Caches/speakerops/uv" \
+  "$HOME/Library/Caches/speakerops/playwright"
+chmod 700 "$HOME/.config/speakerops"
+export UV_CACHE_DIR="$HOME/Library/Caches/speakerops/uv"
+export PLAYWRIGHT_BROWSERS_PATH="$HOME/Library/Caches/speakerops/playwright"
+```
+
+Store local values in `$HOME/.config/speakerops/local.env`, set it to mode
+`600`, and pass it explicitly with Compose's `--env-file` option. Never copy a
+production credential into a repository, shell transcript, issue, screenshot,
+or benchmark artifact. A checkout-local `.venv` is acceptable when the checkout
+itself is under `$HOME/Developer/speakerops-workspace`.
+
+On macOS, run the metadata-only developer doctor before a long test or browser
+run:
+
+```bash
+make doctor
+# Or inspect multiple roots without reading or hydrating file contents:
+python3 tools/developer_doctor.py \
+  "$HOME/Developer/speakerops-workspace" \
+  "$HOME/Library/Caches/speakerops"
+```
+
+Exit `0` means the tree is hydrated (or the host is not macOS), `1` means
+`dataless` placeholders were found, and `2` means metadata could not be read.
+The command never repairs or deletes anything. Move or rehydrate deliberately,
+then rerun it; do not use a blanket Docker or workspace prune.
+
 Docker Desktop with Compose v2 is the supported production-shaped setup:
 
 ```bash
+cd "$HOME/Developer/speakerops-workspace"
 git clone https://github.com/ChaiWithJai/open-speaker-operations.git
 cd open-speaker-operations
-cp .env.local.example .env
-docker compose --project-name speakerops-local up -d --build --wait
+cp .env.local.example "$HOME/.config/speakerops/local.env"
+chmod 600 "$HOME/.config/speakerops/local.env"
+docker compose --env-file "$HOME/.config/speakerops/local.env" \
+  --project-name speakerops-local up -d --build --wait
 curl --fail http://127.0.0.1:8001/speakerops-demo/cfp
 ```
 

@@ -1,4 +1,4 @@
-.PHONY: check check-python docker-smoke format format-check lint test context-graph repository-contract syntax migrate seed run
+.PHONY: check check-python doctor docker-smoke format format-check lint test context-graph repository-contract syntax migrate seed run
 
 check: check-python docker-smoke
 
@@ -24,8 +24,11 @@ repository-contract:
 
 syntax:
 	bash -n tools/ci-compose-smoke.sh deploy/scripts/deploy-digitalocean.sh deploy/scripts/backup-nightly.sh deploy/scripts/verify-restore.sh deploy/scripts/drill-image-rollback.sh
-	uv run python -m py_compile deploy/smoke_journey.py tools/check_context_graph.py tools/check_repository_contract.py
+	uv run python -m py_compile deploy/smoke_journey.py tools/check_context_graph.py tools/check_repository_contract.py tools/developer_doctor.py
 	node --check tools/rehearse-judge-journey.js
+
+doctor:
+	python3 tools/developer_doctor.py .
 
 docker-smoke:
 	tools/ci-compose-smoke.sh
