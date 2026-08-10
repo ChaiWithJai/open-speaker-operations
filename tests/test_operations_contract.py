@@ -270,6 +270,19 @@ def test_production_deploy_imports_and_verifies_conference_memory_before_smoke()
     assert "--prune --confirm-prune --verify" in source
 
 
+def test_production_demo_restore_is_explicit_backed_up_and_smoke_verified():
+    workflow = (ROOT / ".github/workflows/deploy-digitalocean.yml").read_text()
+    source = (ROOT / "deploy/scripts/deploy-digitalocean.sh").read_text()
+
+    assert "restore_demo_seed:" in workflow
+    assert "SPEAKEROPS_RESTORE_DEMO='$RESTORE_DEMO_SEED'" in workflow
+    backup = source.index("pg_dump")
+    restore = source.index("python -m pretalx speakerops_seed")
+    protected_smoke = source.index('python3 "$smoke_script"')
+    assert backup < restore < protected_smoke
+    assert 'if [ "$restore_demo" = "true" ]' in source
+
+
 def test_production_ssh_keeps_long_atomic_import_alive():
     workflow = (ROOT / ".github/workflows/deploy-digitalocean.yml").read_text()
     assert "ServerAliveInterval 30" in workflow
