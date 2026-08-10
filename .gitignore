@@ -4,6 +4,7 @@
 build/
 output/
 .pretalx-data/
+.pretalx/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/

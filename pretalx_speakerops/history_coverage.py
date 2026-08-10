@@ -1,9 +1,15 @@
 import hashlib
 import json
+from collections import defaultdict
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from .conference_memory import canonical_speaker_key, load_document, load_documents
+from .conference_memory import (
+    canonical_speaker_key,
+    load_document,
+    load_documents,
+    source_identity_key,
+)
 
 REQUIRED_FAMILIES = {
     "AI Engineer": lambda slug: slug == "ai-engineer",
@@ -17,12 +23,21 @@ COUNT_FIELDS = (
     "editions",
     "talks",
     "speaker_credits",
+    "source_identities",
     "speakers",
     "known_gaps",
     "empty_editions",
     "missing_session_formats",
     "missing_tracks",
 )
+
+
+def _normalized_speaker_name(name):
+    """Normalize a source display name without discarding non-Latin identities."""
+    try:
+        return canonical_speaker_key(name)
+    except ValueError:
+        return " ".join(name.casefold().split())
 
 
 @dataclass(frozen=True)
@@ -32,6 +47,7 @@ class CoverageReport:
     editions: int
     talks: int
     speaker_credits: int
+    source_identities: int
     speakers: int
     known_gaps: int
     empty_editions: int
@@ -131,6 +147,8 @@ def analyze_catalog(source, contract=None):
     seen_editions = set()
     seen_talks = set()
     all_speakers = set()
+    all_source_identities = set()
+    speaker_names_by_key = defaultdict(set)
     series_counts = {}
     edition_count = talk_count = speaker_credit_count = 0
     known_gap_count = empty_edition_count = 0
@@ -178,10 +196,12 @@ def analyze_catalog(source, contract=None):
         if not editions:
             errors.append(f"{slug}: no editions")
         series_speakers = set()
+        series_source_identities = set()
         metrics = {
             "editions": 0,
             "talks": 0,
             "speaker_credits": 0,
+            "source_identities": 0,
             "speakers": 0,
             "known_gaps": len(known_gaps),
             "empty_editions": 0,
@@ -220,13 +240,17 @@ def analyze_catalog(source, contract=None):
                 metrics["speaker_credits"] += len(speakers)
                 if not speakers:
                     errors.append(f"{context}: no speaker credit")
-                for position, speaker in enumerate(speakers, start=1):
+                for position, speaker in enumerate(speakers):
                     if not isinstance(speaker, dict) or not speaker.get("name"):
-                        errors.append(f"{context}: speaker credit {position} requires name")
+                        errors.append(f"{context}: speaker credit {position + 1} requires name")
                         continue
                     key = speaker.get("canonical_key") or canonical_speaker_key(speaker["name"])
+                    identity_key = source_identity_key(talk.get("external_key"), position, speaker)
+                    speaker_names_by_key[key].add(_normalized_speaker_name(speaker["name"]))
                     all_speakers.add(key)
                     series_speakers.add(key)
+                    all_source_identities.add((*edition_key, identity_key))
+                    series_source_identities.add((edition_key[1], identity_key))
                 if not talk.get("session_format"):
                     missing_format_count += 1
                     metrics["missing_session_formats"] += 1
@@ -236,18 +260,25 @@ def analyze_catalog(source, contract=None):
                     metrics["missing_tracks"] += 1
                     source_gaps.append(f"{context}: track not published by source")
         metrics["speakers"] = len(series_speakers)
+        metrics["source_identities"] = len(series_source_identities)
         metrics["edition_keys"] = sorted(metrics["edition_keys"])
         series_counts[slug] = metrics
 
     for family, count in family_counts.items():
         if not count:
             errors.append(f"Missing required conference family: {family}")
+    for key, names in sorted(speaker_names_by_key.items()):
+        if len(names) > 1:
+            errors.append(
+                f"canonical speaker key {key!r} maps to multiple normalized names: {sorted(names)}"
+            )
     report = CoverageReport(
         documents=len(documents),
         series=len(series_records),
         editions=edition_count,
         talks=talk_count,
         speaker_credits=speaker_credit_count,
+        source_identities=len(all_source_identities),
         speakers=len(all_speakers),
         known_gaps=known_gap_count,
         empty_editions=empty_edition_count,

@@ -112,6 +112,19 @@ env_changed=true
 
 pull_images "$new_image"
 "${compose[@]}" up -d --wait --remove-orphans
+
+# Conference memory is a contracted production dataset, not part of the lightweight
+# event seed. Import and verify it once per immutable deployment so a green release
+# proves the buyer-facing history is actually populated, not merely present in the image.
+history_source=/app/pretalx_speakerops/data/conferences
+history_contract=/app/pretalx_speakerops/data/conference_history_contract.json
+"${compose[@]}" exec -T web python -m pretalx speakerops_history_coverage \
+  "$history_source" --contract "$history_contract" --strict
+"${compose[@]}" exec -T web python -m pretalx speakerops_import_history \
+  "$history_source" --contract "$history_contract" \
+  --prune --confirm-prune --verify \
+  --report /tmp/speakerops-history-verification.json
+
 curl --fail --silent --show-error "$public_url/" >/dev/null
 curl --fail --silent --show-error "$public_url/speakerops-demo/cfp" >/dev/null
 smoke_script="$app_dir/smoke_journey.py"

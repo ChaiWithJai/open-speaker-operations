@@ -72,7 +72,7 @@
 
     <h3>Returning-speaker cadence in matching AIE evidence</h3>
     <ul class="speakerops-memory__returning">
-      {% for speaker in memory_insights.returning_speakers %}<li><strong>{{ speaker.name }}</strong> · {{ speaker.appearance_count }} talks across {{ speaker.edition_count }} editions · latest {{ speaker.latest_appearance|date:"Y"|default:"undated" }}</li>{% empty %}<li>No speaker appears in two or more matching AIE editions.</li>{% endfor %}
+      {% for speaker in memory_insights.returning_speakers %}<li><strong>{{ speaker.name }}</strong> · {{ speaker.appearance_count }} talks across {{ speaker.edition_count }} verified editions · latest {{ speaker.latest_appearance|date:"Y"|default:"undated" }}</li>{% empty %}<li>No explicitly verified identity currently spans two matching AIE editions; provisional name/key clusters are intentionally excluded.</li>{% endfor %}
     </ul>
   </section>
 

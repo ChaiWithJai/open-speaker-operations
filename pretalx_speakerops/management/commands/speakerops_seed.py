@@ -207,6 +207,7 @@ class Command(BaseCommand):
             ("reviewer", "reviewer@example.org", "Reviewer"),
             ("reviewer_systems", "reviewer-systems@democon.test", "Systems Reviewer"),
             ("speaker", "speaker@example.org", "Maya Chen"),
+            ("speaker2", "speaker2@example.org", "Marcus Okafor"),
         ):
             user, created = User.objects.get_or_create(email=email, defaults={"name": name})
             user.name = name
@@ -747,7 +748,7 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 "Seeded speakerops-demo. Accounts: chair@example.org, "
-                "reviewer@example.org, speaker@example.org; password loaded from "
-                "SPEAKEROPS_DEMO_PASSWORD."
+                "reviewer@example.org, speaker@example.org, speaker2@example.org; "
+                "password loaded from SPEAKEROPS_DEMO_PASSWORD."
             )
         )

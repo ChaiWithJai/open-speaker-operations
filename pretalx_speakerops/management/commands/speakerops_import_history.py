@@ -47,6 +47,7 @@ class Command(BaseCommand):
                 "editions": 0,
                 "talks": 0,
                 "speakers": 0,
+                "source_identities": 0,
                 "deleted_talks": 0,
             }
             with transaction.atomic():
@@ -75,6 +76,7 @@ class Command(BaseCommand):
                 "Imported "
                 f"{totals['series']} series, {totals['editions']} editions, "
                 f"{totals['talks']} talks, and {totals['speakers']} speakers; "
+                f"created {totals['source_identities']} source identities; "
                 f"deleted {totals['deleted_talks']} stale talks."
             )
         )
@@ -84,6 +86,7 @@ class Command(BaseCommand):
                     "Verified exact corpus: "
                     f"{verification.series} series, {verification.editions} editions, "
                     f"{verification.talks} talks, {verification.speaker_credits} credits, "
-                    f"and {verification.speakers} speakers."
+                    f"{verification.speakers} speakers, and "
+                    f"{verification.source_identities} source identities."
                 )
             )

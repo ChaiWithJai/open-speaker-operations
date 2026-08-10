@@ -28,6 +28,7 @@ from .conference_memory import (
     conference_coverage,
     find_related_talks,
     memory_decision_support,
+    resolve_source_identity,
     speaker_memory_summary,
 )
 from .domain.commands import Command, execute
@@ -39,6 +40,10 @@ from .models import (
     CommandReceipt,
     ConditionalQuestionRule,
     ConferenceSeries,
+    CRMContact,
+    CRMPipelineCard,
+    HistoricalIdentityDecision,
+    HistoricalSourceIdentity,
     HistoricalSpeaker,
     HistoricalTalk,
     OnboardingTask,
@@ -294,6 +299,24 @@ class ConferenceSpeakerView(EventContextMixin, TemplateView):
             .order_by("-edition__date_from", "title")
         )
         summary = speaker_memory_summary(speaker, talks)
+        active_identities = HistoricalSourceIdentity.objects.filter(
+            speaker=speaker,
+            active=True,
+        )
+        verified_edition_count = (
+            active_identities.filter(resolution_status=HistoricalSourceIdentity.VERIFIED)
+            .values("edition_id")
+            .distinct()
+            .count()
+        )
+        identity_summary = {
+            "source_identity_count": active_identities.count(),
+            "verified_edition_count": verified_edition_count,
+            "unverified_count": active_identities.exclude(
+                resolution_status=HistoricalSourceIdentity.VERIFIED
+            ).count(),
+            "verified_recurrence": verified_edition_count >= 2,
+        }
         for talk in talks:
             credit = next(
                 (credit for credit in talk.credits.all() if credit.speaker_id == speaker.pk),
@@ -317,9 +340,23 @@ class ConferenceSpeakerView(EventContextMixin, TemplateView):
             speaker=speaker,
             profile=profile,
             memory_summary=summary,
+            identity_summary=identity_summary,
             historical_talks=talks,
             current_reviews=current_reviews,
             can_edit_profile=can_manage(self.request.user, self.event),
+            crm_contacts=CRMContact.objects.filter(
+                organiser=self.event.organiser,
+                source_speaker=speaker,
+                merged_into__isnull=True,
+            ).order_by("name", "pk"),
+            source_identities=HistoricalSourceIdentity.objects.filter(
+                speaker=speaker,
+                active=True,
+            )
+            .select_related("edition__series")
+            .prefetch_related("decisions__actor")
+            .order_by("edition__date_from", "edition__name", "source_key"),
+            identity_action_choices=HistoricalIdentityDecision.ACTION_CHOICES,
         )
         return context
 
@@ -327,6 +364,91 @@ class ConferenceSpeakerView(EventContextMixin, TemplateView):
         if not can_manage(request.user, self.event):
             raise Http404
         speaker = self._speaker()
+        if request.POST.get("action") == "resolve_identity":
+            identity = get_object_or_404(
+                HistoricalSourceIdentity,
+                pk=request.POST.get("source_identity"),
+                speaker=speaker,
+                active=True,
+            )
+            decision_action = request.POST.get("identity_action", "")
+            target_key = request.POST.get("target_key", "").strip()
+            try:
+                with transaction.atomic():
+                    if decision_action == HistoricalIdentityDecision.SPLIT:
+                        if not target_key:
+                            raise ValueError("Split decisions require a new cluster key")
+                        if len(target_key) > 200:
+                            raise ValueError("Cluster keys must be 200 characters or fewer")
+                        if HistoricalSpeaker.objects.filter(canonical_key=target_key).exists():
+                            raise ValueError("The split cluster key already exists")
+                        resolved_speaker = HistoricalSpeaker.objects.create(
+                            canonical_key=target_key,
+                            name=identity.display_name,
+                            biography="",
+                            source_url=identity.source_url,
+                            source_updated_at=identity.source_updated_at,
+                        )
+                    else:
+                        resolved_speaker = HistoricalSpeaker.objects.filter(
+                            canonical_key=target_key
+                        ).first()
+                        if not resolved_speaker:
+                            raise ValueError("Choose an existing target cluster key")
+                    decision = resolve_source_identity(
+                        identity,
+                        resolved_speaker,
+                        actor=request.user,
+                        action=decision_action,
+                        reason=request.POST.get("reason", ""),
+                        evidence_url=request.POST.get("evidence_url", "").strip(),
+                    )
+            except ValueError as exc:
+                messages.error(request, str(exc))
+            else:
+                messages.success(
+                    request,
+                    f"Recorded identity {decision.get_action_display().lower()} decision "
+                    f"for {identity.display_name}.",
+                )
+            return redirect(request.path)
+        if request.POST.get("action") == "add_to_crm":
+            contact = CRMContact.objects.filter(
+                organiser=self.event.organiser,
+                source_speaker=speaker,
+                merged_into__isnull=True,
+            ).first()
+            if contact:
+                messages.info(request, f"{contact.name} is already linked in organization CRM.")
+            else:
+                profile = SpeakerMemoryProfile.objects.filter(
+                    event=self.event,
+                    speaker=speaker,
+                ).first()
+                contact = CRMContact.objects.create(
+                    organiser=self.event.organiser,
+                    source_speaker=speaker,
+                    name=speaker.name,
+                    biography=speaker.biography,
+                    tags=profile.tags if profile else [],
+                    internal_notes=profile.internal_notes if profile else "",
+                )
+                CRMPipelineCard.objects.create(
+                    organiser=self.event.organiser,
+                    contact=contact,
+                )
+                messages.success(
+                    request,
+                    f"Added {contact.name} to organization CRM with source provenance. "
+                    "Review possible duplicates before outreach.",
+                )
+            return redirect(
+                reverse(
+                    "plugins:speakerops:speakerops_crm",
+                    kwargs={"event": self.event.slug},
+                )
+                + f"#crm-contact-{contact.pk}"
+            )
         tags = list(
             dict.fromkeys(
                 tag.strip()[:80] for tag in request.POST.get("tags", "").split(",") if tag.strip()

@@ -12,6 +12,7 @@ from pretalx_speakerops.conference_memory import (
     find_related_talks,
     import_document,
     memory_decision_support,
+    resolve_source_identity,
     speaker_memory_summary,
     verify_imported_catalog,
 )
@@ -19,6 +20,10 @@ from pretalx_speakerops.history_coverage import analyze_catalog, build_contract
 from pretalx_speakerops.models import (
     ConferenceEdition,
     ConferenceSeries,
+    CRMContact,
+    CRMPipelineCard,
+    HistoricalIdentityDecision,
+    HistoricalSourceIdentity,
     HistoricalSpeaker,
     HistoricalSpeakerCredit,
     HistoricalTalk,
@@ -102,11 +107,16 @@ def test_history_import_is_idempotent_and_updates_changed_records():
     second = import_document(memory_document("Updated title"))
 
     assert first.series == first.editions == first.talks == first.speakers == 1
+    assert first.source_identities == 1
     assert second.series == second.editions == second.talks == second.speakers == 0
+    assert second.source_identities == 0
     assert ConferenceSeries.objects.count() == 1
     assert ConferenceEdition.objects.count() == 1
     assert HistoricalSpeaker.objects.get().name == "Paolo Melchiorre"
     assert HistoricalSpeakerCredit.objects.get().name_at_source == "Paolo Melchiorre"
+    assert HistoricalSpeakerCredit.objects.get().source_identity.source_key == (
+        "credit:presentation-105:0"
+    )
     assert HistoricalTalk.objects.get().title == "Updated title"
 
 
@@ -227,6 +237,169 @@ def test_import_rejects_duplicate_talk_keys_atomically():
     assert ConferenceSeries.objects.count() == 0
 
 
+@pytest.mark.django_db
+def test_import_rejects_reused_person_key_for_different_people_atomically():
+    first = memory_document("First")
+    first_speaker = first["series"][0]["editions"][0]["talks"][0]["speakers"][0]
+    first_speaker.update(name="Sarah Adigwe", canonical_key="R8PQYJ")
+    import_document(first)
+    second = memory_document("Second")
+    second["series"][0]["editions"][0].update(
+        external_key="2027",
+        name="PyLadiesCon 2027",
+    )
+    second_speaker = second["series"][0]["editions"][0]["talks"][0]["speakers"][0]
+    second_speaker.update(name="Marie-Louise Annan", canonical_key="R8PQYJ")
+
+    with pytest.raises(ValueError, match="cannot map both"):
+        import_document(second)
+
+    assert HistoricalSpeaker.objects.get(canonical_key="R8PQYJ").name == "Sarah Adigwe"
+    assert ConferenceEdition.objects.filter(external_key="2027").count() == 0
+
+
+@pytest.mark.django_db
+def test_audited_identity_link_survives_reimport_and_drives_verified_recurrence():
+    first = aie_memory_document(edition="2024", speaker="Sarah Adigwe")
+    second = aie_memory_document(edition="2025", speaker="Sarah Adigwe")
+    first["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = "sarah-2024"
+    second["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = "sarah-2025"
+    import_document(first)
+    import_document(second)
+    identities = list(HistoricalSourceIdentity.objects.order_by("edition__external_key"))
+
+    resolve_source_identity(
+        identities[1],
+        identities[0].speaker,
+        actor=None,
+        action=HistoricalIdentityDecision.LINK,
+        reason="Reviewed official speaker pages identify the same person.",
+        evidence_url="https://www.ai.engineer/worldsfair/2025/schedule/agent-evals",
+    )
+    import_document(second)
+    identities[1].refresh_from_db()
+
+    assert identities[1].speaker == identities[0].speaker
+    assert identities[1].resolution_status == HistoricalSourceIdentity.VERIFIED
+    assert HistoricalIdentityDecision.objects.count() == 1
+    insights = memory_decision_support(HistoricalTalk.objects.all())
+    assert insights["returning_speakers"][0].name == "Sarah Adigwe"
+    assert insights["returning_speakers"][0].edition_count == 2
+
+
+@pytest.mark.django_db
+def test_identity_link_rejects_duplicate_credit_on_same_talk_atomically():
+    document = aie_memory_document(edition="2025", speaker="First Speaker")
+    talk = document["series"][0]["editions"][0]["talks"][0]
+    talk["speakers"].append(
+        {
+            "canonical_key": "second-speaker",
+            "name": "Second Speaker",
+        }
+    )
+    import_document(document)
+    identities = list(HistoricalSourceIdentity.objects.order_by("source_key"))
+    source_identity = identities[1]
+    target_speaker = identities[0].speaker
+
+    with pytest.raises(ValueError, match="duplicate speaker credit"):
+        resolve_source_identity(
+            source_identity,
+            target_speaker,
+            actor=None,
+            action=HistoricalIdentityDecision.LINK,
+            reason="The official schedule was reviewed.",
+            evidence_url="https://www.ai.engineer/worldsfair/2025/schedule/agent-evals",
+        )
+
+    source_identity.refresh_from_db()
+    assert source_identity.speaker != target_speaker
+    assert HistoricalIdentityDecision.objects.count() == 0
+    assert (
+        HistoricalSpeakerCredit.objects.filter(talk__external_key="agent-evals-2025").count() == 2
+    )
+
+
+@pytest.mark.django_db
+def test_import_verification_allows_audited_operator_split(tmp_path):
+    document = aie_memory_document(edition="2025", speaker="Published Alias")
+    source = tmp_path / "history.json"
+    source.write_text(json.dumps(document), encoding="utf-8")
+    import_document(document)
+    identity = HistoricalSourceIdentity.objects.get()
+    resolved_speaker = HistoricalSpeaker.objects.create(
+        canonical_key="operator-reviewed-person",
+        name="Published Alias",
+        biography="",
+        source_url=identity.source_url,
+        source_updated_at=identity.source_updated_at,
+    )
+
+    resolve_source_identity(
+        identity,
+        resolved_speaker,
+        actor=None,
+        action=HistoricalIdentityDecision.SPLIT,
+        reason="The official profile establishes a distinct person.",
+        evidence_url="https://www.ai.engineer/worldsfair/2025/schedule/agent-evals",
+    )
+
+    report = verify_imported_catalog(source)
+    assert report.complete
+    assert report.speakers == 2
+
+
+@pytest.mark.django_db(transaction=True)
+def test_identity_review_ui_requires_evidence_and_records_actor(event, users, client):
+    first = aie_memory_document(edition="2024", speaker="Sarah Adigwe")
+    second = aie_memory_document(edition="2025", speaker="Sarah Adigwe")
+    first["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = "sarah-2024"
+    second["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = "sarah-2025"
+    import_document(first)
+    import_document(second)
+    identities = list(HistoricalSourceIdentity.objects.order_by("edition__external_key"))
+    source = identities[1]
+    target = identities[0]
+    url = reverse(
+        "plugins:speakerops:speakerops_conference_speaker",
+        kwargs={"event": event.slug, "pk": source.speaker_id},
+    )
+    client.force_login(users["chair"])
+
+    rejected = client.post(
+        url,
+        {
+            "action": "resolve_identity",
+            "source_identity": source.pk,
+            "identity_action": HistoricalIdentityDecision.LINK,
+            "target_key": target.speaker.canonical_key,
+            "reason": "Same person on reviewed schedules",
+            "evidence_url": "",
+        },
+    )
+    assert rejected.status_code == 302
+    assert HistoricalIdentityDecision.objects.count() == 0
+
+    accepted = client.post(
+        url,
+        {
+            "action": "resolve_identity",
+            "source_identity": source.pk,
+            "identity_action": HistoricalIdentityDecision.LINK,
+            "target_key": target.speaker.canonical_key,
+            "reason": "Same person on reviewed official schedules",
+            "evidence_url": "https://www.ai.engineer/worldsfair/2025/schedule/agent-evals",
+        },
+    )
+    source.refresh_from_db()
+    decision = HistoricalIdentityDecision.objects.get()
+
+    assert accepted.status_code == 302
+    assert source.speaker == target.speaker
+    assert decision.actor == users["chair"]
+    assert decision.reason == "Same person on reviewed official schedules"
+
+
 @pytest.mark.django_db(transaction=True)
 def test_cfp_guide_is_public_and_linked_from_cfp(event, client):
     with scope(event=event):
@@ -302,9 +475,23 @@ def test_speaker_crm_layers_tags_notes_and_review_history_without_mutating_sourc
     assert b"Cross-event talk history" in page.content
     assert b"Decision brief" in page.content
     assert b"Cross-event identity cluster" in page.content
+    assert b"Provisional recurrence candidate" in page.content
     assert b"Published expertise signals" in page.content
     assert b"Current-program review history" in page.content
     assert b"Invite again" in page.content
+    assert b"Add to organization CRM" in page.content
+
+    handoff = client.post(url, {"action": "add_to_crm"})
+    contact = CRMContact.objects.get(organiser=event.organiser, source_speaker=speaker)
+    assert handoff.status_code == 302
+    assert handoff.url.endswith(f"#crm-contact-{contact.pk}")
+    assert contact.name == speaker.name
+    assert contact.biography == speaker.biography
+    assert contact.tags == ["AIE alum", "Evals"]
+    assert "Invite again" in contact.internal_notes
+    assert CRMPipelineCard.objects.filter(contact=contact, organiser=event.organiser).exists()
+    client.post(url, {"action": "add_to_crm"})
+    assert CRMContact.objects.filter(organiser=event.organiser, source_speaker=speaker).count() == 1
 
     speaker.refresh_from_db()
     assert speaker.biography == source_biography
@@ -385,6 +572,10 @@ def test_refresh_preserves_missing_records_unless_prune_is_explicit():
     pruned = import_document(document, prune=True)
     assert pruned.deleted_talks == 1
     assert HistoricalTalk.objects.count() == 0
+    identity = HistoricalSourceIdentity.objects.get()
+    assert identity.active is False
+    assert identity.retired_at is not None
+    assert HistoricalSpeaker.objects.count() == 1
 
 
 @pytest.mark.django_db(transaction=True)
@@ -431,9 +622,28 @@ def test_memory_decision_support_compares_aie_peers_and_return_cadence():
     import_document(aie_memory_document(edition="2024"))
     import_document(aie_memory_document(edition="2025"))
     import_document(memory_document("Peer Agent Evals"))
+    source_identities = list(
+        HistoricalSourceIdentity.objects.filter(edition__series__slug="ai-engineer").order_by(
+            "edition__external_key"
+        )
+    )
+    assert all(
+        identity.resolution_status == HistoricalSourceIdentity.LEGACY_UNVERIFIED
+        for identity in source_identities
+    )
+    decision = resolve_source_identity(
+        source_identities[1],
+        source_identities[0].speaker,
+        actor=None,
+        action=HistoricalIdentityDecision.LINK,
+        reason="Official schedules use the same published speaker identity.",
+        evidence_url="https://www.ai.engineer/worldsfair/2025/schedule/agent-evals",
+    )
 
     insights = memory_decision_support(HistoricalTalk.objects.all())
 
+    assert decision.prior_speaker == decision.resolved_speaker
+    assert HistoricalIdentityDecision.objects.count() == 1
     assert insights["aie"]["talks"] == 2
     assert insights["aie"]["editions"] == 2
     assert insights["peers"]["talks"] == 1
@@ -452,15 +662,24 @@ def test_speaker_memory_summary_exposes_recurrence_aliases_and_metadata_gaps():
     first = aie_memory_document(edition="2024", speaker="Returning Builder")
     second = aie_memory_document(edition="2025", speaker="R. Builder")
     first["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = (
-        "returning-builder-verified-cluster"
+        "returning-builder-2024"
     )
     second["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = (
-        "returning-builder-verified-cluster"
+        "returning-builder-2025"
     )
     second["series"][0]["editions"][0]["talks"][0]["track"] = ""
     import_document(first)
     import_document(second)
-    speaker = HistoricalSpeaker.objects.get(canonical_key="returning-builder-verified-cluster")
+    identities = list(HistoricalSourceIdentity.objects.order_by("edition__external_key"))
+    resolve_source_identity(
+        identities[1],
+        identities[0].speaker,
+        actor=None,
+        action=HistoricalIdentityDecision.LINK,
+        reason="Reviewed aliases on the two official schedule pages.",
+        evidence_url="https://www.ai.engineer/worldsfair/2025/schedule/agent-evals",
+    )
+    speaker = identities[0].speaker
     talks = list(
         speaker.historical_talks.select_related("edition__series").prefetch_related(
             "credits__speaker"
@@ -482,17 +701,29 @@ def test_speaker_memory_summary_exposes_recurrence_aliases_and_metadata_gaps():
 def test_speaker_page_links_current_reviews_through_sourced_aliases(event, users, client):
     first = aie_memory_document(edition="2024", speaker="Returning Builder")
     second = aie_memory_document(edition="2025", speaker="R. Builder")
-    for document in (first, second):
-        document["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = (
-            "returning-builder-cluster"
-        )
-        import_document(document)
+    first["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = (
+        "returning-builder-2024"
+    )
+    second["series"][0]["editions"][0]["talks"][0]["speakers"][0]["canonical_key"] = (
+        "returning-builder-2025"
+    )
+    import_document(first)
+    import_document(second)
+    identities = list(HistoricalSourceIdentity.objects.order_by("edition__external_key"))
+    resolve_source_identity(
+        identities[1],
+        identities[0].speaker,
+        actor=None,
+        action=HistoricalIdentityDecision.LINK,
+        reason="Reviewed aliases on the two official schedule pages.",
+        evidence_url="https://www.ai.engineer/worldsfair/2025/schedule/agent-evals",
+    )
     with scope(event=event):
         proposal = event.submissions.filter(reviews__isnull=False).first()
         users["speaker"].name = "Returning Builder"
         users["speaker"].save(update_fields=["name"])
         proposal.speakers.add(users["speaker"])
-    speaker = HistoricalSpeaker.objects.get(canonical_key="returning-builder-cluster")
+    speaker = identities[0].speaker
 
     client.force_login(users["chair"])
     response = client.get(
@@ -504,6 +735,8 @@ def test_speaker_page_links_current_reviews_through_sourced_aliases(event, users
 
     assert response.status_code == 200
     assert response.context["memory_summary"]["talk_count"] == 2
+    assert response.context["identity_summary"]["verified_recurrence"] is True
+    assert b"Verified recurrence" in response.content
     assert b"sourced talks" in response.content
     assert b"Returning Builder" in response.content
     assert b"R. Builder" in response.content
@@ -548,4 +781,4 @@ def test_memory_page_labels_decision_support_and_provenance_limits(event, users,
     assert b"What \xe2\x80\x9cfull known backfill\xe2\x80\x9d means" in response.content
     assert b"declared source gaps" in response.content
     assert b"Source has no label" in response.content
-    assert b"No speaker appears in two or more matching AIE editions" in response.content
+    assert b"No explicitly verified identity currently spans" in response.content

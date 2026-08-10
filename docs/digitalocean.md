@@ -25,7 +25,12 @@ Optional environment variables:
 
 On a green `main` build, CI publishes the commit-SHA image and the deployment
 workflow uploads the versioned Compose/runbook contract, creates a database
-backup, deploys, waits for health, and verifies the public landing page and CFP.
+backup, deploys, waits for health, strictly validates and imports the contracted
+conference-memory corpus, and verifies the protected role journey plus public outputs.
+The release fails atomically if the image's catalog digest/count contract or the
+database's exact 13-series, 199-edition, 18,432-talk, 20,238-credit, and
+20,174-source-identity inventory does not match. The 13,376 provisional person
+clusters remain a separately verified resolution output.
 
 ### First-time host setup
 
@@ -79,6 +84,11 @@ SPEAKEROPS_SMOKE_PASSWORD='read-from-secure-prompt' \
 This verifies speaker, reviewer, chair, sync, embed, and mobile-gallery surfaces.
 Real-browser acceptance and first-party static asset checks remain additional
 release evidence, not substitutes for the protected HTTP journey.
+
+Every normal deployment also runs `speakerops_history_coverage --strict` followed
+by the atomic `speakerops_import_history --prune --verify` release gate inside the
+new web container. Do not bypass that gate with a manual, seed-only restart: code
+containing the catalog is not evidence that production has populated conference memory.
 
 ## Measured demo sizing
 

@@ -17,9 +17,14 @@ Demo credentials use the password `speakerops-demo`:
 - `chair@example.org` — program chair
 - `reviewer@example.org` — reviewer
 - `speaker@example.org` — speaker
+- `speaker2@example.org` — distinct second speaker for co-author and cross-speaker scoping
 
 The integration record is a preview-only stub. No external credentials or
 network calls are made.
+
+The second speaker is deliberately a separate user record. Evaluator scenarios must
+not map both speaker personas to `speaker@example.org`: doing so cannot prove co-author
+identity, invitation boundaries, or cross-speaker authorization.
 
 ## Full conference-memory backfill
 
@@ -44,7 +49,8 @@ The first command fails on catalog, edition, count, identity, digest, or provena
 drift. The second performs one atomic import and then compares every database series,
 edition, talk, speaker credit, and canonical speaker key with the contracted catalog.
 The committed expectation is 13 series, 199 editions, 18,432 talks, 20,238 credits,
-and 13,375 speakers; 120 declared gaps, 9 empty editions, 1,067 missing format labels,
+20,174 edition-scoped source identities, and 13,376 provisional person clusters;
+120 declared gaps, 9 empty editions, 1,067 missing format labels,
 and 5,590 missing track labels remain explicit rather than inferred. The additional
 JSConf US 2009/2011/2012 and JSConf China 2012–2015 rows come from immutable
 first-party repository branches. Their unavailable track labels remain explicit

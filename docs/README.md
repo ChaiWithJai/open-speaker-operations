@@ -17,6 +17,7 @@ Each active long-form document has one purpose. Superseded plans live in
 | `digitalocean.md` | Production deployment and host operations |
 | `operator-handoff.md` | Backup, restore, rollback, and credential handoff |
 | `presenter-runbook.md` | Local competition rehearsal procedure |
+| `sbek-evaluator-runbook.md` | Authenticated external judge preflight and evidence gates |
 | `local-worker-system.md` | Historical local worker design and implementation notes |
 | `performance-audit.md` | Dated performance evidence and measurement method |
 | `demo-hci-review.md` | Dated HCI audit evidence; not a product specification |
