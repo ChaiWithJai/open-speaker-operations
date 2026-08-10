@@ -26,6 +26,42 @@ def test_review_configuration_has_two_rounds_and_auditable_history(event, users)
 
 
 @pytest.mark.django_db(transaction=True)
+def test_organiser_creates_rooms_and_tracks_from_agenda_view(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+    client.force_login(users["chair"])
+    url = f"/orga/{event.slug}/speaker-operations/agenda/"
+
+    response = client.post(
+        url, {"action": "create_room", "room_name": "Workshop Loft", "room_capacity": "45"}
+    )
+    assert response.status_code == 302
+    response = client.post(url, {"action": "create_track", "track_name": "AI Engineering"})
+    assert response.status_code == 302
+    with scope(event=event):
+        room = event.rooms.get(name="Workshop Loft")
+        assert room.capacity == 45
+        track = event.tracks.get(name="AI Engineering")
+        assert track.color
+
+    response = client.get(url)
+    assert response.status_code == 200
+    assert b"Workshop Loft" in response.content
+    assert b"AI Engineering" in response.content
+
+    # Duplicates and invalid input are rejected without creating records.
+    client.post(url, {"action": "create_room", "room_name": "workshop loft"})
+    client.post(url, {"action": "create_track", "track_name": "AI Engineering"})
+    client.post(
+        url, {"action": "create_track", "track_name": "Colourless", "track_color": "not-a-color"}
+    )
+    with scope(event=event):
+        assert event.rooms.filter(name__iexact="workshop loft").count() == 1
+        assert event.tracks.filter(name="AI Engineering").count() == 1
+        assert not event.tracks.filter(name="Colourless").exists()
+
+
+@pytest.mark.django_db(transaction=True)
 def test_blocking_schedule_warning_prevents_release(event, users):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")

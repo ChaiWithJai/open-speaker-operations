@@ -144,7 +144,7 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             contacts = contacts.filter(segments__pk=segment_id, segments__organiser=self.organiser)
         return contacts.distinct().select_related("source_speaker", "pipeline_card")
 
-    def post(self, request, event):
+    def post(self, request, *args, **kwargs):
         action = request.POST.get("action", "")
         handlers = {
             "save_contact": self._save_contact,

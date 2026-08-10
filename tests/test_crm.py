@@ -30,6 +30,41 @@ def _org_url(event):
     )
 
 
+def test_crm_organisation_route_accepts_posts(client, event, users):
+    client.force_login(users["chair"])
+    url = _org_url(event)
+
+    response = client.post(
+        url,
+        {
+            "action": "save_contact",
+            "name": "Morgan Reyes",
+            "email": "morgan@example.org",
+            "company": "Signal Stage",
+            "job_title": "Program Director",
+            "tags": "Keynote",
+        },
+    )
+    assert response.status_code == 302
+    assert response.url == url
+    contact = CRMContact.objects.get(organiser=event.organiser, email="morgan@example.org")
+    assert contact.pipeline_card.stage == CRMPipelineCard.PROSPECT
+
+    response = client.post(
+        url,
+        {
+            "action": "move_stage",
+            "contact_id": contact.pk,
+            "stage": CRMPipelineCard.CONTACTED,
+            "note": "Reached out from the organization workspace.",
+        },
+    )
+    assert response.status_code == 302
+    contact.refresh_from_db()
+    assert contact.pipeline_card.stage == CRMPipelineCard.CONTACTED
+    assert CRMPipelineHistory.objects.filter(card=contact.pipeline_card).count() == 1
+
+
 def test_crm_contact_filters_pipeline_handoff_and_outreach_round_trip(client, event, users):
     client.force_login(users["chair"])
     url = _url(event)

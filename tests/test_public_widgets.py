@@ -119,3 +119,58 @@ def test_embed_builder_is_organizer_only_and_exposes_required_controls(event, us
         b"embed-preview",
     ):
         assert marker in response.content
+
+
+@pytest.mark.django_db(transaction=True)
+def test_agenda_widget_offers_day_tabs_for_multi_day_programs(event, client):
+    from datetime import timedelta
+
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        slots = list(
+            event.current_schedule.talks.filter(is_visible=True, submission__isnull=False).order_by(
+                "start"
+            )
+        )
+        assert slots
+        moved = slots[-1]
+        moved.start = slots[0].start + timedelta(days=1)
+        moved.end = moved.start + timedelta(minutes=30)
+        moved.save(update_fields=["start", "end", "updated"])
+
+    response = client.get(f"/{event.slug}/speaker-operations/widgets/agenda/")
+    assert response.status_code == 200
+    body = response.content.decode()
+    assert body.count("data-day-tab") >= 3  # "All days" plus one tab per day
+    assert "All days" in body
+    assert body.count("data-day-panel=") >= 2
+    assert 'aria-label="Agenda days"' in body
+
+
+@pytest.mark.django_db(transaction=True)
+def test_agenda_widget_hides_day_tabs_for_single_day_programs(event, client):
+    from datetime import timedelta
+
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        slots = list(
+            event.current_schedule.talks.filter(is_visible=True, submission__isnull=False).order_by(
+                "start"
+            )
+        )
+        assert slots
+        from django.utils import timezone
+
+        base = timezone.localtime(slots[0].start, event.tz).replace(
+            hour=9, minute=0, second=0, microsecond=0
+        )
+        for offset, slot in enumerate(slots):
+            slot.start = base + timedelta(minutes=5 * offset)
+            slot.end = slot.start + timedelta(minutes=30)
+            slot.save(update_fields=["start", "end", "updated"])
+
+    response = client.get(f"/{event.slug}/speaker-operations/widgets/agenda/")
+    assert response.status_code == 200
+    body = response.content.decode()
+    assert "data-day-tab" not in body
+    assert body.count("data-day-panel=") == 1

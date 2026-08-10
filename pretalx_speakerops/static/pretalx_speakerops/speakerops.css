@@ -82,6 +82,11 @@ body .markdown-nav label:focus-visible { outline: 3px solid #0b3f91; outline-off
 .speakerops-list { min-width: min(100%, 28rem); margin: 0; padding: 0; list-style: none; }
 .speakerops-list li { display: flex; justify-content: space-between; gap: 1rem; padding: .55rem 0; border-bottom: 1px solid var(--speakerops-line); }
 .speakerops-list span { color: var(--speakerops-muted); }
+.speakerops-columns { display: flex; flex-wrap: wrap; gap: 1.5rem; flex: 1; }
+.speakerops-columns form { flex: 1 1 16rem; display: flex; flex-direction: column; gap: .4rem; align-items: flex-start; }
+.speakerops-columns .speakerops-list { align-self: stretch; margin-top: .5rem; }
+.speakerops-columns .speakerops-list li { justify-content: flex-start; }
+.speakerops-swatch { display: inline-block; width: .85rem; height: .85rem; border-radius: 50%; border: 1px solid var(--speakerops-line); }
 .speakerops-empty { padding: 2.5rem; border: 1px dashed #b8c0c7; border-radius: var(--speakerops-radius); text-align: center; color: var(--speakerops-muted); background: var(--speakerops-soft); }
 .speakerops-review-layout { display: grid; grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr); gap: 1rem; align-items: start; }
 .speakerops-queue, .speakerops-review-form { border: 1px solid var(--speakerops-line); border-radius: var(--speakerops-radius); background: #fff; }

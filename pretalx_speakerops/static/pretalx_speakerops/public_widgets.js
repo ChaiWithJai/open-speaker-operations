@@ -66,6 +66,19 @@
   [query, track, room].filter(Boolean).forEach((control) => {
     control.addEventListener(control === query ? "input" : "change", updateFilter);
   });
+  const dayTabs = [...document.querySelectorAll("[data-day-tab]")];
+  if (dayTabs.length) {
+    const dayPanels = [...document.querySelectorAll("[data-day-panel]")];
+    dayTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        dayTabs.forEach((other) => other.setAttribute("aria-pressed", String(other === tab)));
+        dayPanels.forEach((panel) => {
+          panel.hidden = Boolean(tab.dataset.dayTab) && panel.dataset.dayPanel !== tab.dataset.dayTab;
+        });
+      });
+    });
+  }
+
   selectedOnly?.addEventListener("change", syncStars);
   syncStars();
   if (root.dataset.widget !== "itinerary") updateFilter();

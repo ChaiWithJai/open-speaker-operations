@@ -52,6 +52,42 @@
   <section class="speakerops__success"><strong>Release gate clear.</strong> No blocking room or speaker conflicts.</section>
   {% endif %}
 
+  <section class="speakerops-panel" id="rooms-tracks" aria-labelledby="rooms-tracks-title">
+    <div>
+      <p class="speakerops__eyebrow">Program structure</p>
+      <h2 id="rooms-tracks-title">Rooms &amp; tracks</h2>
+      <p>Create the rooms sessions run in and the tracks that group them. Both become available immediately to the scheduler and the CFP.</p>
+    </div>
+    <div class="speakerops-columns">
+      <form method="post" aria-labelledby="create-room-title">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create_room">
+        <h3 id="create-room-title">Add a room</h3>
+        <label for="room-name">Room name</label>
+        <input class="form-control" id="room-name" name="room_name" required maxlength="100">
+        <label for="room-capacity">Capacity (optional)</label>
+        <input class="form-control" id="room-capacity" name="room_capacity" inputmode="numeric" pattern="[0-9]*">
+        <button class="btn btn-outline-primary" type="submit">Create room</button>
+        <ul class="speakerops-list">
+          {% for room in rooms %}<li>{{ room.name }}{% if room.capacity %} · seats {{ room.capacity }}{% endif %}</li>{% empty %}<li>No rooms yet.</li>{% endfor %}
+        </ul>
+      </form>
+      <form method="post" aria-labelledby="create-track-title">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create_track">
+        <h3 id="create-track-title">Add a track</h3>
+        <label for="track-name">Track name</label>
+        <input class="form-control" id="track-name" name="track_name" required maxlength="200">
+        <label for="track-color">Colour</label>
+        <input class="form-control" id="track-color" name="track_color" type="color" value="#3aa57c">
+        <button class="btn btn-outline-primary" type="submit">Create track</button>
+        <ul class="speakerops-list">
+          {% for track in tracks %}<li><span class="speakerops-swatch" style="background:{{ track.color }}" aria-hidden="true"></span>{{ track.name }}</li>{% empty %}<li>No tracks yet.</li>{% endfor %}
+        </ul>
+      </form>
+    </div>
+  </section>
+
   <section class="speakerops-panel" aria-labelledby="agenda-assist-title">
     <div>
       <p class="speakerops__eyebrow">Operator-controlled assistance</p>

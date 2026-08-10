@@ -1,4 +1,5 @@
 import csv
+import re
 import uuid
 from urllib.parse import urlencode
 
@@ -20,7 +21,8 @@ from django.views.generic import TemplateView, View
 from django_scopes import scope
 from pretalx.event.models import Event
 from pretalx.person.models import User
-from pretalx.submission.models import Review, ReviewScore, Submission, SubmissionStates
+from pretalx.schedule.models import Room
+from pretalx.submission.models import Review, ReviewScore, Submission, SubmissionStates, Track
 
 from .auth import can_manage, is_speaker, require_event_permission, role_home_url, role_navigation
 from .cfp_forms import ConditionalQuestionRuleForm, ReviewerPoolForm
@@ -1311,6 +1313,9 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
                     "competitor"
                 ].submission.orga_urls.quick_schedule
         blocking = [warning for warning in warnings if warning["blocking"]]
+        with scope(event=self.event):
+            rooms = list(self.event.rooms.all())
+            tracks = list(self.event.tracks.all())
         context.update(
             event=self.event,
             schedule=schedule,
@@ -1319,11 +1324,57 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
             blocking=blocking,
             gate_feedback=self._conflict_feedback(blocking),
             proposed_placements=kwargs.get("proposed_placements"),
+            rooms=rooms,
+            tracks=tracks,
         )
         return context
 
+    def _create_room(self, request):
+        name = request.POST.get("room_name", "").strip()
+        if not name:
+            messages.error(request, "Room name is required.")
+            return redirect(f"{request.path}#rooms-tracks")
+        capacity_raw = request.POST.get("room_capacity", "").strip()
+        if capacity_raw and not capacity_raw.isdigit():
+            messages.error(request, "Room capacity must be a whole number.")
+            return redirect(f"{request.path}#rooms-tracks")
+        with scope(event=self.event):
+            if any(str(room.name).casefold() == name.casefold() for room in self.event.rooms.all()):
+                messages.error(request, f"A room named {name} already exists.")
+                return redirect(f"{request.path}#rooms-tracks")
+            Room.objects.create(
+                event=self.event,
+                name=name,
+                capacity=int(capacity_raw) if capacity_raw else None,
+            )
+        messages.success(request, f"Created room {name}. It is now available for scheduling.")
+        return redirect(f"{request.path}#rooms-tracks")
+
+    def _create_track(self, request):
+        name = request.POST.get("track_name", "").strip()
+        color = request.POST.get("track_color", "").strip() or "#3aa57c"
+        if not name:
+            messages.error(request, "Track name is required.")
+            return redirect(f"{request.path}#rooms-tracks")
+        if not re.fullmatch(r"#([0-9A-Fa-f]{3}){1,2}", color):
+            messages.error(request, "Track colour must be a hex value like #3aa57c.")
+            return redirect(f"{request.path}#rooms-tracks")
+        with scope(event=self.event):
+            if any(
+                str(track.name).casefold() == name.casefold() for track in self.event.tracks.all()
+            ):
+                messages.error(request, f"A track named {name} already exists.")
+                return redirect(f"{request.path}#rooms-tracks")
+            Track.objects.create(event=self.event, name=name, color=color)
+        messages.success(request, f"Created track {name}. It is now available for submissions.")
+        return redirect(f"{request.path}#rooms-tracks")
+
     def post(self, request, event):
         action = request.POST.get("action")
+        if action == "create_room":
+            return self._create_room(request)
+        if action == "create_track":
+            return self._create_track(request)
         if action == "preview_assisted_schedule":
             try:
                 with scope(event=self.event):
