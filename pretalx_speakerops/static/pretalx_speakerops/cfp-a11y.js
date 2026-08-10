@@ -1,4 +1,9 @@
 (() => {
+  /* A draft must be savable before required proposal fields are complete. */
+  document.querySelectorAll('button[name="action"][value="draft"]').forEach((button) => {
+    button.formNoValidate = true;
+  });
+
   document.querySelectorAll("details[role='menu']").forEach((details) => {
     details.removeAttribute("role");
     details.removeAttribute("aria-haspopup");
@@ -38,5 +43,54 @@
     if (!input.labels?.length && !input.getAttribute("aria-label")) {
       input.setAttribute("aria-label", "New account password");
     }
+  });
+
+  /*
+   * pretalx's schedule is a third-party web component. Keep the native view,
+   * but repair the accessibility metadata it emits so the public fallback is
+   * as trustworthy as the Speaker Operations widgets.
+   */
+  const enhanceSchedule = (host) => {
+    const apply = () => {
+      const root = host.shadowRoot;
+      if (!root) return;
+
+      root.querySelectorAll("[role='tab'][aria-controls]").forEach((tab) => {
+        const controlled = tab.getAttribute("aria-controls");
+        if (!controlled || !root.getElementById(controlled)) tab.removeAttribute("aria-controls");
+      });
+      root.querySelectorAll("button.btn-fav-container").forEach((button) => {
+        if (button.getAttribute("aria-label")) return;
+        const session = button.closest("a");
+        const title = session?.querySelector(".title")?.textContent?.trim();
+        button.setAttribute("aria-label", title ? `Add ${title} to favorites` : "Add session to favorites");
+      });
+
+      if (!root.getElementById("speakerops-native-schedule-a11y")) {
+        const style = document.createElement("style");
+        style.id = "speakerops-native-schedule-a11y";
+        style.textContent = `
+          .timezone-label { color: #5f5f5f !important; }
+          .time-box .duration { color: #ffffff !important; }
+        `;
+        root.append(style);
+      }
+    };
+
+    apply();
+    const observer = new MutationObserver(apply);
+    if (host.shadowRoot) observer.observe(host.shadowRoot, { childList: true, subtree: true });
+    else {
+      const rootObserver = new MutationObserver(() => {
+        if (!host.shadowRoot) return;
+        rootObserver.disconnect();
+        apply();
+        observer.observe(host.shadowRoot, { childList: true, subtree: true });
+      });
+      rootObserver.observe(host, { childList: true });
+    }
+  };
+  customElements.whenDefined("pretalx-schedule").then(() => {
+    document.querySelectorAll("pretalx-schedule").forEach(enhanceSchedule);
   });
 })();

@@ -41,7 +41,8 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
+      - id: production-image
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
@@ -50,3 +51,13 @@ jobs:
           build-args: APP_VERSION=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Record immutable production image digest
+        run: |
+          test "$(printf '%s' '${{ steps.production-image.outputs.digest }}' | sed 's/^sha256:[0-9a-f]\{64\}$//')" = ""
+          printf '%s\n' '${{ steps.production-image.outputs.digest }}' > production-image-digest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-image-digest
+          path: production-image-digest.txt
+          if-no-files-found: error
+          retention-days: 30

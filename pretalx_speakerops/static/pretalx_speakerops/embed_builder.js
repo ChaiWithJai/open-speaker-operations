@@ -10,12 +10,15 @@
     url.searchParams.set("theme", form.elements.theme.value);
     url.searchParams.set("fields", form.elements.fields.value);
     if (form.elements.track.value) url.searchParams.set("track", form.elements.track.value);
+    const format = form.elements.format.value;
+    const exportPath = format === "json" ? form.dataset.json : format === "xml" ? form.dataset.xml : format === "ical" ? form.dataset.ical : "";
+    const outputUrl = exportPath ? new URL(exportPath, window.location.origin) : url;
     preview.src = url.toString();
-    share.href = url.toString();
+    share.href = outputUrl.toString();
     const title = `${widget[0].toUpperCase()}${widget.slice(1)} for ${form.dataset.eventName}`;
-    snippet.value = form.elements.format.value === "link"
-      ? `<a href="${url}">${title}</a>`
-      : `<iframe src="${url}" title="${title}" loading="lazy" width="100%" height="720"></iframe>`;
+    if (format === "iframe") snippet.value = `<iframe src="${url}" title="${title}" loading="lazy" width="100%" height="720"></iframe>`;
+    else if (format === "link") snippet.value = `<a href="${url}">${title}</a>`;
+    else snippet.value = outputUrl.toString();
   }
   form.addEventListener("input", update);
   form.addEventListener("change", update);

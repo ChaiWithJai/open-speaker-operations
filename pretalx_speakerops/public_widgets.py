@@ -1,8 +1,11 @@
 from collections import defaultdict
+from urllib.parse import urlencode
 
 from csp.decorators import csp_update
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.templatetags.static import static
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -14,6 +17,7 @@ from pretalx.schedule.ical import get_slots_ical
 from pretalx.submission.models import Answer
 
 from .auth import can_manage
+from .demo_assets import DEMO_HEADSHOT_BY_EMAIL
 
 PUBLIC_WIDGETS = {
     "sessions": "Sessions",
@@ -58,6 +62,7 @@ def _public_program(event):
     days = {}
     tracks = {}
     rooms = {}
+    formats = {}
     for slot in slots:
         slot.public_start = timezone.localtime(slot.start, event.tz)
         slot.public_end = timezone.localtime(slot.real_end, event.tz)
@@ -68,24 +73,30 @@ def _public_program(event):
         )["slots"].append(slot)
         if slot.submission.track:
             tracks[slot.submission.track_id] = slot.submission.track
+        if slot.submission.submission_type:
+            formats[slot.submission.submission_type_id] = slot.submission.submission_type
         if slot.room:
             rooms[slot.room_id] = slot.room
         for speaker in slot.submission.speakers.all():
             if speaker.pk not in speaker_cards:
                 answers = public_answers[speaker.pk]
                 profile = profiles.get(speaker.pk)
+                avatar_url = speaker.get_avatar_url(event=event, thumbnail="tiny") or ""
+                if not avatar_url and event.slug == "speakerops-demo":
+                    if demo_headshot := DEMO_HEADSHOT_BY_EMAIL.get(speaker.email):
+                        avatar_url = static(demo_headshot)
                 speaker_cards[speaker.pk] = {
                     "speaker": speaker,
                     "profile": profile,
                     "biography": profile.biography if profile else "",
-                    "avatar_url": speaker.get_avatar_url(event=event, thumbnail="tiny") or "",
+                    "avatar_url": avatar_url,
                     "job_title": next(
                         (
                             answers[key]
                             for key in ("job title", "title", "role")
                             if answers.get(key)
                         ),
-                        "Title not provided",
+                        "",
                     ),
                     "company": next(
                         (
@@ -93,7 +104,7 @@ def _public_program(event):
                             for key in ("company", "organisation", "organization")
                             if answers.get(key)
                         ),
-                        "Company not provided",
+                        "",
                     ),
                     "slots": [],
                 }
@@ -126,9 +137,32 @@ def _public_program(event):
         "slots": slots,
         "days": list(days.values()),
         "tracks": sorted(tracks.values(), key=lambda item: str(item.name)),
+        "formats": sorted(formats.values(), key=lambda item: str(item.name)),
         "rooms": sorted(rooms.values(), key=lambda item: str(item.name)),
         "speaker_cards": speakers,
     }
+
+
+def _filter_session_slots(slots, *, query="", track="", session_format="", room=""):
+    """Apply the public Sessions filters on the server as a no-JS authority."""
+
+    needle = query.strip().casefold()
+    filtered = []
+    for slot in slots:
+        speakers = " ".join(
+            speaker.get_display_name() for speaker in slot.submission.speakers.all()
+        )
+        haystack = f"{slot.submission.title} {speakers}".casefold()
+        if needle and needle not in haystack:
+            continue
+        if track and str(slot.submission.track_id or "") != track:
+            continue
+        if session_format and str(slot.submission.submission_type_id or "") != session_format:
+            continue
+        if room and str(slot.room_id or "") != room:
+            continue
+        filtered.append(slot)
+    return filtered
 
 
 @method_decorator(xframe_options_exempt, name="dispatch")
@@ -147,12 +181,32 @@ class PublicWidgetView(TemplateView):
         with scope(event=self.event):
             context = super().get_context_data(**kwargs)
             context.update(_public_program(self.event))
+        selected_day = self.request.GET.get("day", "")
+        valid_days = {day["key"] for day in context["days"]}
+        if selected_day not in valid_days:
+            selected_day = context["days"][0]["key"] if context["days"] else ""
+        selected_query = self.request.GET.get("q", "").strip()
+        selected_track = self.request.GET.get("track", "")
+        selected_format = self.request.GET.get("format", "")
+        selected_room = self.request.GET.get("room", "")
+        if self.widget == "sessions":
+            context["slots"] = _filter_session_slots(
+                context["slots"],
+                query=selected_query,
+                track=selected_track,
+                session_format=selected_format,
+                room=selected_room,
+            )
         context.update(
             widget=self.widget,
             widget_label=PUBLIC_WIDGETS[self.widget],
             theme="dark" if self.request.GET.get("theme") == "dark" else "light",
             compact=self.request.GET.get("fields") == "compact",
-            selected_track=self.request.GET.get("track", ""),
+            selected_day=selected_day,
+            selected_query=selected_query,
+            selected_track=selected_track,
+            selected_format=selected_format,
+            selected_room=selected_room,
         )
         return context
 
@@ -180,7 +234,69 @@ class PublicSpeakerDetailView(TemplateView):
             )
             if not card:
                 raise Http404
-        context.update(event=self.event, card=card)
+        origin = self.request.GET.get("from", "")
+        if origin not in {"gallery", "speakers"}:
+            origin = "speakers"
+        return_query = self.request.GET.get("q", "").strip()
+        return_url = reverse(
+            "plugins:speakerops:speakerops_public_widget",
+            kwargs={"event": self.event.slug, "widget": origin},
+        )
+        if return_query:
+            return_url = f"{return_url}?{urlencode({'q': return_query})}"
+        return_url = f"{return_url}#speaker-{card['speaker'].code}"
+        context.update(
+            event=self.event,
+            card=card,
+            origin=origin,
+            origin_label=PUBLIC_WIDGETS[origin],
+            return_query=return_query,
+            return_url=return_url,
+        )
+        return context
+
+
+@method_decorator(xframe_options_exempt, name="dispatch")
+@method_decorator(csp_update({"frame-ancestors": ["*"]}), name="dispatch")
+class PublicSessionDetailView(TemplateView):
+    template_name = "pretalx_speakerops/public_session_detail.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.event = get_object_or_404(Event, slug=kwargs["event"])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        with scope(event=self.event):
+            context = super().get_context_data(**kwargs)
+            program = _public_program(self.event)
+            slot = next(
+                (item for item in program["slots"] if item.submission.code == self.kwargs["code"]),
+                None,
+            )
+            if not slot:
+                raise Http404
+        origin = self.request.GET.get("from", "")
+        if origin not in PUBLIC_WIDGETS:
+            origin = "sessions"
+        return_params = {
+            key: self.request.GET[key]
+            for key in ("day", "q", "track", "format", "room")
+            if self.request.GET.get(key)
+        }
+        return_url = reverse(
+            "plugins:speakerops:speakerops_public_widget",
+            kwargs={"event": self.event.slug, "widget": origin},
+        )
+        if return_params:
+            return_url = f"{return_url}?{urlencode(return_params)}"
+        return_url = f"{return_url}#session-{slot.submission.code}"
+        context.update(
+            event=self.event,
+            slot=slot,
+            origin=origin,
+            origin_label=PUBLIC_WIDGETS[origin],
+            return_url=return_url,
+        )
         return context
 
 

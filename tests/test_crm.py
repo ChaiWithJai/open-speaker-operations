@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
@@ -28,6 +30,41 @@ def _org_url(event):
         "plugins:speakerops:speakerops_crm_org",
         kwargs={"organiser": event.organiser.slug},
     )
+
+
+def test_crm_organisation_route_accepts_posts(client, event, users):
+    client.force_login(users["chair"])
+    url = _org_url(event)
+
+    response = client.post(
+        url,
+        {
+            "action": "save_contact",
+            "name": "Morgan Reyes",
+            "email": "morgan@example.org",
+            "company": "Signal Stage",
+            "job_title": "Program Director",
+            "tags": "Keynote",
+        },
+    )
+    assert response.status_code == 302
+    assert response.url == url
+    contact = CRMContact.objects.get(organiser=event.organiser, email="morgan@example.org")
+    assert contact.pipeline_card.stage == CRMPipelineCard.PROSPECT
+
+    response = client.post(
+        url,
+        {
+            "action": "move_stage",
+            "contact_id": contact.pk,
+            "stage": CRMPipelineCard.CONTACTED,
+            "note": "Reached out from the organization workspace.",
+        },
+    )
+    assert response.status_code == 302
+    contact.refresh_from_db()
+    assert contact.pipeline_card.stage == CRMPipelineCard.CONTACTED
+    assert CRMPipelineHistory.objects.filter(card=contact.pipeline_card).count() == 1
 
 
 def test_crm_contact_filters_pipeline_handoff_and_outreach_round_trip(client, event, users):
@@ -65,6 +102,9 @@ def test_crm_contact_filters_pipeline_handoff_and_outreach_round_trip(client, ev
     assert response.status_code == 200
     assert response.context["result_count"] == 1
     assert b"Taylor Kim" in response.content
+    landmark_names = re.findall(rb'<nav[^>]*aria-label="([^"]+)"', response.content)
+    assert b"Speaker Operations workflow navigation" in landmark_names
+    assert len(landmark_names) == len(set(landmark_names))
 
     response = client.post(
         url,
@@ -232,8 +272,89 @@ def test_crm_rejects_invalid_csv_atomically(client, event, users):
     assert CRMContact.objects.filter(organiser=event.organiser).count() == 0
 
 
+def test_sourced_contact_without_email_explains_and_blocks_event_handoff(client, event, users):
+    source = HistoricalSpeaker.objects.create(
+        canonical_key="source-without-email",
+        name="Source Without Email",
+        source_url="https://example.org/schedule/source-without-email",
+        source_updated_at=timezone.now(),
+    )
+    contact = CRMContact.objects.create(
+        organiser=event.organiser,
+        source_speaker=source,
+        name=source.name,
+        email="",
+    )
+    CRMPipelineCard.objects.create(organiser=event.organiser, contact=contact)
+    client.force_login(users["chair"])
+    url = _url(event)
+
+    page = client.get(url, {"q": contact.name})
+
+    assert page.status_code == 200
+    assert b"This sourced record did not publish an email" in page.content
+    assert b"will not infer or invent contact data" in page.content
+    assert f"#edit-email-{contact.pk}".encode() in page.content
+    assert b"Add without re-entry" not in page.content
+
+    blocked = client.post(
+        url,
+        {"action": "add_to_event", "contact_id": contact.pk},
+        follow=True,
+    )
+
+    assert blocked.status_code == 200
+    assert b"No contact data was inferred or invented" in blocked.content
+    assert not CRMEventLink.objects.filter(contact=contact, event=event).exists()
+
+
 def test_org_crm_requires_manager_and_login(client, event, users):
     url = _org_url(event)
     assert client.get(url).status_code == 302
     client.force_login(users["reviewer"])
     assert client.get(url).status_code in (403, 404)
+
+
+def test_org_crm_route_supports_mutations_without_event_slug(client, event, users):
+    """SBEK CRM-S1 enters through the organisation URL and posts forms there."""
+
+    client.force_login(users["chair"])
+    url = _org_url(event)
+
+    response = client.post(
+        url,
+        {
+            "action": "save_contact",
+            "name": "Jordan Regression",
+            "email": "jordan-regression@example.org",
+            "company": "AIE",
+            "job_title": "Program operator",
+            "tags": "alumni, AI",
+            "internal_notes": "Organisation-route mutation regression.",
+        },
+    )
+
+    assert response.status_code == 302
+    assert response.url == url
+    contact = CRMContact.objects.get(
+        organiser=event.organiser,
+        email="jordan-regression@example.org",
+    )
+    assert contact.tags == ["AI", "alumni"]
+
+    response = client.post(
+        url,
+        {
+            "action": "move_stage",
+            "contact_id": contact.pk,
+            "stage": CRMPipelineCard.INTERESTED,
+            "note": "Moved from the canonical organisation route.",
+        },
+    )
+
+    assert response.status_code == 302
+    contact.pipeline_card.refresh_from_db()
+    assert contact.pipeline_card.stage == CRMPipelineCard.INTERESTED
+    assert contact.pipeline_card.history.get().note == (
+        "Moved from the canonical organisation route."
+    )

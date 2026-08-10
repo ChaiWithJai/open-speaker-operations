@@ -11,6 +11,11 @@ Routine deployments are performed by `.github/workflows/deploy-digitalocean.yml`
 not by building or copying application source on the Droplet. Configure a
 protected GitHub Environment named `production` with a required reviewer.
 
+The CI image job publishes an immutable registry digest artifact. Deployment consumes
+that exact digest, checks out both the release contract and deployment tooling at the
+same release SHA, verifies every application container uses the digest, and confirms
+its baked `APP_VERSION` equals the approved commit before importing history or smoke.
+
 Environment secrets:
 
 - `DIGITALOCEAN_HOST`: Droplet hostname or IPv4 address.
@@ -28,8 +33,8 @@ workflow uploads the versioned Compose/runbook contract, creates a database
 backup, deploys, waits for health, strictly validates and imports the contracted
 conference-memory corpus, and verifies the protected role journey plus public outputs.
 The release fails atomically if the image's catalog digest/count contract or the
-database's exact 13-series, 199-edition, 18,432-talk, 20,238-credit, and
-20,174-source-identity inventory does not match. The 13,376 provisional person
+database's exact 13-series, 204-edition, 19,466-talk, 21,419-credit, and
+21,355-source-identity inventory does not match. The 14,068 provisional person
 clusters remain a separately verified resolution output.
 
 ### First-time host setup
@@ -37,7 +42,7 @@ clusters remain a separately verified resolution output.
 1. Create `/opt/open-speaker-operations/.env` with mode `0600` from the
    production-oriented `.env.example` (not `.env.local.example`).
    Use unique values for `POSTGRES_PASSWORD` and `DJANGO_SUPERUSER_PASSWORD`, and
-   pin `APP_IMAGE` to an immutable commit SHA.
+   pin `APP_IMAGE` to an immutable `ghcr.io/...@sha256:...` digest.
 2. Copy `docker-compose.yml` to `/opt/open-speaker-operations/docker-compose.yml`.
 3. Authenticate Docker to GHCR, then run:
 
@@ -89,6 +94,8 @@ Every normal deployment also runs `speakerops_history_coverage --strict` followe
 by the atomic `speakerops_import_history --prune --verify` release gate inside the
 new web container. Do not bypass that gate with a manual, seed-only restart: code
 containing the catalog is not evidence that production has populated conference memory.
+The bundled import also reapplies the audited identity-decision manifest idempotently,
+so the protected deployment retains its verified returning-speaker evidence.
 
 ## Measured demo sizing
 
@@ -152,8 +159,8 @@ temporary resources. It defaults to dry-run and requires `--yes` to execute.
 
 ## Roll back
 
-Prefer the manual GitHub workflow with the previous verified commit SHA. If
-GitHub Actions is unavailable, set `APP_IMAGE` in `.env` to that SHA and run
+Prefer the manual GitHub workflow with the previous verified commit SHA and registry
+digest. If GitHub Actions is unavailable, set `APP_IMAGE` in `.env` to that digest and run
 `pull` followed by `up -d --wait`. Compose retains the database and data volume.
 Do not remove volumes during rollback.
 

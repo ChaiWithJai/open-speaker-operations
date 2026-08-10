@@ -220,6 +220,7 @@ def analyze_catalog(source, contract=None):
             if not edition.get("source_url") or not edition.get("source_updated_at"):
                 errors.append(f"{slug}/{edition_key[1]}: missing edition provenance")
             talks = edition.get("talks", [])
+            missing_credit_contexts = []
             if not talks:
                 empty_edition_count += 1
                 metrics["empty_editions"] += 1
@@ -239,7 +240,7 @@ def analyze_catalog(source, contract=None):
                 speaker_credit_count += len(speakers)
                 metrics["speaker_credits"] += len(speakers)
                 if not speakers:
-                    errors.append(f"{context}: no speaker credit")
+                    missing_credit_contexts.append(context)
                 for position, speaker in enumerate(speakers):
                     if not isinstance(speaker, dict) or not speaker.get("name"):
                         errors.append(f"{context}: speaker credit {position + 1} requires name")
@@ -259,6 +260,12 @@ def analyze_catalog(source, contract=None):
                     missing_track_count += 1
                     metrics["missing_tracks"] += 1
                     source_gaps.append(f"{context}: track not published by source")
+            expected_missing_credits = edition.get("expected_missing_speaker_credit_count", 0)
+            if len(missing_credit_contexts) != expected_missing_credits:
+                errors.append(
+                    f"{slug}/{edition_key[1]}: expected {expected_missing_credits} talks without "
+                    f"speaker credit, observed {len(missing_credit_contexts)}"
+                )
         metrics["speakers"] = len(series_speakers)
         metrics["source_identities"] = len(series_source_identities)
         metrics["edition_keys"] = sorted(metrics["edition_keys"])

@@ -5,6 +5,7 @@ from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 from django_scopes import scope
+from pretalx.mail.models import QueuedMail
 
 from pretalx_speakerops.models import (
     OnboardingTask,
@@ -162,7 +163,7 @@ def test_reminder_replay_is_deduplicated(event, users):
         assert queue_reminders(event, [task], "due-1") == 1
         assert queue_reminders(event, [task], "due-1") == 0
         assert ReminderReceipt.objects.filter(task=task, reminder_key="due-1").count() == 1
-        assert len(mail.outbox) == before
+        assert len(mail.outbox) == before + 1
 
 
 @pytest.mark.django_db(transaction=True)
@@ -196,6 +197,49 @@ def test_reminder_action_requires_confirmation_and_only_queues_overdue_tasks(eve
     with scope(event=event):
         receipts = ReminderReceipt.objects.all()
         assert list(receipts.values_list("task_id", flat=True)) == [tasks[0].pk]
+
+
+@pytest.mark.django_db(transaction=True)
+def test_bulk_reminder_targets_selected_outstanding_deliverables(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.speakers.add(users["speaker"])
+        submission.accept(person=users["chair"], force=True)
+        tasks = list(
+            OnboardingTask.objects.filter(
+                event=event,
+                submission=submission,
+                speaker=users["speaker"],
+            ).order_by("pk")[:3]
+        )
+        assert len(tasks) == 3
+        for task in tasks:
+            task.due_date = timezone.localdate() + timedelta(days=10)
+            task.save(update_fields=["due_date", "updated"])
+        tasks[2].status = OnboardingTask.COMPLETE
+        tasks[2].save(update_fields=["status", "updated"])
+
+    client.force_login(users["chair"])
+    content = client.get(f"/orga/{event.slug}/speaker-operations/content/")
+    assert b"Send reminders to selected outstanding tasks" in content.content
+    response = client.post(
+        f"/orga/{event.slug}/speaker-operations/reminders/",
+        {
+            "confirm_reminders": "yes",
+            "tasks": [str(tasks[0].pk), str(tasks[2].pk)],
+        },
+        follow=True,
+    )
+
+    assert response.status_code == 200
+    assert b"Queued 1 selected outstanding reminder." in response.content
+    with scope(event=event):
+        receipt = ReminderReceipt.objects.get()
+        assert receipt.task_id == tasks[0].pk
+        queued_mail = QueuedMail.objects.get(pk=receipt.queued_mail_id)
+        assert tasks[0].definition.name in queued_mail.text
+        assert tasks[0].due_date.isoformat() in queued_mail.text
 
 
 @pytest.mark.django_db(transaction=True)

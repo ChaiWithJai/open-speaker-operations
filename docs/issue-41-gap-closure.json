@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "issue": 41,
-  "generated_at": "2026-08-09T20:00:00Z",
+  "generated_at": "2026-08-10T03:30:00Z",
   "baseline": {
     "known_gap_occurrences": 127,
     "empty_edition_occurrences": 22,
@@ -9,34 +9,34 @@
     "note": "Occurrences intentionally preserve overlap when one empty edition also has a known-gap declaration."
   },
   "post_enrichment": {
-    "known_gap_occurrences": 120,
-    "empty_edition_occurrences": 9,
-    "total_non_format_track_occurrences": 129,
-    "resolved_baseline_occurrences": 21
+    "known_gap_occurrences": 115,
+    "empty_edition_occurrences": 5,
+    "total_non_format_track_occurrences": 120,
+    "resolved_baseline_occurrences": 30,
+    "note": "Thirty baseline records are resolved or terminally classified. One newly documented current-corpus gap makes the net occurrence reduction 29."
   },
   "summary": {
     "by_disposition": {
       "closed_documented_scope": 1,
       "closed_excluded_by_integrity_rule": 81,
-      "closed_no_program": 6,
+      "closed_no_deterministic_mapping": 9,
+      "closed_no_program": 7,
       "closed_source_does_not_publish_field": 17,
       "closed_unbounded_scope": 1,
-      "open_archive_recovery": 17,
       "open_source_watch": 4,
-      "recovered_partial": 2,
       "resolved_official_field_enrichment": 1,
-      "resolved_program_rows": 20
+      "resolved_program_rows": 29
     },
     "by_recoverability": {
-      "archive_source_gap": 4,
+      "archive_source_gap": 3,
       "catalog_scope_note": 1,
-      "future_unpublished": 5,
-      "held_program_gap": 14,
+      "future_unpublished": 4,
+      "held_program_gap": 6,
       "no_authoritative_inventory": 1,
       "non_talk_or_uncredited": 81,
-      "not_held_or_cancelled": 6,
+      "not_held_or_cancelled": 7,
       "published_field_omission": 17,
-      "recovered": 15,
+      "recovered": 24,
       "recovered_partial": 6
     },
     "by_series": {
@@ -90,10 +90,10 @@
       "item": "cgdc-1988",
       "reason": "Baseline corpus contained no recovered public talks.",
       "source_url": "https://www.retroreversing.com/gdc#cgdc-1988",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "archive_source_gap",
-      "audit_note": "The edition is evidenced, but no speaker-backed row is recoverable from the bounded archive.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "audit_note": "The bounded compilation was exhausted. Partial verbatim rows are preserved, but no complete title-to-presenter mapping exists and identities are not invented.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "empty-edition:goto:accelerate-chicago-2026",
@@ -115,11 +115,11 @@
       "scope": "edition",
       "item": "goto-amsterdam-2020",
       "reason": "Baseline corpus contained no recovered public talks.",
-      "source_url": "https://gotopia.tech/conferences/24/goto-amsterdam-2020",
-      "disposition": "open_archive_recovery",
-      "recoverability": "held_program_gap",
-      "audit_note": "The held edition remains empty because no deterministic official title-to-speaker program was recovered.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/schedule",
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered 52 speaker-backed sessions and 60 credits from the archived official schedule; two TBA rows remain excluded.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "empty-edition:goto:goto-berlin-2020",
@@ -129,10 +129,10 @@
       "item": "goto-berlin-2020",
       "reason": "Baseline corpus contained no recovered public talks.",
       "source_url": "https://gotopia.tech/conferences/27/goto-berlin-2020",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "held_program_gap",
-      "audit_note": "The held edition remains empty because no deterministic official title-to-speaker program was recovered.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "audit_note": "Official and Wayback routes expose no complete speaker-backed catalog; the lone title without a speaker cannot be imported honestly.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "empty-edition:goto:goto-community-day-chicago-2023",
@@ -141,11 +141,11 @@
       "scope": "edition",
       "item": "goto-community-day-chicago-2023",
       "reason": "Baseline corpus contained no recovered public talks.",
-      "source_url": "https://gotopia.tech/conferences/78/goto-community-day-chicago-2023",
-      "disposition": "open_archive_recovery",
-      "recoverability": "held_program_gap",
-      "audit_note": "The held edition remains empty because no deterministic official title-to-speaker program was recovered.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "source_url": "https://gotochgo.com/ai-days-2023/schedule/print",
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered 28 speaker-backed sessions and 31 credits from the official print schedule; furniture and speakerless blocks remain excluded.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "empty-edition:goto:goto-copenhagen-2020",
@@ -154,11 +154,11 @@
       "scope": "edition",
       "item": "goto-copenhagen-2020",
       "reason": "Baseline corpus contained no recovered public talks.",
-      "source_url": "https://gotopia.tech/conferences/33/goto-copenhagen-2020",
-      "disposition": "open_archive_recovery",
-      "recoverability": "held_program_gap",
-      "audit_note": "The held edition remains empty because no deterministic official title-to-speaker program was recovered.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/schedule",
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered 27 deterministic sessions and 30 credits from the archived official schedule after first-party-ID deduplication and speakerless-row exclusion.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "empty-edition:goto:goto-copenhagen-2026",
@@ -181,10 +181,10 @@
       "item": "goto-london-2022",
       "reason": "Baseline corpus contained no recovered public talks.",
       "source_url": "https://gotopia.tech/conferences/56/goto-london-2022",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "held_program_gap",
-      "audit_note": "The held edition remains empty because no deterministic official title-to-speaker program was recovered.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "audit_note": "The official print route is empty and official/Wayback searches expose no complete speaker-backed catalog.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "empty-edition:jsconf-belgium:belgium-2018",
@@ -193,11 +193,11 @@
       "scope": "edition",
       "item": "belgium-2018",
       "reason": "Baseline corpus contained no recovered public talks.",
-      "source_url": "https://web.archive.org/web/20181120203612id_/https://www.jsconf.be/en",
-      "disposition": "open_archive_recovery",
-      "recoverability": "held_program_gap",
-      "audit_note": "The held edition remains empty because no deterministic official title-to-speaker program was recovered.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "source_url": "https://web.archive.org/web/20190819194010id_/https://www.jsconf.be/en/schedule",
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered 24 sessions and 27 credits from the archived official JSConf Belgium schedule.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "empty-edition:jsconf-br:br-2018",
@@ -415,10 +415,10 @@
       "item": "cgdc-gdc-1988-2004",
       "reason": "Public Retro Reversing compilation explicitly identifies incomplete years and ambiguous/verbatim presenter credits; 52 rows without usable speaker credit were excluded and 28 titles remain truncated exactly as published.",
       "source_url": "https://www.retroreversing.com/gdc",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "archive_source_gap",
-      "audit_note": "A bounded official/archive recovery attempt found no deterministic additional rows; retain on the archive watch list.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "audit_note": "The bounded compilation was exhausted. Partial verbatim rows are preserved, but no complete title-to-presenter mapping exists and identities are not invented.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:gdc:002",
@@ -817,11 +817,11 @@
       "scope": "edition",
       "item": "goto-copenhagen-2026",
       "reason": "Official source now publishes 25 credited masterclasses, which are retained; the future event's main-session schedule is not yet published.",
-      "source_url": "https://gotocph.com/2026/masterclasses",
-      "disposition": "recovered_partial",
-      "recoverability": "future_unpublished",
-      "audit_note": "Recovered all 25 currently published, credited masterclasses; the future main-session program is not published and must be revisited after release.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "source_url": "https://gotocph.com/2026/schedule/print",
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered the 42-session/44-credit 2026 main program while preserving the 25 previously curated masterclasses.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:goto:006",
@@ -830,11 +830,11 @@
       "scope": "edition",
       "item": "accelerate-chicago-2026",
       "reason": "Two credited official masterclasses are retained; the held event's complete main-session program is not exposed by the current official schedule route.",
-      "source_url": "https://gotochgo.com/accelerate-chicago-2026/masterclasses",
-      "disposition": "recovered_partial",
-      "recoverability": "held_program_gap",
-      "audit_note": "Recovered both credited masterclasses from the official catalog; the held event's main-session route currently exposes no recoverable program.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "source_url": "https://gotochgo.com/accelerate-chicago-2026/schedule/print",
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered the 28-session/31-credit Accelerate main program while preserving two previously curated masterclasses.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:goto:007",
@@ -1051,11 +1051,11 @@
       "scope": "JSConf Belgium 2018",
       "item": "Talk titles and speaker-to-talk attribution",
       "reason": "The archived official edition page verifies dates and links to schedule/session routes, but no recoverable 2018 snapshot of those routes was discoverable.",
-      "source_url": "https://web.archive.org/web/20181120203612id_/https://www.jsconf.be/en",
-      "disposition": "open_archive_recovery",
-      "recoverability": "held_program_gap",
-      "audit_note": "The edition or row is historically evidenced, but the currently recoverable official source does not provide deterministic title-to-speaker program data.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "source_url": "https://web.archive.org/web/20190819194010id_/https://www.jsconf.be/en/schedule",
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered 24 sessions and 27 credits from the archived official JSConf Belgium schedule.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:jsconf-br:001",
@@ -1091,10 +1091,10 @@
       "item": "Unrecorded talk titles and speaker-to-talk attribution",
       "reason": "The official edition page retains the speaker roster but no schedule mapping. Ten deterministic title-to-speaker pairs are recovered from the organizer's official recordings; remaining roster entries have no recoverable title mapping.",
       "source_url": "https://www.youtube.com/@BrazilJS/search?query=2018",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "held_program_gap",
-      "audit_note": "Ten official recording rows are recovered. The remaining published speaker roster cannot be mapped to titles deterministically, so the residual archive gap stays open.",
-      "checked_at": "2026-08-09T22:00:00Z"
+      "audit_note": "Official organizer recordings and playlists were exhausted. Every deterministic title-to-speaker match is imported; residual unpublished or untitled rows are not invented.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:jsconf-br:004",
@@ -1104,10 +1104,10 @@
       "item": "Unpublished day-one titles and any unrecorded program rows",
       "reason": "Six deterministic title-to-speaker pairs were recovered from the organizer's official day-two recording chapters. Day one publishes speaker names without talk titles; those rows remain excluded.",
       "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "held_program_gap",
-      "audit_note": "The recovered day-two rows are imported; residual untitled or unrecorded program rows remain on the archive watch list.",
-      "checked_at": "2026-08-09T22:15:00Z"
+      "audit_note": "Official organizer recordings and playlists were exhausted. Every deterministic title-to-speaker match is imported; residual unpublished or untitled rows are not invented.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:jsconf-br:005",
@@ -1117,10 +1117,10 @@
       "item": "Unrecorded program rows and the untitled Vinton Cerf segment",
       "reason": "Twenty-three deterministic titled sessions were recovered from the organizer's official conference playlist. The Vinton Cerf recording publishes only his name, not a talk title, and remains excluded.",
       "source_url": "https://www.youtube.com/playlist?list=PLg2lQYZDBwORv56I5aBOdW7yEoucDmhgY",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "held_program_gap",
-      "audit_note": "The titled playlist rows are imported; the name-only keynote recording is excluded rather than assigned an invented title.",
-      "checked_at": "2026-08-09T22:15:00Z"
+      "audit_note": "Official organizer recordings and playlists were exhausted. Every deterministic title-to-speaker match is imported; residual unpublished or untitled rows are not invented.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:jsconf-br:006",
@@ -1130,10 +1130,10 @@
       "item": "Unrecorded program rows",
       "reason": "Fifteen deterministic full-length title-to-speaker recordings were recovered from the organizer's official playlist. Short promotional clips and one unavailable video were excluded.",
       "source_url": "https://www.youtube.com/playlist?list=PLg2lQYZDBwOSlOww9VQalSDGTmOHgYM9u",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "held_program_gap",
-      "audit_note": "The full-length official recordings are imported; clips without complete title-to-speaker session evidence remain excluded.",
-      "checked_at": "2026-08-09T22:15:00Z"
+      "audit_note": "Official organizer recordings and playlists were exhausted. Every deterministic title-to-speaker match is imported; residual unpublished or untitled rows are not invented.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:jsconf-br:007",
@@ -1143,10 +1143,10 @@
       "item": "Held-edition verification and program",
       "reason": "Official sources announce October 24–25, 2025, but no post-event held confirmation or recoverable program was discoverable, so it is not represented as a historical edition.",
       "source_url": "https://www.braziljs.org/p/weekly-500-the-last-dance/",
-      "disposition": "open_archive_recovery",
-      "recoverability": "held_program_gap",
-      "audit_note": "The edition or row is historically evidenced, but the currently recoverable official source does not provide deterministic title-to-speaker program data.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "disposition": "closed_no_program",
+      "recoverability": "not_held_or_cancelled",
+      "audit_note": "Organizer sources show the announced 2025 edition was postponed to August 2026, so no 2025 program is represented.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:jsconf-china:001",
@@ -1845,10 +1845,10 @@
       "item": "PyCon Italia editions before 2023",
       "reason": "Historical year subdomains do not resolve or expose a centralized official talk archive; the official code repositories contain application code but no historical schedule fixture.",
       "source_url": "https://pycon.it/",
-      "disposition": "open_archive_recovery",
+      "disposition": "closed_no_deterministic_mapping",
       "recoverability": "archive_source_gap",
-      "audit_note": "A bounded official/archive recovery attempt found no deterministic additional rows; retain on the archive watch list.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "audit_note": "Official historical subdomains, current archives, and organizer repositories were searched; no bounded first-party pre-2023 Italia catalog was recoverable.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:pycon:003",
@@ -1858,10 +1858,10 @@
       "item": "PyCon DE/PyData before 2016",
       "reason": "Legacy official hosts fail TLS validation or no longer resolve, and the current archive does not expose their talk catalogs. No insecure transport bypass was used.",
       "source_url": "https://pycon.de/archive/",
-      "disposition": "open_archive_recovery",
-      "recoverability": "archive_source_gap",
-      "audit_note": "A bounded official/archive recovery attempt found no deterministic additional rows; retain on the archive watch list.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered official archived PyCon DE 2011, 2012, and 2013 programs; 2014 is documented as a EuroPython satellite and no standalone 2015 edition is listed.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:pycon:004",
@@ -1870,11 +1870,11 @@
       "scope": "edition",
       "item": "PyCon DE & PyData 2018",
       "reason": "The official archived /schedule/ URL currently renders the landing page and exposes no talk catalog.",
-      "source_url": "https://2018.de.pycon.org/schedule/",
-      "disposition": "open_archive_recovery",
-      "recoverability": "held_program_gap",
-      "audit_note": "The edition or row is historically evidenced, but the currently recoverable official source does not provide deterministic title-to-speaker program data.",
-      "checked_at": "2026-08-09T20:00:00Z"
+      "source_url": "https://2018.pycon.de/schedule/",
+      "disposition": "resolved_program_rows",
+      "recoverability": "recovered",
+      "audit_note": "Recovered 79 sessions and 85 credits from the corrected official 2018 schedule host.",
+      "checked_at": "2026-08-10T03:30:00Z"
     },
     {
       "id": "known-gap:pycon:005",

@@ -1,5 +1,5 @@
 {
-  "catalog_sha256": "c9a1e516813123f50194c8e22ec9a5597d68a84020138d228c680f022c26f26e",
+  "catalog_sha256": "cb389e847d5837d6e4b1906bd80f1b15b6f7079960d61a088737a0861c85c901",
   "schema_version": 1,
   "series": {
     "ai-engineer": {
@@ -10,17 +10,18 @@
         "summit-2023",
         "worldsfair-2024",
         "worldsfair-2025",
+        "worldsfair-2026",
         "worldsfair-2027"
       ],
-      "editions": 7,
+      "editions": 8,
       "empty_editions": 2,
-      "known_gaps": 4,
+      "known_gaps": 6,
       "missing_session_formats": 45,
-      "missing_tracks": 183,
-      "source_identities": 846,
-      "speaker_credits": 846,
-      "speakers": 671,
-      "talks": 705
+      "missing_tracks": 271,
+      "source_identities": 1514,
+      "speaker_credits": 1514,
+      "speakers": 1121,
+      "talks": 1266
     },
     "gdc": {
       "edition_keys": [
@@ -113,14 +114,14 @@
         "gotopia-chicago-2021"
       ],
       "editions": 34,
-      "empty_editions": 5,
-      "known_gaps": 11,
+      "empty_editions": 2,
+      "known_gaps": 6,
       "missing_session_formats": 0,
-      "missing_tracks": 1137,
-      "source_identities": 1439,
-      "speaker_credits": 1439,
-      "speakers": 849,
-      "talks": 1258
+      "missing_tracks": 1314,
+      "source_identities": 1635,
+      "speaker_credits": 1635,
+      "speakers": 930,
+      "talks": 1435
     },
     "jsconf-belgium": {
       "edition_keys": [
@@ -132,14 +133,14 @@
         "belgium-2019"
       ],
       "editions": 6,
-      "empty_editions": 1,
-      "known_gaps": 12,
+      "empty_editions": 0,
+      "known_gaps": 11,
       "missing_session_formats": 0,
-      "missing_tracks": 60,
-      "source_identities": 94,
-      "speaker_credits": 94,
+      "missing_tracks": 84,
+      "source_identities": 121,
+      "speaker_credits": 121,
       "speakers": 53,
-      "talks": 60
+      "talks": 84
     },
     "jsconf-br": {
       "edition_keys": [
@@ -299,8 +300,12 @@
         "2024",
         "2025",
         "2026",
+        "de-2011",
+        "de-2012",
+        "de-2013",
         "de-pydata-2016",
         "de-pydata-2017",
+        "de-pydata-2018",
         "de-pydata-2019",
         "de-pydata-2022",
         "de-pydata-2023",
@@ -333,15 +338,15 @@
         "pyladiescon-2024",
         "pyladiescon-2025"
       ],
-      "editions": 48,
+      "editions": 52,
       "empty_editions": 0,
-      "known_gaps": 11,
+      "known_gaps": 10,
       "missing_session_formats": 0,
-      "missing_tracks": 2680,
-      "source_identities": 4108,
-      "speaker_credits": 4172,
-      "speakers": 2773,
-      "talks": 3630
+      "missing_tracks": 2878,
+      "source_identities": 4398,
+      "speaker_credits": 4462,
+      "speakers": 2956,
+      "talks": 3902
     },
     "strange-loop": {
       "edition_keys": [
@@ -373,15 +378,15 @@
   },
   "totals": {
     "documents": 13,
-    "editions": 199,
-    "empty_editions": 9,
-    "known_gaps": 120,
+    "editions": 204,
+    "empty_editions": 5,
+    "known_gaps": 115,
     "missing_session_formats": 1067,
-    "missing_tracks": 5590,
+    "missing_tracks": 6077,
     "series": 13,
-    "source_identities": 20174,
-    "speaker_credits": 20238,
-    "speakers": 13376,
-    "talks": 18432
+    "source_identities": 21355,
+    "speaker_credits": 21419,
+    "speakers": 14068,
+    "talks": 19466
   }
 }

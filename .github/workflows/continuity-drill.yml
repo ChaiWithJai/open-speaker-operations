@@ -7,8 +7,16 @@ on:
         description: Current production image commit SHA
         required: true
         type: string
+      current_digest:
+        description: Current production immutable sha256 digest
+        required: true
+        type: string
       previous_sha:
         description: Previous known-good image commit SHA
+        required: true
+        type: string
+      previous_digest:
+        description: Previous known-good immutable sha256 digest
         required: true
         type: string
       confirmation:
@@ -32,6 +40,8 @@ jobs:
       PUBLIC_URL: ${{ vars.SPEAKEROPS_PUBLIC_URL || 'https://loop.dharmicdata.org' }}
       CURRENT_SHA: ${{ inputs.current_sha }}
       PREVIOUS_SHA: ${{ inputs.previous_sha }}
+      CURRENT_DIGEST: ${{ inputs.current_digest }}
+      PREVIOUS_DIGEST: ${{ inputs.previous_digest }}
     steps:
       - name: Validate explicit authorization and immutable image SHAs
         env:
@@ -43,6 +53,10 @@ jobs:
             test "${#sha}" -eq 40
           done
           test "$CURRENT_SHA" != "$PREVIOUS_SHA"
+          for digest in "$CURRENT_DIGEST" "$PREVIOUS_DIGEST"; do
+            test "$(printf '%s' "$digest" | sed 's/^sha256:[0-9a-f]\{64\}$//')" = ""
+          done
+          test "$CURRENT_DIGEST" != "$PREVIOUS_DIGEST"
 
       - name: Check out continuity tooling
         uses: actions/checkout@v4
@@ -95,11 +109,11 @@ jobs:
         env:
           HOST: ${{ secrets.DIGITALOCEAN_HOST }}
           USER: ${{ secrets.DIGITALOCEAN_USER }}
-          CURRENT_IMAGE: ghcr.io/chaiwithjai/open-speaker-operations:${{ inputs.current_sha }}
-          PREVIOUS_IMAGE: ghcr.io/chaiwithjai/open-speaker-operations:${{ inputs.previous_sha }}
+          CURRENT_IMAGE: ghcr.io/chaiwithjai/open-speaker-operations@${{ inputs.current_digest }}
+          PREVIOUS_IMAGE: ghcr.io/chaiwithjai/open-speaker-operations@${{ inputs.previous_digest }}
         run: |
           ssh "$USER@$HOST" \
-            "'$APP_DIR/run-continuity-drill.sh' --app-dir '$APP_DIR' --public-url '$PUBLIC_URL' --current '$CURRENT_IMAGE' --previous '$PREVIOUS_IMAGE'"
+            "'$APP_DIR/run-continuity-drill.sh' --app-dir '$APP_DIR' --public-url '$PUBLIC_URL' --current '$CURRENT_IMAGE' --current-version '$CURRENT_SHA' --previous '$PREVIOUS_IMAGE' --previous-version '$PREVIOUS_SHA'"
 
       - name: Verify current public health after the drill
         run: |

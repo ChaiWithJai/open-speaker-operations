@@ -5,6 +5,7 @@ from django.contrib.messages import get_messages
 from django.utils import timezone
 from django_scopes import scope
 from pretalx.schedule.models import Room, Schedule
+from pretalx.submission.models import Track
 
 from pretalx_speakerops.program.auto_schedule import build_schedule_proposal
 from pretalx_speakerops.program.policy import classify_warnings
@@ -46,6 +47,85 @@ def _arrange_conflict(event, users, kind):
 
 def _agenda_url(event):
     return f"/orga/{event.slug}/speaker-operations/agenda/"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_organizer_creates_rooms_and_tracks_from_agenda_setup(event, users, client):
+    client.force_login(users["chair"])
+    url = _agenda_url(event)
+
+    room_response = client.post(
+        url,
+        {
+            "action": "create_room",
+            "room_name": "Workshop Studio",
+            "room_capacity": "80",
+        },
+    )
+    track_response = client.post(
+        url,
+        {
+            "action": "create_track",
+            "track_name": "Agent Reliability",
+            "track_color": "#176b53",
+        },
+    )
+
+    assert room_response.status_code == 302
+    assert track_response.status_code == 302
+    with scope(event=event):
+        room = Room.objects.get(event=event, name="Workshop Studio")
+        track = Track.objects.get(event=event, name="Agent Reliability")
+        submission = (
+            event.wip_schedule.talks.filter(submission__isnull=False)
+            .select_related("submission")
+            .first()
+            .submission
+        )
+
+    page = client.get(url)
+    assert page.status_code == 200
+    assert b"Workshop Studio" in page.content
+    assert b"Agent Reliability" in page.content
+    assert b"Add room" in page.content
+    assert b"Add track" in page.content
+    native_schedule = client.get(str(submission.orga_urls.quick_schedule))
+    native_submission = client.get(str(submission.orga_urls.edit))
+    assert native_schedule.status_code == 200
+    assert native_submission.status_code == 200
+    assert str(room.name).encode() in native_schedule.content
+    assert str(track.name).encode() in native_submission.content
+
+
+@pytest.mark.django_db(transaction=True)
+def test_room_and_track_creation_requires_event_settings_access(event, client):
+    from pretalx.event.models import Team
+    from pretalx.person.models import User
+
+    coordinator = User.objects.create_user(
+        email="coordinator@example.org",
+        name="Coordinator",
+        password="test-password",
+    )
+    team = Team.objects.create(
+        organiser=event.organiser,
+        name=f"Program {event.slug}",
+        can_change_submissions=True,
+    )
+    team.limit_events.add(event)
+    team.members.add(coordinator)
+
+    client.force_login(coordinator)
+    url = _agenda_url(event)
+
+    assert client.get(url).status_code == 200
+    assert client.post(url, {"action": "create_room", "room_name": "Side Room"}).status_code == 404
+    assert (
+        client.post(url, {"action": "create_track", "track_name": "Side Track"}).status_code == 404
+    )
+    with scope(event=event):
+        assert not event.rooms.filter(name="Side Room").exists()
+        assert not event.tracks.filter(name="Side Track").exists()
 
 
 @pytest.mark.django_db(transaction=True)

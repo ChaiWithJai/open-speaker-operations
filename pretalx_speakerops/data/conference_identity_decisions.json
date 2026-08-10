@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "verified_identity_groups": [
+    {
+      "series": "ai-engineer",
+      "canonical_key": "ankur-goyal",
+      "reason": "Official AI Engineer World's Fair schedules identify Ankur Goyal on the 2024 Zapier and 2025 Evals sessions.",
+      "evidence_url": "https://www.ai.engineer/worldsfair/2025/schedule",
+      "members": [
+        {
+          "edition": "worldsfair-2024",
+          "source_key": "credit:how-zapier-builds-ai-products-and-features-with-the-help-of-braintrust:0"
+        },
+        {
+          "edition": "worldsfair-2025",
+          "source_key": "credit:939130:0"
+        },
+        {
+          "edition": "worldsfair-2025",
+          "source_key": "credit:943899:0"
+        }
+      ]
+    }
+  ]
+}

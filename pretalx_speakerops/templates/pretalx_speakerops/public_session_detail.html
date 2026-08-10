@@ -1,0 +1,15 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ slot.submission.title }} · {{ event.name }}</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23175cd3'/%3E%3Cpath d='M8 22V10h10a6 6 0 010 12H8zm5-4h5a2 2 0 000-4h-5v4z' fill='white'/%3E%3C/svg%3E"><link rel="stylesheet" href="{% static 'pretalx_speakerops/public_widgets.css' %}"></head>
+<body><main class="detail" aria-labelledby="session-title">
+  <p><a href="{{ return_url }}" data-return-to="{{ origin }}">← Back to {{ origin_label }}</a></p>
+  <p class="eyebrow">Published session</p>
+  <h1 id="session-title">{{ slot.submission.title }}</h1>
+  <p><time datetime="{{ slot.start|date:'c' }}">{{ slot.public_start|date:'l, F j' }} · {{ slot.public_start|time:'g:i A' }}–{{ slot.public_end|time:'g:i A' }}</time></p>
+  <dl class="detail-facts">
+    <div><dt>Room</dt><dd>{{ slot.room.name|default:"Room TBA" }}</dd></div>
+    <div><dt>Format</dt><dd>{{ slot.submission.submission_type.name|default:"Not specified" }}</dd></div>
+    <div><dt>Track</dt><dd>{{ slot.submission.track.name|default:"General" }}</dd></div>
+  </dl>
+  <section aria-labelledby="description-title"><h2 id="description-title">Description</h2><p>{{ slot.submission.description|default:slot.submission.abstract|default:"Description not provided." }}</p></section>
+  <section aria-labelledby="presenters-title"><h2 id="presenters-title">Presenters</h2><ul>{% for speaker in slot.submission.speakers.all %}<li>{{ speaker.get_display_name }}</li>{% endfor %}</ul></section>
+</main></body></html>

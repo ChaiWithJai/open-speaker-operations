@@ -12,7 +12,20 @@ SHELL_SCRIPTS = (
     "deploy/scripts/backup-nightly.sh",
     "deploy/scripts/verify-restore.sh",
     "deploy/scripts/drill-image-rollback.sh",
+    "deploy/scripts/run-continuity-drill.sh",
 )
+
+
+def test_docker_build_context_excludes_local_secrets_and_generated_workspaces():
+    exclusions = set((ROOT / ".dockerignore").read_text().splitlines())
+    assert {
+        ".env",
+        ".env.*",
+        ".pretalx-data",
+        ".test-venv",
+        "build",
+        "*.egg-info",
+    } <= exclusions
 
 
 def test_recovery_shell_contracts_parse_and_backup_defaults_to_safe_project():
@@ -66,6 +79,15 @@ def test_nightly_timer_and_rotation_inputs_are_explicit():
     assert "backup-nightly.sh" in service and "--project speakerops" in service
     assert "SPEAKEROPS_DEMO_PASSWORD" in compose
     assert "SPEAKEROPS_MOCK_KEY" in compose
+
+
+def test_daily_speaker_reminder_scheduler_is_deployed():
+    compose = (ROOT / "docker-compose.yml").read_text()
+    deploy = (ROOT / "deploy/scripts/deploy-digitalocean.sh").read_text()
+    assert "  beat:" in compose
+    assert "celery -A pretalx.celery_app:app beat" in compose
+    assert "--schedule=/data/celerybeat-schedule" in compose
+    assert "for service in web worker beat mock-accelevents" in deploy
 
 
 def test_no_pull_deploy_mode_is_restricted_to_loopback_hci_drills():
@@ -196,6 +218,45 @@ def test_production_pull_contract_records_a_registry_digest():
     assert ".RepoDigests" in source
     assert "Registry image verified:" in source
     assert "Pulled image did not expose the expected GHCR RepoDigest" in source
+    assert "Pulled image digest mismatch" in source
+    assert "SPEAKEROPS_EXPECTED_APP_VERSION" in source
+    assert ".Config.Image" in source
+
+
+def test_production_deploy_refuses_mutable_tags_and_requires_release_version():
+    script = ROOT / "deploy/scripts/deploy-digitalocean.sh"
+    tag = "ghcr.io/chaiwithjai/open-speaker-operations:" + "a" * 40
+    digest = "ghcr.io/chaiwithjai/open-speaker-operations@sha256:" + "b" * 64
+
+    mutable = subprocess.run([str(script), tag], capture_output=True, text=True)
+    assert mutable.returncode == 2
+    assert "Refusing mutable or unexpected production image reference" in mutable.stderr
+
+    missing_version = subprocess.run([str(script), digest], capture_output=True, text=True)
+    assert missing_version.returncode == 2
+    assert "SPEAKEROPS_EXPECTED_APP_VERSION" in missing_version.stderr
+
+
+def test_candidate_version_is_verified_before_backup_or_environment_change():
+    source = (ROOT / "deploy/scripts/deploy-digitalocean.sh").read_text()
+    version_check = source.index("Candidate image APP_VERSION mismatch before deployment")
+    backup = source.index("pg_dump")
+    environment_change = source.index(".env.next")
+    assert version_check < backup < environment_change
+
+
+def test_deployment_workflow_promotes_ci_digest_with_release_pinned_tooling():
+    ci = (ROOT / ".github/workflows/context-graph.yml").read_text()
+    deploy = (ROOT / ".github/workflows/deploy-digitalocean.yml").read_text()
+
+    assert "steps.production-image.outputs.digest" in ci
+    assert "production-image-digest" in ci
+    assert "actions/upload-artifact@v4" in ci
+    assert "actions/download-artifact@v4" in deploy
+    assert "github.event.workflow_run.id" in deploy
+    assert "ghcr.io/chaiwithjai/open-speaker-operations@${{ env.IMAGE_DIGEST }}" in deploy
+    assert "deployment-tooling" not in deploy
+    assert "release/deploy/scripts/{deploy-digitalocean.sh" in deploy
 
 
 def test_production_deploy_imports_and_verifies_conference_memory_before_smoke():

@@ -1,4 +1,5 @@
 import csv
+import json
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
@@ -10,6 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_scopes import scope
+from pretalx.mail.models import QueuedMail
 from pretalx.person.models import User
 from pretalx.submission.models import Submission, SubmissionStates
 
@@ -21,6 +23,7 @@ from .models import (
     RoundReviewAssignment,
     RoundReviewer,
 )
+from .presenter_roles import presenter_rows
 from .views import EventContextMixin
 
 SCORECARD_PRESETS = {
@@ -226,6 +229,22 @@ class AbstractManagementView(EventContextMixin, TemplateView):
                 continue
             membership.last_reminded_at = timezone.now()
             membership.save(update_fields=["last_reminded_at", "updated"])
+            review_url = request.build_absolute_uri(
+                reverse(
+                    "plugins:speakerops:speakerops_round_review_queue",
+                    kwargs={"event": self.event.slug},
+                )
+            )
+            queued_mail = QueuedMail.objects.create(
+                event=self.event,
+                subject=f"Review assignments waiting: {self.event.name}",
+                text=(
+                    f"You have {pending} outstanding review assignment(s) in "
+                    f"{membership.round.name}. Open {review_url} to continue."
+                ),
+            )
+            queued_mail.to_users.add(membership.reviewer)
+            queued_mail.send(requestor=request.user)
             OutboxEvent.objects.create(
                 event=self.event,
                 kind="review.reminder",
@@ -235,6 +254,7 @@ class AbstractManagementView(EventContextMixin, TemplateView):
                     "reviewer": membership.reviewer.email,
                     "round": membership.round.name,
                     "pending": pending,
+                    "queued_mail_id": queued_mail.pk,
                 },
             )
             sent += 1
@@ -244,9 +264,13 @@ class AbstractManagementView(EventContextMixin, TemplateView):
         result = []
         for round_obj in rounds:
             rows = []
-            assignments = round_obj.assignments.filter(
-                status=RoundReviewAssignment.COMPLETE
-            ).select_related("submission", "reviewer")
+            assignments = (
+                round_obj.assignments.filter(status=RoundReviewAssignment.COMPLETE)
+                .select_related("submission", "reviewer")
+                .prefetch_related(
+                    "submission__speakers", "submission__speakerops_presenter_roles__speaker"
+                )
+            )
             grouped = {}
             for assignment in assignments:
                 grouped.setdefault(assignment.submission_id, []).append(assignment)
@@ -260,6 +284,8 @@ class AbstractManagementView(EventContextMixin, TemplateView):
                         "submission": reviews[0].submission,
                         "aggregate": aggregate,
                         "review_count": len(reviews),
+                        "assignments": reviews,
+                        "presenters": presenter_rows(reviews[0].submission),
                     }
                 )
             reverse_sort = self.request.GET.get("sort", "desc") != "asc"
@@ -295,18 +321,42 @@ class AbstractManagementView(EventContextMixin, TemplateView):
             f'attachment; filename="{self.event.slug}-round-review-results.csv"'
         )
         writer = csv.writer(response)
-        writer.writerow(["round", "code", "title", "weighted_average", "review_count"])
+        writer.writerow(
+            [
+                "round",
+                "code",
+                "title",
+                "weighted_average",
+                "review_count",
+                "reviewer",
+                "assignment_status",
+                "criterion_scores",
+            ]
+        )
         for round_obj, rows in self._results(rounds):
             for row in rows:
-                writer.writerow(
-                    [
-                        round_obj.name,
-                        row["submission"].code,
-                        row["submission"].title,
-                        row["aggregate"],
-                        row["review_count"],
-                    ]
-                )
+                for assignment in row["assignments"]:
+                    scores = {}
+                    for answer in assignment.answers.select_related("criterion").order_by(
+                        "criterion__position", "criterion__pk"
+                    ):
+                        scores[answer.criterion.name] = (
+                            str(answer.numeric_value)
+                            if answer.numeric_value is not None
+                            else answer.choice_value or answer.text_value
+                        )
+                    writer.writerow(
+                        [
+                            round_obj.name,
+                            row["submission"].code,
+                            row["submission"].title,
+                            row["aggregate"],
+                            row["review_count"],
+                            assignment.reviewer.email,
+                            assignment.status,
+                            json.dumps(scores, ensure_ascii=False, sort_keys=True),
+                        ]
+                    )
         return response
 
     def get_context_data(self, **kwargs):

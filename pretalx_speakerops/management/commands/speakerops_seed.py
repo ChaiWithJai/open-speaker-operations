@@ -6,12 +6,14 @@ from django.core.management import BaseCommand, call_command
 from django.db import transaction
 from django.utils import timezone
 from django_scopes import scope
+from pretalx.common.models import ActivityLog
 from pretalx.event.models import Event, Team
 from pretalx.person.models import SpeakerProfile, User
 from pretalx.schedule.models import TalkSlot
-from pretalx.submission.models import Review, Submission, SubmissionStates
+from pretalx.submission.models import Answer, Question, Review, Submission, SubmissionStates
+from pretalx.submission.models.question import QuestionRequired, QuestionTarget, QuestionVariant
 
-from ...cfp import configure_demo_cfp, configure_demo_cfp_routing
+from ...cfp import AIE_TRACKS, configure_demo_cfp, configure_demo_cfp_routing
 from ...domain.commands import Command as DomainCommand
 from ...domain.commands import execute
 from ...domain.state import StateMachine, Transition
@@ -119,6 +121,25 @@ CURATED_PROGRAM = (
     ),
 )
 
+# Five sessions intentionally demonstrate a meaningful public track filter while the
+# remaining seven keep the broader human-centered program visible.
+CURATED_RELIABLE_TRACK_INDICES = frozenset({2, 3, 4, 6, 9})
+
+CURATED_SPEAKER_ROLES = (
+    ("Principal Product Designer", "Calm Systems Lab"),
+    ("Program Operations Lead", "Open Program Collective"),
+    ("Responsible AI Director", "Latticework Systems"),
+    ("Integration Architect", "Reliable Interfaces"),
+    ("Accessibility Engineering Lead", "Inclusive Systems Studio"),
+    ("Research Director", "Distributed Decisions Lab"),
+    ("Resilience Designer", "Recovery Works"),
+    ("Open Infrastructure Lead", "Portable Operations"),
+    ("Content Systems Designer", "Clear Next Action"),
+    ("Release Engineering Director", "Guardrail Labs"),
+    ("Operations Researcher", "Human Flow Institute"),
+    ("Conference Program Director", "Final Mile Events"),
+)
+
 CONFLICT_FIXTURE_TITLES = (
     "WIP fixture: Main Stage room collision",
     "WIP fixture: Maya Chen double-booking",
@@ -134,6 +155,7 @@ JOURNEY_PROGRAM = (
     (SubmissionStates.SUBMITTED, "Review: Designing Trustworthy Systems"),
     (SubmissionStates.ACCEPTED, "Accepted: Operations That Scale"),
 )
+EVALUATOR_SIGNUP_EMAIL = "priya.raman-cfp@example.invalid"
 
 
 class Command(BaseCommand):
@@ -172,6 +194,12 @@ class Command(BaseCommand):
                 verbosity=0,
             )
         event = Event.objects.get(slug="speakerops-demo")
+        # Browser acceptance creates this reserved throwaway account through the
+        # real public registration flow. Removing it here keeps every seeded run
+        # deterministic without touching any non-demo identity.
+        with scope(event=event):
+            ActivityLog.objects.filter(person__email=EVALUATOR_SIGNUP_EMAIL).delete()
+        User.objects.filter(email=EVALUATOR_SIGNUP_EMAIL).delete()
         event.enable_plugin("pretalx_speakerops")
         event.name = "DemoCon 2026"
         event.email = "program@democon.test"
@@ -244,6 +272,19 @@ class Command(BaseCommand):
 
         with scope(event=event):
             configure_demo_cfp(event)
+            public_speaker_questions = {}
+            for label in ("Job title", "Company"):
+                question = Question.all_objects.filter(event=event, question=label).first()
+                if not question:
+                    question = Question(event=event, question=label)
+                question.variant = QuestionVariant.STRING
+                question.target = QuestionTarget.SPEAKER
+                question.question_required = QuestionRequired.OPTIONAL
+                question.active = True
+                question.is_public = True
+                question.position = 900 + len(public_speaker_questions)
+                question.save()
+                public_speaker_questions[label] = question
             configure_review_rounds(event, second_round=True)
             get_or_create_default_template(event)
             if options["open_cfp_for_rehearsal"]:
@@ -259,13 +300,33 @@ class Command(BaseCommand):
             )
             event.cfp.save(update_fields=["opening", "deadline", "headline", "text", "updated"])
             event.submission_types.update(deadline=event.cfp.deadline)
-            for track, name in zip(
-                event.tracks.order_by("position", "pk")[:2],
-                ("Human-Centered Operations", "Reliable AI Systems"),
-                strict=False,
+            canonical_track_names = (
+                "Human-Centered Operations",
+                "Reliable AI Systems",
+                *AIE_TRACKS,
+            )
+            tracks = list(event.tracks.order_by("position", "pk"))
+            if len(tracks) < len(canonical_track_names):
+                raise RuntimeError("The deterministic demo needs its complete track taxonomy.")
+            # create_test_event ships a broad taxonomy whose names may overlap with the
+            # CFP taxonomy created above. Converge it by identity, not by name, so seed
+            # replay cannot leave duplicate buyer-facing filters behind.
+            for track in tracks:
+                track.name = f"SpeakerOps seed track {track.pk}"
+                track.save(update_fields=["name", "updated"])
+            canonical_tracks = tracks[: len(canonical_track_names)]
+            for position, (track, name) in enumerate(
+                zip(canonical_tracks, canonical_track_names, strict=True)
             ):
                 track.name = name
-                track.save(update_fields=["name", "updated"])
+                track.position = position
+                track.save(update_fields=["name", "position", "updated"])
+            extra_tracks = tracks[len(canonical_track_names) :]
+            if extra_tracks:
+                Submission.all_objects.filter(
+                    event=event, track_id__in=[track.pk for track in extra_tracks]
+                ).update(track=canonical_tracks[0])
+                event.tracks.filter(pk__in=[track.pk for track in extra_tracks]).delete()
             configure_demo_cfp_routing(event, (users["reviewer"], users["reviewer_systems"]))
 
             existing_journey = {
@@ -450,9 +511,19 @@ class Command(BaseCommand):
                     f"{abstract} This session includes a concrete operating pattern and a "
                     "take-home checklist."
                 )
+                proposal.track = canonical_tracks[
+                    1 if index in CURATED_RELIABLE_TRACK_INDICES else 0
+                ]
                 proposal.state = SubmissionStates.CONFIRMED
                 proposal.save(
-                    update_fields=["title", "abstract", "description", "state", "updated"]
+                    update_fields=[
+                        "title",
+                        "abstract",
+                        "description",
+                        "track",
+                        "state",
+                        "updated",
+                    ]
                 )
                 if index == 0:
                     speaker = users["speaker"]
@@ -462,7 +533,30 @@ class Command(BaseCommand):
                         defaults={"name": speaker_name},
                     )
                 speaker.name = speaker_name
-                speaker.save(update_fields=["name"])
+                for image_field in (
+                    speaker.avatar,
+                    speaker.avatar_thumbnail,
+                    speaker.avatar_thumbnail_tiny,
+                ):
+                    if image_field:
+                        image_field.delete(save=False)
+                # Fictional public-demo portraits are packaged static assets. Native
+                # media uploads remain the normal product path, but local production-mode
+                # Django intentionally does not expose the entire private media tree.
+                speaker.avatar = None
+                speaker.avatar_thumbnail = None
+                speaker.avatar_thumbnail_tiny = None
+                speaker.get_gravatar = False
+                speaker.save(
+                    update_fields=[
+                        "name",
+                        "avatar",
+                        "avatar_thumbnail",
+                        "avatar_thumbnail_tiny",
+                        "get_gravatar",
+                    ],
+                    skip_gravatar_processing=True,
+                )
                 SpeakerProfile.objects.update_or_create(
                     event=event,
                     user=speaker,
@@ -472,6 +566,17 @@ class Command(BaseCommand):
                             "clear, humane operating practices."
                         )
                     },
+                )
+                job_title, company = CURATED_SPEAKER_ROLES[index]
+                Answer.objects.update_or_create(
+                    question=public_speaker_questions["Job title"],
+                    person=speaker,
+                    defaults={"answer": job_title},
+                )
+                Answer.objects.update_or_create(
+                    question=public_speaker_questions["Company"],
+                    person=speaker,
+                    defaults={"answer": company},
                 )
                 proposal.speakers.set([speaker])
 

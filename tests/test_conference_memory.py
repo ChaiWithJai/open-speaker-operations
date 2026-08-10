@@ -17,6 +17,10 @@ from pretalx_speakerops.conference_memory import (
     verify_imported_catalog,
 )
 from pretalx_speakerops.history_coverage import analyze_catalog, build_contract
+from pretalx_speakerops.history_curation import (
+    apply_identity_decisions,
+    load_identity_decisions,
+)
 from pretalx_speakerops.models import (
     ConferenceEdition,
     ConferenceSeries,
@@ -288,6 +292,140 @@ def test_audited_identity_link_survives_reimport_and_drives_verified_recurrence(
 
 
 @pytest.mark.django_db
+def test_curated_identity_group_is_sourced_idempotent_and_proves_recurrence():
+    import_document(aie_memory_document(edition="2024", speaker="Returning Builder"))
+    import_document(aie_memory_document(edition="2025", speaker="Returning Builder"))
+    groups = [
+        {
+            "series": "ai-engineer",
+            "canonical_key": "returning-builder",
+            "reason": "Official AI Engineer schedules identify the same published speaker.",
+            "evidence_url": "https://www.ai.engineer/worldsfair/2025/schedule",
+            "members": [
+                {
+                    "edition": "2024",
+                    "source_key": "credit:agent-evals-2024:0",
+                },
+                {
+                    "edition": "2025",
+                    "source_key": "credit:agent-evals-2025:0",
+                },
+            ],
+        }
+    ]
+
+    first = apply_identity_decisions(groups)
+    second = apply_identity_decisions(groups)
+
+    assert first.groups == 1
+    assert first.identities == 2
+    assert first.decisions_created == 1
+    assert second.decisions_created == 0
+    assert HistoricalIdentityDecision.objects.count() == 1
+    assert (
+        HistoricalSourceIdentity.objects.filter(resolution_status=HistoricalSourceIdentity.VERIFIED)
+        .values("edition_id")
+        .distinct()
+        .count()
+        == 2
+    )
+    insights = memory_decision_support(HistoricalTalk.objects.all())
+    assert insights["returning_speakers"][0].name == "Returning Builder"
+    assert insights["returning_speakers"][0].edition_count == 2
+
+
+@pytest.mark.django_db
+def test_bundled_aie_identity_decision_matches_imported_official_source_members():
+    first = aie_memory_document(edition="worldsfair-2024", speaker="Ankur Goyal")
+    first_edition = first["series"][0]["editions"][0]
+    first_edition["date_from"] = "2024-06-25"
+    first_edition["date_to"] = "2024-06-27"
+    first_talk = first_edition["talks"][0]
+    first_talk["external_key"] = (
+        "how-zapier-builds-ai-products-and-features-with-the-help-of-braintrust"
+    )
+    first_talk["source_url"] = (
+        "https://www.ai.engineer/worldsfair/2024/schedule#"
+        "how-zapier-builds-ai-products-and-features-with-the-help-of-braintrust"
+    )
+
+    second = aie_memory_document(edition="worldsfair-2025", speaker="Ankur Goyal")
+    second_edition = second["series"][0]["editions"][0]
+    second_edition["date_from"] = "2025-06-25"
+    second_edition["date_to"] = "2025-06-27"
+    second_talk = second_edition["talks"][0]
+    second_talk["external_key"] = "939130"
+    second_talk["source_url"] = "https://www.ai.engineer/worldsfair/2025/schedule#session-939130"
+    closing_talk = json.loads(json.dumps(second_talk))
+    closing_talk.update(
+        external_key="943899",
+        title="Evals Closing Keynote",
+        source_url="https://www.ai.engineer/worldsfair/2025/schedule#session-943899",
+    )
+    second_edition["talks"].append(closing_talk)
+    import_document(first)
+    import_document(second)
+    groups = load_identity_decisions(
+        Path(__file__).parents[1]
+        / "pretalx_speakerops"
+        / "data"
+        / "conference_identity_decisions.json"
+    )
+
+    result = apply_identity_decisions(groups)
+
+    assert result.groups == 1
+    assert result.identities == 3
+    assert result.decisions_created == 2
+    assert (
+        HistoricalSourceIdentity.objects.filter(
+            speaker__canonical_key="ankur-goyal",
+            resolution_status=HistoricalSourceIdentity.VERIFIED,
+        )
+        .values("edition_id")
+        .distinct()
+        .count()
+        == 2
+    )
+
+
+@pytest.mark.django_db
+def test_committed_aie_corpus_proves_ankur_goyal_recurrence_exactly():
+    root = Path(__file__).parents[1] / "pretalx_speakerops" / "data"
+    document = json.loads((root / "conferences" / "ai_engineer.json").read_text())
+    import_document(document)
+    result = apply_identity_decisions(
+        load_identity_decisions(root / "conference_identity_decisions.json")
+    )
+
+    speaker = HistoricalSpeaker.objects.get(canonical_key="ankur-goyal")
+    talks = HistoricalTalk.objects.filter(speakers=speaker).select_related("edition")
+    summary = speaker_memory_summary(speaker, talks)
+
+    assert result.groups == 1
+    assert result.identities == 3
+    assert result.decisions_created == 2
+    assert set(talks.values_list("title", flat=True)) == {
+        "How Zapier Builds AI Products and Features With the Help of Braintrust",
+        "[Evals Keynote] tba",
+        "Evals Closing Keynote",
+    }
+    assert set(talks.values_list("edition__external_key", flat=True)) == {
+        "worldsfair-2024",
+        "worldsfair-2025",
+    }
+    assert summary["talk_count"] == 3
+    assert summary["edition_count"] == 2
+    assert (
+        HistoricalSourceIdentity.objects.filter(
+            speaker=speaker,
+            resolution_status=HistoricalSourceIdentity.VERIFIED,
+        ).count()
+        == 3
+    )
+
+
+@pytest.mark.django_db
 def test_identity_link_rejects_duplicate_credit_on_same_talk_atomically():
     document = aie_memory_document(edition="2025", speaker="First Speaker")
     talk = document["series"][0]["editions"][0]["talks"][0]
@@ -480,6 +618,9 @@ def test_speaker_crm_layers_tags_notes_and_review_history_without_mutating_sourc
     assert b"Current-program review history" in page.content
     assert b"Invite again" in page.content
     assert b"Add to organization CRM" in page.content
+    assert b"speakerops-panel--stack" in page.content
+    assert b"speaker-brief-title" in page.content
+    assert b"crm-handoff-title" in page.content
 
     handoff = client.post(url, {"action": "add_to_crm"})
     contact = CRMContact.objects.get(organiser=event.organiser, source_speaker=speaker)
@@ -762,6 +903,24 @@ def test_coverage_exposes_gaps_freshness_and_label_confidence_without_inference(
     assert series.speakerops_editions[0].speakerops_label_coverage == 50
 
 
+@pytest.mark.django_db
+def test_decision_support_normalizes_format_casing_without_inventing_missing_labels():
+    upper = aie_memory_document(edition="2024", title="Upper Label")
+    upper["series"][0]["editions"][0]["talks"][0]["session_format"] = "TALK"
+    lower = aie_memory_document(edition="2025", title="Lower Label")
+    lower["series"][0]["editions"][0]["talks"][0]["session_format"] = "talk"
+    missing = aie_memory_document(edition="2026", title="Missing Label")
+    missing["series"][0]["editions"][0]["talks"][0]["session_format"] = ""
+    import_document(upper)
+    import_document(lower)
+    import_document(missing)
+
+    insights = memory_decision_support(HistoricalTalk.objects.all())
+
+    assert insights["formats"] == [{"label": "Talk", "aie": 2, "peers": 0}]
+    assert insights["aie_missing_format"] == 1
+
+
 @pytest.mark.django_db(transaction=True)
 def test_memory_page_labels_decision_support_and_provenance_limits(event, users, client):
     with scope(event=event):
@@ -777,8 +936,41 @@ def test_memory_page_labels_decision_support_and_provenance_limits(event, users,
 
     assert response.status_code == 200
     assert b"AIE decision support" in response.content
+    assert response.content.count(b"speakerops-panel--stack") >= 2
+    assert b"memory-signals-title" in response.content
+    assert b"coverage-title" in response.content
     assert b"They do not rank a proposal" in response.content
     assert b"What \xe2\x80\x9cfull known backfill\xe2\x80\x9d means" in response.content
     assert b"declared source gaps" in response.content
     assert b"Source has no label" in response.content
     assert b"No explicitly verified identity currently spans" in response.content
+
+
+@pytest.mark.django_db(transaction=True)
+def test_memory_page_separates_past_upcoming_and_undated_program_evidence(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        event.save(update_fields=["plugins"])
+    past = aie_memory_document(edition="2025", title="Past Evals Practice")
+    upcoming = aie_memory_document(edition="2027", title="Upcoming Evals Practice")
+    undated = aie_memory_document(edition="2028", title="Undated Evals Practice")
+    undated["series"][0]["editions"][0]["date_from"] = ""
+    undated["series"][0]["editions"][0]["date_to"] = ""
+    import_document(past)
+    import_document(upcoming)
+    import_document(undated)
+    client.force_login(users["reviewer"])
+    url = reverse("plugins:speakerops:speakerops_conference_memory", kwargs={"event": event.slug})
+
+    past_response = client.get(url, {"timing": "past"})
+    upcoming_response = client.get(url, {"timing": "upcoming"})
+    undated_response = client.get(url, {"timing": "undated"})
+
+    assert past_response.context["selected_timing"] == "past"
+    assert list(past_response.context["historical_talks"])[0].title == "Past Evals Practice"
+    assert upcoming_response.context["selected_timing"] == "upcoming"
+    assert list(upcoming_response.context["historical_talks"])[0].title == "Upcoming Evals Practice"
+    assert undated_response.context["selected_timing"] == "undated"
+    assert list(undated_response.context["historical_talks"])[0].title == "Undated Evals Practice"
+    assert b"What has this community programmed?" in past_response.content
+    assert b"Past and current programs" in past_response.content

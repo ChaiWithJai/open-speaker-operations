@@ -33,6 +33,15 @@ Credentials are accepted only through the environment, never command-line
 arguments or output. The deployment script reads the same secret from the
 mode-`0600` host `.env` when an operator has not exported it.
 
+## Automatic speaker reminders
+
+The `beat` Compose service owns the daily 09:00 UTC schedule for
+`speakerops.send_due_speaker_reminders`; the `worker` service executes the task.
+Each overdue task receives at most one reminder per local event day because the
+database receipt key includes the date. Verify both services are running after
+deployment and retain the Beat dispatch log, durable reminder receipt, native
+mail record, and controlled-inbox delivery when proving SPK-16.
+
 ## Nightly backups and retention
 
 `deploy/scripts/backup-nightly.sh` creates one mode-restricted directory containing a
@@ -90,8 +99,8 @@ checksum output, six-surface smoke JSON, and cleanup confirmation as evidence.
 
 ## Previous-image rollback-and-return drill
 
-The drill accepts only two full 40-character GHCR image tags. It requires the
-declared current image to match `.env`, deploys and smokes the previous image,
+The production drill accepts two immutable GHCR image digests plus their full
+40-character build commit SHAs. It requires the declared current digest to match `.env`, deploys and smokes the previous image,
 then deploys and smokes current main. An exit trap returns to the declared
 current image after every failure path.
 
@@ -101,8 +110,10 @@ protected production owner session during an announced window:
 ```bash
 SPEAKEROPS_SMOKE_PASSWORD='from-secure-prompt' ./drill-image-rollback.sh \
   --app-dir /opt/open-speaker-operations \
-  --current ghcr.io/chaiwithjai/open-speaker-operations:<current-40-sha> \
-  --previous ghcr.io/chaiwithjai/open-speaker-operations:<previous-40-sha>
+  --current ghcr.io/chaiwithjai/open-speaker-operations@sha256:<current-digest> \
+  --current-version <current-40-sha> \
+  --previous ghcr.io/chaiwithjai/open-speaker-operations@sha256:<previous-digest> \
+  --previous-version <previous-40-sha>
 ```
 
 Add `--yes` only after confirming both image digests, the latest backup, active
