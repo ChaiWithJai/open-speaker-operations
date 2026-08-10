@@ -270,8 +270,7 @@ def analyze_catalog(source, contract=None):
     for key, names in sorted(speaker_names_by_key.items()):
         if len(names) > 1:
             errors.append(
-                f"canonical speaker key {key!r} maps to multiple normalized names: "
-                f"{sorted(names)}"
+                f"canonical speaker key {key!r} maps to multiple normalized names: {sorted(names)}"
             )
     report = CoverageReport(
         documents=len(documents),
