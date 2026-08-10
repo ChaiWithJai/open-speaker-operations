@@ -48,6 +48,7 @@ def test_aie_cfp_configures_exact_formats_topics_policy_and_waves(event):
     assert "Session format" not in active_question_names
     assert {name for name, question in by_name.items() if question.required} == {
         "Key takeaway",
+        "Review category",
         "Workshop prerequisites",
         "Session abstract",
     }

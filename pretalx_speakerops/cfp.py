@@ -45,7 +45,7 @@ AIE_TRACKS = (
 )
 
 DEMO_CFP_QUESTIONS = (
-    ("Review category", QuestionVariant.CHOICES, QuestionRequired.OPTIONAL),
+    ("Review category", QuestionVariant.CHOICES, QuestionRequired.REQUIRED),
     ("Audience level", QuestionVariant.CHOICES, QuestionRequired.OPTIONAL),
     ("Key takeaway", QuestionVariant.STRING, QuestionRequired.REQUIRED),
     ("Workshop prerequisites", QuestionVariant.STRING, QuestionRequired.REQUIRED),
