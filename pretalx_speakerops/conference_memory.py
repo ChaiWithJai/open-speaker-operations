@@ -17,6 +17,8 @@ from django.utils.dateparse import parse_date, parse_datetime
 from .models import (
     ConferenceEdition,
     ConferenceSeries,
+    HistoricalIdentityDecision,
+    HistoricalSourceIdentity,
     HistoricalSpeaker,
     HistoricalSpeakerCredit,
     HistoricalTalk,
@@ -48,6 +50,7 @@ class ImportResult:
     editions: int = 0
     talks: int = 0
     speakers: int = 0
+    source_identities: int = 0
     deleted_talks: int = 0
 
 
@@ -58,6 +61,7 @@ class ImportVerification:
     talks: int
     speaker_credits: int
     speakers: int
+    source_identities: int
     errors: list
 
     @property
@@ -71,6 +75,7 @@ class ImportVerification:
             "talks": self.talks,
             "speaker_credits": self.speaker_credits,
             "speakers": self.speakers,
+            "source_identities": self.source_identities,
             "errors": self.errors,
             "complete": self.complete,
         }
@@ -135,6 +140,98 @@ def canonical_speaker_key(name):
     if not normalized:
         raise ValueError("Speaker name cannot produce an identity key")
     return normalized
+
+
+def source_identity_key(talk_key, position, speaker_record):
+    """Return an edition-scoped source identity, never a global person identifier."""
+    external_key = speaker_record.get("canonical_key")
+    if external_key:
+        return f"ext:{external_key}"
+    return f"credit:{talk_key}:{position}"
+
+
+def _normalized_identity_name(name):
+    try:
+        return canonical_speaker_key(name)
+    except ValueError:
+        return " ".join(name.casefold().split())
+
+
+@transaction.atomic
+def resolve_source_identity(
+    source_identity,
+    resolved_speaker,
+    *,
+    actor,
+    action,
+    reason,
+    evidence_url,
+):
+    """Apply an explicit identity decision and preserve it across future imports."""
+    if action not in dict(HistoricalIdentityDecision.ACTION_CHOICES):
+        raise ValueError(f"Unsupported identity action: {action!r}")
+    if not reason.strip():
+        raise ValueError("Identity decisions require a reason")
+    if not evidence_url.startswith("https://"):
+        raise ValueError("Identity decisions require an HTTPS evidence URL")
+    identity = HistoricalSourceIdentity.objects.select_for_update().get(pk=source_identity.pk)
+    prior_speaker = identity.speaker
+    affected_talk_ids = list(identity.credits.values_list("talk_id", flat=True))
+    duplicate_talk = (
+        HistoricalSpeakerCredit.objects.filter(
+            talk_id__in=affected_talk_ids,
+            speaker=resolved_speaker,
+        )
+        .exclude(source_identity=identity)
+        .select_related("talk")
+        .first()
+    )
+    if duplicate_talk:
+        raise ValueError(
+            "Identity decision would create duplicate speaker credit on talk "
+            f"{duplicate_talk.talk.external_key!r}"
+        )
+    identity.speaker = resolved_speaker
+    identity.resolution_status = HistoricalSourceIdentity.VERIFIED
+    identity.save(update_fields=["speaker", "resolution_status", "updated"])
+    anchor_identity = (
+        HistoricalSourceIdentity.objects.filter(
+            speaker=resolved_speaker,
+            active=True,
+        )
+        .exclude(pk=identity.pk)
+        .order_by("edition__date_from", "pk")
+        .first()
+    )
+    if action in (HistoricalIdentityDecision.LINK, HistoricalIdentityDecision.RELINK) and not (
+        anchor_identity
+    ):
+        raise ValueError("Link decisions require an active target source identity")
+    if anchor_identity:
+        HistoricalSourceIdentity.objects.filter(pk=anchor_identity.pk).exclude(
+            resolution_status=HistoricalSourceIdentity.NEEDS_REVIEW
+        ).update(resolution_status=HistoricalSourceIdentity.VERIFIED)
+    HistoricalSourceIdentity.objects.filter(
+        speaker=resolved_speaker,
+        active=True,
+        pk=identity.pk,
+    ).update(resolution_status=HistoricalSourceIdentity.VERIFIED)
+    identity.credits.update(speaker=resolved_speaker)
+    for talk in HistoricalTalk.objects.filter(pk__in=affected_talk_ids):
+        talk.speakers.set(talk.credits.values_list("speaker_id", flat=True).distinct())
+    decision_version = (
+        identity.decisions.aggregate(version=Max("decision_version"))["version"] or 0
+    ) + 1
+    return HistoricalIdentityDecision.objects.create(
+        source_identity=identity,
+        prior_speaker=prior_speaker,
+        resolved_speaker=resolved_speaker,
+        action=action,
+        reason=reason.strip(),
+        evidence_url=evidence_url,
+        actor=actor,
+        decision_version=decision_version,
+    )
 
 
 def find_related_talks(submission, limit=5):
@@ -211,11 +308,15 @@ def memory_decision_support(talks):
         latest=Max("edition__date_from"),
     )
     returning_speakers = list(
-        HistoricalSpeaker.objects.filter(credits__talk__in=aie_talks)
+        HistoricalSpeaker.objects.filter(
+            source_identities__active=True,
+            source_identities__resolution_status=HistoricalSourceIdentity.VERIFIED,
+            source_identities__edition__series__slug="ai-engineer",
+        )
         .annotate(
             appearance_count=Count("credits__talk", distinct=True),
-            edition_count=Count("credits__talk__edition", distinct=True),
-            latest_appearance=Max("credits__talk__edition__date_from"),
+            edition_count=Count("source_identities__edition", distinct=True),
+            latest_appearance=Max("source_identities__edition__date_from"),
         )
         .filter(edition_count__gte=2)
         .order_by("-edition_count", "-appearance_count", "name")[:6]
@@ -412,6 +513,13 @@ def _inventory_difference(label, expected, observed):
     )
 
 
+def _missing_inventory(label, expected, observed):
+    missing = sorted(expected - observed)
+    if not missing:
+        return None
+    return f"{label} missing={missing[:5]}{' …' if len(missing) > 5 else ''}"
+
+
 def verify_imported_catalog(source):
     """Compare every imported identity key with the normalized catalog."""
     expected_series = set()
@@ -419,6 +527,7 @@ def verify_imported_catalog(source):
     expected_talks = set()
     expected_credits = set()
     expected_speakers = set()
+    expected_source_identities = set()
     for _path, document in load_documents(source):
         for series in document.get("series", []):
             slug = series["slug"]
@@ -433,8 +542,16 @@ def verify_imported_catalog(source):
                         speaker_key = speaker.get("canonical_key") or canonical_speaker_key(
                             speaker["name"]
                         )
+                        identity_key = source_identity_key(talk_key, position, speaker)
                         expected_speakers.add(speaker_key)
-                        expected_credits.add((slug, edition_key, talk_key, speaker_key, position))
+                        expected_credits.add((slug, edition_key, talk_key, identity_key, position))
+                        expected_source_identities.add(
+                            (
+                                slug,
+                                edition_key,
+                                identity_key,
+                            )
+                        )
 
     observed_series = set(ConferenceSeries.objects.values_list("slug", flat=True))
     observed_editions = set(ConferenceEdition.objects.values_list("series__slug", "external_key"))
@@ -448,11 +565,16 @@ def verify_imported_catalog(source):
             "talk__edition__series__slug",
             "talk__edition__external_key",
             "talk__external_key",
-            "speaker__canonical_key",
+            "source_identity__source_key",
             "position",
         )
     )
     observed_speakers = set(HistoricalSpeaker.objects.values_list("canonical_key", flat=True))
+    observed_source_identities = set(
+        HistoricalSourceIdentity.objects.filter(active=True).values_list(
+            "edition__series__slug", "edition__external_key", "source_key"
+        )
+    )
     errors = [
         error
         for error in (
@@ -460,7 +582,15 @@ def verify_imported_catalog(source):
             _inventory_difference("editions", expected_editions, observed_editions),
             _inventory_difference("talks", expected_talks, observed_talks),
             _inventory_difference("speaker credits", expected_credits, observed_credits),
-            _inventory_difference("speakers", expected_speakers, observed_speakers),
+            # Canonical clusters are operator-owned once identities are reviewed. A
+            # split may add a durable cluster, so require every source-default
+            # cluster to remain present without rejecting audited operator additions.
+            _missing_inventory(
+                "source-default speaker clusters", expected_speakers, observed_speakers
+            ),
+            _inventory_difference(
+                "source identities", expected_source_identities, observed_source_identities
+            ),
         )
         if error
     ]
@@ -470,6 +600,7 @@ def verify_imported_catalog(source):
         talks=len(observed_talks),
         speaker_credits=len(observed_credits),
         speakers=len(observed_speakers),
+        source_identities=len(observed_source_identities),
         errors=errors,
     )
 
@@ -485,6 +616,7 @@ def import_document(document, *, prune=False):
         "editions": 0,
         "talks": 0,
         "speakers": 0,
+        "source_identities": 0,
         "deleted_talks": 0,
     }
     for series_record in _required(document, "series", "document"):
@@ -553,12 +685,21 @@ def import_document(document, *, prune=False):
                 counts["talks"] += int(created)
 
                 speakers = []
+                source_identities = []
                 for position, speaker_record in enumerate(talk_record.get("speakers", [])):
                     name = _required(speaker_record, "name", f"talk {talk_key} speaker")
                     key = speaker_record.get("canonical_key") or canonical_speaker_key(name)
                     speaker_source_url = speaker_record.get("source_url")
                     if speaker_source_url and not speaker_source_url.startswith("https://"):
                         raise ValueError(f"speaker {name!r} 'source_url' must use HTTPS")
+                    existing_speaker = HistoricalSpeaker.objects.filter(canonical_key=key).first()
+                    if existing_speaker and _normalized_identity_name(existing_speaker.name) != (
+                        _normalized_identity_name(name)
+                    ):
+                        raise ValueError(
+                            f"Canonical speaker key {key!r} cannot map both "
+                            f"{existing_speaker.name!r} and {name!r}"
+                        )
                     speaker, speaker_created = HistoricalSpeaker.objects.update_or_create(
                         canonical_key=key,
                         defaults={
@@ -573,11 +714,72 @@ def import_document(document, *, prune=False):
                         },
                     )
                     counts["speakers"] += int(speaker_created)
+                    identity_key = source_identity_key(talk_key, position, speaker_record)
+                    source_identity = HistoricalSourceIdentity.objects.filter(
+                        edition=edition, source_key=identity_key
+                    ).first()
+                    if source_identity:
+                        if _normalized_identity_name(source_identity.display_name) != (
+                            _normalized_identity_name(name)
+                        ):
+                            raise ValueError(
+                                f"Source identity {edition_key}/{identity_key} changed from "
+                                f"{source_identity.display_name!r} to {name!r}"
+                            )
+                        source_identity.display_name = name
+                        source_identity.source_url = speaker_source_url or talk_record["source_url"]
+                        source_identity.source_updated_at = _source_timestamp(
+                            speaker_record.get("source_updated_at")
+                            or talk_record.get("source_updated_at")
+                            or edition_record["source_updated_at"]
+                        )
+                        source_identity.active = True
+                        source_identity.retired_at = None
+                        source_identity.save(
+                            update_fields=[
+                                "display_name",
+                                "source_url",
+                                "source_updated_at",
+                                "active",
+                                "retired_at",
+                                "updated",
+                            ]
+                        )
+                        speaker = source_identity.speaker
+                    else:
+                        prior_identities = HistoricalSourceIdentity.objects.filter(
+                            speaker=speaker, active=True
+                        )
+                        status = (
+                            HistoricalSourceIdentity.LEGACY_UNVERIFIED
+                            if prior_identities.exclude(edition=edition).exists()
+                            else HistoricalSourceIdentity.ISOLATED
+                        )
+                        if status == HistoricalSourceIdentity.LEGACY_UNVERIFIED:
+                            prior_identities.exclude(
+                                resolution_status=HistoricalSourceIdentity.VERIFIED
+                            ).update(resolution_status=HistoricalSourceIdentity.LEGACY_UNVERIFIED)
+                        source_identity = HistoricalSourceIdentity.objects.create(
+                            edition=edition,
+                            source_key=identity_key,
+                            speaker=speaker,
+                            display_name=name,
+                            source_url=speaker_source_url or talk_record["source_url"],
+                            source_updated_at=_source_timestamp(
+                                speaker_record.get("source_updated_at")
+                                or talk_record.get("source_updated_at")
+                                or edition_record["source_updated_at"]
+                            ),
+                            resolution_status=status,
+                        )
+                        counts["source_identities"] += 1
                     speakers.append(speaker)
+                    source_identities.append(source_identity)
                     HistoricalSpeakerCredit.objects.update_or_create(
                         talk=talk,
                         speaker=speaker,
                         defaults={
+                            "source_identity": source_identity,
                             "name_at_source": name,
                             "position": position,
                             "source_url": speaker_source_url or talk_record["source_url"],
@@ -589,10 +791,15 @@ def import_document(document, *, prune=False):
                         },
                     )
                 talk.speakers.set(speakers)
-                talk.credits.exclude(speaker__in=speakers).delete()
+                talk.credits.exclude(source_identity__in=source_identities).delete()
             if prune:
                 stale = edition.talks.exclude(external_key__in=seen_talks)
                 counts["deleted_talks"] += stale.count()
                 stale.delete()
+                HistoricalSourceIdentity.objects.filter(
+                    edition=edition,
+                    active=True,
+                    credits__isnull=True,
+                ).update(active=False, retired_at=timezone.now())
 
     return ImportResult(**counts)

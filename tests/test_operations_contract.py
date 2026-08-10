@@ -196,3 +196,14 @@ def test_production_pull_contract_records_a_registry_digest():
     assert ".RepoDigests" in source
     assert "Registry image verified:" in source
     assert "Pulled image did not expose the expected GHCR RepoDigest" in source
+
+
+def test_production_deploy_imports_and_verifies_conference_memory_before_smoke():
+    source = (ROOT / "deploy/scripts/deploy-digitalocean.sh").read_text()
+    coverage = source.index("speakerops_history_coverage")
+    history_import = source.index("speakerops_import_history")
+    protected_smoke = source.index('python3 "$smoke_script"')
+
+    assert coverage < history_import < protected_smoke
+    assert '--contract "$history_contract" --strict' in source
+    assert "--prune --confirm-prune --verify" in source

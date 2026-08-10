@@ -40,6 +40,7 @@ actual module and process boundaries.
 - [Contributing and production workflow](./CONTRIBUTING.md)
 - [DigitalOcean deployment runbook](./docs/digitalocean.md)
 - [Operator recovery and credential handoff](./docs/operator-handoff.md)
+- [Authenticated external evaluator runbook](./docs/sbek-evaluator-runbook.md)
 
 Superseded product, Rails, and implementation plans are retained under
 `docs/archive/` for provenance and are not current instructions.
@@ -65,6 +66,7 @@ admin@example.org
 chair@example.org
 reviewer@example.org
 speaker@example.org
+speaker2@example.org
 ```
 
 Follow this numbered journey:

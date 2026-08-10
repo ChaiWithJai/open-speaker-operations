@@ -13,10 +13,11 @@ def test_full_catalog_matches_committed_count_and_provenance_contract():
 
     assert report.structurally_complete
     assert (report.documents, report.series, report.editions) == (13, 13, 199)
-    assert (report.talks, report.speaker_credits, report.speakers) == (
+    assert (report.talks, report.speaker_credits, report.source_identities, report.speakers) == (
         18432,
         20238,
-        13375,
+        20174,
+        13376,
     )
     assert (
         report.known_gaps,
@@ -36,6 +37,25 @@ def test_full_catalog_contract_rejects_count_or_provenance_drift():
     assert not report.structurally_complete
     assert "contract: ai-engineer talks expected 706, observed 705" in report.errors
     assert "contract: gdc known_gaps expected 26, observed 27" in report.errors
+
+
+def test_coverage_rejects_one_canonical_key_for_different_people(tmp_path):
+    document = json.loads((CATALOG / "pycon.json").read_text())
+    series = document["series"][0]
+    series["editions"] = series["editions"][:1]
+    first_talk = series["editions"][0]["talks"][0]
+    first_talk["speakers"] = [
+        {"name": "First Person", "canonical_key": "reused-source-id"},
+        {"name": "Different Person", "canonical_key": "reused-source-id"},
+    ]
+    (tmp_path / "pycon.json").write_text(json.dumps(document), encoding="utf-8")
+
+    report = analyze_catalog(tmp_path)
+
+    assert (
+        "canonical speaker key 'reused-source-id' maps to multiple normalized names: "
+        "['different-person', 'first-person']"
+    ) in report.errors
 
 
 def test_coverage_report_names_missing_families_and_incomplete_scope(tmp_path):

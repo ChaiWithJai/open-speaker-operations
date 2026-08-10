@@ -517,6 +517,104 @@ class HistoricalSpeaker(PretalxModel):
         ordering = ("name",)
 
 
+class HistoricalSourceIdentity(PretalxModel):
+    """A source-scoped speaker identity mapped to a canonical speaker."""
+
+    ISOLATED = "isolated"
+    VERIFIED = "verified"
+    LEGACY_UNVERIFIED = "legacy_unverified"
+    NEEDS_REVIEW = "needs_review"
+    RESOLUTION_STATUS_CHOICES = (
+        (ISOLATED, "Isolated"),
+        (VERIFIED, "Verified"),
+        (LEGACY_UNVERIFIED, "Legacy unverified"),
+        (NEEDS_REVIEW, "Needs review"),
+    )
+
+    edition = models.ForeignKey(
+        ConferenceEdition, on_delete=models.CASCADE, related_name="source_identities"
+    )
+    source_key = models.CharField(max_length=240)
+    speaker = models.ForeignKey(
+        HistoricalSpeaker, on_delete=models.PROTECT, related_name="source_identities"
+    )
+    display_name = models.CharField(max_length=200)
+    source_url = models.URLField()
+    source_updated_at = models.DateTimeField()
+    resolution_status = models.CharField(
+        max_length=24,
+        choices=RESOLUTION_STATUS_CHOICES,
+        default=ISOLATED,
+    )
+    active = models.BooleanField(default=True)
+    retired_at = models.DateTimeField(null=True, blank=True)
+    objects = models.Manager()
+
+    class Meta:
+        ordering = ("edition", "display_name", "source_key")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("edition", "source_key"),
+                name="speakerops_source_identity_edition_key",
+            )
+        ]
+        indexes = [
+            models.Index(fields=("edition", "source_key")),
+            models.Index(fields=("display_name",)),
+        ]
+
+
+class HistoricalIdentityDecision(PretalxModel):
+    """An auditable operator decision about a source identity mapping."""
+
+    LINK = "link"
+    SPLIT = "split"
+    RELINK = "relink"
+    ACTION_CHOICES = (
+        (LINK, "Link"),
+        (SPLIT, "Split"),
+        (RELINK, "Relink"),
+    )
+
+    source_identity = models.ForeignKey(
+        HistoricalSourceIdentity,
+        on_delete=models.PROTECT,
+        related_name="decisions",
+    )
+    prior_speaker = models.ForeignKey(
+        HistoricalSpeaker,
+        on_delete=models.PROTECT,
+        related_name="prior_identity_decisions",
+    )
+    resolved_speaker = models.ForeignKey(
+        HistoricalSpeaker,
+        on_delete=models.PROTECT,
+        related_name="resolved_identity_decisions",
+    )
+    action = models.CharField(max_length=16, choices=ACTION_CHOICES)
+    reason = models.TextField()
+    evidence_url = models.URLField()
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="speakerops_historical_identity_decisions",
+    )
+    decided_at = models.DateTimeField(default=timezone.now)
+    decision_version = models.PositiveIntegerField(default=1)
+    objects = models.Manager()
+
+    class Meta:
+        ordering = ("-decided_at", "-decision_version", "-pk")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("source_identity", "decision_version"),
+                name="speakerops_identity_decision_version",
+            )
+        ]
+
+
 class SpeakerMemoryProfile(EventOwnedModel):
     """AIE-owned operating context layered over immutable sourced speaker history."""
 
@@ -572,6 +670,13 @@ class HistoricalSpeakerCredit(PretalxModel):
 
     talk = models.ForeignKey(HistoricalTalk, on_delete=models.CASCADE, related_name="credits")
     speaker = models.ForeignKey(HistoricalSpeaker, on_delete=models.CASCADE, related_name="credits")
+    source_identity = models.ForeignKey(
+        HistoricalSourceIdentity,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="credits",
+    )
     name_at_source = models.CharField(max_length=200)
     position = models.PositiveIntegerField(default=0)
     source_url = models.URLField()

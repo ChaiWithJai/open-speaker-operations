@@ -2,6 +2,7 @@ import pytest
 from django.core.management import call_command
 from django_scopes import scope
 from pretalx.event.models import Event
+from pretalx.person.models import User
 
 from pretalx_speakerops.management.commands.speakerops_seed import (
     CFP_DEADLINE,
@@ -117,6 +118,7 @@ def _baseline(event):
 
 @pytest.mark.django_db(transaction=True)
 def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monkeypatch):
+    monkeypatch.setenv("SPEAKEROPS_DEMO_PASSWORD", "test-demo-password")
     monkeypatch.setenv("DJANGO_SUPERUSER_EMAIL", "seed-admin@example.org")
     monkeypatch.setenv("DJANGO_SUPERUSER_PASSWORD", "test-password")
     monkeypatch.setenv("PRETALX_INIT_ORGANISER_NAME", "Seed Test Organiser")
@@ -140,6 +142,13 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         assert event.get_feature_flag("use_tracks") is True
         assert "Browse the released schedule" in str(event.landing_page_text)
         assert "/speakerops-demo/speaker-operations/embed/" in str(event.landing_page_text)
+        primary_speaker = User.objects.get(email="speaker@example.org")
+        second_speaker = User.objects.get(email="speaker2@example.org")
+        assert primary_speaker.pk != second_speaker.pk
+        assert primary_speaker.name == "Maya Chen"
+        assert second_speaker.name == "Marcus Okafor"
+        assert primary_speaker.check_password("test-demo-password")
+        assert second_speaker.check_password("test-demo-password")
         released = first["released_program"]
         assert len(released) == len(CURATED_PROGRAM) == 12
         assert {row[3] for row in released} == {"Main Stage", "Studio"}
