@@ -56,18 +56,23 @@ def csrf_token(body):
     return match.group(1)
 
 
-def assert_surface(surface, response, body, elapsed, expected_path, marker):
+def assert_surface(surface, response, body, elapsed, expected_path, marker, *, alternatives=None):
     final_path = urllib.parse.urlparse(response.geturl()).path
     if response.status != 200:
         raise RuntimeError(f"{surface}: expected HTTP 200, received {response.status}")
-    if final_path != expected_path:
-        raise RuntimeError(f"{surface}: landed on {final_path!r}, expected {expected_path!r}")
-    if marker not in body:
-        raise RuntimeError(f"{surface}: missing protected marker {marker!r}")
+    expected_markers = {expected_path: marker, **(alternatives or {})}
+    expected_marker = expected_markers.get(final_path)
+    if expected_marker is None:
+        expected = ", ".join(repr(path) for path in expected_markers)
+        raise RuntimeError(f"{surface}: landed on {final_path!r}, expected one of {expected}")
+    if expected_marker not in body:
+        raise RuntimeError(f"{surface}: missing protected marker {expected_marker!r}")
     return Result(surface, response.status, round(elapsed, 1), response.geturl())
 
 
-def authenticated_surface(base_url, event, email, password, login_path, path, marker, timeout):
+def authenticated_surface(
+    base_url, event, email, password, login_path, path, marker, timeout, *, alternatives=None
+):
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(CookieJar()))
     login_url = urllib.parse.urljoin(base_url, login_path)
     _, login_body, _ = request(opener, login_url, timeout=timeout)
@@ -82,7 +87,18 @@ def authenticated_surface(base_url, event, email, password, login_path, path, ma
         headers={"Referer": login_url},
         timeout=timeout,
     )
-    return assert_surface(email.split("@", 1)[0], response, body, elapsed, path, marker), opener
+    return (
+        assert_surface(
+            email.split("@", 1)[0],
+            response,
+            body,
+            elapsed,
+            path,
+            marker,
+            alternatives=alternatives,
+        ),
+        opener,
+    )
 
 
 def public_surface(base_url, surface, path, marker, timeout, *, mobile=False):
@@ -140,8 +156,11 @@ def main():
         password,
         orga_login,
         f"/orga/{event}/speaker-operations/round-review/",
-        "Score assigned proposals",
+        "Assigned round evaluations",
         args.timeout,
+        alternatives={
+            f"/orga/{event}/speaker-operations/reviewer/": "Score assigned proposals",
+        },
     )
     results.append(reviewer)
     chair, chair_opener = authenticated_surface(
