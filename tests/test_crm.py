@@ -5,9 +5,9 @@ from bs4 import BeautifulSoup
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils import timezone
-from django_scopes import scope
-from pretalx.event.models import Organiser
-from pretalx.person.models import SpeakerProfile
+from django_scopes import scope, scopes_disabled
+from pretalx.event.models import Event, Organiser
+from pretalx.person.models import SpeakerProfile, User
 
 from pretalx_speakerops.models import (
     ConferenceEdition,
@@ -113,6 +113,10 @@ def test_crm_contact_filters_pipeline_handoff_and_outreach_round_trip(client, ev
     assert response.status_code == 200
     assert response.context["result_count"] == 1
     assert b"Taylor Kim" in response.content
+    assert b'aria-label="CRM section navigation"' in response.content
+    assert b"1 of 1 contacts shown" in response.content
+    assert b"Active filters:" in response.content
+    assert b"speakerops-crm-pipeline" in response.content
     landmark_names = re.findall(rb'<nav[^>]*aria-label="([^"]+)"', response.content)
     assert b"Speaker Operations workflow navigation" in landmark_names
     assert len(landmark_names) == len(set(landmark_names))
@@ -143,8 +147,14 @@ def test_crm_contact_filters_pipeline_handoff_and_outreach_round_trip(client, ev
     )
     assert response.status_code == 302
     segment = CRMSegment.objects.get(organiser=event.organiser, name="Vector prospects")
+    assert response.url == f"{url}?segment={segment.pk}#crm-directory-title"
     assert list(segment.contacts.all()) == [contact]
     assert segment.filter_definition == {"company": "Vector Labs"}
+
+    selected_segment = client.get(response.url)
+    assert selected_segment.status_code == 200
+    assert selected_segment.context["filters"]["segment"] == str(segment.pk)
+    assert b"Saved segment selected" in selected_segment.content
 
     response = client.post(
         url,
@@ -206,7 +216,7 @@ def test_crm_csv_validation_explicit_merge_and_organiser_isolation(client, event
                 "contacts.csv",
                 (
                     "Full Name,Email Address,Organization,Title,Photo URL,Bio,Labels\n"
-                    "Taylor K.,taylor@example.org,Vector Labs,CTO,"
+                    "Taylor Kim,taylor.alt@example.org,Vector Labs,CTO,"
                     "https://example.org/taylor-new.jpg,Operator biography,AI;alumni\n"
                 ).encode(),
                 content_type="text/csv",
@@ -215,7 +225,7 @@ def test_crm_csv_validation_explicit_merge_and_organiser_isolation(client, event
     )
     assert response.status_code == 302
     matches = CRMContact.objects.filter(
-        organiser=event.organiser, email__iexact="taylor@example.org", merged_into__isnull=True
+        organiser=event.organiser, name__iexact="Taylor Kim", merged_into__isnull=True
     )
     assert matches.count() == 2
     duplicate = matches.exclude(pk=primary.pk).get()
@@ -264,6 +274,164 @@ def test_crm_csv_validation_explicit_merge_and_organiser_isolation(client, event
     assert response.status_code == 302
     foreign_card.refresh_from_db()
     assert foreign_card.stage == CRMPipelineCard.PROSPECT
+
+
+def test_crm_csv_exact_email_is_idempotent_and_near_name_requires_explicit_merge(
+    client, event, users
+):
+    client.force_login(users["chair"])
+    url = _url(event)
+
+    def upload_csv(content):
+        return client.post(
+            url,
+            {
+                "action": "import_csv",
+                "csv_file": SimpleUploadedFile(
+                    "contacts.csv",
+                    content.encode(),
+                    content_type="text/csv",
+                ),
+            },
+            follow=True,
+        )
+
+    content = (
+        "name,email,company,job_title,biography,tags\n"
+        "Marcus Okafor, MARCUS@EXAMPLE.ORG ,Continuity Labs,Staff Engineer,"
+        "Builds durable event systems.,returning;platform\n"
+    )
+    first = upload_csv(content)
+    assert first.status_code == 200
+    assert b"1 created, 0 updated, 0 unchanged" in first.content
+    contact = CRMContact.objects.get(
+        organiser=event.organiser, email="marcus@example.org", merged_into__isnull=True
+    )
+    assert contact.tags == ["platform", "returning"]
+
+    second = upload_csv(content)
+    assert second.status_code == 200
+    assert b"0 created, 0 updated, 1 unchanged" in second.content
+    assert (
+        CRMContact.objects.filter(
+            organiser=event.organiser,
+            email__iexact="marcus@example.org",
+            merged_into__isnull=True,
+        ).count()
+        == 1
+    )
+
+    changed = upload_csv(
+        "name,email,company,job_title,biography,tags\n"
+        "Marcus Okafor,marcus@example.org,Continuity Labs,Principal Engineer,,\n"
+    )
+    assert b"0 created, 1 updated, 0 unchanged" in changed.content
+    contact.refresh_from_db()
+    assert contact.job_title == "Principal Engineer"
+    assert contact.biography == "Builds durable event systems."
+    assert contact.tags == ["platform", "returning"]
+
+    near_duplicate = upload_csv(
+        "name,email,company\nMarcus Okafor,marcus.other@example.org,Other Labs\n"
+    )
+    assert b"1 created, 0 updated, 0 unchanged" in near_duplicate.content
+    assert b"Flagged 1 possible name duplicate" in near_duplicate.content
+    assert (
+        CRMContact.objects.filter(
+            organiser=event.organiser, name__iexact="Marcus Okafor", merged_into__isnull=True
+        ).count()
+        == 2
+    )
+    assert b"Duplicate review" in near_duplicate.content
+
+
+def test_crm_event_handoff_is_permission_scoped_and_visible_in_target_speaker_roster(
+    client, event, users
+):
+    target_slug = f"{event.slug}-target"
+    sibling_slug = f"{event.slug}-private"
+    with scopes_disabled():
+        for slug, name in ((target_slug, "DevFlow Conf 2027"), (sibling_slug, "Private Summit")):
+            Event.objects.create(
+                organiser=event.organiser,
+                slug=slug,
+                name=name,
+                date_from=event.date_from,
+                date_to=event.date_to,
+                timezone=event.timezone,
+                email=f"program@{slug}.example.org",
+                locale="en",
+                locale_array="en",
+                is_public=False,
+                plugins=["pretalx_speakerops"],
+            )
+    target = Event.objects.get(slug=target_slug)
+    sibling = Event.objects.get(slug=sibling_slug)
+    chair_team = users["chair"].teams.get(organiser=event.organiser)
+    chair_team.limit_events.add(target)
+
+    marcus = User.objects.create_user(
+        email="marcus@example.org", name="Marcus Okafor", password="test-password"
+    )
+    contact = CRMContact.objects.create(
+        organiser=event.organiser,
+        name=marcus.name,
+        email=marcus.email,
+        biography="Builds durable event systems and practical program handoffs.",
+    )
+    CRMPipelineCard.objects.create(organiser=event.organiser, contact=contact)
+    blocked_contact = CRMContact.objects.create(
+        organiser=event.organiser,
+        name="Private Candidate",
+        email="private-candidate@example.org",
+        biography="Must not cross the permission boundary.",
+    )
+    CRMPipelineCard.objects.create(organiser=event.organiser, contact=blocked_contact)
+
+    client.force_login(users["chair"])
+    page = client.get(_url(event), {"contact": contact.pk})
+    assert page.status_code == 200
+    assert set(page.context["organiser_events"]) == {target, event}
+    assert str(sibling.name).encode() not in page.content
+
+    blocked = client.post(
+        _url(event),
+        {
+            "action": "add_to_event",
+            "contact_id": blocked_contact.pk,
+            "target_event": sibling.pk,
+        },
+        follow=True,
+    )
+    assert blocked.status_code == 200
+    assert b"cannot manage the selected target event" in blocked.content
+    blocked_contact.refresh_from_db()
+    assert blocked_contact.email == "private-candidate@example.org"
+    assert not User.objects.filter(email__iexact=blocked_contact.email).exists()
+    assert not CRMEventLink.objects.filter(contact=blocked_contact, event=sibling).exists()
+    with scope(event=sibling):
+        assert not SpeakerProfile.objects.filter(event=sibling).exists()
+
+    handed_off = client.post(
+        _url(event),
+        {"action": "add_to_event", "contact_id": contact.pk, "target_event": target.pk},
+        follow=True,
+    )
+    assert handed_off.status_code == 200
+    assert b"Added Marcus Okafor to DevFlow Conf 2027 without re-keying" in handed_off.content
+    link = CRMEventLink.objects.get(contact=contact, event=target)
+    assert link.user == marcus
+    with scope(event=target):
+        profile = SpeakerProfile.objects.get(event=target, user=marcus)
+        assert str(profile.biography) == contact.biography
+
+    roster = client.get(
+        reverse("plugins:speakerops:speakerops_speakers", kwargs={"event": target.slug})
+    )
+    assert roster.status_code == 200
+    assert b"Marcus Okafor" in roster.content
+    assert contact.biography.encode() in roster.content
+    assert b"Private Candidate" not in roster.content
 
 
 def test_crm_rejects_invalid_csv_atomically(client, event, users):

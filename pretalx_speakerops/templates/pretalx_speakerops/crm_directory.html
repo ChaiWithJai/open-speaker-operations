@@ -10,6 +10,14 @@
     <span class="speakerops-status"><strong>{{ total_contacts }}</strong> active contacts</span>
   </header>
 
+  <nav class="speakerops-section-nav" aria-label="CRM section navigation">
+    <a href="#crm-filter-title">Find contacts</a>
+    <a href="#crm-import-title">Import CSV</a>
+    <a href="#crm-pipeline-title">Pipeline</a>
+    <a href="#crm-directory-title">Directory</a>
+    <a href="#crm-bulk-title">Segments &amp; outreach</a>
+  </nav>
+
   <section class="speakerops-panel speakerops-panel--stack" aria-labelledby="crm-program-memory-title">
     <p class="speakerops__eyebrow">Program memory · sourced evidence</p>
     <h2 id="crm-program-memory-title">The organization’s programming context survives the next event</h2>
@@ -30,7 +38,7 @@
   </section>
   <section class="speakerops-panel" aria-labelledby="crm-analytics-title"><h2 id="crm-analytics-title">Top companies</h2><p>Click a company to drill into its contacts.</p><ul>{% for item in top_companies %}<li><a href="{{ request.path }}?company={{ item.company|urlencode }}">{{ item.company }}</a> · {{ item.total }} contact{{ item.total|pluralize }}</li>{% empty %}<li>Add company data to populate this organization-wide analytic.</li>{% endfor %}</ul></section>
 
-  <section class="speakerops-panel" aria-labelledby="crm-filter-title">
+  <section class="speakerops-panel speakerops-panel--stack" aria-labelledby="crm-filter-title">
     <h2 id="crm-filter-title">Search and filter contacts</h2>
     <form method="get" role="search">
       <label for="crm-q">Name, email, company, or title</label><input class="form-control" id="crm-q" name="q" value="{{ filters.q }}">
@@ -41,6 +49,20 @@
       <label for="crm-segment">Saved segment</label><select class="form-control" id="crm-segment" name="segment"><option value="">All segments</option>{% for segment in segments %}<option value="{{ segment.pk }}"{% if filters.segment == segment.pk|stringformat:'s' %} selected{% endif %}>{{ segment.name }} ({{ segment.contact_count }})</option>{% endfor %}</select>
       <button class="btn btn-primary" type="submit">Apply filters</button> <a href="{% url 'plugins:speakerops:speakerops_crm' event.slug %}">Clear filters</a>
     </form>
+    <div class="speakerops-filter-summary" role="status">
+      <strong>{{ result_count }} of {{ total_contacts }} contacts shown.</strong>
+      {% if filters.q or filters.company or filters.job_title or filters.tag or filters.stage or filters.segment %}
+        <span>Active filters:</span>
+        {% if filters.q %}<span class="speakerops-badge">Search: {{ filters.q }}</span>{% endif %}
+        {% if filters.company %}<span class="speakerops-badge">Company: {{ filters.company }}</span>{% endif %}
+        {% if filters.job_title %}<span class="speakerops-badge">Title: {{ filters.job_title }}</span>{% endif %}
+        {% if filters.tag %}<span class="speakerops-badge">Tag: {{ filters.tag }}</span>{% endif %}
+        {% if filters.stage %}<span class="speakerops-badge">Stage: {{ filters.stage }}</span>{% endif %}
+        {% if filters.segment %}<span class="speakerops-badge">Saved segment selected</span>{% endif %}
+      {% else %}
+        <span>No filters active.</span>
+      {% endif %}
+    </div>
   </section>
 
   <section class="speakerops-panel" aria-labelledby="crm-add-title">
@@ -75,7 +97,7 @@
       <button class="btn btn-secondary" type="submit">Merge into primary</button></form>{% endfor %}
   </section>{% endif %}
 
-  <section class="speakerops-panel" aria-labelledby="crm-pipeline-title"><p class="speakerops__eyebrow">Sourcing pipeline</p><h2 id="crm-pipeline-title">Open to confirmed or declined</h2><p>Every new or imported contact begins as a prospect. Move a card below; every transition and note is timestamped and retained.</p><div class="speakerops__grid">{% for column in pipeline_columns %}<section aria-labelledby="pipeline-{{ column.value }}"><h3 id="pipeline-{{ column.value }}">{{ column.label }}</h3><p>{{ column.contacts|length }} contact{{ column.contacts|length|pluralize }}</p><ul>{% for contact in column.contacts %}<li><a href="{{ request.path }}?contact={{ contact.pk }}#crm-contact-{{ contact.pk }}">{{ contact.name }}</a>{% if contact.company %}<br><small>{{ contact.company }}</small>{% endif %}</li>{% empty %}<li>No contacts</li>{% endfor %}</ul></section>{% endfor %}</div></section>
+  <section class="speakerops-panel speakerops-panel--stack" aria-labelledby="crm-pipeline-title"><p class="speakerops__eyebrow">Sourcing pipeline</p><h2 id="crm-pipeline-title">Open to confirmed or declined</h2><p>Every new or imported contact begins as a prospect. Move a card below; every transition and note is timestamped and retained.</p><div class="speakerops-crm-pipeline">{% for column in pipeline_columns %}<section aria-labelledby="pipeline-{{ column.value }}"><h3 id="pipeline-{{ column.value }}">{{ column.label }}</h3><p>{{ column.contacts|length }} contact{{ column.contacts|length|pluralize }}</p><ul>{% for contact in column.contacts %}<li><a href="{{ request.path }}?contact={{ contact.pk }}#crm-contact-{{ contact.pk }}">{{ contact.name }}</a>{% if contact.company %}<br><small>{{ contact.company }}</small>{% endif %}</li>{% empty %}<li>No contacts</li>{% endfor %}</ul></section>{% endfor %}</div></section>
 
   <section aria-labelledby="crm-directory-title">
     <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Organization directory</p><h2 id="crm-directory-title">{{ result_count }} matching contacts</h2></div></div>
