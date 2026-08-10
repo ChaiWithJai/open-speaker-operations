@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.views.generic import TemplateView
 from pretalx.person.models import SpeakerProfile
 
@@ -114,8 +115,9 @@ class SpeakerPortalProfileView(EventContextMixin, TemplateView):
             speaker_profile.biography = form.cleaned_data["biography"]
             speaker_profile.save(update_fields=["biography", "updated"])
             operations_profile.social_url = form.cleaned_data["social_url"]
-            operations_profile.save(update_fields=["social_url", "updated"])
             if headshot := form.cleaned_data.get("headshot"):
+                operations_profile.headshot_original_filename = headshot.name
+                operations_profile.headshot_uploaded_at = timezone.now()
                 request.user.avatar = headshot
                 request.user.avatar_thumbnail = None
                 request.user.avatar_thumbnail_tiny = None
@@ -129,6 +131,14 @@ class SpeakerPortalProfileView(EventContextMixin, TemplateView):
                     ],
                     skip_gravatar_processing=True,
                 )
+            operations_profile.save(
+                update_fields=[
+                    "social_url",
+                    "headshot_original_filename",
+                    "headshot_uploaded_at",
+                    "updated",
+                ]
+            )
 
         messages.success(
             request, "Profile saved. Organizers now see the same biography, link, and headshot."

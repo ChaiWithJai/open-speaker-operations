@@ -53,6 +53,7 @@ def test_aie_cfp_configures_exact_formats_topics_policy_and_waves(event):
         "Key takeaway",
         "Review category",
         "Workshop prerequisites",
+        "Topics",
         "Session abstract",
     }
     assert audience_options == ["Beginner", "Intermediate", "Advanced"]

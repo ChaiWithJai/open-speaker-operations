@@ -42,30 +42,35 @@ handoff, and manual checks.
 2. As chair, open the speaker record. Verify the biography matches and the durable
    headshot responds successfully rather than rendering a broken thumbnail.
 3. In the speaker checklist, capture an incomplete upload task, upload `slides.pdf`,
-   and capture the completed state. Upload a replacement with the same filename.
+   and capture the completed state. Upload a replacement with the same filename, then
+   upload `supporting-document.pdf` to the separate supporting-document task.
 4. Expand version history. Verify v1 and v2, timestamps, **Current/latest**, old-version
    download, and speaker/organizer comments with authors and timestamps.
 5. As chair, open **Content & files**. Filter by speaker and status; verify the row shows
    speaker, session, due date, explicit completion state, original filename, upload
    date, two versions, and current version.
-6. Approve one session's content and leave another pending. In a logged-out window,
-   verify only the approved session appears in the public widget/feed.
+6. For two already released sessions, approve **Trustworthy AI Needs Operational
+   Guardrails** and leave **The Human Side of Reliable Integrations** pending. In a
+   logged-out window, verify only the approved session appears in the public
+   widget/feed.
 7. Select two uploaded deliverables, choose session grouping, and generate the ZIP.
    Repeat with one deselected. Inspect the archives: only selected latest versions may
    appear, with the requested grouping and no prior version.
 
 ## 3. Agenda rules and release handoff
 
-1. Place **Taming 40-Minute CI** on Day 1 at 10:00 in Room 2A. Reload and verify the
-   placement remains.
-2. Place a second session in the same room/time. Verify the action is blocked or a
-   visible room-conflict warning appears.
-3. Move the second session elsewhere. Verify the warning clears immediately and stays
-   cleared after reload.
-4. Generate and apply an Agenda Assist proposal. Verify it includes accepted WIP
+1. On the Speaker Operations Agenda, clear the two pre-seeded warnings for **WIP
+   fixture: Main Stage room collision** and **WIP fixture: Maya Chen double-booking**.
+2. Place **Accepted: Operations That Scale** on August 10 at 10:00 in **Main Stage**.
+   Reload and verify the placement remains.
+3. Move **WIP fixture: Main Stage room collision** into that occupied room/time. Verify
+   the action is blocked or a visible room-conflict warning appears.
+4. Move the WIP fixture to an unused slot. Use **Recheck conflicts**, then reload and
+   verify the warning remains cleared.
+5. Generate and apply an Agenda Assist proposal. Verify it includes accepted WIP
    sessions, produces no room/speaker overlaps, and does not leave accepted sessions
    incorrectly classified as unscheduled.
-5. Release through the Speaker Operations release gate using its suggested unique
+6. Release through the Speaker Operations release gate using its suggested unique
    version. Verify success without HTTP 500, then confirm the released session in a
    logged-out public schedule without re-entry.
 
