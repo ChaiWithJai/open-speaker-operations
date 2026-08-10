@@ -17,8 +17,10 @@ class SpeakerOpsConfig(AppConfig):
             tasks,  # noqa: F401
         )
         from .cfp import SpeakerOpsQuestionsForm
+        from .cfp_lock import install_closed_cfp_guards
         from .program import policy  # noqa: F401
 
         # Keep pretalx's mature CFP flow and replace only its questions form class.
         # The subclass is a no-op for events without this plugin or persisted rules.
         QuestionsStep.form_class = SpeakerOpsQuestionsForm
+        install_closed_cfp_guards()

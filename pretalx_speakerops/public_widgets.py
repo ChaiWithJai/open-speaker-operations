@@ -181,10 +181,10 @@ class PublicWidgetView(TemplateView):
         with scope(event=self.event):
             context = super().get_context_data(**kwargs)
             context.update(_public_program(self.event))
-        selected_day = self.request.GET.get("day", "")
-        valid_days = {day["key"] for day in context["days"]}
+        selected_day = self.request.GET.get("day", "all")
+        valid_days = {"all", *(day["key"] for day in context["days"])}
         if selected_day not in valid_days:
-            selected_day = context["days"][0]["key"] if context["days"] else ""
+            selected_day = "all"
         selected_query = self.request.GET.get("q", "").strip()
         selected_track = self.request.GET.get("track", "")
         selected_format = self.request.GET.get("format", "")

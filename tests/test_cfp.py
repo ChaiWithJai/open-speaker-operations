@@ -180,6 +180,20 @@ def test_cfp_close_date_blocks_new_submission_and_existing_edit(event, users, cl
     assert edit.status_code == 200
     assert edit.context["can_edit"] is False
     assert b'name="action" value="submit"' not in edit.content
+    assert b"This proposal is read-only" in edit.content
+
+    for route_name in (
+        "cfp:event.user.submission.withdraw",
+        "cfp:event.user.submission.invite",
+    ):
+        mutation_url = reverse(
+            route_name,
+            kwargs={"event": event.slug, "code": submission.code},
+        )
+        denied_mutation = client.post(mutation_url, {}, HTTP_HOST=request_host)
+        assert denied_mutation.status_code in {403, 404}
+        submission.refresh_from_db()
+        assert submission.state == SubmissionStates.SUBMITTED
 
     denied_edit = client.post(
         edit_url,

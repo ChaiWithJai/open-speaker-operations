@@ -167,6 +167,37 @@ def test_sessions_widget_server_filters_title_speaker_track_format_and_room(even
 
 
 @pytest.mark.django_db(transaction=True)
+def test_speaker_surname_search_returns_every_released_session_for_that_speaker(
+    event, users, client
+):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        speaker = users["speaker"]
+        speaker.name = "Priya Raman"
+        speaker.save(update_fields=["name"])
+        slots = list(
+            event.current_schedule.talks.filter(is_visible=True, submission__isnull=False)
+            .select_related("submission")
+            .order_by("pk")[:3]
+        )
+        assert len(slots) == 3
+        for slot in slots:
+            slot.submission.speakers.add(speaker)
+        expected_ids = set(
+            event.current_schedule.talks.filter(
+                is_visible=True, submission__speakers=speaker
+            ).values_list("pk", flat=True)
+        )
+
+    response = client.get(f"/{event.slug}/speaker-operations/widgets/sessions/", {"q": "Raman"})
+
+    assert response.status_code == 200
+    assert _slot_ids(response) == expected_ids
+    for slot in slots:
+        assert slot.submission.title.encode() in response.content
+
+
+@pytest.mark.django_db(transaction=True)
 def test_agenda_day_query_selects_exact_initial_tab_and_panel(event, client):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")
@@ -212,10 +243,14 @@ def test_agenda_day_query_selects_exact_initial_tab_and_panel(event, client):
             "tabindex": "-1",
         },
     )
+    # Raw HTML retains every day for form navigation and no-JS use. The deferred
+    # script applies the requested day as progressive enhancement.
     selected_panel = _elements(response, tag="section", id=f"agenda-panel-{selected_day}")[0]
     other_panel = _elements(response, tag="section", id=f"agenda-panel-{other_day}")[0]
     assert "hidden" not in selected_panel
-    assert "hidden" in other_panel
+    assert "hidden" not in other_panel
+    assert _elements(response, tag="main", **{"data-selected-day": selected_day})
+    assert b"Showing " in response.content
 
 
 @pytest.mark.django_db(transaction=True)
@@ -324,7 +359,7 @@ def test_itinerary_is_grouped_and_server_navigable_by_day(event, client):
     )
     for day in response.context["days"]:
         panel = _elements(response, tag="section", id=f"itinerary-panel-{day['key']}")[0]
-        assert ("hidden" not in panel) is (day["key"] == selected_day)
+        assert "hidden" not in panel
         for slot in day["slots"]:
             assert slot.submission.title.encode() in response.content
 
@@ -488,6 +523,9 @@ def test_embed_builder_is_organizer_only_and_exposes_required_controls(event, us
         b"Branding",
         b"Fields",
         b"Track filter",
+        b"Search filter",
+        b"Session format filter",
+        b"Room filter",
         b"Format",
         b"Generated snippet",
         b"embed-preview",
@@ -496,5 +534,23 @@ def test_embed_builder_is_organizer_only_and_exposes_required_controls(event, us
         b"JSON data feed",
         b"XML data feed",
         b"iCal calendar feed",
+        b"Five shareable public surfaces",
     ):
         assert marker in response.content
+    for widget in (b"sessions", b"speakers", b"agenda", b"itinerary", b"gallery"):
+        assert b"/widgets/" + widget + b"/" in response.content
+
+
+@pytest.mark.django_db(transaction=True)
+def test_public_day_views_default_to_all_days_and_keep_broken_image_fallback(event, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+    agenda = client.get(f"/{event.slug}/speaker-operations/widgets/agenda/")
+    gallery = client.get(f"/{event.slug}/speaker-operations/widgets/gallery/")
+
+    assert agenda.context["selected_day"] == "all"
+    assert b">All days</button>" in agenda.content
+    assert b"Showing all event days" in agenda.content
+    assert all("hidden" not in panel for panel in _elements(agenda, tag="section", role="tabpanel"))
+    if b"data-avatar" in gallery.content:
+        assert b"data-avatar-fallback" in gallery.content

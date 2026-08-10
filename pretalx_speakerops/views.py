@@ -1123,18 +1123,24 @@ class SpeakerSubmissionPresentersView(EventContextMixin, TemplateView):
         return get_object_or_404(submissions)
 
     def get_context_data(self, **kwargs):
+        from .cfp_lock import proposal_mutations_open
+
         context = super().get_context_data(**kwargs)
         submission = self._submission()
         context.update(
             submission=submission,
             presenters=presenter_rows(submission),
             role_choices=SubmissionPresenterRole.ROLE_CHOICES,
+            can_edit_presenters=proposal_mutations_open(submission),
         )
         return context
 
     def post(self, request, event, code):
+        from .cfp_lock import require_open_proposal
+
         with transaction.atomic(), scope(event=self.event):
             submission = self._submission(lock=True)
+            require_open_proposal(submission)
             speakers = list(submission.speakers.order_by("pk"))
             choices = dict(SubmissionPresenterRole.ROLE_CHOICES)
             selected = {

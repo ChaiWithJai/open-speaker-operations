@@ -1,4 +1,11 @@
 (() => {
+  document.querySelectorAll("[data-avatar]").forEach((avatar) => {
+    avatar.addEventListener("error", () => {
+      avatar.hidden = true;
+      const fallback = avatar.parentElement.querySelector("[data-avatar-fallback]");
+      if (fallback) fallback.hidden = false;
+    }, { once: true });
+  });
   const biography = document.querySelector("[data-biography]");
   const toggle = document.querySelector("[data-biography-toggle]");
   if (!biography || !toggle) return;

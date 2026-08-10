@@ -13,17 +13,18 @@
   </header>
   <section class="speakerops-panel" aria-labelledby="participants-title">
     <div><h2 id="participants-title">Presenters and role labels</h2><p>Invite additional presenters through the native proposal flow, then label every attached person here.</p></div>
+    {% if not can_edit_presenters %}<div class="alert alert-info" role="status"><strong>Proposal locked.</strong> The call for proposals is closed, so presenter roles and invitations are read-only. Contact the organisers if a correction is required.</div>{% endif %}
     <form method="post">
       {% csrf_token %}
       {% for presenter in presenters %}
       <label for="presenter-role-{{ presenter.speaker.pk }}">{{ presenter.speaker.get_display_name }}</label>
-      <select class="form-control" id="presenter-role-{{ presenter.speaker.pk }}" name="role_{{ presenter.speaker.pk }}" required>
+      <select class="form-control" id="presenter-role-{{ presenter.speaker.pk }}" name="role_{{ presenter.speaker.pk }}" required{% if not can_edit_presenters %} disabled{% endif %}>
         {% for value,label in role_choices %}<option value="{{ value }}"{% if presenter.role == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
       </select>
       {% empty %}<p>No presenters are attached to this proposal.</p>{% endfor %}
-      {% if presenters %}<button class="btn btn-primary" type="submit">Save presenter roles</button>{% endif %}
+      {% if presenters and can_edit_presenters %}<button class="btn btn-primary" type="submit">Save presenter roles</button>{% endif %}
     </form>
-    <p><a class="btn btn-outline-primary" href="{{ submission.urls.invite }}">Invite another presenter</a></p>
+    {% if can_edit_presenters %}<p><a class="btn btn-outline-primary" href="{{ submission.urls.invite }}">Invite another presenter</a></p>{% endif %}
   </section>
 </div>
 {% endblock content %}

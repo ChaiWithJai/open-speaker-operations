@@ -6,7 +6,7 @@ from django.urls import reverse
 from django_scopes import scope
 from pretalx.common.models import ActivityLog
 from pretalx.event.models import Event, Team
-from pretalx.person.models import User
+from pretalx.person.models import SpeakerProfile, User
 from pretalx.submission.models import Answer
 
 from pretalx_speakerops.cfp import AIE_TRACKS
@@ -219,6 +219,9 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         assert primary_speaker.pk != second_speaker.pk
         assert primary_speaker.name == "Priya Raman"
         assert second_speaker.name == "Marcus Okafor"
+        assert not SpeakerProfile.objects.filter(
+            event=event, biography__contains="SBEK-PORTAL-BIO-01"
+        ).exists()
         assert primary_speaker.check_password("test-demo-password")
         assert second_speaker.check_password("test-demo-password")
         devflow = Event.objects.get(slug=DEVFLOW_SLUG)
