@@ -13,7 +13,9 @@ from pretalx.submission.models import (
 )
 
 from pretalx_speakerops.cfp import (
+    SESSION_FORMATS,
     SpeakerOpsQuestionsForm,
+    conditional_rules_for_browser,
     configure_demo_cfp,
     validate_persisted_conditional_answers,
 )
@@ -68,10 +70,9 @@ def test_cfp_has_exact_evaluation_fields_and_workshop_scope(event):
         assert takeaway.required
         assert prerequisites.variant == QuestionVariant.STRING
         assert prerequisites.required
-        assert list(prerequisites.submission_types.values_list("name", flat=True)) == [
-            "Workshop",
-            "Workshop (120 min)",
-        ]
+        assert {
+            str(name) for name in prerequisites.submission_types.values_list("name", flat=True)
+        } == set(dict(SESSION_FORMATS))
 
 
 @pytest.mark.django_db(transaction=True)
@@ -171,7 +172,7 @@ def test_organizer_builder_fields_render_and_validate_on_public_form(event, user
 
 
 @pytest.mark.django_db(transaction=True)
-def test_workshop_prerequisites_render_only_for_workshops_and_are_required(event, users):
+def test_workshop_prerequisites_are_optional_for_talks_and_required_for_workshops(event, users):
     with scope(event=event):
         stage_talk = event.submission_types.get(name="Stage Talk")
         workshop = event.submission_types.get(name="Workshop")
@@ -184,7 +185,8 @@ def test_workshop_prerequisites_render_only_for_workshops_and_are_required(event
 
         assert isinstance(stage_form.fields[audience_name].widget, forms.Select)
         assert not isinstance(stage_form.fields[audience_name].widget, forms.RadioSelect)
-        assert field_name not in stage_form.fields
+        assert field_name in stage_form.fields
+        assert not stage_form.fields[field_name].required
         assert field_name in workshop_form.fields
         assert workshop_form.fields[field_name].required
 
@@ -200,6 +202,29 @@ def test_workshop_prerequisites_render_only_for_workshops_and_are_required(event
         )
         assert not missing_form.is_valid()
         assert "required" in str(missing_form.errors[field_name]).lower()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_workshop_prerequisites_publish_a_live_session_type_visibility_rule(event):
+    with scope(event=event):
+        configure_demo_cfp(event)
+        prerequisites = event.questions.get(question="Workshop prerequisites")
+        workshop_ids = {
+            str(item)
+            for item in event.submission_types.filter(
+                name__in=("Workshop", "Workshop (120 min)")
+            ).values_list("pk", flat=True)
+        }
+
+        rule = next(
+            item
+            for item in conditional_rules_for_browser(event)
+            if item["targetName"] == f"question_{prerequisites.pk}"
+            and item["controllerName"] == "submission_type"
+        )
+
+        assert set(rule["triggerOptions"]) == workshop_ids
+        assert rule["targetRequired"] is True
 
 
 @pytest.mark.django_db(transaction=True)

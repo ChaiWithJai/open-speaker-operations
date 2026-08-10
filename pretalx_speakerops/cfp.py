@@ -30,6 +30,7 @@ SESSION_FORMATS = (
     ("Lightning Talk", 10),
     ("Online Talk", 30),
 )
+WORKSHOP_FORMAT_NAMES = frozenset({"Workshop", "Workshop (120 min)"})
 
 ACCEPTANCE_WAVES = (("Wave 1", 8, 15), ("Wave 2", 9, 1), ("Wave 3", 9, 15))
 AIE_TRACKS = (
@@ -166,16 +167,11 @@ def configure_demo_cfp(event):
             question.min_length = 20 if variant == QuestionVariant.TEXT else None
             question.max_length = 500 if variant == QuestionVariant.TEXT else None
             question.save()
-            allowed_types = (
-                [
-                    submission_type
-                    for submission_type in submission_types
-                    if str(submission_type.name) in {"Workshop", "Workshop (120 min)"}
-                ]
-                if label == "Workshop prerequisites"
-                else submission_types
-            )
-            question.submission_types.set(allowed_types)
+            # Keep the field in the native multi-step form for every format so
+            # changing Session type can reveal it immediately without a page
+            # reload. Browser visibility and authoritative server validation
+            # below still restrict answers to workshop formats.
+            question.submission_types.set(submission_types)
             if variant in (QuestionVariant.CHOICES, QuestionVariant.MULTIPLE):
                 options = QUESTION_OPTIONS[label]
                 for option_position, option_text in enumerate(options):
@@ -255,7 +251,7 @@ def conditional_rules_for_browser(event):
         rules = ConditionalQuestionRule.objects.filter(event=event, active=True).select_related(
             "controller_question", "trigger_option", "target_question"
         )
-        return [
+        browser_rules = [
             {
                 "controllerName": f"question_{rule.controller_question_id}",
                 "triggerOption": str(rule.trigger_option_id),
@@ -264,6 +260,24 @@ def conditional_rules_for_browser(event):
             }
             for rule in rules
         ]
+        prerequisites = Question.all_objects.filter(
+            event=event, question="Workshop prerequisites", active=True
+        ).first()
+        if prerequisites:
+            workshop_type_ids = list(
+                event.submission_types.filter(name__in=WORKSHOP_FORMAT_NAMES).values_list(
+                    "pk", flat=True
+                )
+            )
+            browser_rules.append(
+                {
+                    "controllerName": "submission_type",
+                    "triggerOptions": [str(item) for item in workshop_type_ids],
+                    "targetName": f"question_{prerequisites.pk}",
+                    "targetRequired": True,
+                }
+            )
+        return browser_rules
 
 
 def _answer_is_present(value):
@@ -322,7 +336,7 @@ def _validate_persisted_workshop_prerequisites(submission):
             or answer.options.exists()
         )
     )
-    is_workshop = question.submission_types.filter(pk=submission.submission_type_id).exists()
+    is_workshop = str(submission.submission_type.name) in WORKSHOP_FORMAT_NAMES
     if is_workshop and not answer_present:
         raise ValidationError("Workshop prerequisites are required for Workshop proposals.")
     if not is_workshop and answer_present:
@@ -363,7 +377,15 @@ class SpeakerOpsQuestionsForm(QuestionsForm):
                 widget = forms.Select()
                 widget.choices = field.choices
                 field.widget = widget
-                break
+        prerequisites = Question.all_objects.filter(
+            event=self.event, question="Workshop prerequisites", active=True
+        ).first()
+        if prerequisites:
+            field = self.fields.get(f"question_{prerequisites.pk}")
+            if field:
+                field.required = (
+                    str(getattr(self.submission_type, "name", "")) in WORKSHOP_FORMAT_NAMES
+                )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -375,8 +397,9 @@ class SpeakerOpsQuestionsForm(QuestionsForm):
             event=self.event, question="Workshop prerequisites", active=True
         ).first()
         submission_type_id = getattr(self.submission_type, "pk", self.submission_type)
+        submission_type = self.event.submission_types.filter(pk=submission_type_id).first()
         is_prerequisites_type = bool(
-            prerequisites and prerequisites.submission_types.filter(pk=submission_type_id).exists()
+            prerequisites and submission_type and str(submission_type.name) in WORKSHOP_FORMAT_NAMES
         )
         if prerequisites and not is_prerequisites_type:
             prerequisites_name = f"question_{prerequisites.pk}"

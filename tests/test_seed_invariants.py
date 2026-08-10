@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 from django.core.management import call_command
 from django.urls import reverse
@@ -13,17 +15,26 @@ from pretalx_speakerops.management.commands.speakerops_seed import (
     CFP_DEADLINE,
     CFP_OPENING,
     CONFLICT_FIXTURE_TITLES,
+    CRM_DUPLICATE_EMAIL,
+    CRM_FIXTURE_NOTES,
     CURATED_PROGRAM,
     CURATED_RELIABLE_TRACK_INDICES,
     CURATED_SPEAKER_ROLES,
     DEMO_END,
     DEMO_START,
     DEMO_WALKTHROUGH_AT,
+    DEVFLOW_END,
+    DEVFLOW_SLUG,
+    DEVFLOW_START,
+    DEVFLOW_TIMEZONE,
     EVALUATOR_SIGNUP_EMAIL,
 )
 from pretalx_speakerops.models import (
+    CRMContact,
+    CRMPipelineCard,
     ExternalIdentity,
     OnboardingTask,
+    SubmissionPresenterRole,
     SyncAttempt,
     SyncItem,
     SyncPreview,
@@ -96,6 +107,19 @@ def _baseline(event):
                 "submission__title",
             )
             .order_by("definition__position", "pk")
+        ),
+        "presenter_roles": tuple(
+            SubmissionPresenterRole.objects.filter(event=event)
+            .values_list("submission__title", "speaker__email", "role")
+            .order_by("submission__title", "speaker__email")
+        ),
+        "crm_fixtures": tuple(
+            CRMContact.objects.filter(
+                organiser=event.organiser,
+                internal_notes__in=CRM_FIXTURE_NOTES,
+            )
+            .values_list("name", "email", "company", "job_title", "internal_notes")
+            .order_by("internal_notes")
         ),
         "sync": {
             "previews": tuple(
@@ -193,10 +217,16 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         primary_speaker = User.objects.get(email="speaker@example.org")
         second_speaker = User.objects.get(email="speaker2@example.org")
         assert primary_speaker.pk != second_speaker.pk
-        assert primary_speaker.name == "Maya Chen"
+        assert primary_speaker.name == "Priya Raman"
         assert second_speaker.name == "Marcus Okafor"
         assert primary_speaker.check_password("test-demo-password")
         assert second_speaker.check_password("test-demo-password")
+        devflow = Event.objects.get(slug=DEVFLOW_SLUG)
+        assert str(devflow.name) == "DevFlow Conf 2027"
+        assert devflow.organiser == event.organiser
+        assert devflow.date_from == DEVFLOW_START
+        assert devflow.date_to == DEVFLOW_END
+        assert devflow.timezone == DEVFLOW_TIMEZONE
         chair = User.objects.get(email="chair@example.org")
         chair_team = chair.teams.get(
             organiser=event.organiser,
@@ -232,6 +262,11 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         assert {row[0] for row in released} == {program[1] for program in CURATED_PROGRAM}
         assert all(row[1].startswith(DEMO_START.isoformat()) for row in released[:4])
         assert all(row[1].startswith(DEMO_END.isoformat()) for row in released[-4:])
+        assert {row[1][:10] for row in released} == {
+            DEMO_START.isoformat(),
+            (DEMO_START + timedelta(days=1)).isoformat(),
+            DEMO_END.isoformat(),
+        }
 
         released_by_title = {row[0]: row for row in released}
         for speaker_name, title, _abstract in CURATED_PROGRAM:
@@ -243,7 +278,36 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             for row in released
             if "speaker@example.org" in {email for email, _name in row[4]}
         ]
-        assert demo_speaker_sessions == [CURATED_PROGRAM[0][1]]
+        assert demo_speaker_sessions == [CURATED_PROGRAM[2][1]]
+        maya_speakers = released_by_title[CURATED_PROGRAM[0][1]][4]
+        assert maya_speakers == (("curated-speaker-1@democon.test", "Maya Chen"),)
+        accepted = event.submissions.get(title="Accepted: Operations That Scale")
+        assert str(accepted.track.name) == "Platform & Infra"
+        assert str(accepted.submission_type.name) == "Talk (30 min)"
+        assert set(accepted.speakers.values_list("email", flat=True)) == {
+            "speaker@example.org",
+            "speaker2@example.org",
+        }
+        assert set(
+            SubmissionPresenterRole.objects.filter(event=event, submission=accepted).values_list(
+                "speaker__email", "role"
+            )
+        ) == {
+            ("speaker@example.org", SubmissionPresenterRole.PRIMARY_AUTHOR),
+            ("speaker2@example.org", SubmissionPresenterRole.CO_AUTHOR),
+        }
+        crm_pair = CRMContact.objects.filter(
+            organiser=event.organiser,
+            email=CRM_DUPLICATE_EMAIL,
+            internal_notes__in=CRM_FIXTURE_NOTES,
+            merged_into__isnull=True,
+        )
+        assert crm_pair.count() == 2
+        assert crm_pair.values("email").distinct().count() == 1
+        assert (
+            CRMPipelineCard.objects.filter(organiser=event.organiser, contact__in=crm_pair).count()
+            == 2
+        )
         public_identity_answers = Answer.objects.filter(
             question__event=event,
             question__question__in=("Job title", "Company"),

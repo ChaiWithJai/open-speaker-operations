@@ -3,8 +3,19 @@
 {% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
 {% block content %}
 <main class="speakerops" aria-labelledby="content-title">
-  <h1 id="content-title">Content operations</h1>
-  <p><a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">&larr; Back to dashboard</a></p>
+  {% include "pretalx_speakerops/includes/role_navigation.html" %}
+  <header class="speakerops__header">
+    <div>
+      <p class="speakerops__eyebrow">Content operations</p>
+      <h1 id="content-title">Content operations &amp; files library</h1>
+      <p>Create file requests, reconcile every speaker deliverable, inspect comments and version history, approve publication, and export the latest selected files without hunting through individual records.</p>
+    </div>
+    <nav class="speakerops__actions" aria-label="Content operations sections">
+      <a class="btn btn-primary" href="#deliverables-title">Open files library &amp; ZIP export</a>
+      <a class="btn btn-outline-primary" href="#new-file-request">Create file request</a>
+      <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_dashboard' event.slug %}">Back to dashboard</a>
+    </nav>
+  </header>
 
   <section class="speakerops-panel" id="new-file-request" aria-labelledby="file-request-title">
     <div>
@@ -69,8 +80,9 @@
 
   <section class="speakerops-panel" aria-labelledby="deliverables-title">
     <div>
-      <h2 id="deliverables-title">Deliverable library</h2>
-      <p>Download any version, discuss it with the speaker, approve it, or export the latest selected versions as one ZIP.</p>
+      <p class="speakerops__eyebrow">Central files library</p>
+      <h2 id="deliverables-title">Speaker deliverables, versions &amp; downloads</h2>
+      <p>Filter uploads across every session and speaker. Download any version, discuss it with the speaker, approve it, or select multiple rows and export their latest versions as one ZIP.</p>
     </div>
     <form method="get" aria-label="Filter deliverables">
       <label for="deliverable-speaker">Speaker</label><select id="deliverable-speaker" name="speaker"><option value="">All speakers</option>{% for speaker in speakers %}<option value="{{ speaker.pk }}"{% if selected_speaker == speaker.pk|stringformat:'s' %} selected{% endif %}>{{ speaker.get_display_name }}</option>{% endfor %}</select>
@@ -96,7 +108,7 @@
         </li>{% empty %}<li><strong>Missing upload</strong> · due {{ task.due_date|default:"not set" }}</li>{% endfor %}</ol>
       </li>{% empty %}<li>No uploaded content awaits review.</li>{% endfor %}
       </ul>
-      {% if rows %}<button class="btn btn-primary" type="submit" form="zip-form">Download latest selected versions (.zip)</button> <button class="btn btn-secondary" type="submit" form="reminder-form">Send reminders to selected outstanding tasks</button>{% endif %}
+      {% if rows %}<button class="btn btn-primary" type="submit" form="zip-form">Generate ZIP of latest selected files</button> <button class="btn btn-secondary" type="submit" form="reminder-form">Send reminders to selected outstanding tasks</button>{% endif %}
   </section>
 </main>
 {% endblock content %}

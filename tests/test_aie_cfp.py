@@ -28,9 +28,12 @@ def test_aie_cfp_configures_exact_formats_topics_policy_and_waves(event):
         audience_options = list(
             by_name["Audience level"].options.order_by("position").values_list("answer", flat=True)
         )
-        prerequisite_types = list(
-            by_name["Workshop prerequisites"].submission_types.values_list("name", flat=True)
-        )
+        prerequisite_types = {
+            str(name)
+            for name in by_name["Workshop prerequisites"].submission_types.values_list(
+                "name", flat=True
+            )
+        }
 
     assert submission_types == dict(SESSION_FORMATS)
     assert str(event.cfp.default_type.name) == "Talk (30 min)"
@@ -53,6 +56,8 @@ def test_aie_cfp_configures_exact_formats_topics_policy_and_waves(event):
         "Session abstract",
     }
     assert audience_options == ["Beginner", "Intermediate", "Advanced"]
-    assert prerequisite_types == ["Workshop", "Workshop (120 min)"]
+    # The native form must retain the field across live format changes; the
+    # browser rule and server validation still limit it to workshop formats.
+    assert prerequisite_types == set(dict(SESSION_FORMATS))
     assert [name for name, _when in waves] == ["Wave 1", "Wave 2", "Wave 3"]
     assert [(when.month, when.day) for _name, when in waves] == [(8, 15), (9, 1), (9, 15)]

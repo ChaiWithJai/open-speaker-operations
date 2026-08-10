@@ -16,6 +16,7 @@
     <nav class="speakerops__actions" aria-label="Speaker Operations views">
       <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_review_queue' event.slug %}">Review queue</a>
       <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_abstract_management' event.slug %}">Abstract management</a>
+      <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_content_operations' event.slug %}#deliverables-title">Content &amp; files</a>
       <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_agenda' event.slug %}">Agenda &amp; release</a>
       <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_embed_builder' event.slug %}">Embed &amp; share</a>
       <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_sync_console' event.slug %}">Accelevents sync</a>
@@ -90,6 +91,11 @@
   <section class="speakerops-panel" aria-labelledby="speaker-workflow-title">
     <div><p class="speakerops__eyebrow">Speaker control</p><h2 id="speaker-workflow-title">Roster, workflow &amp; logistics</h2><p>Import speakers, filter their readiness, assign dated actions in bulk, and reconcile travel or accessibility needs.</p></div>
     <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_speakers' event.slug %}">Open speaker operations</a>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="content-library-title">
+    <div><p class="speakerops__eyebrow">Content control</p><h2 id="content-library-title">Files library, approvals &amp; latest-version ZIP</h2><p>Find every requested deliverable in one place, filter by speaker or status, review version history and comments, then download the latest selected files as a ZIP.</p></div>
+    <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_content_operations' event.slug %}#deliverables-title">Open content files library</a>
   </section>
 
   <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="evidence-title">
