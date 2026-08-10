@@ -113,9 +113,7 @@ def test_changing_shared_cfp_deadline_keeps_submission_formats_open(event):
         event.cfp.deadline = extended_deadline
         event.cfp.save(update_fields=["deadline", "updated"])
 
-        assert set(event.submission_types.values_list("deadline", flat=True)) == {
-            extended_deadline
-        }
+        assert set(event.submission_types.values_list("deadline", flat=True)) == {extended_deadline}
 
         workshop = event.submission_types.get(name="Workshop")
         workshop_deadline = extended_deadline + timedelta(days=7)
