@@ -326,11 +326,6 @@ def test_cfp_format_and_interest_options_are_distinct(event):
                 name__in=[name for name, _duration in SESSION_FORMATS]
             )
         }
-    assert formats == {
-        "Workshop",
-        "Stage Talk",
-        "Lightning Talk",
-        "Online Talk",
-    }
+    assert formats == {name for name, _duration in SESSION_FORMATS}
     assert "AI engineering" in values["Audience interests"]
     assert formats.isdisjoint(values["Audience interests"])

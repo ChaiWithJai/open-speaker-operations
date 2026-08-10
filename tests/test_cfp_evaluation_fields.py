@@ -68,7 +68,10 @@ def test_cfp_has_exact_evaluation_fields_and_workshop_scope(event):
         assert takeaway.required
         assert prerequisites.variant == QuestionVariant.STRING
         assert prerequisites.required
-        assert list(prerequisites.submission_types.values_list("name", flat=True)) == ["Workshop"]
+        assert list(prerequisites.submission_types.values_list("name", flat=True)) == [
+            "Workshop",
+            "Workshop (120 min)",
+        ]
 
 
 @pytest.mark.django_db(transaction=True)

@@ -44,7 +44,7 @@ def test_organiser_creates_validated_rooms_and_tracks_from_agenda(event, users, 
             url,
             {
                 "action": "create_track",
-                "track_name": "AI Engineering",
+                "track_name": "Emerging Systems",
                 "track_color": "#315efb",
             },
         ).status_code
@@ -52,7 +52,7 @@ def test_organiser_creates_validated_rooms_and_tracks_from_agenda(event, users, 
     )
     with scope(event=event):
         room = event.rooms.get(name="Workshop Loft")
-        track = event.tracks.get(name="AI Engineering")
+        track = event.tracks.get(name="Emerging Systems")
         assert room.capacity == 45
         assert track.color == "#315efb"
 
