@@ -56,9 +56,10 @@
     <div>
       <p class="speakerops__eyebrow">Program structure</p>
       <h2 id="rooms-tracks-title">Rooms &amp; tracks</h2>
-      <p>Create the rooms sessions run in and the tracks that group them. Both become available immediately to the scheduler and the CFP.</p>
+      <p>{% if can_edit_structure %}Create the rooms sessions run in and the tracks that group them. Both become available immediately to the scheduler and the CFP.{% else %}Creating rooms and tracks requires event-settings access. Ask an event administrator to add them.{% endif %}</p>
     </div>
     <div class="speakerops-columns">
+      {% if can_edit_structure %}
       <form method="post" aria-labelledby="create-room-title">
         {% csrf_token %}
         <input type="hidden" name="action" value="create_room">
@@ -85,6 +86,20 @@
           {% for track in tracks %}<li><span class="speakerops-swatch" style="background:{{ track.color }}" aria-hidden="true"></span>{{ track.name }}</li>{% empty %}<li>No tracks yet.</li>{% endfor %}
         </ul>
       </form>
+      {% else %}
+      <div>
+        <h3>Rooms</h3>
+        <ul class="speakerops-list">
+          {% for room in rooms %}<li>{{ room.name }}{% if room.capacity %} · seats {{ room.capacity }}{% endif %}</li>{% empty %}<li>No rooms yet.</li>{% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h3>Tracks</h3>
+        <ul class="speakerops-list">
+          {% for track in tracks %}<li><span class="speakerops-swatch" style="background:{{ track.color }}" aria-hidden="true"></span>{{ track.name }}</li>{% empty %}<li>No tracks yet.</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
     </div>
   </section>
 

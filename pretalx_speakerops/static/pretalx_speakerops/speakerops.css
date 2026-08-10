@@ -83,7 +83,7 @@ body .markdown-nav label:focus-visible { outline: 3px solid #0b3f91; outline-off
 .speakerops-list li { display: flex; justify-content: space-between; gap: 1rem; padding: .55rem 0; border-bottom: 1px solid var(--speakerops-line); }
 .speakerops-list span { color: var(--speakerops-muted); }
 .speakerops-columns { display: flex; flex-wrap: wrap; gap: 1.5rem; flex: 1; }
-.speakerops-columns form { flex: 1 1 16rem; display: flex; flex-direction: column; gap: .4rem; align-items: flex-start; }
+.speakerops-columns form, .speakerops-columns > div { flex: 1 1 16rem; display: flex; flex-direction: column; gap: .4rem; align-items: flex-start; }
 .speakerops-columns .speakerops-list { align-self: stretch; margin-top: .5rem; }
 .speakerops-columns .speakerops-list li { justify-content: flex-start; }
 .speakerops-swatch { display: inline-block; width: .85rem; height: .85rem; border-radius: 50%; border: 1px solid var(--speakerops-line); }

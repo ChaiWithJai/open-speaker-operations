@@ -1326,17 +1326,26 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
             proposed_placements=kwargs.get("proposed_placements"),
             rooms=rooms,
             tracks=tracks,
+            can_edit_structure=self.request.user.is_administrator
+            or self.request.user.has_perm("event.update_event", self.event),
         )
         return context
 
+    # Rooms and tracks are event-wide structure: pretalx reserves their
+    # creation for event-settings holders, not every submission manager.
+    MAX_ROOM_CAPACITY = 2_147_483_647
+
     def _create_room(self, request):
+        require_event_permission(request.user, self.event, "event.update_event")
         name = request.POST.get("room_name", "").strip()
         if not name:
             messages.error(request, "Room name is required.")
             return redirect(f"{request.path}#rooms-tracks")
         capacity_raw = request.POST.get("room_capacity", "").strip()
-        if capacity_raw and not capacity_raw.isdigit():
-            messages.error(request, "Room capacity must be a whole number.")
+        if capacity_raw and (
+            not capacity_raw.isdigit() or int(capacity_raw) > self.MAX_ROOM_CAPACITY
+        ):
+            messages.error(request, "Room capacity must be a whole number within range.")
             return redirect(f"{request.path}#rooms-tracks")
         with scope(event=self.event):
             if any(str(room.name).casefold() == name.casefold() for room in self.event.rooms.all()):
@@ -1351,6 +1360,7 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
         return redirect(f"{request.path}#rooms-tracks")
 
     def _create_track(self, request):
+        require_event_permission(request.user, self.event, "event.update_event")
         name = request.POST.get("track_name", "").strip()
         color = request.POST.get("track_color", "").strip() or "#3aa57c"
         if not name:

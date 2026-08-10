@@ -49,16 +49,73 @@ def test_organiser_creates_rooms_and_tracks_from_agenda_view(event, users, clien
     assert b"Workshop Loft" in response.content
     assert b"AI Engineering" in response.content
 
+    # The new room and track must be genuinely usable: place a session in the
+    # room, tag it with the track, and read both back through the agenda view.
+    with scope(event=event):
+        slot = event.wip_schedule.talks.filter(submission__isnull=False).first()
+        assert slot
+        slot.room = room
+        slot.save(update_fields=["room", "updated"])
+        slot.submission.track = track
+        slot.submission.save(update_fields=["track"])
+        placed_title = slot.submission.title
+    response = client.get(url)
+    assert response.status_code == 200
+    placed = next(
+        item for item in response.context["slots"] if item.submission.title == placed_title
+    )
+    assert placed.room_id == room.pk
+    assert placed.submission.track_id == track.pk
+    assert placed_title.encode() in response.content
+
     # Duplicates and invalid input are rejected without creating records.
     client.post(url, {"action": "create_room", "room_name": "workshop loft"})
+    client.post(
+        url, {"action": "create_room", "room_name": "Overflow", "room_capacity": "99999999999"}
+    )
     client.post(url, {"action": "create_track", "track_name": "AI Engineering"})
     client.post(
         url, {"action": "create_track", "track_name": "Colourless", "track_color": "not-a-color"}
     )
     with scope(event=event):
         assert event.rooms.filter(name__iexact="workshop loft").count() == 1
+        assert not event.rooms.filter(name="Overflow").exists()
         assert event.tracks.filter(name="AI Engineering").count() == 1
         assert not event.tracks.filter(name="Colourless").exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_room_and_track_creation_requires_event_settings_access(event, users, client):
+    from pretalx.event.models import Team
+    from pretalx.person.models import User
+
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+    coordinator = User.objects.create_user(
+        email="coordinator@example.org", name="Coordinator", password="test-password"
+    )
+    team = Team.objects.create(
+        organiser=event.organiser,
+        name=f"Program {event.slug}",
+        can_change_submissions=True,
+    )
+    team.limit_events.add(event)
+    team.members.add(coordinator)
+
+    client.force_login(coordinator)
+    url = f"/orga/{event.slug}/speaker-operations/agenda/"
+    response = client.get(url)
+    assert response.status_code == 200
+    assert b"requires event-settings access" in response.content
+    assert b"create_room" not in response.content
+
+    assert client.post(url, {"action": "create_room", "room_name": "Side Room"}).status_code == 404
+    assert (
+        client.post(url, {"action": "create_track", "track_name": "Side Track"}).status_code == 404
+    )
+    with scope(event=event):
+        assert not event.rooms.filter(name="Side Room").exists()
+        assert not event.tracks.filter(name="Side Track").exists()
 
 
 @pytest.mark.django_db(transaction=True)
