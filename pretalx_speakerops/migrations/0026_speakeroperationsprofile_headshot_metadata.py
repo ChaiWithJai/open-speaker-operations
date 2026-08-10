@@ -2,7 +2,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [("pretalx_speakerops", "0025_mailtemplate_null_role_compatibility")]
+    dependencies = [("speakerops", "0025_mailtemplate_null_role_compatibility")]
 
     operations = [
         migrations.AddField(

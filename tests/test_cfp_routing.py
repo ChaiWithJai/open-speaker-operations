@@ -56,7 +56,42 @@ def _valid_form_data(event, *, relationship, context=None, submission_type=None)
         data[f"question_{context_question.pk}"] = context_question.options.get(answer=context).pk
     else:
         data.pop(f"question_{context_question.pk}", None)
+    topics_question = event.questions.get(question="Topics")
+    data[f"question_{topics_question.pk}"] = [topics_question.options.first().pk]
     return data
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize(
+    ("topic_count", "expected_valid"),
+    ((0, False), (1, True), (5, True), (6, False)),
+)
+def test_submission_form_enforces_one_to_five_topics(event, users, topic_count, expected_valid):
+    with scope(event=event):
+        pools, _second = _configure_routing(event, users)
+        track = pools[0].track_mappings.first().track
+        proposal = _proposal(event, users, track)
+        data = _valid_form_data(
+            event,
+            relationship="No commercial relationship",
+            submission_type=proposal.submission_type,
+        )
+        topics = event.questions.get(question="Topics")
+        data[f"question_{topics.pk}"] = list(
+            topics.options.order_by("position").values_list("pk", flat=True)[:topic_count]
+        )
+        form = SpeakerOpsQuestionsForm(
+            data=data,
+            event=event,
+            submission=proposal,
+            submission_type=proposal.submission_type,
+            track=proposal.track,
+            speaker=users["speaker"],
+        )
+
+        assert form.is_valid() is expected_valid
+        if not expected_valid:
+            assert "one and five topics" in str(form.errors[f"question_{topics.pk}"])
 
 
 def _proposal(event, users, track):

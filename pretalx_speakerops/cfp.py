@@ -50,7 +50,7 @@ DEMO_CFP_QUESTIONS = (
     ("Audience level", QuestionVariant.CHOICES, QuestionRequired.OPTIONAL),
     ("Key takeaway", QuestionVariant.STRING, QuestionRequired.REQUIRED),
     ("Workshop prerequisites", QuestionVariant.STRING, QuestionRequired.REQUIRED),
-    ("Topics", QuestionVariant.MULTIPLE, QuestionRequired.OPTIONAL),
+    ("Topics", QuestionVariant.MULTIPLE, QuestionRequired.REQUIRED),
     ("Commercial relationship", QuestionVariant.CHOICES, QuestionRequired.OPTIONAL),
     ("Proposed session context", QuestionVariant.CHOICES, QuestionRequired.OPTIONAL),
     ("Session title pronunciation", QuestionVariant.STRING, QuestionRequired.OPTIONAL),
@@ -386,6 +386,11 @@ class SpeakerOpsQuestionsForm(QuestionsForm):
                 field.required = (
                     str(getattr(self.submission_type, "name", "")) in WORKSHOP_FORMAT_NAMES
                 )
+        topics = Question.all_objects.filter(
+            event=self.event, question="Topics", active=True
+        ).first()
+        if topics and (field := self.fields.get(f"question_{topics.pk}")):
+            field.error_messages["required"] = "Choose between one and five topics."
 
     def clean(self):
         cleaned_data = super().clean()
@@ -411,6 +416,14 @@ class SpeakerOpsQuestionsForm(QuestionsForm):
                 raise forms.ValidationError(
                     "Workshop prerequisites are hidden unless Session type is Workshop."
                 )
+        topics = Question.all_objects.filter(
+            event=self.event, question="Topics", active=True
+        ).first()
+        if topics:
+            topics_name = f"question_{topics.pk}"
+            selected_topics = cleaned_data.get(topics_name)
+            if selected_topics is not None and not 1 <= len(selected_topics) <= 5:
+                self.add_error(topics_name, "Choose between one and five topics.")
         rules = ConditionalQuestionRule.objects.filter(
             event=self.event, active=True
         ).select_related("trigger_option")
