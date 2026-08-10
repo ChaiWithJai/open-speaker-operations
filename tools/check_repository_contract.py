@@ -32,6 +32,7 @@ REQUIRED_PATHS = {
     "docs/repository-map.md",
     "docker-compose.yml",
     "tools/ci-compose-smoke.sh",
+    "tools/developer_doctor.py",
 }
 ROOT_ALLOWLIST = {
     ".dockerignore",
