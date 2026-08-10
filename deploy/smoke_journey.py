@@ -139,7 +139,7 @@ def main():
         "reviewer@example.org",
         password,
         orga_login,
-        f"/orga/{event}/speaker-operations/reviewer/",
+        f"/orga/{event}/speaker-operations/round-review/",
         "Score assigned proposals",
         args.timeout,
     )

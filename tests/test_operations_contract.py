@@ -69,6 +69,8 @@ def test_smoke_parser_handles_minified_unquoted_csrf_and_covers_six_surfaces():
         '"mobile-gallery"',
     ):
         assert fragment in source
+    assert 'f"/orga/{event}/speaker-operations/round-review/"' in source
+    assert 'f"/orga/{event}/speaker-operations/reviewer/"' not in source
 
 
 def test_nightly_timer_and_rotation_inputs_are_explicit():
