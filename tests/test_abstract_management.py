@@ -335,6 +335,8 @@ def test_mixed_scorecard_roundtrip_weighted_aggregate_sort_and_csv(event, users,
     )
     descending = client.get(f"{manage_url}?sort=desc")
     assert descending.status_code == 200
+    assert b"Download review results CSV" in descending.content
+    assert b"Open reviewer portal & recusal controls" in descending.content
     rows = descending.context["round_results"][0][1]
     assert rows[0]["aggregate"] == Decimal("5")
     assert rows[1]["aggregate"].quantize(Decimal("0.01")) == Decimal("3.33")
@@ -382,6 +384,8 @@ def test_recusal_is_scoped_and_auditable(event, users, client):
         kwargs={"event": event.slug, "assignment": assignment.pk},
     )
     page = client.get(url)
+    assert b"Conflict of interest / recuse" in page.content
+    assert b"id=conflict-of-interest" in page.content
     assert b"Declare conflict and recuse" in page.content
     response = client.post(url, {"action": "recuse", "recusal_reason": "Prior collaboration"})
     assert response.status_code == 302

@@ -43,7 +43,7 @@ DIRECT_EVIDENCE = {
     ),
     "CFP-02": (
         "tests/test_cfp_evaluation_fields.py",
-        "test_workshop_prerequisites_render_only_for_workshops_and_are_required",
+        "test_workshop_prerequisites_are_optional_for_talks_and_required_for_workshops",
     ),
     "CFP-04": ("tests/test_cfp.py", "test_cfp_close_date_blocks_new_submission_and_existing_edit"),
     "CFP-06": (

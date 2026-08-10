@@ -8,15 +8,16 @@
     || document.querySelector("#submission-steps + form, form[method='post']");
   if (!form) return;
   rules.forEach((rule) => {
-    const controllerFields = [...form.querySelectorAll(`[name="${rule.controllerName}"]`)];
+    const controllerFields = [...document.querySelectorAll(`[name="${rule.controllerName}"]`)];
     const targetFields = [...form.querySelectorAll(`[name="${rule.targetName}"]`)];
     if (!controllerFields.length || !targetFields.length) return;
     const container = targetFields[0].closest(".form-group, fieldset, .mb-3") || targetFields[0].parentElement;
     if (!container) return;
 
     const updateVisibility = () => {
-      const matches = controllerFields.some((field) => field.checked && field.value === rule.triggerOption)
-        || controllerFields.some((field) => field.tagName === "SELECT" && field.value === rule.triggerOption);
+      const triggerOptions = rule.triggerOptions || [rule.triggerOption];
+      const matches = controllerFields.some((field) => field.checked && triggerOptions.includes(field.value))
+        || controllerFields.some((field) => field.tagName === "SELECT" && triggerOptions.includes(field.value));
       container.hidden = !matches;
       targetFields.forEach((field, index) => {
         // Pretalx upgrades enhanced selects with Choices.js. Initializing Choices

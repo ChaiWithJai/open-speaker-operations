@@ -1,6 +1,7 @@
 import re
 
 import pytest
+from bs4 import BeautifulSoup
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils import timezone
@@ -9,13 +10,18 @@ from pretalx.event.models import Organiser
 from pretalx.person.models import SpeakerProfile
 
 from pretalx_speakerops.models import (
+    ConferenceEdition,
+    ConferenceSeries,
     CRMContact,
     CRMEventLink,
     CRMOutreachLog,
     CRMPipelineCard,
     CRMPipelineHistory,
     CRMSegment,
+    HistoricalSourceIdentity,
     HistoricalSpeaker,
+    HistoricalSpeakerCredit,
+    HistoricalTalk,
 )
 
 pytestmark = pytest.mark.django_db
@@ -30,6 +36,10 @@ def _org_url(event):
         "plugins:speakerops:speakerops_crm_org",
         kwargs={"organiser": event.organiser.slug},
     )
+
+
+def _selected_url(url, contact):
+    return f"{url}?contact={contact.pk}#crm-contact-{contact.pk}"
 
 
 def test_crm_organisation_route_accepts_posts(client, event, users):
@@ -48,8 +58,8 @@ def test_crm_organisation_route_accepts_posts(client, event, users):
         },
     )
     assert response.status_code == 302
-    assert response.url == url
     contact = CRMContact.objects.get(organiser=event.organiser, email="morgan@example.org")
+    assert response.url == _selected_url(url, contact)
     assert contact.pipeline_card.stage == CRMPipelineCard.PROSPECT
 
     response = client.post(
@@ -62,6 +72,7 @@ def test_crm_organisation_route_accepts_posts(client, event, users):
         },
     )
     assert response.status_code == 302
+    assert response.url == _selected_url(url, contact)
     contact.refresh_from_db()
     assert contact.pipeline_card.stage == CRMPipelineCard.CONTACTED
     assert CRMPipelineHistory.objects.filter(card=contact.pipeline_card).count() == 1
@@ -335,11 +346,11 @@ def test_org_crm_route_supports_mutations_without_event_slug(client, event, user
     )
 
     assert response.status_code == 302
-    assert response.url == url
     contact = CRMContact.objects.get(
         organiser=event.organiser,
         email="jordan-regression@example.org",
     )
+    assert response.url == _selected_url(url, contact)
     assert contact.tags == ["AI", "alumni"]
 
     response = client.post(
@@ -353,8 +364,141 @@ def test_org_crm_route_supports_mutations_without_event_slug(client, event, user
     )
 
     assert response.status_code == 302
+    assert response.url == _selected_url(url, contact)
     contact.pipeline_card.refresh_from_db()
     assert contact.pipeline_card.stage == CRMPipelineCard.INTERESTED
     assert contact.pipeline_card.history.get().note == (
         "Moved from the canonical organisation route."
     )
+
+
+def test_crm_surfaces_live_program_memory_and_verified_recurrence(client, event, users):
+    now = timezone.now()
+    series = ConferenceSeries.objects.create(
+        slug="ai-engineer",
+        name="AI Engineer",
+        website="https://example.org",
+        source_policy={"authority": "published program"},
+    )
+    speaker = HistoricalSpeaker.objects.create(
+        canonical_key="returning-builder",
+        name="Returning Builder",
+        source_url="https://example.org/speakers/returning-builder",
+        source_updated_at=now,
+    )
+    for year in (2025, 2026):
+        edition = ConferenceEdition.objects.create(
+            series=series,
+            external_key=str(year),
+            name=f"AI Engineer {year}",
+            source_url=f"https://example.org/{year}",
+            source_updated_at=now,
+        )
+        identity = HistoricalSourceIdentity.objects.create(
+            edition=edition,
+            source_key=f"speaker-{year}",
+            speaker=speaker,
+            display_name=speaker.name,
+            source_url=f"https://example.org/{year}/speakers/returning-builder",
+            source_updated_at=now,
+            resolution_status=HistoricalSourceIdentity.VERIFIED,
+        )
+        talk = HistoricalTalk.objects.create(
+            edition=edition,
+            external_key=f"talk-{year}",
+            title=f"Reliable systems in {year}",
+            source_url=f"https://example.org/{year}/talks/reliable-systems",
+            source_updated_at=now,
+        )
+        HistoricalSpeakerCredit.objects.create(
+            talk=talk,
+            speaker=speaker,
+            source_identity=identity,
+            name_at_source=speaker.name,
+            source_url=talk.source_url,
+            source_updated_at=now,
+        )
+        talk.speakers.add(speaker)
+
+    client.force_login(users["chair"])
+    response = client.get(_org_url(event))
+
+    assert response.status_code == 200
+    assert response.context["program_memory"] == {
+        "editions": 2,
+        "talks": 2,
+        "speaker_credits": 2,
+        "source_identities": 2,
+        "verified_returning_speakers": 1,
+    }
+    assert b"Program memory" in response.content
+    assert b"release-locked provenance contract" in response.content
+    assert b"Verified recurrence" in response.content
+    memory_url = reverse(
+        "plugins:speakerops:speakerops_conference_memory",
+        kwargs={"event": event.slug},
+    )
+    assert memory_url.encode() in response.content
+
+
+def test_crm_selected_contact_opens_addressable_controls_and_survives_actions(client, event, users):
+    contact = CRMContact.objects.create(
+        organiser=event.organiser,
+        name="Casey Operator",
+        email="casey@example.org",
+        company="Continuity Labs",
+        job_title="Program lead",
+    )
+    CRMPipelineCard.objects.create(organiser=event.organiser, contact=contact)
+    client.force_login(users["chair"])
+    url = _org_url(event)
+
+    response = client.get(url, {"contact": contact.pk})
+
+    assert response.status_code == 200
+    assert response.context["selected_contact_id"] == contact.pk
+    content = response.content.decode()
+    document = BeautifulSoup(content, "html.parser")
+    for element_id in (
+        f"crm-contact-{contact.pk}",
+        f"crm-edit-{contact.pk}",
+        f"crm-connections-{contact.pk}",
+        f"crm-history-{contact.pk}",
+    ):
+        details = document.find("details", id=element_id)
+        assert details is not None
+        assert details.has_attr("open")
+    assert f'href="{url}?contact={contact.pk}#crm-contact-{contact.pk}"' in content
+
+    response = client.post(
+        url,
+        {
+            "action": "save_contact",
+            "contact_id": contact.pk,
+            "name": contact.name,
+            "email": contact.email,
+            "company": contact.company,
+            "job_title": contact.job_title,
+            "tags": "alumni, AI",
+            "internal_notes": "Return for the systems track.",
+        },
+    )
+
+    assert response.status_code == 302
+    assert response.url == _selected_url(url, contact)
+    contact.refresh_from_db()
+    assert contact.tags == ["AI", "alumni"]
+    assert contact.internal_notes == "Return for the systems track."
+
+    response = client.post(
+        url,
+        {
+            "action": "move_stage",
+            "contact_id": contact.pk,
+            "stage": CRMPipelineCard.INTERESTED,
+            "note": "Asked to see the returning-speaker context.",
+        },
+    )
+
+    assert response.status_code == 302
+    assert response.url == _selected_url(url, contact)

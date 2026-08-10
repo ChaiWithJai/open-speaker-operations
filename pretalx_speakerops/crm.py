@@ -18,12 +18,17 @@ from pretalx.person.models import SpeakerProfile, User
 
 from .auth import can_manage
 from .models import (
+    ConferenceEdition,
     CRMContact,
     CRMEventLink,
     CRMOutreachLog,
     CRMPipelineCard,
     CRMPipelineHistory,
     CRMSegment,
+    HistoricalSourceIdentity,
+    HistoricalSpeaker,
+    HistoricalSpeakerCredit,
+    HistoricalTalk,
 )
 from .views import EventContextMixin
 
@@ -114,8 +119,11 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             )
         return reverse("plugins:speakerops:speakerops_crm", kwargs={"event": self.event.slug})
 
-    def _redirect(self):
-        return redirect(self._url())
+    def _redirect(self, contact=None):
+        url = self._url()
+        if contact:
+            url = f"{url}?contact={contact.pk}#crm-contact-{contact.pk}"
+        return redirect(url)
 
     def _contacts(self):
         contacts = CRMContact.objects.filter(organiser=self.organiser, merged_into__isnull=True)
@@ -216,7 +224,7 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
                 "Compare and merge explicitly.",
             )
         messages.success(request, f"Saved CRM contact {contact.name}.")
-        return self._redirect()
+        return self._redirect(contact)
 
     def _import_csv(self, request):
         upload = request.FILES.get("csv_file")
@@ -330,7 +338,7 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             duplicate.merged_into = primary
             duplicate.save(update_fields=["merged_into"])
         messages.success(request, f"Merged {duplicate.name} into primary contact {primary.name}.")
-        return self._redirect()
+        return self._redirect(primary)
 
     def _save_segment(self, request):
         name = request.POST.get("segment_name", "").strip()
@@ -370,7 +378,7 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             card=card, from_stage=prior, to_stage=stage, note=note, actor=request.user
         )
         messages.success(request, f"Moved {contact.name} from {prior} to {stage}.")
-        return self._redirect()
+        return self._redirect(contact)
 
     def _add_to_event(self, request):
         contact = self._owned_contact(request.POST.get("contact_id"))
@@ -383,13 +391,13 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
                 "Verify and save the contact email before event handoff. "
                 "No contact data was inferred or invented.",
             )
-            return self._redirect()
+            return self._redirect(contact)
         target_event = Event.objects.filter(
             organiser=self.organiser, pk=request.POST.get("target_event") or self.event.pk
         ).first()
         if not target_event:
             messages.error(request, "Choose an event owned by this organizer.")
-            return self._redirect()
+            return self._redirect(contact)
         with transaction.atomic(), scope(event=target_event):
             user = User.objects.filter(email__iexact=contact.email).first()
             if not user:
@@ -407,7 +415,7 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
                 defaults={"user": user, "added_by": request.user, "added_at": timezone.now()},
             )
         messages.success(request, f"Added {contact.name} to {target_event.name} without re-keying.")
-        return self._redirect()
+        return self._redirect(contact)
 
     def _log_outreach(self, request):
         contacts = CRMContact.objects.filter(
@@ -443,6 +451,7 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
         context["event"] = self.event
         contacts = self._contacts()
         all_contacts = CRMContact.objects.filter(organiser=self.organiser, merged_into__isnull=True)
+        selected_contact = self._owned_contact(self.request.GET.get("contact"))
         duplicate_names = list(
             all_contacts.values("name")
             .annotate(total=Count("pk"))
@@ -487,6 +496,21 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             .annotate(total=Count("pk"))
             .order_by("-total", "company")[:8]
         )
+        verified_returning_speakers = (
+            HistoricalSpeaker.objects.filter(
+                source_identities__active=True,
+                source_identities__resolution_status=HistoricalSourceIdentity.VERIFIED,
+            )
+            .annotate(
+                verified_edition_count=Count(
+                    "source_identities__edition",
+                    distinct=True,
+                )
+            )
+            .filter(verified_edition_count__gte=2)
+            .distinct()
+            .count()
+        )
         context.update(
             contacts=contacts,
             result_count=contacts.count(),
@@ -507,6 +531,14 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             stage_counts=stage_counts,
             pipeline_columns=pipeline_columns,
             top_companies=top_companies,
+            selected_contact_id=selected_contact.pk if selected_contact else None,
+            program_memory={
+                "editions": ConferenceEdition.objects.count(),
+                "talks": HistoricalTalk.objects.count(),
+                "speaker_credits": HistoricalSpeakerCredit.objects.count(),
+                "source_identities": HistoricalSourceIdentity.objects.filter(active=True).count(),
+                "verified_returning_speakers": verified_returning_speakers,
+            },
             organiser_events=Event.objects.filter(organiser=self.organiser).order_by(
                 "-date_from", "name"
             ),

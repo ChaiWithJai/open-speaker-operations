@@ -5,7 +5,8 @@
 
 {% block content %}
 <div class="speakerops speakerops--review" aria-labelledby="round-review-title">
-  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Reviewer portal</p><h1 id="round-review-title">Assigned round evaluations</h1><p>Your queue contains only submissions explicitly assigned to you in a round.</p></div></header>
+  {% include "pretalx_speakerops/includes/role_navigation.html" %}
+  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Reviewer portal</p><h1 id="round-review-title">Assigned round evaluations</h1><p>Your queue contains only submissions explicitly assigned to you in a round. Every assignment includes a named conflict-of-interest recusal control.</p></div>{% if assignment %}<a class="btn btn-outline-primary" href="#conflict-of-interest">Conflict of interest / recuse</a>{% endif %}</header>
   <div class="speakerops-review-layout">
     <aside class="speakerops-queue" aria-label="Exactly assigned proposals">
       <h2>Queue <span>{{ assignments|length }}</span></h2>
@@ -30,7 +31,7 @@
         {% endfor %}
         <button class="btn btn-primary" type="submit">Save round evaluation</button>
       </form>
-      <form class="speakerops-panel speakerops-panel--quiet" method="post">
+      <form class="speakerops-panel speakerops-panel--quiet" id="conflict-of-interest" method="post">
         {% csrf_token %}<input type="hidden" name="action" value="recuse">
         <div><h3>Conflict of interest</h3><p>Declare a conflict to remove this proposal from your actionable queue while preserving an auditable recusal status.</p></div>
         <label for="recusal-reason">Reason (optional)</label><input class="form-control" id="recusal-reason" name="recusal_reason">

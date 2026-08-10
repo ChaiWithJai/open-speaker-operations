@@ -118,6 +118,8 @@ def test_organiser_download_comments_and_latest_version_zip_are_scoped(event, us
     client.force_login(users["chair"])
     content = client.get(f"/orga/{event.slug}/speaker-operations/content/")
     assert content.status_code == 200
+    assert b"Central files library" in content.content
+    assert b"Generate ZIP of latest selected files" in content.content
     assert b"Please add the licensing slide." in content.content
     assert b"Added in the next version." in content.content
     assert users["chair"].name.encode() in content.content

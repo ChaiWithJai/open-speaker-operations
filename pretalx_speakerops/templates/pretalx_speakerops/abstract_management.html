@@ -7,13 +7,17 @@
 
 {% block content %}
 <div class="speakerops" aria-labelledby="abstract-management-title">
+  {% include "pretalx_speakerops/includes/role_navigation.html" %}
   <header class="speakerops__header">
     <div>
       <p class="speakerops__eyebrow">Abstract management</p>
       <h1 id="abstract-management-title">Review rounds, assignments &amp; results</h1>
       <p>Independent rounds keep scorecards, reviewer pools, visibility, assignments, and results isolated. Human scores inform the chair; they never decide automatically.</p>
     </div>
-    <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_round_review_queue' event.slug %}">View reviewer portal</a>
+    <div class="speakerops__actions">
+      <a class="btn btn-primary" href="?export=csv">Download review results CSV</a>
+      <a class="btn btn-outline-primary" href="{% url 'plugins:speakerops:speakerops_round_review_queue' event.slug %}">Open reviewer portal &amp; recusal controls</a>
+    </div>
   </header>
 
   <section id="evaluation-rounds" aria-labelledby="rounds-title">
@@ -78,7 +82,7 @@
   </section>
 
   <section id="review-results" aria-labelledby="results-title">
-    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Human evaluation evidence</p><h2 id="results-title">Weighted aggregate results</h2></div><div class="speakerops__actions"><a href="?sort=desc#review-results">Highest first</a><a href="?sort=asc#review-results">Lowest first</a><a href="?export=csv">Export round results CSV</a></div></div>
+    <div class="speakerops-section-heading"><div><p class="speakerops__eyebrow">Human evaluation evidence</p><h2 id="results-title">Weighted aggregate results</h2></div><div class="speakerops__actions"><a href="?sort=desc#review-results">Highest first</a><a href="?sort=asc#review-results">Lowest first</a><a class="btn btn-primary" href="?export=csv">Download review results CSV</a></div></div>
     <p>Numeric criteria are multiplied by their persisted weight, summed, then divided by total numeric weight. Dropdown and text answers remain qualitative evidence.</p>
     {% for round, results in round_results %}<h3>{{ round.name }}</h3><div class="speakerops-table-wrap" tabindex="0" aria-label="Weighted results for {{ round.name }}"><table class="speakerops-table"><thead><tr><th>Proposal</th><th>Presenters</th><th>Weighted average</th><th>Completed reviews</th></tr></thead><tbody>{% for row in results %}<tr><td>{{ row.submission.title }}</td><td>{% for presenter in row.presenters %}{{ presenter.speaker.get_display_name }} — {{ presenter.role_label }}{% if not forloop.last %}; {% endif %}{% empty %}No presenter attached{% endfor %}</td><td>{{ row.aggregate|floatformat:2 }}</td><td>{{ row.review_count }}</td></tr>{% empty %}<tr><td colspan="4">No completed evaluations in this round.</td></tr>{% endfor %}</tbody></table></div>{% endfor %}
   </section>

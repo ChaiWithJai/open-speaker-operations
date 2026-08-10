@@ -134,6 +134,14 @@ def role_navigation(user, event, current_path=""):
                     "section": "abstract-management",
                 },
                 {
+                    "label": "Content & files",
+                    "url": reverse(
+                        "plugins:speakerops:speakerops_content_operations",
+                        kwargs={"event": event.slug},
+                    ),
+                    "section": "content",
+                },
+                {
                     "label": "CFP routing",
                     "url": reverse(
                         "plugins:speakerops:speakerops_cfp_routing",
@@ -166,6 +174,7 @@ def role_navigation(user, event, current_path=""):
                     "/cfp-routing/",
                     "/program-decisions/",
                     "/abstract-management/",
+                    "/content/",
                     "/round-review/",
                     "/sync-console/",
                 )

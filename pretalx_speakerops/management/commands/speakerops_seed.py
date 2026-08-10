@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from django.core.management import BaseCommand, call_command
 from django.db import transaction
 from django.utils import timezone
-from django_scopes import scope
+from django_scopes import scope, scopes_disabled
 from pretalx.common.models import ActivityLog
 from pretalx.event.models import Event, Team
 from pretalx.person.models import SpeakerProfile, User
@@ -20,12 +20,15 @@ from ...domain.state import StateMachine, Transition
 from ...integrations.sync import fingerprint
 from ...models import (
     AcceleventsConnection,
+    CRMContact,
+    CRMPipelineCard,
     ExternalIdentity,
     OnboardingTask,
     ReminderReceipt,
     Resource,
     ResourceVersion,
     ReviewRecommendation,
+    SubmissionPresenterRole,
     SyncAttempt,
     SyncItem,
     SyncPreview,
@@ -156,6 +159,15 @@ JOURNEY_PROGRAM = (
     (SubmissionStates.ACCEPTED, "Accepted: Operations That Scale"),
 )
 EVALUATOR_SIGNUP_EMAIL = "priya.raman-cfp@example.invalid"
+DEVFLOW_SLUG = "devflow-conf-2027"
+DEVFLOW_START = date(2027, 5, 12)
+DEVFLOW_END = date(2027, 5, 14)
+DEVFLOW_TIMEZONE = "America/Los_Angeles"
+CRM_DUPLICATE_EMAIL = "alex.morgan@vector-labs.example"
+CRM_FIXTURE_NOTES = (
+    "SBEK deterministic CRM primary fixture",
+    "SBEK deterministic CRM imported duplicate fixture",
+)
 
 
 class Command(BaseCommand):
@@ -227,6 +239,36 @@ class Command(BaseCommand):
                 "updated",
             ]
         )
+        with scopes_disabled():
+            devflow, devflow_created = Event.objects.get_or_create(
+                slug=DEVFLOW_SLUG,
+                defaults={
+                    "name": "DevFlow Conf 2027",
+                    "organiser": event.organiser,
+                    "is_public": False,
+                    "date_from": DEVFLOW_START,
+                    "date_to": DEVFLOW_END,
+                    "timezone": DEVFLOW_TIMEZONE,
+                    "email": "program@devflow.test",
+                    "locale_array": "en",
+                    "locale": "en",
+                },
+            )
+            if devflow.organiser_id != event.organiser_id:
+                raise RuntimeError(
+                    f"The reserved {DEVFLOW_SLUG!r} event belongs to another organiser."
+                )
+            devflow.name = "DevFlow Conf 2027"
+            devflow.date_from = DEVFLOW_START
+            devflow.date_to = DEVFLOW_END
+            devflow.timezone = DEVFLOW_TIMEZONE
+            devflow.email = "program@devflow.test"
+            devflow.save(
+                update_fields=["name", "date_from", "date_to", "timezone", "email", "updated"]
+            )
+        if devflow_created:
+            with scope(event=devflow):
+                devflow.build_initial_data()
         administrator.timezone = event.timezone
         administrator.save(update_fields=["timezone"])
         users = {}
@@ -234,7 +276,7 @@ class Command(BaseCommand):
             ("chair", "chair@example.org", "Program Chair"),
             ("reviewer", "reviewer@example.org", "Reviewer"),
             ("reviewer_systems", "reviewer-systems@democon.test", "Systems Reviewer"),
-            ("speaker", "speaker@example.org", "Maya Chen"),
+            ("speaker", "speaker@example.org", "Priya Raman"),
             ("speaker2", "speaker2@example.org", "Marcus Okafor"),
         ):
             user, created = User.objects.get_or_create(email=email, defaults={"name": name})
@@ -243,6 +285,30 @@ class Command(BaseCommand):
             user.set_password(demo_password)
             user.save(update_fields=["name", "timezone", "password"])
             users[role] = user
+
+        crm_fixture_defaults = (
+            {
+                "name": "Alex Morgan",
+                "email": CRM_DUPLICATE_EMAIL,
+                "company": "Vector Labs",
+                "job_title": "VP Engineering",
+                "tags": ["returning-speaker"],
+            },
+            {
+                "name": "Alex Morgan (imported)",
+                "email": CRM_DUPLICATE_EMAIL,
+                "company": "Vector Labs, Inc.",
+                "job_title": "Engineering VP",
+                "tags": ["imported"],
+            },
+        )
+        for marker, defaults in zip(CRM_FIXTURE_NOTES, crm_fixture_defaults, strict=True):
+            contact, _ = CRMContact.objects.update_or_create(
+                organiser=event.organiser,
+                internal_notes=marker,
+                defaults=defaults,
+            )
+            CRMPipelineCard.objects.get_or_create(organiser=event.organiser, contact=contact)
 
         teams = (
             (
@@ -363,6 +429,24 @@ class Command(BaseCommand):
                 proposal.title = title
                 proposal.save(update_fields=["state", "title", "updated"])
                 proposal.speakers.set([users["speaker"]])
+            accepted.track = next(
+                track for track in canonical_tracks if str(track.name) == "Platform & Infra"
+            )
+            accepted.submission_type = event.submission_types.get(name="Talk (30 min)")
+            accepted.save(update_fields=["track", "submission_type", "updated"])
+            accepted.speakers.set([users["speaker"], users["speaker2"]])
+            SubmissionPresenterRole.objects.update_or_create(
+                event=event,
+                submission=accepted,
+                speaker=users["speaker"],
+                defaults={"role": SubmissionPresenterRole.PRIMARY_AUTHOR},
+            )
+            SubmissionPresenterRole.objects.update_or_create(
+                event=event,
+                submission=accepted,
+                speaker=users["speaker2"],
+                defaults={"role": SubmissionPresenterRole.CO_AUTHOR},
+            )
             queued.assigned_reviewers.add(users["reviewer"])
             Review.objects.filter(submission=queued).exclude(user=users["reviewer"]).delete()
             Review.objects.update_or_create(
@@ -508,6 +592,7 @@ class Command(BaseCommand):
                 slot.submission_id: program
                 for slot, program in zip(curated_slots, CURATED_PROGRAM, strict=True)
             }
+            curated_speakers_by_name = {}
             for index, (slot, (speaker_name, title, abstract)) in enumerate(
                 zip(curated_slots, CURATED_PROGRAM, strict=True)
             ):
@@ -532,7 +617,7 @@ class Command(BaseCommand):
                         "updated",
                     ]
                 )
-                if index == 0:
+                if speaker_name == "Priya Raman":
                     speaker = users["speaker"]
                 else:
                     speaker, _ = User.objects.get_or_create(
@@ -564,6 +649,7 @@ class Command(BaseCommand):
                     ],
                     skip_gravatar_processing=True,
                 )
+                curated_speakers_by_name[speaker_name] = speaker
                 SpeakerProfile.objects.update_or_create(
                     event=event,
                     user=speaker,
@@ -591,7 +677,7 @@ class Command(BaseCommand):
                 email="conflict-room@democon.test",
                 defaults={"name": "Room Fixture Speaker"},
             )
-            conflict_speakers = (room_fixture_speaker, users["speaker"])
+            conflict_speakers = (room_fixture_speaker, curated_speakers_by_name["Maya Chen"])
             for slot, title, speaker in zip(
                 conflict_slots, CONFLICT_FIXTURE_TITLES, conflict_speakers, strict=True
             ):

@@ -113,9 +113,21 @@ def test_role_navigation_is_named_current_and_permission_filtered(event, users, 
         item["label"] == "Operations" and item["active"]
         for item in dashboard.context["speakerops_navigation"]
     )
-    for label in ("Review queue", "Agenda / release", "Sync"):
+    for label in ("Review queue", "Content & files", "Agenda / release", "Sync"):
         assert f">{label}</a>" in dashboard_body
     assert ">Speaker tasks</a>" not in dashboard_body
+
+    content = client.get(
+        reverse("plugins:speakerops:speakerops_content_operations", kwargs={"event": event.slug})
+    )
+    assert content.status_code == 200
+    assert any(
+        item["label"] == "Content & files" and item["active"]
+        for item in content.context["speakerops_navigation"]
+    )
+    assert sum(item["active"] for item in content.context["speakerops_navigation"]) == 1
+    assert "Content operations & files library" in content.content.decode()
+    assert "Open files library & ZIP export" in content.content.decode()
 
 
 @pytest.mark.django_db(transaction=True)
