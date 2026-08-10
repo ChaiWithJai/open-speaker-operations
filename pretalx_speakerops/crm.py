@@ -125,6 +125,20 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             url = f"{url}?contact={contact.pk}#crm-contact-{contact.pk}"
         return redirect(url)
 
+    def _redirect_segment(self, segment):
+        return redirect(f"{self._url()}?segment={segment.pk}#crm-directory-title")
+
+    def _manageable_events(self):
+        """Return only same-organiser events the current operator can manage."""
+
+        return [
+            event
+            for event in Event.objects.filter(organiser=self.organiser).order_by(
+                "-date_from", "name"
+            )
+            if can_manage(self.request.user, event)
+        ]
+
     def _contacts(self):
         contacts = CRMContact.objects.filter(organiser=self.organiser, merged_into__isnull=True)
         query = self.request.GET.get("q", "").strip()
@@ -267,29 +281,56 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             for error in errors[:12]:
                 messages.error(request, error)
             return self._redirect()
-        duplicate_count = 0
+        created_count = 0
+        updated_count = 0
+        unchanged_count = 0
+        possible_duplicate_count = 0
         with transaction.atomic():
             for values in parsed:
-                duplicate_query = Q(name__iexact=values["name"])
+                active_contacts = CRMContact.objects.filter(
+                    organiser=self.organiser,
+                    merged_into__isnull=True,
+                )
+                exact_email = None
                 if values["email"]:
-                    duplicate_query |= Q(email__iexact=values["email"])
-                if (
-                    CRMContact.objects.filter(
-                        organiser=self.organiser,
-                        merged_into__isnull=True,
+                    exact_email = (
+                        active_contacts.filter(email__iexact=values["email"]).order_by("pk").first()
                     )
-                    .filter(duplicate_query)
-                    .exists()
-                ):
-                    duplicate_count += 1
-                contact = CRMContact.objects.create(organiser=self.organiser, **values)
+                if exact_email:
+                    changed = False
+                    for field in CRM_IMPORT_FIELDS:
+                        value = values[field]
+                        # A sparse spreadsheet must not erase richer CRM data. Empty
+                        # imported fields therefore mean "no update".
+                        if value in ("", []):
+                            continue
+                        if getattr(exact_email, field) != value:
+                            setattr(exact_email, field, value)
+                            changed = True
+                    if changed:
+                        exact_email.save()
+                        updated_count += 1
+                    else:
+                        unchanged_count += 1
+                    continue
+                if active_contacts.filter(name__iexact=values["name"]).exists():
+                    possible_duplicate_count += 1
+                contact = CRMContact.objects.create(
+                    organiser=self.organiser,
+                    **values,
+                )
                 CRMPipelineCard.objects.create(organiser=self.organiser, contact=contact)
-        messages.success(request, f"Imported {len(parsed)} CRM contacts.")
-        if duplicate_count:
+                created_count += 1
+        messages.success(
+            request,
+            f"CSV import complete: {created_count} created, {updated_count} updated, "
+            f"{unchanged_count} unchanged.",
+        )
+        if possible_duplicate_count:
             messages.warning(
                 request,
-                f"Flagged {duplicate_count} possible "
-                f"duplicate{'s' if duplicate_count != 1 else ''}; "
+                f"Flagged {possible_duplicate_count} possible name "
+                f"duplicate{'s' if possible_duplicate_count != 1 else ''}; "
                 "no records were merged automatically.",
             )
         return self._redirect()
@@ -359,7 +400,7 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
         )
         segment.contacts.set(contacts)
         messages.success(request, f"Saved segment {name} with {contacts.count()} contacts.")
-        return self._redirect()
+        return self._redirect_segment(segment)
 
     def _move_stage(self, request):
         contact = self._owned_contact(request.POST.get("contact_id"))
@@ -397,6 +438,9 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
         ).first()
         if not target_event:
             messages.error(request, "Choose an event owned by this organizer.")
+            return self._redirect(contact)
+        if not can_manage(request.user, target_event):
+            messages.error(request, "You cannot manage the selected target event.")
             return self._redirect(contact)
         with transaction.atomic(), scope(event=target_event):
             user = User.objects.filter(email__iexact=contact.email).first()
@@ -539,9 +583,7 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
                 "source_identities": HistoricalSourceIdentity.objects.filter(active=True).count(),
                 "verified_returning_speakers": verified_returning_speakers,
             },
-            organiser_events=Event.objects.filter(organiser=self.organiser).order_by(
-                "-date_from", "name"
-            ),
+            organiser_events=self._manageable_events(),
             linked_count=CRMEventLink.objects.filter(organiser=self.organiser).count(),
             outreach_count=CRMOutreachLog.objects.filter(organiser=self.organiser).count(),
             recent_outreach=CRMOutreachLog.objects.filter(organiser=self.organiser).select_related(

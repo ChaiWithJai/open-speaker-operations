@@ -11,7 +11,7 @@
 <main class="detail" aria-labelledby="speaker-name">
   <p><a href="{{ return_url }}" data-return-to="{{ origin }}">← Back to {{ origin_label }}</a></p>
   <div class="detail-head">
-    {% if card.avatar_url %}<img class="avatar" src="{{ card.avatar_url }}" alt="Headshot of {{ card.speaker.get_display_name }}">{% else %}<div class="avatar avatar-fallback" aria-hidden="true">{{ card.speaker.name|first|upper }}</div>{% endif %}
+    {% if card.avatar_url %}<span class="avatar-shell"><img class="avatar" data-avatar src="{{ card.avatar_url }}" alt="Headshot of {{ card.speaker.get_display_name }}"><span class="avatar avatar-fallback" data-avatar-fallback aria-hidden="true" hidden>{{ card.speaker.name|first|upper }}</span></span>{% else %}<div class="avatar avatar-fallback" aria-hidden="true">{{ card.speaker.name|first|upper }}</div>{% endif %}
     <div>
       <p class="eyebrow">Published speaker</p>
       <h1 id="speaker-name">{{ card.speaker.get_display_name }}</h1>

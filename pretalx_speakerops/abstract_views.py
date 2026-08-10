@@ -46,6 +46,18 @@ SCORECARD_PRESETS = {
     ),
 }
 
+REVIEWABLE_STATES = (
+    SubmissionStates.SUBMITTED,
+    SubmissionStates.ACCEPTED,
+    SubmissionStates.REJECTED,
+    SubmissionStates.CONFIRMED,
+)
+
+
+def _reviewable_submissions(event):
+    """Committee review excludes drafts/withdrawals but survives a program decision."""
+    return Submission.objects.filter(event=event, state__in=REVIEWABLE_STATES)
+
 
 def _reviewers(event):
     return (
@@ -171,7 +183,7 @@ class AbstractManagementView(EventContextMixin, TemplateView):
             reviewer=reviewer,
             defaults={"assignment_limit": assignment_limit},
         )
-        submissions = Submission.objects.filter(event=self.event, state=SubmissionStates.SUBMITTED)
+        submissions = _reviewable_submissions(self.event)
         if auto:
             track_id = request.POST.get("track_id")
             if track_id:
@@ -265,37 +277,60 @@ class AbstractManagementView(EventContextMixin, TemplateView):
         for round_obj in rounds:
             rows = []
             assignments = (
-                round_obj.assignments.filter(status=RoundReviewAssignment.COMPLETE)
+                round_obj.assignments.exclude(status=RoundReviewAssignment.RECUSED)
                 .select_related("submission", "reviewer")
                 .prefetch_related(
-                    "submission__speakers", "submission__speakerops_presenter_roles__speaker"
+                    "answers__criterion",
+                    "submission__speakers",
+                    "submission__speakerops_presenter_roles__speaker",
                 )
             )
             grouped = {}
             for assignment in assignments:
                 grouped.setdefault(assignment.submission_id, []).append(assignment)
             for _submission_id, reviews in grouped.items():
+                completed_reviews = [
+                    review for review in reviews if review.status == RoundReviewAssignment.COMPLETE
+                ]
                 scores = [
-                    score for review in reviews if (score := _round_score(review)) is not None
+                    score
+                    for review in completed_reviews
+                    if (score := _round_score(review)) is not None
                 ]
                 aggregate = sum(scores, Decimal("0")) / len(scores) if scores else None
+                evidence = []
+                for review in reviews:
+                    answers = []
+                    for answer in review.answers.all():
+                        value = (
+                            answer.numeric_value
+                            if answer.numeric_value is not None
+                            else answer.choice_value or answer.text_value
+                        )
+                        answers.append({"criterion": answer.criterion, "value": value})
+                    answers.sort(
+                        key=lambda item: (item["criterion"].position, item["criterion"].pk)
+                    )
+                    evidence.append({"assignment": review, "answers": answers})
                 rows.append(
                     {
                         "submission": reviews[0].submission,
                         "aggregate": aggregate,
-                        "review_count": len(reviews),
+                        "review_count": len(completed_reviews),
                         "assignments": reviews,
+                        "evidence": evidence,
                         "presenters": presenter_rows(reviews[0].submission),
                     }
                 )
-            reverse_sort = self.request.GET.get("sort", "desc") != "asc"
+            descending = self.request.GET.get("sort", "desc") != "asc"
             rows.sort(
                 key=lambda row: (
-                    row["aggregate"] is not None,
-                    row["aggregate"] or Decimal("0"),
-                    row["submission"].title,
-                ),
-                reverse=reverse_sort,
+                    row["aggregate"] is None,
+                    -(row["aggregate"] or Decimal("0"))
+                    if descending
+                    else row["aggregate"] or Decimal("0"),
+                    row["submission"].title.casefold(),
+                )
             )
             result.append((round_obj, rows))
         return result
@@ -404,9 +439,7 @@ class AbstractManagementView(EventContextMixin, TemplateView):
                 event=self.event,
                 rounds=rounds,
                 reviewers=_reviewers(self.event),
-                submissions=Submission.objects.filter(
-                    event=self.event, state=SubmissionStates.SUBMITTED
-                )
+                submissions=_reviewable_submissions(self.event)
                 .select_related("track")
                 .order_by("title"),
                 tracks=self.event.tracks.all().order_by("position", "name"),

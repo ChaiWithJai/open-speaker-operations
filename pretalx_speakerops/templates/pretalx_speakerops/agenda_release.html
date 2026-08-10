@@ -129,7 +129,7 @@
     <form method="post">
       {% csrf_token %}
       <label for="release-name">Revision name</label>
-      <input class="form-control" id="release-name" name="name" value="SpeakerOps release" required>
+      <input class="form-control" id="release-name" name="name" value="{{ release_name }}" required>
       <label class="speakerops-check"><input type="checkbox" name="confirm_release" value="yes" required> I confirm this schedule should become public.</label>
       <button class="btn btn-primary" type="submit"{% if blocking %} disabled aria-disabled="true"{% endif %}>Release schedule</button>
     </form>

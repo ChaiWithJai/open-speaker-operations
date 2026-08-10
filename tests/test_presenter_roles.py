@@ -1,8 +1,10 @@
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.utils import timezone
 from django_scopes import scope
 from pretalx.person.models import User
 from pretalx.submission.models import SubmissionStates
@@ -17,10 +19,40 @@ from pretalx_speakerops.models import (
 
 
 @pytest.mark.django_db(transaction=True)
+def test_closed_cfp_makes_presenter_roles_read_only_and_rejects_post(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+        submission.speakers.set([users["speaker"]])
+        past = timezone.now() - timedelta(days=1)
+        event.cfp.deadline = past
+        event.cfp.save(update_fields=["deadline", "updated"])
+        event.submission_types.update(deadline=past)
+    url = reverse(
+        "plugins:speakerops:speakerops_submission_presenters",
+        kwargs={"event": event.slug, "code": submission.code},
+    )
+    client.force_login(users["speaker"])
+
+    rendered = client.get(url)
+    denied = client.post(url, {f"role_{users['speaker'].pk}": "primary_author"})
+
+    assert rendered.status_code == 200
+    assert b"Proposal locked" in rendered.content
+    assert b"Save presenter roles" not in rendered.content
+    assert b"Invite another presenter" not in rendered.content
+    assert denied.status_code == 403
+
+
+@pytest.mark.django_db(transaction=True)
 def test_presenter_roles_survive_reload_and_render_for_speaker_and_organizer(event, users, client):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")
         event.save(update_fields=["plugins"])
+        open_deadline = timezone.now() + timedelta(days=7)
+        event.cfp.deadline = open_deadline
+        event.cfp.save(update_fields=["deadline", "updated"])
+        event.submission_types.update(deadline=open_deadline)
         priya = users["speaker"]
         priya.name = "Priya Raman"
         priya.save(update_fields=["name"])

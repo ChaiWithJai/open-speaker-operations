@@ -6,7 +6,7 @@
 {% block content %}
 <div class="speakerops speakerops--review" aria-labelledby="round-review-title">
   {% include "pretalx_speakerops/includes/role_navigation.html" %}
-  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Reviewer portal</p><h1 id="round-review-title">Assigned round evaluations</h1><p>Your queue contains only submissions explicitly assigned to you in a round. Every assignment includes a named conflict-of-interest recusal control.</p></div>{% if assignment %}<a class="btn btn-outline-primary" href="#conflict-of-interest">Conflict of interest / recuse</a>{% endif %}</header>
+  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Reviewer portal · canonical queue</p><h1 id="round-review-title">Assigned round evaluations</h1><p>Your queue contains only submissions explicitly assigned to you in a round. Decisions do not silently remove committee work: accepted, rejected, and confirmed proposals remain reviewable when assigned. Every assignment includes a named conflict-of-interest recusal control.</p></div>{% if assignment %}<a class="btn btn-outline-primary" href="#conflict-of-interest">Conflict of interest / recuse</a>{% endif %}</header>
   <div class="speakerops-review-layout">
     <aside class="speakerops-queue" aria-label="Exactly assigned proposals">
       <h2>Queue <span>{{ assignments|length }}</span></h2>

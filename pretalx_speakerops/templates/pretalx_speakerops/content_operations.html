@@ -1,6 +1,7 @@
 {% extends "orga/base.html" %}
 {% load static %}
 {% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+{% block scripts %}{{ block.super }}<script defer src="{% static 'pretalx_speakerops/content-export.js' %}"></script>{% endblock scripts %}
 {% block content %}
 <main class="speakerops" aria-labelledby="content-title">
   {% include "pretalx_speakerops/includes/role_navigation.html" %}
@@ -36,8 +37,8 @@
       <label for="request-due">Due date</label>
       <input class="form-control" id="request-due" name="due_date" type="date" required>
       <fieldset>
-        <legend>Assign to speakers</legend>
-        {% for speaker in speakers %}<label class="speakerops-check"><input type="checkbox" name="speakers" value="{{ speaker.pk }}"> {{ speaker.get_display_name }}{% if speaker.email %} · {{ speaker.email }}{% endif %}</label>{% empty %}<p>No speakers are attached to event submissions.</p>{% endfor %}
+        <legend>Assign to accepted sessions and speakers</legend>
+        {% for row in assignment_rows %}<label class="speakerops-check"><input type="checkbox" name="assignments" value="{{ row.submission.pk }}:{{ row.speaker.pk }}"> {{ row.speaker.get_display_name }}{% if row.speaker.email %} · {{ row.speaker.email }}{% endif %} · “{{ row.submission.title }}”</label>{% empty %}<p>No speakers are attached to accepted or confirmed sessions.</p>{% endfor %}
       </fieldset>
       <button class="btn btn-primary" type="submit">Create and assign file request</button>
     </form>
@@ -90,14 +91,26 @@
       <label for="deliverable-status">Review status</label><select id="deliverable-status" name="status"><option value="">All statuses</option><option value="missing"{% if selected_status == 'missing' %} selected{% endif %}>Missing upload</option>{% for value, label in review_statuses %}<option value="{{ value }}"{% if selected_status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
       <button class="btn btn-outline-primary" type="submit">Apply filters</button> <a href="{% url 'plugins:speakerops:speakerops_content_operations' event.slug %}#deliverables-title">Clear filters</a>
     </form>
-    <form id="zip-form" method="post" action="{% url 'plugins:speakerops:speakerops_latest_evidence_zip' event.slug %}">{% csrf_token %}</form>
+    <form id="zip-form" method="post" action="{% url 'plugins:speakerops:speakerops_latest_evidence_zip' event.slug %}" data-content-export>{% csrf_token %}
+      <fieldset>
+        <legend>Latest-version ZIP export</legend>
+        <label for="zip-grouping">Organize archive by</label>
+        <select id="zip-grouping" name="grouping">
+          <option value="speaker">Speaker, then task</option>
+          <option value="session">Session, then speaker</option>
+          <option value="flat">No folders</option>
+        </select>
+        <p class="speakerops__muted">Only the current/latest version of each selected uploaded deliverable is included. Unselected files are excluded.</p>
+        <p data-export-status role="status" aria-live="polite">Ready to generate a ZIP.</p>
+      </fieldset>
+    </form>
     <form id="reminder-form" method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">{% csrf_token %}<input type="hidden" name="confirm_reminders" value="yes"></form>
       <ul class="speakerops-list">
       {% for task in rows %}<li id="task-{{ task.pk }}">
-        <label><input type="checkbox" name="tasks" value="{{ task.pk }}" form="zip-form"> <strong>{{ task.definition.name }} · {{ task.speaker }}</strong></label>{% if task.status == 'pending' or task.status == 'reopened' %} <label><input type="checkbox" name="tasks" value="{{ task.pk }}" form="reminder-form"> Remind</label>{% endif %}
-        <span>{% if task.submission %}{{ task.submission.title }} · {% endif %}{{ task.speaker.email }}</span>
+        <label><input type="checkbox" name="tasks" value="{{ task.pk }}" form="zip-form"{% if not task.speakerops_latest_evidence %} disabled{% endif %}> <strong>{{ task.definition.name }} · {{ task.speaker }}</strong></label>{% if task.status == 'pending' or task.status == 'reopened' %} <label><input type="checkbox" name="tasks" value="{{ task.pk }}" form="reminder-form"> Remind</label>{% endif %}
+        <span>{% if task.submission %}{{ task.submission.title }} · {% endif %}{{ task.speaker.email }} · <strong>{% if task.speakerops_latest_evidence %}Complete/uploaded{% else %}Incomplete/pending{% endif %}</strong> · due {{ task.due_date|default:"not set" }} · {{ task.speakerops_evidence_items|length }} version{{ task.speakerops_evidence_items|length|pluralize }}</span>
         <ol>{% for evidence in task.speakerops_evidence_items %}<li id="evidence-{{ evidence.pk }}">
-          <strong>v{{ evidence.version }}{% if forloop.first %} · Current/latest{% endif %} · <a href="{% url 'plugins:speakerops:speakerops_evidence_download' event.slug evidence.pk %}">Download {{ evidence.upload.name|cut:"speakerops/evidence/" }}</a></strong>
+          <strong>v{{ evidence.version }}{% if forloop.first %} · Current/latest{% endif %} · <a href="{% url 'plugins:speakerops:speakerops_evidence_download' event.slug evidence.pk %}">Download {{ evidence.value.original_filename|default:evidence.upload.name|cut:"speakerops/evidence/" }}</a></strong>
           <span>{{ evidence.created_at|date:"M j, Y, P" }} · {{ evidence.get_review_status_display }}{% if evidence.reviewed_by %} by {{ evidence.reviewed_by }}{% endif %}</span>
           {% if evidence.review_note %}<p><strong>Review note:</strong> {{ evidence.review_note }}</p>{% endif %}
           <div aria-label="Comments on version {{ evidence.version }}">

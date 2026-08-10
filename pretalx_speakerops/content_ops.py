@@ -1,4 +1,5 @@
 import io
+import mimetypes
 from datetime import date
 from pathlib import PurePath
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -15,7 +16,7 @@ from django.views.generic import TemplateView, View
 from django_scopes import scope
 from PIL import Image, UnidentifiedImageError
 from pretalx.person.models import SpeakerProfile, User
-from pretalx.submission.models import Submission
+from pretalx.submission.models import Submission, SubmissionStates
 
 from .models import (
     ContentRevision,
@@ -101,6 +102,12 @@ class ContentOperationsView(EventContextMixin, TemplateView):
                 .prefetch_related("speakers")
                 .order_by("title")
             )
+            assignment_rows = [
+                {"submission": submission, "speaker": speaker}
+                for submission in submissions
+                if submission.state in {SubmissionStates.ACCEPTED, SubmissionStates.CONFIRMED}
+                for speaker in submission.speakers.all()
+            ]
             approvals = {
                 item.submission_id: item
                 for item in SessionPublicationApproval.objects.filter(event=self.event)
@@ -129,7 +136,12 @@ class ContentOperationsView(EventContextMixin, TemplateView):
                     profile = SpeakerProfile.objects.filter(event=self.event, user=speaker).first()
                     speaker.speakerops_biography = profile.biography if profile else ""
                     speaker.speakerops_avatar_url = (
-                        speaker.get_avatar_url(event=self.event, thumbnail="tiny") or ""
+                        reverse(
+                            "plugins:speakerops:speakerops_organiser_speaker_headshot",
+                            kwargs={"event": self.event.slug, "pk": speaker.pk},
+                        )
+                        if speaker.avatar
+                        else ""
                     )
                     speaker.speakerops_revisions = [
                         revision
@@ -147,6 +159,7 @@ class ContentOperationsView(EventContextMixin, TemplateView):
             selected_request=selected_request,
             selected_status=selected_status,
             file_requests=file_requests,
+            assignment_rows=assignment_rows,
             review_statuses=TaskEvidence.REVIEW_STATUS_CHOICES,
         )
         return context
@@ -160,6 +173,7 @@ class CreateFileRequestView(EventContextMixin, View):
         instructions = request.POST.get("instructions", "").strip()
         criteria = request.POST.get("completion_criteria", "").strip()
         due_date = request.POST.get("due_date", "").strip()
+        requested_assignments = request.POST.getlist("assignments")
         speaker_ids = request.POST.getlist("speakers")
         requested_extensions = {
             item.strip().lower().lstrip(".")
@@ -168,7 +182,7 @@ class CreateFileRequestView(EventContextMixin, View):
         }
         supported_extensions = requested_extensions & {"pdf", "pptx", "jpg", "jpeg", "png"}
         extensions = [f".{item}" for item in sorted(supported_extensions or {"pdf", "pptx"})]
-        if not all((name, instructions, criteria, due_date, speaker_ids)):
+        if not all((name, instructions, criteria, due_date, requested_assignments or speaker_ids)):
             messages.error(
                 request, "Name, instructions, file rules, due date, and speakers are required."
             )
@@ -179,14 +193,7 @@ class CreateFileRequestView(EventContextMixin, View):
             messages.error(request, "Choose a valid due date.")
             return redirect(_content_url(event, "#new-file-request"))
         with scope(event=self.event), transaction.atomic():
-            speakers = list(
-                User.objects.filter(
-                    pk__in=speaker_ids,
-                    submissions__event=self.event,
-                ).distinct()
-            )
-            if len(speakers) != len(set(speaker_ids)):
-                raise Http404
+            assignments = self._resolve_assignments(requested_assignments, speaker_ids)
             base_slug = slugify(name)[:70] or "file-request"
             slug = base_slug
             suffix = 2
@@ -205,12 +212,7 @@ class CreateFileRequestView(EventContextMixin, View):
                 evaluator_config={"extensions": extensions, "max_size": 20_000_000},
             )
             created = 0
-            for speaker in speakers:
-                submission = (
-                    Submission.objects.filter(event=self.event, speakers=speaker)
-                    .order_by("pk")
-                    .first()
-                )
+            for submission, speaker in assignments:
                 OnboardingTask.objects.create(
                     event=self.event,
                     submission=submission,
@@ -221,6 +223,63 @@ class CreateFileRequestView(EventContextMixin, View):
                 created += 1
         messages.success(request, f"Created “{name}” and assigned it to {created} speaker(s).")
         return redirect(_content_url(event, "#new-file-request"))
+
+    def _resolve_assignments(self, requested_assignments, speaker_ids):
+        eligible_states = (SubmissionStates.ACCEPTED, SubmissionStates.CONFIRMED)
+        if requested_assignments:
+            parsed = set()
+            for value in requested_assignments:
+                submission_id, separator, speaker_id = value.partition(":")
+                if not separator or not submission_id.isdigit() or not speaker_id.isdigit():
+                    raise Http404
+                parsed.add((int(submission_id), int(speaker_id)))
+            submissions = {
+                submission.pk: submission
+                for submission in Submission.objects.filter(
+                    event=self.event,
+                    pk__in={item[0] for item in parsed},
+                    state__in=eligible_states,
+                ).prefetch_related("speakers")
+            }
+            assignments = []
+            for submission_id, speaker_id in sorted(parsed):
+                submission = submissions.get(submission_id)
+                if not submission or not any(
+                    speaker.pk == speaker_id for speaker in submission.speakers.all()
+                ):
+                    raise Http404
+                assignments.append(
+                    (
+                        submission,
+                        next(
+                            speaker
+                            for speaker in submission.speakers.all()
+                            if speaker.pk == speaker_id
+                        ),
+                    )
+                )
+            return assignments
+
+        # Backwards-compatible API behavior: when callers only submit speaker IDs,
+        # associate each request with an accepted/confirmed session, never an
+        # arbitrary draft or rejected proposal.
+        assignments = []
+        for speaker in User.objects.filter(pk__in=speaker_ids).order_by("pk"):
+            submission = (
+                Submission.objects.filter(
+                    event=self.event,
+                    speakers=speaker,
+                    state__in=eligible_states,
+                )
+                .order_by("state", "pk")
+                .first()
+            )
+            if not submission:
+                raise Http404
+            assignments.append((submission, speaker))
+        if len(assignments) != len(set(speaker_ids)):
+            raise Http404
+        return assignments
 
 
 class EvidenceDownloadView(EventContextMixin, View):
@@ -235,7 +294,8 @@ class EvidenceDownloadView(EventContextMixin, View):
             return FileResponse(
                 evidence.upload.file,
                 as_attachment=True,
-                filename=PurePath(evidence.upload.name).name,
+                filename=evidence.value.get("original_filename")
+                or PurePath(evidence.upload.name).name,
                 content_type=evidence.content_type or "application/octet-stream",
             )
 
@@ -255,8 +315,27 @@ class SpeakerEvidenceDownloadView(EventContextMixin, View):
             return FileResponse(
                 evidence.upload.file,
                 as_attachment=True,
-                filename=PurePath(evidence.upload.name).name,
+                filename=evidence.value.get("original_filename")
+                or PurePath(evidence.upload.name).name,
                 content_type=evidence.content_type or "application/octet-stream",
+            )
+
+
+class OrganiserSpeakerHeadshotView(EventContextMixin, View):
+    permission = "manage"
+
+    def get(self, request, event, pk):
+        with scope(event=self.event):
+            speaker = get_object_or_404(
+                User.objects.filter(submissions__event=self.event).distinct(), pk=pk
+            )
+            if not speaker.avatar:
+                raise Http404
+            speaker.avatar.open("rb")
+            return FileResponse(
+                speaker.avatar.file,
+                filename=PurePath(speaker.avatar.name).name,
+                content_type=mimetypes.guess_type(speaker.avatar.name)[0] or "image/jpeg",
             )
 
 
@@ -321,6 +400,9 @@ class LatestEvidenceZipView(EventContextMixin, View):
 
     def post(self, request, event):
         task_ids = request.POST.getlist("tasks")
+        grouping = request.POST.get("grouping", "speaker")
+        if grouping not in {"speaker", "session", "flat"}:
+            raise Http404
         with scope(event=self.event):
             tasks = list(
                 OnboardingTask.objects.filter(
@@ -343,13 +425,24 @@ class LatestEvidenceZipView(EventContextMixin, View):
         with ZipFile(payload, "w", compression=ZIP_DEFLATED) as archive:
             for task, evidence in latest:
                 speaker = slugify(task.speaker.get_display_name()) or f"speaker-{task.speaker_id}"
-                task_name = slugify(task.definition.name) or f"task-{task.pk}"
-                filename = PurePath(evidence.upload.name).name
-                evidence.upload.open("rb")
-                archive.writestr(
-                    f"{speaker}/{task_name}/v{evidence.version}-{evidence.pk}-{filename}",
-                    evidence.upload.read(),
+                session = (
+                    slugify(task.submission.title)
+                    if task.submission
+                    else f"unassigned-task-{task.pk}"
                 )
+                task_name = slugify(task.definition.name) or f"task-{task.pk}"
+                filename = (
+                    evidence.value.get("original_filename") or PurePath(evidence.upload.name).name
+                )
+                versioned_filename = f"v{evidence.version}-{evidence.pk}-{filename}"
+                if grouping == "speaker":
+                    archive_name = f"{speaker}/{task_name}/{versioned_filename}"
+                elif grouping == "session":
+                    archive_name = f"{session}/{speaker}/{versioned_filename}"
+                else:
+                    archive_name = f"{task.pk}-{speaker}-{versioned_filename}"
+                evidence.upload.open("rb")
+                archive.writestr(archive_name, evidence.upload.read())
         response = HttpResponse(payload.getvalue(), content_type="application/zip")
         response["Content-Disposition"] = (
             f'attachment; filename="{slugify(self.event.slug)}-latest-deliverables.zip"'

@@ -9,7 +9,10 @@
     const url = new URL(form.dataset.base.replace("__widget__", widget), window.location.origin);
     url.searchParams.set("theme", form.elements.theme.value);
     url.searchParams.set("fields", form.elements.fields.value);
+    if (form.elements.q.value.trim()) url.searchParams.set("q", form.elements.q.value.trim());
     if (form.elements.track.value) url.searchParams.set("track", form.elements.track.value);
+    if (form.elements.session_format.value) url.searchParams.set("format", form.elements.session_format.value);
+    if (form.elements.room.value) url.searchParams.set("room", form.elements.room.value);
     const format = form.elements.format.value;
     const exportPath = format === "json" ? form.dataset.json : format === "xml" ? form.dataset.xml : format === "ical" ? form.dataset.ical : "";
     const outputUrl = exportPath ? new URL(exportPath, window.location.origin) : url;

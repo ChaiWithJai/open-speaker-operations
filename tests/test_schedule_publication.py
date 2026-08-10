@@ -1,9 +1,11 @@
 from datetime import timedelta
 
 import pytest
+from django.contrib.messages import get_messages
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django_scopes import scope
+from pretalx.schedule.models import Schedule
 
 from pretalx_speakerops.models import ScheduleIcsIdentity
 from pretalx_speakerops.program.calendar import released_ical
@@ -215,3 +217,60 @@ def test_successful_release_hands_exact_schedule_to_public_agenda(event, users, 
     assert expected_title.encode() in public.content
     with scope(event=event):
         assert str(event.current_schedule.version) == "SBEK public handoff"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_custom_release_validates_duplicate_name_instead_of_crashing(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        Schedule.objects.create(
+            event=event,
+            version="SpeakerOps release",
+            published=timezone.now(),
+        )
+        wip_id = event.wip_schedule.pk
+        released_before = Schedule.objects.filter(event=event, version__isnull=False).count()
+
+    client.force_login(users["chair"])
+    page = client.get(f"/orga/{event.slug}/speaker-operations/agenda/")
+    assert page.context["release_name"] == "SpeakerOps release 2"
+    assert b'value="SpeakerOps release 2"' in page.content
+    response = client.post(
+        f"/orga/{event.slug}/speaker-operations/agenda/",
+        {"confirm_release": "yes", "name": "speakerops RELEASE"},
+    )
+
+    assert response.status_code == 302
+    assert response.url == f"/orga/{event.slug}/speaker-operations/agenda/"
+    assert any("used already" in str(message) for message in get_messages(response.wsgi_request))
+    with scope(event=event):
+        assert event.wip_schedule.pk == wip_id
+        assert (
+            Schedule.objects.filter(event=event, version__isnull=False).count() == released_before
+        )
+
+
+@pytest.mark.django_db(transaction=True)
+def test_custom_release_reports_unexpected_failure_without_http_500(
+    event, users, client, monkeypatch
+):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        wip_id = event.wip_schedule.pk
+
+    def fail_release(*args, **kwargs):
+        raise RuntimeError("production-shaped release failure")
+
+    monkeypatch.setattr("pretalx_speakerops.views.release_schedule", fail_release)
+    client.force_login(users["chair"])
+    response = client.post(
+        f"/orga/{event.slug}/speaker-operations/agenda/",
+        {"confirm_release": "yes", "name": "Safe release failure"},
+    )
+
+    assert response.status_code == 302
+    assert any(
+        "could not be released" in str(message) for message in get_messages(response.wsgi_request)
+    )
+    with scope(event=event):
+        assert event.wip_schedule.pk == wip_id

@@ -8,6 +8,7 @@ from .content_ops import (
     EvidenceDownloadView,
     LatestEvidenceZipView,
     OrganiserEvidenceCommentView,
+    OrganiserSpeakerHeadshotView,
     SessionContentEditView,
     SessionPublicationApprovalView,
     SpeakerContentEditView,
@@ -228,6 +229,11 @@ urlpatterns = [
         "orga/<slug:event>/speaker-operations/content/speakers/<int:pk>/edit/",
         SpeakerContentEditView.as_view(),
         name="speakerops_speaker_content_edit",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/content/speakers/<int:pk>/headshot/",
+        OrganiserSpeakerHeadshotView.as_view(),
+        name="speakerops_organiser_speaker_headshot",
     ),
     path(
         "orga/<slug:event>/speaker-operations/content/revisions/<int:pk>/restore/",

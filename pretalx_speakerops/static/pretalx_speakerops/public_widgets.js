@@ -12,6 +12,7 @@
   const dayTabs = [...document.querySelectorAll("[data-day-tab]")];
   const dayPanels = [...document.querySelectorAll("[data-day-panel]")];
   const speakerDetailLinks = [...document.querySelectorAll("[data-speaker-detail]")];
+  const currentDay = document.querySelector("[data-current-day]");
   const storageKey = `speakerops:${eventKey}:personal-schedule`;
 
   function selected() {
@@ -71,6 +72,35 @@
     }
   }
 
+  function activateDay(tab, updateUrl = true) {
+    const selectedDay = tab.dataset.dayTab;
+    dayTabs.forEach((candidate) => {
+      const active = candidate === tab;
+      candidate.setAttribute("aria-selected", String(active));
+      candidate.tabIndex = active ? 0 : -1;
+    });
+    dayPanels.forEach((panel) => {
+      panel.hidden = selectedDay !== "all" && panel.dataset.dayPanel !== selectedDay;
+    });
+    if (currentDay) {
+      currentDay.textContent = selectedDay === "all" ? "Showing all event days" : `Showing ${tab.textContent.trim()}`;
+    }
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      if (selectedDay === "all") url.searchParams.delete("day");
+      else url.searchParams.set("day", selectedDay);
+      window.history.replaceState({}, "", url);
+    }
+  }
+
+  document.querySelectorAll("[data-avatar]").forEach((avatar) => {
+    avatar.addEventListener("error", () => {
+      avatar.hidden = true;
+      const fallback = avatar.parentElement.querySelector("[data-avatar-fallback]");
+      if (fallback) fallback.hidden = false;
+    }, { once: true });
+  });
+
   if (track && root.dataset.selectedTrack) track.value = root.dataset.selectedTrack;
 
   document.querySelectorAll("[data-star]").forEach((button) => {
@@ -90,17 +120,7 @@
   dayTabs.forEach((tab, index) => {
     tab.addEventListener("click", (event) => {
       event.preventDefault();
-      dayTabs.forEach((candidate) => {
-        const active = candidate === tab;
-        candidate.setAttribute("aria-selected", String(active));
-        candidate.tabIndex = active ? 0 : -1;
-      });
-      dayPanels.forEach((panel) => {
-        panel.hidden = panel.dataset.dayPanel !== tab.dataset.dayTab;
-      });
-      const url = new URL(window.location.href);
-      url.searchParams.set("day", tab.dataset.dayTab);
-      window.history.replaceState({}, "", url);
+      activateDay(tab);
     });
     tab.addEventListener("keydown", (event) => {
       if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
@@ -111,6 +131,8 @@
       next.focus();
     });
   });
+  const initialDay = dayTabs.find((tab) => tab.dataset.dayTab === root.dataset.selectedDay) || dayTabs[0];
+  if (initialDay) activateDay(initialDay, false);
   syncStars();
   if (root.dataset.widget !== "itinerary") updateFilter();
 })();

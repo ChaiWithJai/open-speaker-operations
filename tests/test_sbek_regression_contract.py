@@ -194,6 +194,10 @@ DIRECT_EVIDENCE = {
         "tests/test_uploads.py",
         "test_upload_ui_explains_recovery_and_completed_file_identity",
     ),
+    "CNT-07": (
+        "tests/test_content_operations.py",
+        "test_content_journey_upload_updates_filterable_dashboard_and_library",
+    ),
     "CNT-08": (
         "tests/test_onboarding_operations.py",
         "test_bulk_reminder_targets_selected_outstanding_deliverables",
@@ -214,6 +218,10 @@ DIRECT_EVIDENCE = {
         "tests/test_content_operations.py",
         "test_explicit_session_approval_controls_public_widgets",
     ),
+    "CNT-13": (
+        "tests/test_content_operations.py",
+        "test_content_journey_upload_updates_filterable_dashboard_and_library",
+    ),
     "CNT-14": (
         "tests/test_content_operations.py",
         "test_organiser_download_comments_and_latest_version_zip_are_scoped",
@@ -224,7 +232,7 @@ DIRECT_EVIDENCE = {
     ),
     "AIA-03": (
         "tests/test_conflict_resolution.py",
-        "test_assisted_agenda_previews_then_applies_conflict_free_plan",
+        "test_hidden_accepted_placement_is_conflict_checked_and_move_persists",
     ),
     "AIA-04": (
         "tests/test_conflict_resolution.py",
@@ -232,11 +240,11 @@ DIRECT_EVIDENCE = {
     ),
     "AIA-05": (
         "tests/test_conflict_resolution.py",
-        "test_conflict_rows_name_context_and_link_native_editors",
+        "test_hidden_accepted_placement_is_conflict_checked_and_move_persists",
     ),
     "AIA-06": (
         "tests/test_conflict_resolution.py",
-        "test_return_to_gate_reports_cleared_conflict",
+        "test_hidden_accepted_placement_is_conflict_checked_and_move_persists",
     ),
     "AIA-07": (
         "tests/test_schedule_publication.py",

@@ -1,11 +1,11 @@
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
 import pytest
 from django.contrib.messages import get_messages
 from django.utils import timezone
 from django_scopes import scope
 from pretalx.schedule.models import Room, Schedule
-from pretalx.submission.models import Track
+from pretalx.submission.models import SubmissionStates, Track
 
 from pretalx_speakerops.program.auto_schedule import build_schedule_proposal
 from pretalx_speakerops.program.policy import classify_warnings
@@ -197,6 +197,55 @@ def test_return_to_gate_reports_cleared_conflict(event, users, client, kind):
 
 
 @pytest.mark.django_db(transaction=True)
+def test_hidden_accepted_placement_is_conflict_checked_and_move_persists(event, users, client):
+    """AIA-03/05/06: WIP visibility must not hide accepted placement conflicts."""
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        first, second, _ = _arrange_conflict(event, users, "room")
+        room = first.room
+        room.name = "Room 2A"
+        room.save(update_fields=["name", "updated"])
+        start = datetime.combine(event.date_from, time(10), tzinfo=event.tz)
+        first.submission.title = "Taming 40-Minute CI"
+        first.submission.state = SubmissionStates.ACCEPTED
+        first.submission.save(update_fields=["title", "state", "updated"])
+        second.submission.state = SubmissionStates.ACCEPTED
+        second.submission.save(update_fields=["state", "updated"])
+        for slot in (first, second):
+            slot.room = room
+            slot.start = start
+            slot.end = start + timedelta(minutes=30)
+            slot.save(update_fields=["room", "start", "end", "updated"])
+        second.is_visible = False
+        second.save(update_fields=["is_visible", "updated"])
+
+    client.force_login(users["chair"])
+    placed = client.get(_agenda_url(event))
+    assert placed.status_code == 200
+    assert any(
+        slot.pk == first.pk
+        and slot.room_id == room.pk
+        and slot.start == start
+        and slot.submission.title == "Taming 40-Minute CI"
+        for slot in placed.context["slots"]
+    )
+    assert [item["category"] for item in placed.context["blocking"]] == ["room"]
+
+    with scope(event=event):
+        second.start = first.end + timedelta(minutes=30)
+        second.end = second.start + timedelta(minutes=30)
+        second.save(update_fields=["start", "end", "updated"])
+
+    reloaded = client.get(f"{_agenda_url(event)}?recheck=1")
+    assert reloaded.context["blocking"] == []
+    assert reloaded.context["gate_feedback"]["cleared"] is True
+    with scope(event=event):
+        second.refresh_from_db()
+        assert second.room_id == room.pk
+        assert second.start == start + timedelta(hours=1)
+
+
+@pytest.mark.django_db(transaction=True)
 def test_combined_conflict_stays_blocked_until_every_resource_is_resolved(event, users, client):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")
@@ -237,9 +286,15 @@ def test_combined_conflict_stays_blocked_until_every_resource_is_resolved(event,
 def test_assisted_agenda_previews_then_applies_conflict_free_plan(event, users, client):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")
-        _arrange_conflict(event, users, "combined")
+        _, hidden_accepted, _ = _arrange_conflict(event, users, "combined")
+        hidden_accepted.submission.state = SubmissionStates.ACCEPTED
+        hidden_accepted.submission.save(update_fields=["state", "updated"])
+        hidden_accepted.is_visible = False
+        hidden_accepted.save(update_fields=["is_visible", "updated"])
+        assert classify_warnings(event.wip_schedule)
         proposal = build_schedule_proposal(event.wip_schedule)
         assert proposal
+        assert any(item.slot.pk == hidden_accepted.pk for item in proposal)
         assert any(item.changed for item in proposal)
 
     client.force_login(users["chair"])

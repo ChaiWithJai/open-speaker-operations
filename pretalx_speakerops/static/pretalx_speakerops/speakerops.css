@@ -50,6 +50,12 @@ pretalx-schedule { display: block; max-width: 100%; overflow-x: auto; }
 .speakerops-role-nav li a[aria-current="page"] { color: #fff; background: var(--speakerops-accent); }
 .speakerops-entry-callout { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem 1.2rem; border: 1px solid #b8cdf4; border-radius: 12px; background: #eaf2ff; }
 .speakerops-entry-callout p { margin: .15rem 0 0; }
+.speakerops-section-nav { display: flex; flex-wrap: wrap; gap: .5rem; margin: -1rem 0 1.5rem; }
+.speakerops-section-nav a { padding: .45rem .7rem; border: 1px solid var(--speakerops-line); border-radius: 999px; background: #fff; font-weight: 700; text-decoration: none; }
+.speakerops-filter-summary { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: 1rem; }
+.speakerops-crm-pipeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .75rem; margin-top: 1rem; }
+.speakerops-crm-pipeline section { min-width: 0; padding: .85rem; border: 1px solid var(--speakerops-line); border-radius: 10px; background: var(--speakerops-soft); }
+.speakerops-crm-pipeline ul { padding-left: 1.2rem; overflow-wrap: anywhere; }
 .speakerops__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 1.5rem 0 2rem; }
 .speakerops-card { display: flex; min-height: 10.5rem; flex-direction: column; padding: 1.25rem; border: 1px solid var(--speakerops-line); border-radius: var(--speakerops-radius); background: #fff; box-shadow: var(--speakerops-shadow); color: inherit; text-decoration: none; transition: transform .15s ease, border-color .15s ease; }
 .speakerops-card:hover, .speakerops-card:focus-visible { color: inherit; text-decoration: none; transform: translateY(-2px); border-color: var(--speakerops-accent); }

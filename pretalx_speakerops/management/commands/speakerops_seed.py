@@ -329,7 +329,8 @@ class Command(BaseCommand):
             team, _ = Team.objects.get_or_create(organiser=event.organiser, name=name)
             team.all_events = False
             team.save()
-            team.limit_events.add(event)
+            # Reset the deterministic permission boundary on every seed run.
+            team.limit_events.set([event])
             for field, value in permissions.items():
                 setattr(team, field, value)
             team.save(update_fields=list(permissions))
@@ -339,6 +340,12 @@ class Command(BaseCommand):
         Team.objects.get(organiser=event.organiser, name="SpeakerOps program chair").members.add(
             users["chair"]
         )
+        # The buyer journey deliberately demonstrates permission-scoped continuity
+        # across two events. Grant only the chair team access to the receiving event;
+        # reviewers and speakers remain scoped to DemoCon.
+        Team.objects.get(
+            organiser=event.organiser, name="SpeakerOps program chair"
+        ).limit_events.add(devflow)
         Team.objects.get(organiser=event.organiser, name="SpeakerOps reviewers").members.add(
             users["reviewer"], users["reviewer_systems"]
         )

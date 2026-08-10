@@ -1,4 +1,5 @@
 import csv
+import logging
 import re
 import uuid
 from urllib.parse import urlencode
@@ -20,11 +21,19 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import TemplateView, View
 from django_scopes import scope
 from pretalx.event.models import Event
+from pretalx.orga.forms.schedule import ScheduleReleaseForm
 from pretalx.person.models import User
 from pretalx.schedule.models import Room
 from pretalx.submission.models import Review, ReviewScore, Submission, SubmissionStates, Track
 
-from .auth import can_manage, is_speaker, require_event_permission, role_home_url, role_navigation
+from .auth import (
+    can_manage,
+    has_round_assignments,
+    is_speaker,
+    require_event_permission,
+    role_home_url,
+    role_navigation,
+)
 from .cfp_forms import ConditionalQuestionRuleForm, ReviewerPoolForm
 from .conference_memory import (
     conference_coverage,
@@ -54,6 +63,7 @@ from .models import (
     Resource,
     ReviewerPool,
     ReviewRecommendation,
+    RoundReviewAssignment,
     SessionPublicationApproval,
     SpeakerMemoryProfile,
     SubmissionPresenterRole,
@@ -75,6 +85,8 @@ from .program.decisions import (
 )
 from .program.policy import classify_warnings, release_schedule, schedule_slots
 from .program.reviews import configure_review_rounds
+
+logger = logging.getLogger(__name__)
 
 TASK_MACHINE = StateMachine(
     states=frozenset(
@@ -191,6 +203,9 @@ class EventContextMixin(LoginRequiredMixin):
         permission = getattr(self, "permission", "dashboard")
         if permission == "review":
             require_event_permission(request.user, self.event, "submission.orga_list_submission")
+            authorized_events = getattr(request.user, "_speakerops_review_event_ids", set())
+            authorized_events.add(self.event.pk)
+            request.user._speakerops_review_event_ids = authorized_events
         elif permission == "manage":
             require_event_permission(
                 request.user, self.event, "event.update_event", "submission.orga_update_submission"
@@ -1108,18 +1123,24 @@ class SpeakerSubmissionPresentersView(EventContextMixin, TemplateView):
         return get_object_or_404(submissions)
 
     def get_context_data(self, **kwargs):
+        from .cfp_lock import proposal_mutations_open
+
         context = super().get_context_data(**kwargs)
         submission = self._submission()
         context.update(
             submission=submission,
             presenters=presenter_rows(submission),
             role_choices=SubmissionPresenterRole.ROLE_CHOICES,
+            can_edit_presenters=proposal_mutations_open(submission),
         )
         return context
 
     def post(self, request, event, code):
+        from .cfp_lock import require_open_proposal
+
         with transaction.atomic(), scope(event=self.event):
             submission = self._submission(lock=True)
+            require_open_proposal(submission)
             speakers = list(submission.speakers.order_by("pk"))
             choices = dict(SubmissionPresenterRole.ROLE_CHOICES)
             selected = {
@@ -1150,6 +1171,35 @@ class SpeakerSubmissionPresentersView(EventContextMixin, TemplateView):
 class ReviewerScoringView(EventContextMixin, TemplateView):
     permission = "review"
     template_name = "pretalx_speakerops/reviewer_scoring.html"
+
+    def _round_review_destination(self):
+        assignments = RoundReviewAssignment.objects.filter(
+            event=self.event,
+            reviewer=self.request.user,
+        ).exclude(status=RoundReviewAssignment.RECUSED)
+        if not has_round_assignments(self.request.user, self.event):
+            return None
+        if submission_id := self.kwargs.get("pk"):
+            assignment = (
+                assignments.filter(submission_id=submission_id)
+                .order_by("round__position", "pk")
+                .first()
+            )
+            if assignment:
+                return reverse(
+                    "plugins:speakerops:speakerops_round_review",
+                    kwargs={"event": self.event.slug, "assignment": assignment.pk},
+                )
+        return reverse(
+            "plugins:speakerops:speakerops_round_review_queue",
+            kwargs={"event": self.event.slug},
+        )
+
+    def get(self, request, *args, **kwargs):
+        with scope(event=self.event):
+            if destination := self._round_review_destination():
+                return redirect(destination)
+        return super().get(request, *args, **kwargs)
 
     def _queue(self):
         queue = Submission.objects.filter(
@@ -1246,6 +1296,8 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
 
     def post(self, request, event, pk=None):
         with scope(event=self.event):
+            if destination := self._round_review_destination():
+                return redirect(destination)
             configure_review_rounds(self.event)
             submission = self._submission()
             if not submission:
@@ -1363,6 +1415,21 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
     template_name = "pretalx_speakerops/agenda_release.html"
     MAX_ROOM_CAPACITY = 2_147_483_647
 
+    def _next_release_name(self):
+        base = "SpeakerOps release"
+        used = {
+            name.casefold()
+            for name in self.event.schedules.exclude(version__isnull=True).values_list(
+                "version", flat=True
+            )
+        }
+        if base.casefold() not in used:
+            return base
+        suffix = 2
+        while f"{base} {suffix}".casefold() in used:
+            suffix += 1
+        return f"{base} {suffix}"
+
     def _conflict_feedback(self, blocking):
         session_key = f"speakerops:agenda-conflicts:{self.event.pk}"
         current_keys = {warning["conflict_key"] for warning in blocking}
@@ -1432,6 +1499,7 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
             unscheduled=unscheduled,
             warnings=warnings,
             blocking=blocking,
+            release_name=self._next_release_name(),
             gate_feedback=self._conflict_feedback(blocking),
             proposed_placements=kwargs.get("proposed_placements"),
             can_edit_structure=self.request.user.is_administrator
@@ -1519,15 +1587,45 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
             return redirect(request.path)
         with scope(event=self.event):
             schedule = self.event.wip_schedule
+            default_release_name = self._next_release_name()
+            release_name = (
+                request.POST.get("name", default_release_name).strip() or default_release_name
+            )
+            release_form = ScheduleReleaseForm(
+                data={
+                    "version": release_name,
+                    "comment": "",
+                    "notify_speakers": False,
+                },
+                event=self.event,
+                locales=self.event.locales,
+            )
+            if not release_form.is_valid():
+                error_text = " ".join(
+                    str(error) for errors in release_form.errors.values() for error in errors
+                )
+                messages.error(request, error_text or "Choose a valid schedule revision name.")
+                return redirect(request.path)
             try:
                 release_schedule(
                     schedule,
-                    request.POST.get("name", "SpeakerOps release").strip() or "SpeakerOps release",
+                    release_form.cleaned_data["version"],
                     request.user,
-                    notify_speakers=False,
+                    notify_speakers=release_form.cleaned_data["notify_speakers"],
+                    comment=release_form.cleaned_data["comment"],
                 )
             except ValidationError as error:
                 messages.error(request, "; ".join(error.messages))
+            except Exception:
+                logger.exception(
+                    "Schedule release failed for event %s",
+                    self.event.slug,
+                )
+                messages.error(
+                    request,
+                    "The schedule could not be released. No release was published; "
+                    "review the draft and try again.",
+                )
             else:
                 messages.success(request, "Schedule released.")
         return redirect(request.path)
