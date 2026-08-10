@@ -12,6 +12,7 @@ Each active long-form document has one purpose. Superseded plans live in
 | `architecture.md` | Current runtime boundaries and capability ownership |
 | `repository-map.md` | Where code, tests, deployment files, tools, and artifacts belong |
 | `context-graph.md` / `context-graph.json` | Requirement-to-code/test traceability and its machine-readable gate |
+| `buzz-demo-map.md` | Per-judged-row Buzz demo contract: coordination in Buzz, authority and links in SpeakerOps |
 | `cfp-guide.md` | Public/operator explanation of the configured CFP |
 | `seed.md` | Deterministic demo data contract |
 | `digitalocean.md` | Production deployment and host operations |
