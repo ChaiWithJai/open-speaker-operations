@@ -129,7 +129,10 @@ class ContentOperationsView(EventContextMixin, TemplateView):
                     profile = SpeakerProfile.objects.filter(event=self.event, user=speaker).first()
                     speaker.speakerops_biography = profile.biography if profile else ""
                     speaker.speakerops_avatar_url = (
-                        speaker.get_avatar_url(event=self.event, thumbnail="tiny") or ""
+                        # Use the durable original immediately after an organiser upload.
+                        # Thumbnail generation is asynchronous in pretalx and can briefly
+                        # produce a URL whose object does not exist yet.
+                        speaker.get_avatar_url(event=self.event) or ""
                     )
                     speaker.speakerops_revisions = [
                         revision
@@ -235,7 +238,8 @@ class EvidenceDownloadView(EventContextMixin, View):
             return FileResponse(
                 evidence.upload.file,
                 as_attachment=True,
-                filename=PurePath(evidence.upload.name).name,
+                filename=evidence.value.get("original_filename")
+                or PurePath(evidence.upload.name).name,
                 content_type=evidence.content_type or "application/octet-stream",
             )
 
@@ -255,7 +259,8 @@ class SpeakerEvidenceDownloadView(EventContextMixin, View):
             return FileResponse(
                 evidence.upload.file,
                 as_attachment=True,
-                filename=PurePath(evidence.upload.name).name,
+                filename=evidence.value.get("original_filename")
+                or PurePath(evidence.upload.name).name,
                 content_type=evidence.content_type or "application/octet-stream",
             )
 
@@ -321,6 +326,9 @@ class LatestEvidenceZipView(EventContextMixin, View):
 
     def post(self, request, event):
         task_ids = request.POST.getlist("tasks")
+        grouping = request.POST.get("grouping", "speaker")
+        if grouping not in {"speaker", "session", "flat"}:
+            raise Http404
         with scope(event=self.event):
             tasks = list(
                 OnboardingTask.objects.filter(
@@ -343,13 +351,24 @@ class LatestEvidenceZipView(EventContextMixin, View):
         with ZipFile(payload, "w", compression=ZIP_DEFLATED) as archive:
             for task, evidence in latest:
                 speaker = slugify(task.speaker.get_display_name()) or f"speaker-{task.speaker_id}"
-                task_name = slugify(task.definition.name) or f"task-{task.pk}"
-                filename = PurePath(evidence.upload.name).name
-                evidence.upload.open("rb")
-                archive.writestr(
-                    f"{speaker}/{task_name}/v{evidence.version}-{evidence.pk}-{filename}",
-                    evidence.upload.read(),
+                session = (
+                    slugify(task.submission.title)
+                    if task.submission
+                    else f"unassigned-task-{task.pk}"
                 )
+                task_name = slugify(task.definition.name) or f"task-{task.pk}"
+                filename = (
+                    evidence.value.get("original_filename") or PurePath(evidence.upload.name).name
+                )
+                versioned_filename = f"v{evidence.version}-{evidence.pk}-{filename}"
+                if grouping == "speaker":
+                    archive_name = f"{speaker}/{task_name}/{versioned_filename}"
+                elif grouping == "session":
+                    archive_name = f"{session}/{speaker}/{versioned_filename}"
+                else:
+                    archive_name = f"{task.pk}-{speaker}-{versioned_filename}"
+                evidence.upload.open("rb")
+                archive.writestr(archive_name, evidence.upload.read())
         response = HttpResponse(payload.getvalue(), content_type="application/zip")
         response["Content-Disposition"] = (
             f'attachment; filename="{slugify(self.event.slug)}-latest-deliverables.zip"'

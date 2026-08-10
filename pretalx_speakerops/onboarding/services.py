@@ -231,6 +231,7 @@ def record_evidence(task, speaker, kind, value=None, upload=None):
         raise ValueError("Choose a file before submitting this task.")
     if upload:
         _validate_upload(upload, config)
+        value = {**value, "original_filename": upload.name}
     latest_version = (
         TaskEvidence.objects.filter(task=task)
         .order_by("-version")

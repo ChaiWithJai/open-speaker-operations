@@ -194,6 +194,10 @@ DIRECT_EVIDENCE = {
         "tests/test_uploads.py",
         "test_upload_ui_explains_recovery_and_completed_file_identity",
     ),
+    "CNT-07": (
+        "tests/test_content_operations.py",
+        "test_content_journey_upload_updates_filterable_dashboard_and_library",
+    ),
     "CNT-08": (
         "tests/test_onboarding_operations.py",
         "test_bulk_reminder_targets_selected_outstanding_deliverables",
@@ -213,6 +217,10 @@ DIRECT_EVIDENCE = {
     "CNT-12": (
         "tests/test_content_operations.py",
         "test_explicit_session_approval_controls_public_widgets",
+    ),
+    "CNT-13": (
+        "tests/test_content_operations.py",
+        "test_content_journey_upload_updates_filterable_dashboard_and_library",
     ),
     "CNT-14": (
         "tests/test_content_operations.py",
