@@ -47,8 +47,24 @@ def test_local_profile_parses_without_key_and_hides_private_topology():
     profile = ProviderProfile.from_env(LOCAL_ENV)
     assert profile.api_key is None
     assert profile.status_card()["endpoint_host"] == "private"
+
+
+def test_bare_hostnames_are_private_only_when_explicitly_allow_listed():
     compose_internal = dict(LOCAL_ENV, OPENAI_COMPAT_BASE_URL="http://ollama:11434/v1")
-    assert ProviderProfile.from_env(compose_internal).is_private_endpoint
+    # Search domains or controlled DNS can resolve a bare hostname anywhere,
+    # so without an allow-list entry it is treated as public: plain http is
+    # rejected and an API key is required.
+    with pytest.raises(ProviderConfigError) as excinfo:
+        ProviderProfile.from_env(compose_internal)
+    message = str(excinfo.value)
+    assert "BUZZ_AGENT_PRIVATE_HOSTS" in message
+    allow_listed = dict(compose_internal, BUZZ_AGENT_PRIVATE_HOSTS="ollama")
+    assert ProviderProfile.from_env(allow_listed).is_private_endpoint
+
+
+def test_provider_client_contract_never_follows_redirects():
+    assert ProviderProfile.from_env(TOGETHER_ENV).follow_redirects is False
+    assert ProviderProfile.from_env(LOCAL_ENV).follow_redirects is False
 
 
 def test_missing_or_malformed_configuration_fails_closed_with_all_problems_named():

@@ -1,6 +1,11 @@
 # Buzz demo map: one demo per judged row
 
-This document is the demo contract for issues #66/#67: every judged row of the
+**Status: design contract. Every flow below is `planned`; none is
+implemented.** This document specifies demonstrations — it is not evidence of
+AI capability, and nothing here may be presented to a buyer as a working
+feature until the walking skeleton (relay + model + one typed read) exists.
+
+This is the demo contract for issues #66/#67: every judged row of the
 SessionBoard benchmark gets a Buzz demonstration proving the same shape — the
 real work is isolated out of the web UI into a Slack-like room where humans and
 agents coordinate, while SpeakerOps stays the system of record and every
@@ -8,8 +13,19 @@ message carries an addressable, permission-aware link that lets a human
 confirm, drill deeper, or continue in the actual web UI.
 
 `pretalx_speakerops/integrations/buzz/resources.py` is the machine-checked
-registry behind this map; `tests/test_buzz_resource_registry.py` fails when a
-named route or judged row drifts.
+registry behind this map. It distinguishes shareable GET **links** from
+POST-only **commands** (links navigate, commands mutate — a command route is
+never handed out as a link), and grades every anchor's exactness:
+exact-record, filtered-collection, aggregate-screen, or public-output.
+`tests/test_buzz_resource_registry.py` fails when a named route or judged row
+drifts, and exercises the seeded chair/reviewer/speaker role matrix over HTTP:
+intended audiences reach their surfaces, unauthorized roles get non-disclosing
+404s, stale IDs fail safely, and command endpoints refuse GET.
+
+Delivery order follows the walking skeleton, not this document's breadth:
+first `release_readiness` end-to-end (row 5), then content readiness (row 6),
+then the reminder preview/confirm/receipt write (row 8). The remaining rows
+extend a proven grammar; they are not built first.
 
 ## The demo grammar
 
@@ -112,7 +128,30 @@ never do.
 - **Writes via Buzz:** release confirmation only via the authoritative web
   confirmation; never from a reaction.
 
-### 6. Embeds & web publishing (High)
+### 6. Content & production (the benchmark's weakest category — first-class)
+
+- **Buyer moment:** "Which latest decks are AV-ready, and who owns what's
+  not?" (the PRD's content/production job; previously the weakest substantive
+  benchmark category).
+- **Demo script:** Daily content brief threads the not-AV-ready set: each
+  session with its latest `TaskEvidence` version, stale-vs-approved state,
+  requested-change owner, and a link into the content console
+  (`speakerops_content_operations`) → organiser reviews the exact evidence
+  file (`speakerops_evidence_download`, version-aware) → requested changes
+  and AV approval execute as receipted commands
+  (`speakerops_session_content_edit`, `speakerops_speaker_content_edit`,
+  `speakerops_session_publication_approval` — POST-only; never links) →
+  when the set is clean, the agent posts the production handoff: the
+  approved latest-files ZIP (`speakerops_latest_evidence_zip`).
+- **Reads:** latest/stale/missing versions, approval blockers,
+  requested-change ownership, upload failures needing recovery.
+- **Links:** content console, exact evidence-file download, AV bundle.
+  **Gap:** per-session/speaker content GET detail is a console fragment —
+  the resolver owes a `content-record` resource.
+- **Writes via Buzz:** none in v1; uploads stay in the protected SpeakerOps
+  path, edits/approvals confirm in the web UI with receipts to the thread.
+
+### 7. Embeds & web publishing (High)
 
 - **Buyer moment:** "What will the public actually see when I hit publish?"
 - **Demo script:** Before release the agent posts the would-be-public set
@@ -126,7 +165,7 @@ never do.
   pages by code), `speakerops_ics`/`speakerops_selected_ics`.
 - **Writes via Buzz:** none; publication approval is row 5's receipt flow.
 
-### 7. Automated communication (Medium)
+### 8. Automated communication (Medium)
 
 - **Buyer moment:** "Nudge everyone who's late — but show me first."
 - **Demo script:** `@speakerops draft reminders for overdue tasks` → agent
@@ -135,12 +174,15 @@ never do.
   idempotently → thread receives per-recipient `ReminderReceipt` summary and
   the `SpeakerCommunicationLog` trail link.
 - **Reads:** overdue sets, prior sends (noise budget: don't re-nudge).
-- **Links:** `speakerops_reminders` (console). **Gap:** receipt/log detail
-  resource for "what did we send this speaker?" threads.
+- **Links:** the overdue-task drilldown (`speakerops_drilldown`,
+  `kind=tasks`) is the shareable evidence surface; `speakerops_reminders` is
+  the POST-only confirmed-send command and is never handed out as a link.
+  **Gap:** receipt/log detail resource for "what did we send this speaker?"
+  threads.
 - **Writes via Buzz:** the flagship bounded write — preview → confirm →
   idempotent send → receipt. This is handoff step 5's designated candidate.
 
-### 8. System performance & UX (Medium, differentiator)
+### 9. System performance & UX (Medium, differentiator)
 
 - **Buyer moment:** "Is it fast, and is it up?" (the anti-SessionBoard row)
 - **Demo script:** Scheduled brief posts `status.json` health plus the query
@@ -153,7 +195,7 @@ never do.
   `speakerops_dashboard`.
 - **Writes via Buzz:** none.
 
-### 9. Integrations & data handling (Low/Bonus — but buyers pay for it)
+### 10. Integrations & data handling (Low/Bonus — but buyers pay for it)
 
 - **Buyer moment:** "Why is Accelevents out of sync, and is it safe to retry?"
 - **Demo script:** Outbox event posts a failed-sync thread naming the
@@ -164,14 +206,14 @@ never do.
   import via `speakerops_speaker_import`, exports from the abstract/speaker/
   CRM consoles, so "get my data in/out" is one click from the room.
 - **Reads:** run/item/attempt state, fingerprint diffs (preview).
-- **Links:** `speakerops_sync_run` (per-run, pk — already addressable),
-  `speakerops_sync_console`, `speakerops_sync_preview`,
-  `speakerops_speaker_import`. **Gap:** per-item resource for
-  thread-per-exception.
+- **Links:** `speakerops_sync_console`, `speakerops_speaker_import`.
+  `speakerops_sync_run` (per-run, pk) and `speakerops_sync_preview` are
+  POST-only commands — the idempotent retry, never a shareable link.
+  **Gap:** sync-run/sync-item GET detail for thread-per-exception links.
 - **Writes via Buzz:** selective retry via preview/confirm on the existing
   receipt pattern.
 
-### 10. CRM / speaker relationships (matrix says out of scope — buyers buy it)
+### 11. CRM / speaker relationships (beyond the matrix — buyers buy it)
 
 - **Buyer moment:** "Who spoke for us before, who's in the pipeline for next
   year, and what did we last say to them?"
@@ -191,14 +233,19 @@ never do.
   real model exists.
 - **Writes via Buzz:** none in v1; outreach logging is a later bounded-write
   candidate.
+- **Coverage rule:** CRM is beyond the judging matrix; it never counts toward
+  core benchmark coverage and is built only after the core walking skeleton
+  works.
 
 ## Resolver gaps this map creates
 
 The rows above need these `go/` resources beyond routes that exist today:
-`onboarding-task`, `submission`, `schedule-conflict`, `communication-receipt`,
-`sync-item`, `crm-contact`. That list is the concrete input to the #67
-"canonical resource types" checklist item; the registry marks each as
-`aggregate` until its detail route lands.
+`onboarding-task`, `submission`, `schedule-conflict`, `content-record`,
+`communication-receipt`, `sync-item` (with a sync-run GET detail),
+`crm-contact`. That list is the concrete input to the #67 "canonical resource
+types" checklist item; the registry grades each affected anchor
+`aggregate-screen` or `filtered-collection` until its record-level GET route
+lands.
 
 ## What each demo must prove (acceptance)
 

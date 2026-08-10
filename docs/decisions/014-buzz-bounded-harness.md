@@ -59,40 +59,58 @@ configuration-first, so the admitted code is exactly that step.
 
 ## Decision, costs, and guesses
 
-Adopt RFC #67's recommendation. Buzz runs only as an isolated feasibility
-deployment on a dedicated Droplet using upstream's Compose bundle with a
-pinned image; it never joins the `speakerops` Compose project, `.env`
-contract, or deploy scripts, and SpeakerOps must remain fully operable with
-the entire Buzz stack stopped. The bridge/agent is a separate process with
-its own least-privilege identity; model credentials live only in its
-deployment environment (`deploy/buzz-agent.env.example` documents the blank
-contract). `pretalx_speakerops/integrations/buzz/provider.py` pins the
-provider dialect (`openai`/`chat`), fails closed on missing or malformed
-provider, model, or base URL, rejects `latest` model aliases and plain HTTP
-across hosts, requires keys for public endpoints, redacts secrets from
-errors, repr, and status metadata, and hard-rejects `writes_enabled=true`
-until the bounded-write step is separately approved. The runtime must not
-import the adapter package. Guesses: Together AI as first profile with a
-local endpoint substitutable; a single Droplet is adequate for the
-feasibility trial; upstream approval-execution gaps will not block read-only
-briefs.
+Adopt RFC #67's recommendation with two explicitly different deployment
+modes. **Ephemeral demo (approved, ~one week):** Buzz may run on the
+existing Droplet as a separate `buzz-demo` Compose project with a pinned
+image, its own volumes, secrets, domain, and firewall rules, explicit CPU
+and memory limits, a disk usage threshold, and a dated teardown command
+that removes containers, volumes, keys, and DNS. Inference uses
+Together-hosted models over HTTPS, so no model runs on the host. The demo
+project must never share volumes with, recreate, stop, or otherwise touch
+the `speakerops` Compose project, `.env` contract, or deploy scripts, and
+SpeakerOps must remain fully operable with the entire Buzz stack stopped.
+**Durable adoption:** anything beyond the dated demo requires a separate
+Droplet/failure domain and a new decision record. The bridge/agent is a
+separate process with its own least-privilege identity; model credentials
+live only in its deployment environment (`deploy/buzz-agent.env.example`
+documents the blank contract). The provider module
+(`pretalx_speakerops/integrations/buzz/provider.py`) pins the dialect
+(`openai`/`chat`), fails closed on
+missing or malformed provider, model, or base URL, rejects `latest` model
+aliases and plain HTTP across hosts, treats bare hostnames as private only
+when explicitly allow-listed (`BUZZ_AGENT_PRIVATE_HOSTS`), requires keys
+for public endpoints, forbids the client from following redirects or
+forwarding Authorization across origins, redacts secrets from errors,
+repr, and status metadata, and hard-rejects `writes_enabled=true` until
+the bounded-write step is separately approved. The runtime must not import
+the adapter package. Guesses: Together AI as first profile with a local
+endpoint substitutable; the shared Droplet has headroom for a
+resource-limited one-week demo; upstream approval-execution gaps will not
+block read-only briefs.
 
 ## Upgrade and security impact
 
 Re-audit this record before moving off the pinned Buzz revision: re-read the
 Compose bundle, SECURITY.md supported-versions policy, and the workflow
 approval status, and rerun the backup/restore drill for all five Buzz state
-classes. Nostr pubkeys, NIP-05 handles, display names, and channel
-membership are labels, never SpeakerOps authority; any future write path
-must go through an explicit principal binding and the existing command
-receipt contract. Provider keys must never appear in repository files,
-Compose files, browser payloads, Nostr events, or logs. Enabling writes,
-co-locating any Buzz service, or teaching the runtime to import the adapter
-each require a new decision record.
+classes. The ephemeral demo's runbook must exist before it starts: resource
+limits, disk thresholds, key revocation, data deletion, and the dated
+teardown command are preconditions, not follow-ups. Nostr pubkeys, NIP-05
+handles, display names, and channel membership are labels, never SpeakerOps
+authority; any future write path must go through an explicit principal
+binding and the existing command receipt contract. Provider keys must never
+appear in repository files, Compose files, browser payloads, Nostr events,
+or logs. Enabling writes, extending the demo beyond its teardown date,
+adding Buzz to the `speakerops` Compose project, or teaching the runtime to
+import the adapter each require a new decision record.
 
 ## Automated proof
 
 `tests/test_buzz_provider_config.py::test_missing_or_malformed_configuration_fails_closed_with_all_problems_named`,
 `tests/test_buzz_provider_config.py::test_writes_cannot_be_enabled_before_the_bounded_write_step`,
-`tests/test_buzz_provider_config.py::test_secret_never_leaks_through_repr_str_or_redacted_environ`, and
-`tests/test_buzz_provider_config.py::test_buzz_stays_out_of_the_protected_speakerops_runtime`.
+`tests/test_buzz_provider_config.py::test_bare_hostnames_are_private_only_when_explicitly_allow_listed`,
+`tests/test_buzz_provider_config.py::test_secret_never_leaks_through_repr_str_or_redacted_environ`,
+`tests/test_buzz_provider_config.py::test_buzz_stays_out_of_the_protected_speakerops_runtime`,
+`tests/test_buzz_resource_registry.py::test_registry_hygiene_rows_covered_commands_excluded_nothing_implemented`,
+`tests/test_buzz_resource_registry.py::test_organiser_surfaces_open_for_chair_and_404_for_speaker`, and
+`tests/test_buzz_resource_registry.py::test_command_endpoints_refuse_get_so_links_can_never_mutate`.

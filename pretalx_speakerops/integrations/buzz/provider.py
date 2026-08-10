@@ -10,10 +10,16 @@ Invariants enforced here:
 - The provider dialect is pinned to Buzz's generic OpenAI-compatible chat mode.
 - Configuration fails closed: a missing or malformed provider, model, or base
   URL raises with every problem named, and never echoes secret values.
-- Plain-HTTP endpoints are accepted only on loopback/private/Compose-internal
-  hosts; endpoints that cross hosts require TLS.
+- Plain-HTTP endpoints are accepted only for loopback/private IP addresses,
+  well-known local hostnames, or hosts explicitly allow-listed via
+  ``BUZZ_AGENT_PRIVATE_HOSTS``. A bare single-label hostname is NOT assumed
+  private: search domains or controlled DNS can resolve it anywhere, so it
+  must be allow-listed to count as private topology.
 - Public endpoints require an API key; a provider-side "latest" model alias is
   rejected as a production pin.
+- The provider client contract forbids following redirects
+  (``follow_redirects`` is always ``False``): a redirect must never carry the
+  Authorization header to another origin.
 - Writes stay disabled until the bounded-write step of the handoff lands, so
   ``BUZZ_AGENT_WRITES_ENABLED`` must remain ``false``.
 - The API key is redacted from ``repr``, error messages, status metadata, and
@@ -36,6 +42,7 @@ ENV_TIMEOUT = "BUZZ_AGENT_TIMEOUT_SECONDS"
 ENV_MAX_RETRIES = "BUZZ_AGENT_MAX_RETRIES"
 ENV_MAX_OUTPUT_TOKENS = "BUZZ_AGENT_MAX_OUTPUT_TOKENS"
 ENV_WRITES_ENABLED = "BUZZ_AGENT_WRITES_ENABLED"
+ENV_PRIVATE_HOSTS = "BUZZ_AGENT_PRIVATE_HOSTS"
 
 SECRET_ENV_VARS = (ENV_API_KEY,)
 REDACTED = "***redacted***"
@@ -83,16 +90,18 @@ class _Secret:
         return hash((_Secret, self._value))
 
 
-def _is_private_host(host: str) -> bool:
+def _is_private_host(host: str, allowed_hosts: frozenset[str] = frozenset()) -> bool:
     lowered = host.lower()
-    if lowered in _PRIVATE_HOSTS or lowered.endswith(_PRIVATE_SUFFIXES):
+    if lowered in _PRIVATE_HOSTS or lowered in allowed_hosts:
         return True
-    if "." not in lowered:
-        # A bare hostname is a Compose service or single-label internal name.
+    if lowered.endswith(_PRIVATE_SUFFIXES):
         return True
     try:
         address = ipaddress.ip_address(lowered)
     except ValueError:
+        # Hostnames — including bare single-label names, which search domains
+        # or controlled DNS can resolve anywhere — are private only when
+        # explicitly allow-listed above.
         return False
     return address.is_private or address.is_loopback
 
@@ -116,6 +125,10 @@ class ProviderProfile:
     max_output_tokens: int = 1024
     writes_enabled: bool = False
     capabilities: tuple[str, ...] = field(default=())
+    private_hosts: frozenset[str] = field(default=frozenset())
+    # Contract for the future HTTP client: never follow a redirect (and so
+    # never forward Authorization to another origin). Not configurable.
+    follow_redirects: bool = False
 
     @property
     def host(self) -> str:
@@ -123,7 +136,7 @@ class ProviderProfile:
 
     @property
     def is_private_endpoint(self) -> bool:
-        return _is_private_host(self.host)
+        return _is_private_host(self.host, self.private_hosts)
 
     @property
     def provider_label(self) -> str:
@@ -163,6 +176,12 @@ class ProviderProfile:
         elif api != SUPPORTED_API:
             problems.append(f"{ENV_API} must be '{SUPPORTED_API}' for Together/local endpoints")
 
+        allowed_hosts = frozenset(
+            part.strip().lower()
+            for part in (environ.get(ENV_PRIVATE_HOSTS) or "").split(",")
+            if part.strip()
+        )
+
         base_url = (environ.get(ENV_BASE_URL) or "").strip()
         host = ""
         if not base_url:
@@ -176,9 +195,10 @@ class ProviderProfile:
                 problems.append(f"{ENV_BASE_URL} must not embed credentials")
             elif parts.query or parts.fragment:
                 problems.append(f"{ENV_BASE_URL} must not carry a query string or fragment")
-            elif parts.scheme == "http" and not _is_private_host(host):
+            elif parts.scheme == "http" and not _is_private_host(host, allowed_hosts):
                 problems.append(
-                    f"{ENV_BASE_URL} uses plain http on a non-private host; "
+                    f"{ENV_BASE_URL} uses plain http on a host that is not loopback, "
+                    f"a private address, or allow-listed in {ENV_PRIVATE_HOSTS}; "
                     "endpoints that cross hosts require TLS"
                 )
 
@@ -189,7 +209,7 @@ class ProviderProfile:
             problems.append(f"{ENV_MODEL} must pin an exact model ID, not a 'latest' alias")
 
         raw_key = (environ.get(ENV_API_KEY) or "").strip()
-        if base_url and host and not _is_private_host(host) and not raw_key:
+        if base_url and host and not _is_private_host(host, allowed_hosts) and not raw_key:
             problems.append(f"{ENV_API_KEY} is required for non-private endpoints")
 
         timeout = _parse_number(
@@ -225,6 +245,7 @@ class ProviderProfile:
             max_retries=retries,
             max_output_tokens=max_tokens,
             writes_enabled=writes_enabled,
+            private_hosts=allowed_hosts,
         )
 
 
