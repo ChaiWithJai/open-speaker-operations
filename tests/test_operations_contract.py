@@ -207,3 +207,10 @@ def test_production_deploy_imports_and_verifies_conference_memory_before_smoke()
     assert coverage < history_import < protected_smoke
     assert '--contract "$history_contract" --strict' in source
     assert "--prune --confirm-prune --verify" in source
+
+
+def test_production_ssh_keeps_long_atomic_import_alive():
+    workflow = (ROOT / ".github/workflows/deploy-digitalocean.yml").read_text()
+    assert "ServerAliveInterval 30" in workflow
+    assert "ServerAliveCountMax 20" in workflow
+    assert "TCPKeepAlive yes" in workflow

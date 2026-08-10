@@ -50,6 +50,13 @@ jobs:
           chmod 0600 ~/.ssh/id_ed25519
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 0600 ~/.ssh/known_hosts
+          printf '%s\n' \
+            'Host *' \
+            '  ServerAliveInterval 30' \
+            '  ServerAliveCountMax 20' \
+            '  TCPKeepAlive yes' \
+            > ~/.ssh/config
+          chmod 0600 ~/.ssh/config
       - name: Upload deployment contract
         env:
           HOST: ${{ secrets.DIGITALOCEAN_HOST }}
