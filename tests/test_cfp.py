@@ -100,6 +100,37 @@ def test_seeded_cfp_renders_accepts_all_p0_field_types_and_resumes_draft(event, 
         )
 
 
+@pytest.mark.django_db
+def test_changing_shared_cfp_deadline_keeps_submission_formats_open(event):
+    """The public form must not lose every format after an operator extends the CFP."""
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        event.save(update_fields=["plugins"])
+        original_deadline = event.cfp.deadline
+        event.submission_types.update(deadline=original_deadline)
+
+        extended_deadline = original_deadline + timedelta(days=30)
+        event.cfp.deadline = extended_deadline
+        event.cfp.save(update_fields=["deadline", "updated"])
+
+        assert set(event.submission_types.values_list("deadline", flat=True)) == {extended_deadline}
+
+        workshop = event.submission_types.get(name="Workshop")
+        workshop_deadline = extended_deadline + timedelta(days=7)
+        workshop.deadline = workshop_deadline
+        workshop.save(update_fields=["deadline", "updated"])
+
+        second_extension = extended_deadline + timedelta(days=60)
+        event.cfp.deadline = second_extension
+        event.cfp.save(update_fields=["deadline", "updated"])
+
+        workshop.refresh_from_db()
+        assert workshop.deadline == workshop_deadline
+        assert set(
+            event.submission_types.exclude(pk=workshop.pk).values_list("deadline", flat=True)
+        ) == {second_extension}
+
+
 @pytest.mark.django_db(transaction=True)
 @override_settings(
     STORAGES={

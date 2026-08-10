@@ -1,5 +1,5 @@
 from django.contrib.auth.signals import user_logged_in
-from django.db.models.signals import m2m_changed
+from django.db.models.signals import m2m_changed, post_save, pre_save
 from django.dispatch import receiver
 from django.templatetags.static import static
 from django.urls import reverse
@@ -9,13 +9,40 @@ from pretalx.cfp.signals import html_head as cfp_html_head
 from pretalx.orga.signals import html_above_orga_page, nav_event
 from pretalx.orga.signals import html_head as orga_html_head
 from pretalx.schedule.signals import schedule_release
-from pretalx.submission.models import Submission
+from pretalx.submission.models import CfP, Submission
 from pretalx.submission.signals import submission_state_change
 
 from .auth import is_speaker, role_home_url, role_navigation
 from .cfp import conditional_rules_for_browser
 from .models import PreviewRun, SubmissionPresenterRole
 from .onboarding.services import ensure_acceptance_plan
+
+
+@receiver(pre_save, sender=CfP)
+def remember_shared_cfp_deadline(sender, instance, **kwargs):
+    """Remember the old shared deadline so format-specific overrides remain intact."""
+    instance._speakerops_deadline_changed = False
+    if not instance.pk or "pretalx_speakerops" not in instance.event.plugin_list:
+        return
+    previous_deadline = (
+        sender.objects.filter(pk=instance.pk).values_list("deadline", flat=True).first()
+    )
+    if previous_deadline != instance.deadline:
+        instance._speakerops_deadline_changed = True
+        instance._speakerops_previous_deadline = previous_deadline
+
+
+@receiver(post_save, sender=CfP)
+def synchronize_shared_cfp_deadline(sender, instance, **kwargs):
+    """Extend formats that followed the old CFP deadline without erasing overrides."""
+    if not getattr(instance, "_speakerops_deadline_changed", False):
+        return
+    if "pretalx_speakerops" not in instance.event.plugin_list:
+        return
+    previous_deadline = instance._speakerops_previous_deadline
+    instance.event.submission_types.filter(deadline=previous_deadline).update(
+        deadline=instance.deadline
+    )
 
 
 @receiver(submission_state_change)
