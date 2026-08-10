@@ -1,8 +1,9 @@
 import pytest
 from django.core.management import call_command
+from django.urls import reverse
 from django_scopes import scope
 from pretalx.common.models import ActivityLog
-from pretalx.event.models import Event
+from pretalx.event.models import Event, Team
 from pretalx.person.models import User
 from pretalx.submission.models import Answer
 
@@ -142,7 +143,7 @@ def _baseline(event):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monkeypatch):
+def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monkeypatch, client):
     monkeypatch.setenv("SPEAKEROPS_DEMO_PASSWORD", "test-demo-password")
     monkeypatch.setenv("DJANGO_SUPERUSER_EMAIL", "seed-admin@example.org")
     monkeypatch.setenv("DJANGO_SUPERUSER_PASSWORD", "test-password")
@@ -196,6 +197,35 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         assert second_speaker.name == "Marcus Okafor"
         assert primary_speaker.check_password("test-demo-password")
         assert second_speaker.check_password("test-demo-password")
+        chair = User.objects.get(email="chair@example.org")
+        chair_team = chair.teams.get(
+            organiser=event.organiser,
+            name="SpeakerOps program chair",
+        )
+        assert chair_team.can_change_submissions is True
+        assert chair_team.can_change_event_settings is True
+        assert chair_team.can_change_teams is True
+        assert chair.has_perm("event.update_event", event)
+
+        client.force_login(chair)
+        assert (
+            client.get(reverse("orga:cfp.text.view", kwargs={"event": event.slug})).status_code
+            == 200
+        )
+        reviewer_team = Team.objects.get(
+            organiser=event.organiser,
+            name="SpeakerOps reviewers",
+        )
+        assert (
+            client.get(
+                reverse(
+                    "orga:organiser.teams.update",
+                    kwargs={"organiser": event.organiser.slug, "pk": reviewer_team.pk},
+                )
+            ).status_code
+            == 200
+        )
+        client.logout()
         released = first["released_program"]
         assert len(released) == len(CURATED_PROGRAM) == 12
         assert {row[3] for row in released} == {"Main Stage", "Studio"}

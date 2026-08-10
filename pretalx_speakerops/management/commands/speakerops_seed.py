@@ -249,7 +249,14 @@ class Command(BaseCommand):
                 "SpeakerOps organisers",
                 {"can_change_event_settings": True, "can_change_submissions": True},
             ),
-            ("SpeakerOps program chair", {"can_change_submissions": True}),
+            (
+                "SpeakerOps program chair",
+                {
+                    "can_change_submissions": True,
+                    "can_change_event_settings": True,
+                    "can_change_teams": True,
+                },
+            ),
             ("SpeakerOps reviewers", {"can_change_submissions": False, "is_reviewer": True}),
         )
         for name, permissions in teams:
