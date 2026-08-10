@@ -37,8 +37,8 @@
       <label for="request-due">Due date</label>
       <input class="form-control" id="request-due" name="due_date" type="date" required>
       <fieldset>
-        <legend>Assign to speakers</legend>
-        {% for speaker in speakers %}<label class="speakerops-check"><input type="checkbox" name="speakers" value="{{ speaker.pk }}"> {{ speaker.get_display_name }}{% if speaker.email %} · {{ speaker.email }}{% endif %}</label>{% empty %}<p>No speakers are attached to event submissions.</p>{% endfor %}
+        <legend>Assign to accepted sessions and speakers</legend>
+        {% for row in assignment_rows %}<label class="speakerops-check"><input type="checkbox" name="assignments" value="{{ row.submission.pk }}:{{ row.speaker.pk }}"> {{ row.speaker.get_display_name }}{% if row.speaker.email %} · {{ row.speaker.email }}{% endif %} · “{{ row.submission.title }}”</label>{% empty %}<p>No speakers are attached to accepted or confirmed sessions.</p>{% endfor %}
       </fieldset>
       <button class="btn btn-primary" type="submit">Create and assign file request</button>
     </form>
