@@ -33,7 +33,7 @@ def test_aie_cfp_configures_exact_formats_topics_policy_and_waves(event):
         )
 
     assert submission_types == dict(SESSION_FORMATS)
-    assert str(event.cfp.default_type.name) == "Stage Talk"
+    assert str(event.cfp.default_type.name) == "Talk (30 min)"
     assert set(AIE_TRACKS) <= track_names
     assert set(by_name) >= {
         "Review category",
@@ -49,6 +49,6 @@ def test_aie_cfp_configures_exact_formats_topics_policy_and_waves(event):
     assert by_name["Topics"].required
     assert by_name["Key takeaway"].required
     assert audience_options == ["Beginner", "Intermediate", "Advanced"]
-    assert prerequisite_types == ["Workshop"]
+    assert prerequisite_types == ["Workshop", "Workshop (120 min)"]
     assert [name for name, _when in waves] == ["Wave 1", "Wave 2", "Wave 3"]
     assert [(when.month, when.day) for _name, when in waves] == [(8, 15), (9, 1), (9, 15)]

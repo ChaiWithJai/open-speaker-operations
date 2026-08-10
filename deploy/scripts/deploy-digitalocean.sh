@@ -6,10 +6,15 @@ public_url="${SPEAKEROPS_PUBLIC_URL:-https://loop.dharmicdata.org}"
 compose_project="${SPEAKEROPS_COMPOSE_PROJECT:-speakerops}"
 skip_pull="${SPEAKEROPS_SKIP_PULL:-false}"
 expected_app_version="${SPEAKEROPS_EXPECTED_APP_VERSION:-}"
+restore_demo="${SPEAKEROPS_RESTORE_DEMO:-false}"
 new_image="${1:?usage: deploy-digitalocean.sh ghcr.io/chaiwithjai/open-speaker-operations@sha256:<digest>}"
 case "$compose_project" in
   speakerops|speakerops-*) ;;
   *) echo "Refusing unexpected Compose project: $compose_project" >&2; exit 2 ;;
+esac
+case "$restore_demo" in
+  true|false) ;;
+  *) echo "SPEAKEROPS_RESTORE_DEMO must be true or false." >&2; exit 2 ;;
 esac
 if [ "$skip_pull" = "true" ]; then
   [[ "$new_image" =~ ^ghcr\.io/chaiwithjai/open-speaker-operations:([0-9a-f]{40})$ ]] || {
@@ -149,6 +154,11 @@ for service in web worker beat mock-accelevents; do
     }
   fi
 done
+
+if [ "$restore_demo" = "true" ]; then
+  echo "Restoring deterministic speakerops-demo dataset from the deployed image."
+  "${compose[@]}" exec -T web python -m pretalx speakerops_seed
+fi
 
 # Conference memory is a contracted production dataset, not part of the lightweight
 # event seed. Import and verify it once per immutable deployment so a green release

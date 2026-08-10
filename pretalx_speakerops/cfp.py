@@ -20,6 +20,11 @@ from pretalx.submission.models.question import QuestionRequired
 from .models import AcceptanceWave
 
 SESSION_FORMATS = (
+    ("Keynote (45 min)", 45),
+    ("Talk (30 min)", 30),
+    ("Lightning Talk (10 min)", 10),
+    ("Workshop (120 min)", 120),
+    ("Panel (45 min)", 45),
     ("Workshop", 90),
     ("Stage Talk", 20),
     ("Lightning Talk", 10),
@@ -28,6 +33,9 @@ SESSION_FORMATS = (
 
 ACCEPTANCE_WAVES = (("Wave 1", 8, 15), ("Wave 2", 9, 1), ("Wave 3", 9, 15))
 AIE_TRACKS = (
+    "AI Engineering",
+    "Platform & Infra",
+    "Developer Experience",
     "AI in Financial Services",
     "Evals and Observability",
     "Infrastructure",
@@ -98,7 +106,7 @@ def _configure_submission_types(event):
     event.cfp.default_type = next(
         submission_type
         for submission_type in configured
-        if str(submission_type.name) == "Stage Talk"
+        if str(submission_type.name) == "Talk (30 min)"
     )
     event.cfp.save(update_fields=["default_type", "updated"])
     return configured
@@ -162,7 +170,7 @@ def configure_demo_cfp(event):
                 [
                     submission_type
                     for submission_type in submission_types
-                    if str(submission_type.name) == "Workshop"
+                    if str(submission_type.name) in {"Workshop", "Workshop (120 min)"}
                 ]
                 if label == "Workshop prerequisites"
                 else submission_types
@@ -462,7 +470,14 @@ def validate_aie_submission_policy(submission):
     relationship = values.get("Commercial relationship") or []
     context = values.get("Proposed session context") or []
     is_vendor = any("vendor" in value.lower() for value in relationship)
-    is_main_stage = str(submission.submission_type.name) == "Stage Talk" or "Main stage" in context
+    is_main_stage = (
+        str(submission.submission_type.name)
+        in {
+            "Stage Talk",
+            "Talk (30 min)",
+        }
+        or "Main stage" in context
+    )
     if is_vendor and is_main_stage:
         raise ValidationError(
             "Vendor-only talks are not eligible for the main stage. "

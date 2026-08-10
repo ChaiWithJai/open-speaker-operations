@@ -15,6 +15,11 @@ on:
         description: Immutable sha256 registry digest produced by the image job
         required: true
         type: string
+      restore_demo_seed:
+        description: Restore the deterministic speakerops-demo dataset after deployment
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -89,4 +94,5 @@ jobs:
           HOST: ${{ secrets.DIGITALOCEAN_HOST }}
           USER: ${{ secrets.DIGITALOCEAN_USER }}
           IMAGE: ghcr.io/chaiwithjai/open-speaker-operations@${{ env.IMAGE_DIGEST }}
-        run: ssh "$USER@$HOST" "SPEAKEROPS_APP_DIR='$APP_DIR' SPEAKEROPS_PUBLIC_URL='$PUBLIC_URL' SPEAKEROPS_EXPECTED_APP_VERSION='$DEPLOY_SHA' '$APP_DIR/deploy-digitalocean.sh' '$IMAGE'"
+          RESTORE_DEMO_SEED: ${{ github.event.inputs.restore_demo_seed || 'false' }}
+        run: ssh "$USER@$HOST" "SPEAKEROPS_APP_DIR='$APP_DIR' SPEAKEROPS_PUBLIC_URL='$PUBLIC_URL' SPEAKEROPS_EXPECTED_APP_VERSION='$DEPLOY_SHA' SPEAKEROPS_RESTORE_DEMO='$RESTORE_DEMO_SEED' '$APP_DIR/deploy-digitalocean.sh' '$IMAGE'"
