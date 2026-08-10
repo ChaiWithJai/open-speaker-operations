@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django_scopes import scope
 from pretalx.schedule.models import Schedule
-from pretalx.schedule.services import freeze_schedule
+from pretalx.submission.models import SubmissionStates
 
 
 @dataclass(frozen=True)
@@ -23,8 +24,8 @@ def schedule_slots(schedule):
             submission__isnull=False,
             start__isnull=False,
             end__isnull=False,
-            is_visible=True,
         )
+        .filter(Q(is_visible=True) | Q(submission__state__in=SubmissionStates.accepted_states))
         .select_related("room", "submission", "submission__track")
         .prefetch_related("submission__speakers")
         .order_by("start", "pk")
@@ -113,10 +114,12 @@ def assert_release_allowed(schedule):
 
 
 def release_schedule(schedule, name, user=None, **kwargs):
-    """The plugin's release entry point, preserving pretalx's freeze service."""
+    """Release the current WIP schedule through pretalx's event-level API."""
     with scope(event=schedule.event):
+        if schedule.pk != schedule.event.wip_schedule.pk:
+            raise ValidationError("Only the current working schedule can be released.")
         assert_release_allowed(schedule)
-        return freeze_schedule(schedule, name=name, user=user, **kwargs)
+        return schedule.event.release_schedule(name, user=user, **kwargs)
 
 
 @receiver(pre_save, sender=Schedule)

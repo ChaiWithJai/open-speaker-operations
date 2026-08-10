@@ -3,7 +3,9 @@ from datetime import datetime, time, timedelta
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Q
 from django_scopes import scope
+from pretalx.submission.models import SubmissionStates
 
 
 @dataclass(frozen=True)
@@ -40,7 +42,8 @@ def build_schedule_proposal(schedule, *, day_start=time(9), day_end=time(18), st
         raise ValidationError("Add at least one room before generating an agenda proposal.")
 
     slots = list(
-        schedule.talks.filter(submission__isnull=False, is_visible=True)
+        schedule.talks.filter(submission__isnull=False)
+        .filter(Q(is_visible=True) | Q(submission__state__in=SubmissionStates.accepted_states))
         .select_related("submission", "room")
         .prefetch_related("submission__speakers")
         .order_by("start", "pk")
