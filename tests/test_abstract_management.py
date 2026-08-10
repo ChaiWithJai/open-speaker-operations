@@ -5,7 +5,7 @@ import pytest
 from django.urls import reverse
 from django_scopes import scope
 from pretalx.mail.models import QueuedMail
-from pretalx.person.models import User
+from pretalx.person.models import SpeakerProfile, User
 from pretalx.submission.models import SubmissionStates
 
 from pretalx_speakerops.models import (
@@ -113,8 +113,21 @@ def test_exact_assignments_cap_progress_reminder_and_reviewer_isolation(event, u
         event.enable_plugin("pretalx_speakerops")
         event.save(update_fields=["plugins"])
         submissions = _submitted(event)
+        submissions[0].state = SubmissionStates.ACCEPTED
+        submissions[0].save(update_fields=["state", "updated"])
+        submissions[1].state = SubmissionStates.REJECTED
+        submissions[1].save(update_fields=["state", "updated"])
+        submissions[2].state = SubmissionStates.DRAFT
+        submissions[2].save(update_fields=["state", "updated"])
         users["speaker"].name = "Secret Priya Raman"
         users["speaker"].save(update_fields=["name"])
+        SpeakerProfile.objects.update_or_create(
+            event=event,
+            user=users["speaker"],
+            defaults={
+                "biography": "Secret biography for Latticework Systems, never reviewer-visible."
+            },
+        )
         submissions[0].speakers.add(users["speaker"])
         round_obj = EvaluationRound.objects.create(
             event=event,
@@ -153,6 +166,12 @@ def test_exact_assignments_cap_progress_reminder_and_reviewer_isolation(event, u
         },
     )
     assert response.status_code == 302
+    assignment_page = client.get(manage_url)
+    assignment_body = assignment_page.content.decode()
+    assert "Decision-safe review policy" in assignment_body
+    assert submissions[0].title in assignment_body
+    assert submissions[1].title in assignment_body
+    assert submissions[2].title not in assignment_body
     with scope(event=event):
         assignments = list(
             RoundReviewAssignment.objects.filter(round=round_obj).order_by("submission_id")
@@ -175,7 +194,26 @@ def test_exact_assignments_cap_progress_reminder_and_reviewer_isolation(event, u
     assert submissions[0].title in body and submissions[1].title in body
     assert submissions[2].title not in body
     assert "Secret Priya Raman" not in body
+    assert "Secret biography" not in body
+    assert "Latticework Systems" not in body
     assert "Author identity hidden" in body
+    legacy_queue = reverse(
+        "plugins:speakerops:speakerops_review_queue", kwargs={"event": event.slug}
+    )
+    legacy = client.get(legacy_queue)
+    assert legacy.status_code == 302
+    assert legacy.url == queue_url
+    legacy_detail = client.get(
+        reverse(
+            "plugins:speakerops:speakerops_review",
+            kwargs={"event": event.slug, "pk": submissions[0].pk},
+        )
+    )
+    assert legacy_detail.status_code == 302
+    assert legacy_detail.url == reverse(
+        "plugins:speakerops:speakerops_round_review",
+        kwargs={"event": event.slug, "assignment": assignments[0].pk},
+    )
 
     with scope(event=event):
         other_reviewer = User.objects.create_user(
@@ -342,6 +380,9 @@ def test_mixed_scorecard_roundtrip_weighted_aggregate_sort_and_csv(event, users,
     assert rows[1]["aggregate"].quantize(Decimal("0.01")) == Decimal("3.33")
     assert b"Organizer-visible Priya" in descending.content
     assert b"Presenter" in descending.content
+    assert b"Strong fit with concrete evidence." in descending.content
+    assert b"Accept" in descending.content
+    assert b"complete" in descending.content
     assert [row["submission"].pk for row in rows] == [
         submissions[1].pk,
         submissions[0].pk,
@@ -358,6 +399,59 @@ def test_mixed_scorecard_roundtrip_weighted_aggregate_sort_and_csv(event, users,
     assert users["reviewer"].email.encode() in exported.content
     assert b'complete,"{""Comments""' in exported.content
     assert b'""Originality"": ""4.00""' in exported.content
+
+
+@pytest.mark.django_db(transaction=True)
+def test_descending_weighted_results_keep_unreviewed_assignments_below_scores(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submissions = _submitted(event, 3)
+        round_obj = EvaluationRound.objects.create(
+            event=event,
+            name="Initial Review",
+            opens_at="2026-08-01",
+            closes_at="2026-10-15",
+        )
+        criterion = EvaluationCriterion.objects.create(
+            event=event,
+            round=round_obj,
+            name="Originality",
+            field_type=EvaluationCriterion.NUMERIC,
+            weight=1,
+            minimum=1,
+            maximum=5,
+        )
+        assignments = [
+            RoundReviewAssignment.objects.create(
+                event=event,
+                round=round_obj,
+                reviewer=users["reviewer"],
+                submission=submission,
+            )
+            for submission in submissions
+        ]
+        assignments[0].status = RoundReviewAssignment.COMPLETE
+        assignments[0].save(update_fields=["status", "updated"])
+        EvaluationAnswer.objects.create(
+            event=event,
+            assignment=assignments[0],
+            criterion=criterion,
+            numeric_value=Decimal("4"),
+        )
+
+    client.force_login(users["chair"])
+    url = reverse("plugins:speakerops:speakerops_abstract_management", kwargs={"event": event.slug})
+    descending = client.get(f"{url}?sort=desc")
+    rows = descending.context["round_results"][0][1]
+
+    assert [row["submission"].pk for row in rows] == [
+        submissions[0].pk,
+        submissions[1].pk,
+        submissions[2].pk,
+    ]
+    assert rows[0]["aggregate"] == Decimal("4")
+    assert rows[1]["aggregate"] is None and rows[2]["aggregate"] is None
+    assert descending.content.decode().count("Not scored") == 2
 
 
 @pytest.mark.django_db(transaction=True)

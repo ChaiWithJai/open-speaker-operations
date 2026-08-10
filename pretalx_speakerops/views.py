@@ -26,7 +26,14 @@ from pretalx.person.models import User
 from pretalx.schedule.models import Room
 from pretalx.submission.models import Review, ReviewScore, Submission, SubmissionStates, Track
 
-from .auth import can_manage, is_speaker, require_event_permission, role_home_url, role_navigation
+from .auth import (
+    can_manage,
+    has_round_assignments,
+    is_speaker,
+    require_event_permission,
+    role_home_url,
+    role_navigation,
+)
 from .cfp_forms import ConditionalQuestionRuleForm, ReviewerPoolForm
 from .conference_memory import (
     conference_coverage,
@@ -56,6 +63,7 @@ from .models import (
     Resource,
     ReviewerPool,
     ReviewRecommendation,
+    RoundReviewAssignment,
     SessionPublicationApproval,
     SpeakerMemoryProfile,
     SubmissionPresenterRole,
@@ -195,6 +203,9 @@ class EventContextMixin(LoginRequiredMixin):
         permission = getattr(self, "permission", "dashboard")
         if permission == "review":
             require_event_permission(request.user, self.event, "submission.orga_list_submission")
+            authorized_events = getattr(request.user, "_speakerops_review_event_ids", set())
+            authorized_events.add(self.event.pk)
+            request.user._speakerops_review_event_ids = authorized_events
         elif permission == "manage":
             require_event_permission(
                 request.user, self.event, "event.update_event", "submission.orga_update_submission"
@@ -1155,6 +1166,35 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
     permission = "review"
     template_name = "pretalx_speakerops/reviewer_scoring.html"
 
+    def _round_review_destination(self):
+        assignments = RoundReviewAssignment.objects.filter(
+            event=self.event,
+            reviewer=self.request.user,
+        ).exclude(status=RoundReviewAssignment.RECUSED)
+        if not has_round_assignments(self.request.user, self.event):
+            return None
+        if submission_id := self.kwargs.get("pk"):
+            assignment = (
+                assignments.filter(submission_id=submission_id)
+                .order_by("round__position", "pk")
+                .first()
+            )
+            if assignment:
+                return reverse(
+                    "plugins:speakerops:speakerops_round_review",
+                    kwargs={"event": self.event.slug, "assignment": assignment.pk},
+                )
+        return reverse(
+            "plugins:speakerops:speakerops_round_review_queue",
+            kwargs={"event": self.event.slug},
+        )
+
+    def get(self, request, *args, **kwargs):
+        with scope(event=self.event):
+            if destination := self._round_review_destination():
+                return redirect(destination)
+        return super().get(request, *args, **kwargs)
+
     def _queue(self):
         queue = Submission.objects.filter(
             event=self.event,
@@ -1250,6 +1290,8 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
 
     def post(self, request, event, pk=None):
         with scope(event=self.event):
+            if destination := self._round_review_destination():
+                return redirect(destination)
             configure_review_rounds(self.event)
             submission = self._submission()
             if not submission:

@@ -17,13 +17,45 @@ def is_speaker(user, event):
 
 
 def can_review(user, event):
-    return user.is_administrator or user.has_perm(REVIEW_PERMISSION, event)
+    if user.is_administrator:
+        return True
+    authorized_events = getattr(user, "_speakerops_review_event_ids", set())
+    if event.pk in authorized_events:
+        return True
+    allowed = user.has_perm(REVIEW_PERMISSION, event)
+    if allowed:
+        authorized_events.add(event.pk)
+        user._speakerops_review_event_ids = authorized_events
+    return allowed
 
 
 def can_manage(user, event):
-    return user.is_administrator or any(
-        user.has_perm(permission, event) for permission in MANAGE_PERMISSIONS
+    if user.is_administrator:
+        return True
+    cache = getattr(user, "_speakerops_manage_permissions", {})
+    if event.pk in cache:
+        return cache[event.pk]
+    allowed = any(user.has_perm(permission, event) for permission in MANAGE_PERMISSIONS)
+    cache[event.pk] = allowed
+    user._speakerops_manage_permissions = cache
+    return allowed
+
+
+def has_round_assignments(user, event):
+    """Return whether the reviewer has a canonical round-review queue."""
+    from .models import RoundReviewAssignment
+
+    cache = getattr(user, "_speakerops_round_assignment_presence", {})
+    if event.pk in cache:
+        return cache[event.pk]
+    result = (
+        RoundReviewAssignment.objects.filter(event=event, reviewer=user)
+        .exclude(status=RoundReviewAssignment.RECUSED)
+        .exists()
     )
+    cache[event.pk] = result
+    user._speakerops_round_assignment_presence = cache
+    return result
 
 
 def role_navigation(user, event, current_path=""):
@@ -32,7 +64,9 @@ def role_navigation(user, event, current_path=""):
         return []
 
     destinations = []
-    if is_speaker(user, event):
+    # Keep organizer/reviewer pages focused on their current authority. The
+    # role-entry route still exposes the speaker workspace for dual-role users.
+    if not current_path.startswith("/orga/") and is_speaker(user, event):
         destinations.extend(
             (
                 {
@@ -54,8 +88,19 @@ def role_navigation(user, event, current_path=""):
             )
         )
     if can_review(user, event):
-        destinations.extend(
-            (
+        if has_round_assignments(user, event):
+            destinations.append(
+                {
+                    "label": "Assigned round reviews",
+                    "url": reverse(
+                        "plugins:speakerops:speakerops_round_review_queue",
+                        kwargs={"event": event.slug},
+                    ),
+                    "section": "round-review",
+                }
+            )
+        else:
+            destinations.append(
                 {
                     "label": "Review queue",
                     "url": reverse(
@@ -63,24 +108,17 @@ def role_navigation(user, event, current_path=""):
                         kwargs={"event": event.slug},
                     ),
                     "section": "reviewer",
-                },
-                {
-                    "label": "Round reviews",
-                    "url": reverse(
-                        "plugins:speakerops:speakerops_round_review_queue",
-                        kwargs={"event": event.slug},
-                    ),
-                    "section": "round-review",
-                },
-                {
-                    "label": "Conference memory",
-                    "url": reverse(
-                        "plugins:speakerops:speakerops_conference_memory",
-                        kwargs={"event": event.slug},
-                    ),
-                    "section": "conference-memory",
-                },
+                }
             )
+        destinations.append(
+            {
+                "label": "Conference memory",
+                "url": reverse(
+                    "plugins:speakerops:speakerops_conference_memory",
+                    kwargs={"event": event.slug},
+                ),
+                "section": "conference-memory",
+            }
         )
     if can_manage(user, event):
         destinations.extend(
@@ -187,7 +225,7 @@ def role_navigation(user, event, current_path=""):
 def role_home_url(user, event):
     """Choose the highest-authority useful home for one event."""
     navigation = role_navigation(user, event)
-    preferred_sections = ("operations", "reviewer", "checklist")
+    preferred_sections = ("operations", "round-review", "reviewer", "checklist")
     for section in preferred_sections:
         if destination := next((item for item in navigation if item["section"] == section), None):
             return destination["url"]

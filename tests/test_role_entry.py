@@ -2,6 +2,8 @@ import pytest
 from django.urls import reverse
 from django_scopes import scope
 
+from pretalx_speakerops.models import EvaluationRound, RoundReviewAssignment
+
 
 def _prepare_roles(event, users):
     with scope(event=event):
@@ -147,3 +149,47 @@ def test_explicit_login_return_path_is_preserved(event, users, client):
 
     assert response.status_code == 302
     assert response.url == destination
+
+
+@pytest.mark.django_db(transaction=True)
+def test_reviewer_with_round_work_lands_on_the_canonical_exact_queue(event, users, client):
+    submission = _prepare_roles(event, users)
+    with scope(event=event):
+        round_obj = EvaluationRound.objects.create(
+            event=event,
+            name="Initial Review",
+            opens_at="2026-08-01",
+            closes_at="2026-10-15",
+            blinded=True,
+        )
+        RoundReviewAssignment.objects.create(
+            event=event,
+            round=round_obj,
+            reviewer=users["reviewer"],
+            submission=submission,
+        )
+
+    client.force_login(users["reviewer"])
+    entry = client.get(reverse("plugins:speakerops:speakerops_entry", kwargs={"event": event.slug}))
+
+    canonical = reverse(
+        "plugins:speakerops:speakerops_round_review_queue", kwargs={"event": event.slug}
+    )
+    assert entry.status_code == 302
+    assert entry.url == canonical
+    queue = client.get(canonical)
+    assert queue.status_code == 200
+    assert "Assigned round reviews" in queue.content.decode()
+    assert "Review queue" not in queue.content.decode()
+
+    client.logout()
+    signed_in = client.post(
+        reverse("orga:event.login", kwargs={"event": event.slug}),
+        {
+            "login_email": users["reviewer"].email,
+            "login_password": "test-password",
+        },
+        follow=True,
+    )
+    assert signed_in.status_code == 200
+    assert signed_in.request["PATH_INFO"] == canonical
