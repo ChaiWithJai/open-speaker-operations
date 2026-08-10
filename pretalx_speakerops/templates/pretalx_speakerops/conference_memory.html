@@ -10,8 +10,8 @@
   <header class="speakerops__header">
     <div>
       <p class="speakerops__eyebrow">Conference memory</p>
-      <h1 id="memory-title">What has this community already heard?</h1>
-      <p>Search sourced programs before routing proposals, assembling a track, or inviting a speaker back.</p>
+      <h1 id="memory-title">What has this community programmed?</h1>
+      <p>Search sourced programs before routing proposals, assembling a track, or inviting a speaker back. Separate past programs from announced upcoming evidence.</p>
     </div>
     <span class="speakerops-status"><strong>{{ historical_talk_count }}</strong> sourced talks</span>
   </header>
@@ -24,10 +24,17 @@
       <option value="">All conference families</option>
       {% for item in conference_series %}<option value="{{ item.slug }}"{% if selected_series == item.slug %} selected{% endif %}>{{ item.name }}</option>{% endfor %}
     </select>
+    <label for="memory-timing">Program timing</label>
+    <select class="form-control" id="memory-timing" name="timing">
+      <option value="all"{% if selected_timing == "all" %} selected{% endif %}>All dated and undated evidence</option>
+      <option value="past"{% if selected_timing == "past" %} selected{% endif %}>Past and current programs</option>
+      <option value="upcoming"{% if selected_timing == "upcoming" %} selected{% endif %}>Upcoming announced programs</option>
+      <option value="undated"{% if selected_timing == "undated" %} selected{% endif %}>Undated evidence</option>
+    </select>
     <button class="btn btn-primary" type="submit">Search memory</button>
   </form>
 
-  <section class="speakerops-panel" aria-labelledby="memory-signals-title">
+  <section class="speakerops-panel speakerops-panel--stack" aria-labelledby="memory-signals-title">
     <p class="speakerops__eyebrow">AIE decision support · evidence, not a score</p>
     <h2 id="memory-signals-title">How this evidence compares</h2>
     <p>These counts describe sourced programs matching the current search. They do not rank a proposal, infer missing labels, or replace reviewer and chair judgment.</p>
@@ -35,12 +42,12 @@
       <article>
         <h3>AI Engineer precedent</h3>
         <p><strong>{{ memory_insights.aie.talks }}</strong> talks across <strong>{{ memory_insights.aie.editions }}</strong> editions.</p>
-        <p>Most recent dated evidence: {{ memory_insights.aie.latest|date:"M j, Y"|default:"Not available" }}.</p>
+        <p>Most recent program date in this scope: {{ memory_insights.aie.latest|date:"M j, Y"|default:"Not available" }}.</p>
       </article>
       <article>
         <h3>Peer precedent</h3>
         <p><strong>{{ memory_insights.peers.talks }}</strong> talks across <strong>{{ memory_insights.peers.editions }}</strong> editions.</p>
-        <p>Most recent dated evidence: {{ memory_insights.peers.latest|date:"M j, Y"|default:"Not available" }}.</p>
+        <p>Most recent program date in this scope: {{ memory_insights.peers.latest|date:"M j, Y"|default:"Not available" }}.</p>
       </article>
       <article>
         <h3>Evidence limits</h3>
@@ -76,7 +83,7 @@
     </ul>
   </section>
 
-  <section class="speakerops-panel" aria-labelledby="coverage-title">
+  <section class="speakerops-panel speakerops-panel--stack" aria-labelledby="coverage-title">
     <p class="speakerops__eyebrow">Provenance and confidence</p>
     <h2 id="coverage-title">What “full known backfill” means</h2>
     <p>Label coverage measures only source-published format and track fields. Declared gaps and empty editions stay visible; they are not filled with guesses or counted as evidence.</p>
@@ -117,8 +124,8 @@
 
   {% if page_obj.paginator.num_pages > 1 %}
   <nav aria-label="Conference memory result pages">
-    {% if page_obj.has_previous %}<a class="btn btn-secondary" href="?q={{ query|urlencode }}&amp;series={{ selected_series|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
-    {% if page_obj.has_next %}<a class="btn btn-secondary" href="?q={{ query|urlencode }}&amp;series={{ selected_series|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+    {% if page_obj.has_previous %}<a class="btn btn-secondary" href="?q={{ query|urlencode }}&amp;series={{ selected_series|urlencode }}&amp;timing={{ selected_timing|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+    {% if page_obj.has_next %}<a class="btn btn-secondary" href="?q={{ query|urlencode }}&amp;series={{ selected_series|urlencode }}&amp;timing={{ selected_timing|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next</a>{% endif %}
   </nav>
   {% endif %}
 </div>

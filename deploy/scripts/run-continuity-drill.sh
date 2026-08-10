@@ -5,15 +5,19 @@ app_dir="${SPEAKEROPS_APP_DIR:-/opt/open-speaker-operations}"
 public_url="${SPEAKEROPS_PUBLIC_URL:-https://loop.dharmicdata.org}"
 current_image=""
 previous_image=""
+current_version=""
+previous_version=""
 
 usage() {
-  echo "usage: run-continuity-drill.sh --current IMAGE_SHA --previous IMAGE_SHA [--app-dir PATH] [--public-url URL]"
+  echo "usage: run-continuity-drill.sh --current IMAGE --current-version SHA --previous IMAGE --previous-version SHA [--app-dir PATH] [--public-url URL]"
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --current) current_image="${2:?missing --current value}"; shift 2 ;;
+    --current-version) current_version="${2:?missing --current-version value}"; shift 2 ;;
     --previous) previous_image="${2:?missing --previous value}"; shift 2 ;;
+    --previous-version) previous_version="${2:?missing --previous-version value}"; shift 2 ;;
     --app-dir) app_dir="${2:?missing --app-dir value}"; shift 2 ;;
     --public-url) public_url="${2:?missing --public-url value}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
@@ -21,9 +25,11 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-image_pattern='^ghcr\.io/chaiwithjai/open-speaker-operations:[0-9a-f]{40}$'
-[[ "$current_image" =~ $image_pattern ]] || { echo "Current image must use a full GHCR commit-SHA tag." >&2; exit 2; }
-[[ "$previous_image" =~ $image_pattern ]] || { echo "Previous image must use a full GHCR commit-SHA tag." >&2; exit 2; }
+image_pattern='^ghcr\.io/chaiwithjai/open-speaker-operations@sha256:[0-9a-f]{64}$'
+[[ "$current_image" =~ $image_pattern ]] || { echo "Current image must use a full GHCR digest." >&2; exit 2; }
+[[ "$previous_image" =~ $image_pattern ]] || { echo "Previous image must use a full GHCR digest." >&2; exit 2; }
+[[ "$current_version" =~ ^[0-9a-f]{40}$ ]] || { echo "Current version must be a full commit SHA." >&2; exit 2; }
+[[ "$previous_version" =~ ^[0-9a-f]{40}$ ]] || { echo "Previous version must be a full commit SHA." >&2; exit 2; }
 test "$current_image" != "$previous_image"
 app_dir="$(cd "$app_dir" && pwd)"
 cd "$app_dir"
@@ -66,7 +72,8 @@ echo "CONTINUITY_STAGE restore:passed"
 echo "CONTINUITY_STAGE rollback:start previous=$previous_image current=$current_image"
 SPEAKEROPS_SMOKE_PASSWORD="$smoke_password" ./drill-image-rollback.sh \
   --app-dir "$app_dir" --public-url "$public_url" \
-  --current "$current_image" --previous "$previous_image" --yes
+  --current "$current_image" --current-version "$current_version" \
+  --previous "$previous_image" --previous-version "$previous_version" --yes
 test "$(sed -n 's/^APP_IMAGE=//p' .env | tail -n 1)" = "$current_image"
 echo "CONTINUITY_STAGE rollback:passed current=$current_image"
 

@@ -1,8 +1,10 @@
 from decimal import Decimal
+from unittest.mock import patch
 
 import pytest
 from django.urls import reverse
 from django_scopes import scope
+from pretalx.mail.models import QueuedMail
 from pretalx.person.models import User
 from pretalx.submission.models import SubmissionStates
 
@@ -198,10 +200,20 @@ def test_exact_assignments_cap_progress_reminder_and_reviewer_isolation(event, u
     client.force_login(users["chair"])
     progress = client.get(manage_url)
     assert "0 of 2" in progress.content.decode()
-    reminder = client.post(manage_url, {"action": "send_reminders", "memberships": [membership.pk]})
+    with patch("pretalx.common.mail.mail_send_task.apply_async") as dispatch:
+        reminder = client.post(
+            manage_url, {"action": "send_reminders", "memberships": [membership.pk]}
+        )
     assert reminder.status_code == 302
+    assert dispatch.call_count == 1
     with scope(event=event):
         assert OutboxEvent.objects.filter(kind="review.reminder").count() == 1
+        queued = QueuedMail.objects.get(to_users=users["reviewer"])
+        assert "Initial Review" in queued.text
+        assert "2 outstanding review assignment" in queued.text
+        assert queued.sent is not None
+        event_record = OutboxEvent.objects.get(kind="review.reminder")
+        assert event_record.payload["queued_mail_id"] == queued.pk
         membership.refresh_from_db()
         assert membership.last_reminded_at is not None
 
@@ -340,6 +352,10 @@ def test_mixed_scorecard_roundtrip_weighted_aggregate_sort_and_csv(event, users,
     assert exported.status_code == 200
     assert exported["Content-Type"] == "text/csv"
     assert b"Initial Review" in exported.content and b"3.333" in exported.content
+    assert b"reviewer,assignment_status,criterion_scores" in exported.content
+    assert users["reviewer"].email.encode() in exported.content
+    assert b'complete,"{""Comments""' in exported.content
+    assert b'""Originality"": ""4.00""' in exported.content
 
 
 @pytest.mark.django_db(transaction=True)

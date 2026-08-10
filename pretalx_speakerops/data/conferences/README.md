@@ -64,5 +64,18 @@ report is an untracked run artifact, not a substitute for the committed contract
 7. Import into an isolated database twice and confirm exact verification on both runs.
 8. Review identity collisions before any confirmed prune.
 
+AI Engineer World's Fair 2026 has a dedicated deterministic refresher. It validates
+the two official feeds share a schedule version, preserves their ETags and raw
+SHA-256 digests, derives reviewable session keys from the published schedule
+coordinates, and refuses silent schema/count drift:
+
+```bash
+python scripts/refresh_ai_engineer_worldsfair_2026.py
+```
+
+Because the upstream feed publishes neither stable IDs nor modification timestamps,
+`source_updated_at` means the UTC retrieval/check time. A rescheduled session changes
+its derived key and therefore requires explicit drift review before a confirmed prune.
+
 The starter catalog in the parent directory is a small import example. It is not the
 historical completeness artifact and must not be used as closure evidence for #41.

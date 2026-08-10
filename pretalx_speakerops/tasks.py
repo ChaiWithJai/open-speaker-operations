@@ -1,8 +1,10 @@
 from datetime import date
 
 from celery import shared_task
+from celery.schedules import crontab
 from django.utils import timezone
 from django_scopes import scope
+from pretalx.celery_app import app
 from pretalx.event.models import Event
 
 from .models import OnboardingTask
@@ -37,6 +39,20 @@ def send_due_speaker_reminders(event_slug=None, as_of=None):
     return result
 
 
-@shared_task(name="speakerops.send_due_speaker_reminders")
+@shared_task(
+    name="speakerops.send_due_speaker_reminders",
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_kwargs={"max_retries": 5},
+)
 def send_due_speaker_reminders_task():
     return send_due_speaker_reminders()
+
+
+app.conf.beat_schedule.setdefault(
+    "speakerops-due-speaker-reminders-daily",
+    {
+        "task": "speakerops.send_due_speaker_reminders",
+        "schedule": crontab(hour=9, minute=0),
+    },
+)

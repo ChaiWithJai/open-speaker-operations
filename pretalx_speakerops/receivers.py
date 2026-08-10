@@ -1,4 +1,5 @@
 from django.contrib.auth.signals import user_logged_in
+from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.templatetags.static import static
 from django.urls import reverse
@@ -8,11 +9,12 @@ from pretalx.cfp.signals import html_head as cfp_html_head
 from pretalx.orga.signals import html_above_orga_page, nav_event
 from pretalx.orga.signals import html_head as orga_html_head
 from pretalx.schedule.signals import schedule_release
+from pretalx.submission.models import Submission
 from pretalx.submission.signals import submission_state_change
 
 from .auth import is_speaker, role_home_url, role_navigation
 from .cfp import conditional_rules_for_browser
-from .models import PreviewRun
+from .models import PreviewRun, SubmissionPresenterRole
 from .onboarding.services import ensure_acceptance_plan
 
 
@@ -23,6 +25,39 @@ def create_acceptance_plan(sender, submission, old_state, user, **kwargs):
     from django.db import transaction
 
     transaction.on_commit(lambda: ensure_acceptance_plan(submission))
+
+
+@receiver(m2m_changed, sender=Submission.speakers.through)
+def synchronize_submission_presenter_roles(sender, instance, action, reverse, pk_set, **kwargs):
+    """Keep role labels scoped to the authoritative native presenter relation."""
+    if reverse or "pretalx_speakerops" not in instance.event.plugin_list:
+        return
+    if action == "post_clear":
+        SubmissionPresenterRole.objects.filter(event=instance.event, submission=instance).delete()
+        return
+    if action == "post_remove":
+        SubmissionPresenterRole.objects.filter(
+            event=instance.event,
+            submission=instance,
+            speaker_id__in=pk_set,
+        ).delete()
+    elif action == "post_add":
+        for speaker_id in pk_set:
+            SubmissionPresenterRole.objects.get_or_create(
+                event=instance.event,
+                submission=instance,
+                speaker_id=speaker_id,
+                defaults={"role": SubmissionPresenterRole.CO_PRESENTER},
+            )
+    else:
+        return
+
+    roles = SubmissionPresenterRole.objects.filter(event=instance.event, submission=instance)
+    if not roles.filter(role=SubmissionPresenterRole.PRIMARY_AUTHOR).exists():
+        first = roles.order_by("speaker_id").first()
+        if first:
+            first.role = SubmissionPresenterRole.PRIMARY_AUTHOR
+            first.save(update_fields=["role", "updated"])
 
 
 @receiver(nav_event)
@@ -60,7 +95,7 @@ def speakerops_role_navigation(sender, request, **kwargs):
 
     links = format_html_join("", "{}", ((render_link(item),) for item in navigation))
     return format_html(
-        '<nav class="speakerops-role-nav" aria-label="Speaker Operations">'
+        '<nav class="speakerops-role-nav" aria-label="Speaker Operations global navigation">'
         '<a class="speakerops-role-nav__home" href="{}">Speaker Operations</a>'
         "<ul>{}</ul></nav>",
         role_home_url(request.user, sender),
@@ -104,12 +139,35 @@ def speakerops_speaker_footer_link(sender, request, **kwargs):
 def speakerops_speaker_home_callout(sender, request, **kwargs):
     if not request.user.is_authenticated or not is_speaker(request.user, sender):
         return ""
-    return format_html(
+    callout = format_html(
         '<aside class="speakerops-entry-callout" aria-labelledby="speakerops-entry-title">'
         '<div><strong id="speakerops-entry-title">Speaker workspace</strong>'
         "<p>See what the program team needs from you next.</p></div>"
         '<a class="btn btn-primary" href="{}">Open speaker tasks</a></aside>',
         reverse("plugins:speakerops:speakerops_entry", kwargs={"event": sender.slug}),
+    )
+    submissions = sender.submissions.filter(speakers=request.user).order_by("title", "pk")
+    presenter_links = format_html_join(
+        "",
+        '<li><a href="{}">{} — manage presenter roles</a></li>',
+        (
+            (
+                reverse(
+                    "plugins:speakerops:speakerops_submission_presenters",
+                    kwargs={"event": sender.slug, "code": submission.code},
+                ),
+                submission.title,
+            )
+            for submission in submissions
+        ),
+    )
+    if not presenter_links:
+        return callout
+    return format_html(
+        '{}<nav class="speakerops-panel" aria-label="Proposal presenter roles"><strong>'
+        "Proposal participants</strong><ul>{}</ul></nav>",
+        callout,
+        presenter_links,
     )
 
 

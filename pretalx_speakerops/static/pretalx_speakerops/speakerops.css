@@ -35,6 +35,9 @@ body .markdown-nav label:focus-visible { outline: 3px solid #0b3f91; outline-off
 .speakerops__header h1 { margin: .1rem 0 .35rem; font-size: clamp(2rem, 4vw, 3rem); }
 .speakerops__header p { margin: 0; color: var(--speakerops-muted); max-width: 52rem; }
 .speakerops__eyebrow { color: var(--speakerops-accent) !important; font-size: .76rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+.speakerops code { color: #9c1f5b; }
+#header-tabs .header-tab { color: #725b38 !important; }
+pretalx-schedule { display: block; max-width: 100%; overflow-x: auto; }
 .speakerops__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; }
 .speakerops__header-aside { display: grid; gap: .75rem; justify-items: end; }
 .speakerops__return { font-weight: 700; }
@@ -61,6 +64,9 @@ body .markdown-nav label:focus-visible { outline: 3px solid #0b3f91; outline-off
 .speakerops__alert a { color: inherit; font-weight: 700; }
 .speakerops__success { border: 1px solid #a6f4c5; background: var(--speakerops-success-soft); color: var(--speakerops-success); }
 .speakerops-panel { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; padding: 1.35rem; margin: 1.5rem 0; border: 1px solid var(--speakerops-line); border-radius: var(--speakerops-radius); background: #fff; }
+.speakerops-panel--stack { display: block; }
+.speakerops-panel--stack > * { min-width: 0; }
+.speakerops-panel--stack form { margin-top: 1rem; }
 .speakerops-panel h2, .speakerops-panel p { margin: .2rem 0; }
 .speakerops-panel--quiet { align-items: flex-start; background: var(--speakerops-soft); }
 .speakerops-stack { display: grid; gap: 1rem; }
@@ -70,6 +76,7 @@ body .markdown-nav label:focus-visible { outline: 3px solid #0b3f91; outline-off
 .speakerops-task form { display: grid; gap: .7rem; margin-top: 1rem; }
 .speakerops-task__meta { display: flex; justify-content: space-between; gap: 1rem; color: var(--speakerops-muted); font-size: .9rem; }
 .speakerops-badge { display: inline-flex; align-items: center; width: fit-content; padding: .18rem .55rem; border-radius: 999px; background: var(--speakerops-accent-soft); color: var(--speakerops-accent); font-size: .75rem; font-weight: 800; text-transform: uppercase; }
+.speakerops-swatch { display: inline-block; width: .75rem; height: .75rem; margin-right: .3rem; border: 1px solid var(--speakerops-line); border-radius: 50%; }
 .speakerops-badge--partial, .speakerops-badge--failed { background: var(--speakerops-danger-soft); color: var(--speakerops-danger); }
 .speakerops-badge--succeeded { background: var(--speakerops-success-soft); color: var(--speakerops-success); }
 .speakerops__muted { color: var(--speakerops-muted); }
@@ -169,6 +176,7 @@ body:has(.speakerops) > nav.navbar .nav-link { color: #176b53; }
 
 @media (max-width: 900px) {
   .speakerops__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .speakerops-memory__comparisons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .speakerops-funnel { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .speakerops-review-layout { grid-template-columns: 1fr; }
   .speakerops-queue { position: static; }
@@ -212,4 +220,23 @@ body:has(.speakerops) > nav.navbar .nav-link { color: #176b53; }
 .btn-outline-success {
   color: #217a5b !important;
   border-color: #217a5b !important;
+}
+
+/* Native CFP surfaces inherit the event accent colors, but white text on the
+   generated primary/success fills does not meet WCAG AA. These darker variants
+   retain the palette while keeping speaker dashboard actions and state badges
+   readable. */
+body .btn-primary {
+  background-color: #735526 !important;
+  border-color: #735526 !important;
+}
+
+body .btn-success {
+  background-color: #176b53 !important;
+  border-color: #176b53 !important;
+}
+
+body .submission-state-submitted,
+body .submission-state-review {
+  background-color: #17658f !important;
 }

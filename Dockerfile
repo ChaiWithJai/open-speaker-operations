@@ -24,6 +24,7 @@ COPY mock_accelevents /app/mock_accelevents
 COPY docker/entrypoint.sh /app/docker/entrypoint.sh
 COPY --from=schedule-assets /schedule-static /app/schedule-static
 RUN pip install --no-cache-dir --no-deps . \
+    && python -m pretalx_speakerops.pretalx_compat \
     && chmod +x /app/docker/entrypoint.sh
 COPY docker/pretalx.cfg /app/docker/pretalx.cfg
 

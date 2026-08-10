@@ -24,36 +24,51 @@
             "reason": "The official schedule identifies credited keynote slots only as “Keynote”; they are omitted rather than assigned invented titles.",
             "source_url": "https://2015.braziljs.org/"
           },
-          {
-            "scope": "BrazilJS Conf 2018",
-            "item": "Unrecorded talk titles and speaker-to-talk attribution",
-            "reason": "The official edition page retains the speaker roster but no schedule mapping. Ten deterministic title-to-speaker pairs are recovered from the organizer's official recordings; remaining roster entries have no recoverable title mapping.",
-            "source_url": "https://www.youtube.com/@BrazilJS/search?query=2018"
-          },
+        {
+          "scope": "BrazilJS Conf 2018",
+          "item": "Unrecorded talk titles and speaker-to-talk attribution",
+          "reason": "The official edition page retains the speaker roster but no schedule mapping. Ten deterministic title-to-speaker pairs are recovered from the organizer's official recordings; remaining roster entries have no recoverable title mapping.",
+          "source_url": "https://www.youtube.com/@BrazilJS/search?query=2018",
+          "disposition": "closed_no_deterministic_mapping",
+          "searched_on": "2026-08-10",
+          "search_evidence": "Official edition pages, organizer recordings, and playlists were exhausted; every deterministic recording match is imported and residual roster entries remain unpaired."
+        },
           {
             "scope": "BrazilJS Conf 2020",
             "item": "Unpublished day-one titles and any unrecorded program rows",
             "reason": "Six deterministic title-to-speaker pairs were recovered from the organizer's official day-two recording chapters. Day one publishes speaker names without talk titles; those rows remain excluded.",
-            "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088"
+          "source_url": "https://www.youtube.com/watch?v=Cqr7BimZ088",
+          "disposition": "closed_no_deterministic_mapping",
+          "searched_on": "2026-08-10",
+          "search_evidence": "Official edition pages and organizer recordings were exhausted; the published day-two chapter matches are imported and day-one titles were not published."
           },
           {
             "scope": "BrazilJS Conf 2021",
             "item": "Unrecorded program rows and the untitled Vinton Cerf segment",
             "reason": "Twenty-three deterministic titled sessions were recovered from the organizer's official conference playlist. The Vinton Cerf recording publishes only his name, not a talk title, and remains excluded.",
-            "source_url": "https://www.youtube.com/playlist?list=PLg2lQYZDBwORv56I5aBOdW7yEoucDmhgY"
+          "source_url": "https://www.youtube.com/playlist?list=PLg2lQYZDBwORv56I5aBOdW7yEoucDmhgY",
+          "disposition": "closed_no_deterministic_mapping",
+          "searched_on": "2026-08-10",
+          "search_evidence": "The official organizer playlist was exhausted; every titled full session is imported and the untitled segment remains excluded."
           },
           {
             "scope": "BrazilJS Conf 2024",
             "item": "Unrecorded program rows",
             "reason": "Fifteen deterministic full-length title-to-speaker recordings were recovered from the organizer's official playlist. Short promotional clips and one unavailable video were excluded.",
-            "source_url": "https://www.youtube.com/playlist?list=PLg2lQYZDBwOSlOww9VQalSDGTmOHgYM9u"
+          "source_url": "https://www.youtube.com/playlist?list=PLg2lQYZDBwOSlOww9VQalSDGTmOHgYM9u",
+          "disposition": "closed_no_deterministic_mapping",
+          "searched_on": "2026-08-10",
+          "search_evidence": "The official organizer playlist was exhausted; every full titled recording is imported while promotional and unavailable rows remain excluded."
           },
           {
             "scope": "BrazilJS Conf 2025",
             "item": "Held-edition verification and program",
-            "reason": "Official sources announce October 24–25, 2025, but no post-event held confirmation or recoverable program was discoverable, so it is not represented as a historical edition.",
-            "source_url": "https://www.braziljs.org/p/weekly-500-the-last-dance/"
-          }
+          "reason": "The announced October 2025 event was postponed and moved to August 2026; no 2025 conference program is represented.",
+          "source_url": "https://www.braziljs.org/p/weekly-500-the-last-dance/",
+          "disposition": "closed_no_program",
+          "searched_on": "2026-08-10",
+          "search_evidence": "Organizer announcements were checked for held confirmation and program publication; the edition was postponed rather than held in 2025."
+        }
         ]
       },
       "editions": [

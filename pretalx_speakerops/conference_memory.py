@@ -269,10 +269,16 @@ def find_related_talks(submission, limit=5):
     return talks
 
 
-def _compared_distribution(aie_talks, peer_talks, field, limit=6):
+def _compared_distribution(aie_talks, peer_talks, field, limit=6, *, normalize_case=False):
     """Compare only labels published by a source; never manufacture missing metadata."""
 
     def counts(queryset):
+        if normalize_case:
+            return Counter(
+                " ".join(value.split()).casefold()
+                for value in queryset.order_by().values_list(field, flat=True)
+                if value and value != SOURCE_NOT_PROVIDED
+            )
         return {
             row[field]: row["count"]
             for row in queryset.order_by()
@@ -288,7 +294,11 @@ def _compared_distribution(aie_talks, peer_talks, field, limit=6):
         key=lambda label: (-(aie_counts.get(label, 0) + peer_counts.get(label, 0)), label),
     )[:limit]
     return [
-        {"label": label, "aie": aie_counts.get(label, 0), "peers": peer_counts.get(label, 0)}
+        {
+            "label": label.title() if normalize_case else label,
+            "aie": aie_counts.get(label, 0),
+            "peers": peer_counts.get(label, 0),
+        }
         for label in labels
     ]
 
@@ -343,7 +353,9 @@ def memory_decision_support(talks):
         "aie": aie_summary,
         "peers": peer_summary,
         "returning_speakers": returning_speakers,
-        "formats": _compared_distribution(aie_talks, peer_talks, "session_format"),
+        "formats": _compared_distribution(
+            aie_talks, peer_talks, "session_format", normalize_case=True
+        ),
         "tracks": _compared_distribution(aie_talks, peer_talks, "track"),
         "topics": [
             {"label": label, "aie": aie_topics[label], "peers": peer_topics[label]}

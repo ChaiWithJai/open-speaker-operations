@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-09T15:35:00Z",
+  "generated_at": "2026-08-10T07:21:01Z",
   "series": [
     {
       "slug": "goto",
@@ -13,48 +13,24 @@
         "gotopia_session_pages_observed": 1103,
         "excluded_without_speaker_credit": 2,
         "known_gaps": [
-          {
-            "scope": "edition",
-            "item": "goto-amsterdam-2020",
-            "reason": "Official archive page exposes no public session catalog at collection time; no talk metadata invented.",
-            "source_url": "https://gotopia.tech/conferences/24/goto-amsterdam-2020"
-          },
-          {
-            "scope": "edition",
-            "item": "goto-berlin-2020",
-            "reason": "Official archive page exposes no public session catalog at collection time; no talk metadata invented.",
-            "source_url": "https://gotopia.tech/conferences/27/goto-berlin-2020"
-          },
-          {
-            "scope": "edition",
-            "item": "goto-copenhagen-2020",
-            "reason": "Official archive page exposes no public session catalog at collection time; no talk metadata invented.",
-            "source_url": "https://gotopia.tech/conferences/33/goto-copenhagen-2020"
-          },
-          {
-            "scope": "edition",
-            "item": "goto-london-2022",
-            "reason": "Official archive page exposes no public session catalog at collection time; no talk metadata invented.",
-            "source_url": "https://gotopia.tech/conferences/56/goto-london-2022"
-          },
-          {
-            "scope": "edition",
-            "item": "goto-copenhagen-2026",
-            "reason": "Official source now publishes 25 credited masterclasses, which are retained; the future event's main-session schedule is not yet published.",
-            "source_url": "https://gotocph.com/2026/masterclasses"
-          },
-          {
-            "scope": "edition",
-            "item": "accelerate-chicago-2026",
-            "reason": "Two credited official masterclasses are retained; the held event's complete main-session program is not exposed by the current official schedule route.",
-            "source_url": "https://gotochgo.com/accelerate-chicago-2026/masterclasses"
-          },
-          {
-            "scope": "edition",
-            "item": "goto-community-day-chicago-2023",
-            "reason": "Official archive page exposes no public session catalog at collection time; no talk metadata invented.",
-            "source_url": "https://gotopia.tech/conferences/78/goto-community-day-chicago-2023"
-          },
+        {
+          "scope": "edition",
+          "item": "goto-berlin-2020",
+          "reason": "The official archive exposes one title without a speaker and the Wayback index exposes no recoverable schedule route. No speaker identity is invented.",
+          "source_url": "https://gotopia.tech/conferences/27/goto-berlin-2020",
+          "disposition": "closed_no_deterministic_mapping",
+          "searched_on": "2026-08-10",
+          "search_evidence": "Official conference/session routes and their Wayback captures were searched; no complete speaker-backed program was recoverable."
+        },
+        {
+          "scope": "edition",
+          "item": "goto-london-2022",
+          "reason": "The official print schedule is empty and the official archive exposes no speaker-backed catalog. No speaker identity is invented.",
+          "source_url": "https://gotopia.tech/conferences/56/goto-london-2022",
+          "disposition": "closed_no_deterministic_mapping",
+          "searched_on": "2026-08-10",
+          "search_evidence": "Official conference, print-schedule, session, and Wayback routes were searched; no complete speaker-backed program was recoverable."
+        },
           {
             "scope": "talk",
             "item": "gotopia-session-664",
@@ -14286,10 +14262,1253 @@
         {
           "external_key": "goto-amsterdam-2020",
           "name": "GOTO Amsterdam 2020",
-          "location": "",
-          "source_url": "https://gotopia.tech/conferences/24/goto-amsterdam-2020",
-          "source_updated_at": "2026-08-09T15:35:00Z",
-          "talks": []
+          "date_from": "2020-12-07",
+          "date_to": "2020-12-10",
+          "location": "Amsterdam, Netherlands",
+          "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020",
+          "source_updated_at": "2026-08-10T07:21:01Z",
+          "source_version": "sha256:965929817d06c36a42ec11c115517c9cfc38fcd80d2819defdaebf47529a8562",
+          "published_schedule_row_count": 54,
+          "excluded_schedule_rows": {
+            "tba": 2
+          },
+          "source_snapshot": {
+            "retrieved_at": "2026-08-10T07:21:01Z",
+            "url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/schedule",
+            "sha256": "965929817d06c36a42ec11c115517c9cfc38fcd80d2819defdaebf47529a8562",
+            "sha256_scope": "canonical data-schedule-data JSON"
+          },
+          "talks": [
+            {
+              "external_key": "1213",
+              "title": "The Importance of Laughter",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "keynote",
+                "behavior"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1213",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Aino Vonge Corry",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1221",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1215",
+              "title": "Structure and Interpretation of Test Cases",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1215",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Kevlin Henney",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1229",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1216",
+              "title": "Lies, Damned Lies and Metrics",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "data",
+                "observable",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1216",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Roy Osherove",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1223",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1217",
+              "title": "Understanding Test Driven Development with Modern Javascript",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "javascript",
+                "programming",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1217",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Roy Osherove",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1223",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1218",
+              "title": "Shortening the Architectural Feedback Loop",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture",
+                "teams",
+                "behavior",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1218",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Eltjo R. Poort",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1224",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1219",
+              "title": "Prioritizing Technical Debt as If Time and Money Matters",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1219",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Adam Tornhill",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1225",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1222",
+              "title": "Talking With Tech Leads",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "behavior",
+                "teams"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1222",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Patrick Kua",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1230",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1223",
+              "title": "Securing Kubernetes Secrets",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "kubernetes",
+                "containers",
+                "security",
+                "backend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1223",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Seth Vargo",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1231",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1225",
+              "title": "Interaction Protocols: It's All About Good Manners",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming",
+                "keynote",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1225",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Martin Thompson",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1227",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1226",
+              "title": "#FAIL",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "keynote",
+                "programming",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1226",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Kevlin Henney",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1229",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1227",
+              "title": "Helm Your Way With Kubernetes",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "kubernetes",
+                "containers",
+                "programming",
+                "backend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1227",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Ana-Maria Mihalceanu",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1232",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1231",
+              "title": "#DigitalNudge - The Hidden Forces that Shape our Digital Decisions",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ux",
+                "behavior",
+                "data",
+                "keynote"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1231",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Fabio Pereira",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1233",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1232",
+              "title": "The Fast Track to AI with Serverless",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ai",
+                "serverless",
+                "backend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1232",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Peter Elger",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1234",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1233",
+              "title": "Ops in the Serverless",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "serverless",
+                "cloud",
+                "devops",
+                "backend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1233",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jennifer Davis",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1238",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1234",
+              "title": "Clarity",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1234",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Saša Jurić",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1239",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1235",
+              "title": "Building Microservices Architectures in Small Steps",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "microservices",
+                "architecture",
+                "programming",
+                "backend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1235",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Sander Hoogendoorn",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1220",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1237",
+              "title": "Taking Back “Software Engineering”",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "history and philosophy"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1237",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Dave Farley",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1261",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1240",
+              "title": "Testing in Production",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming",
+                "continuous delivery",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1240",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Talia Nassi",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1266",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1244",
+              "title": "Java 2020: Containerized, Serverless, CloudNative",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "java",
+                "cloud",
+                "serverless",
+                "containers",
+                "backend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1244",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Andrey Adamovich",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1272",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1247",
+              "title": "Kubernetes, Your Next Java App Server",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "kubernetes",
+                "java",
+                "programming",
+                "backend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1247",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Burr Sutter",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1277",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1293",
+              "title": "Is Software Engineering Still an Oxymoron?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "keynote",
+                "history and philosophy"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1293",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Alan Kay",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1294",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1300",
+              "title": "Shut Up And Eat Your Veg: Valuable Lessons From The 1990’s",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming",
+                "history and philosophy",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1300",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Eamonn Boyle",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1300",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Garth Gilmour",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1301",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1301",
+              "title": "TypeScript vs KotlinJS",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "kotlin",
+                "scala",
+                "programming",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1301",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Eamonn Boyle",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1300",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Garth Gilmour",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1301",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1310",
+              "title": "Evolution of Financial Exchange Architectures",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1310",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Martin Thompson",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1227",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1312",
+              "title": "Software Engineering - Development in 100 Years Time",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "continuous delivery",
+                "history and philosophy",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1312",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Dave Farley",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1261",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1313",
+              "title": "Troubleshooting & Debugging Microservices in Kubernetes",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "cloud",
+                "microservices",
+                "containers",
+                "kubernetes",
+                "backend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1313",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "James Ward",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1338",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Ray Tsang",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1306",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1314",
+              "title": "White-hat Attention Jacking for Accessibility, Fun and Profit",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ux",
+                "behavior"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1314",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Chris Atherton",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1307",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1325",
+              "title": "Progressive Delivery: Patterns & Benefits of Decoupling Deploy from Release",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "continuous delivery",
+                "devops",
+                "programming",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1325",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Channing Benson",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1337",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Dave Karow",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1314",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1331",
+              "title": "User Centric Digital Cities: Generating Value with Experimentation in Living Labs",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "data",
+                "iot",
+                "smart city",
+                "history and philosophy"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1331",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Paul Manwaring",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1325",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1336",
+              "title": "Web Component Design - Maintaining and Reusing Your Frontend",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "javascript",
+                "programming",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1336",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Joy Heron",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1328",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1338",
+              "title": "Running Kafka On Kube the Native Way with Operators",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1338",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Katherine Stanley",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1330",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1340",
+              "title": "Design For The Utopia You Want, Not The Dystopia You're In",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "keynote",
+                "ux"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1340",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Chris Atherton",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1307",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1342",
+              "title": "How Microteams Change the Way We Collaborate. Again.",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1342",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Sander Hoogendoorn",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1220",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1343",
+              "title": "Ten Things we've Learned From Running Production Infrastructure at Google",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1343",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Christof Leng",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1324",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1344",
+              "title": "Live Hacking: Breaking into Your Web App",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1344",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Brian Vermeer",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1332",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1348",
+              "title": "Ten Years of Technology From the Trenches",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1348",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "James Lewis",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1267",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1356",
+              "title": "Microservices With Service Meshes - What's Behind the Hype?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1356",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jörg Müller",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1348",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1357",
+              "title": "Welcome to a New Age of Refereeing",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1357",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Pierluigi Collina",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1349",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1371",
+              "title": "Balancing Choreography and Orchestration",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "partner",
+                "backend",
+                "programming",
+                "architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1371",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Bernd Rücker",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1359",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1425",
+              "title": "Taking Machine Learning Research to Production: Solving Real Problems",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/sessions/1425",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Robert Crowe",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1391",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_233",
+              "title": "Code As A Crime Scene: Fix Technical Debt with Behavioral Code Analysis",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/233",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Adam Tornhill",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1225",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_236",
+              "title": "Elastic, Agile and Adaptive Leadership for Technical Leaders",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/236",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Roy Osherove",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1223",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_242",
+              "title": "Creating a Microservices Architecture with Kotlin, Ktor and Event Streams",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/242",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Eamonn Boyle",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1300",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Garth Gilmour",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1301",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_248",
+              "title": "Advanced Deployment Pipeline Techniques",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/248",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Dave Farley",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1261",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_250",
+              "title": "Advanced Retrospective Facilitation",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/250",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Aino Vonge Corry",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1221",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_252",
+              "title": "Spring Boot practices on Kubernetes, and Google Cloud Platform",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/252",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "James Ward",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1338",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Ray Tsang",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1306",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_253",
+              "title": "Continuous Intelligence: Data Science, Hypothesis Driven Development, and Continuous Delivery",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/253",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Em Grasmeder",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1326",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Emily Gorcenski",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1327",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_254",
+              "title": "Progressive Delivery Using Feature Flags: Hands-On With the Split.io Feature Delivery Platform",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/254",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Channing Benson",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1337",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Dave Karow",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1314",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_257",
+              "title": "#DigitalNudge - The Hidden Forces that Shape our Digital Decisions",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/257",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Fabio Pereira",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1233",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_262",
+              "title": "High-Performance Messaging & Services with Aeron",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/262",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Martin Thompson",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1227",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_263",
+              "title": "Service Mesh - a Practical Introduction to the Smart Network for Microservices",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/263",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jörg Müller",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1348",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_264",
+              "title": "AI as a Service - the fast track to AI with serverless",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/masterclasses/264",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Peter Elger",
+                  "source_url": "https://web.archive.org/web/20201024180755id_/https://gotoams.nl/2020/speakers/1234",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            }
+          ]
         },
         {
           "external_key": "goto-berlin-2020",
@@ -14302,10 +15521,598 @@
         {
           "external_key": "goto-copenhagen-2020",
           "name": "GOTO Copenhagen 2020",
-          "location": "",
-          "source_url": "https://gotopia.tech/conferences/33/goto-copenhagen-2020",
-          "source_updated_at": "2026-08-09T15:35:00Z",
-          "talks": []
+          "date_from": "2020-11-09",
+          "date_to": "2020-11-13",
+          "location": "Copenhagen, Denmark",
+          "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020",
+          "source_updated_at": "2026-08-10T07:21:01Z",
+          "source_version": "sha256:57359303a3cbb7a4dff071777c2dab18670266f43b2ded01aa70d223e4970f24",
+          "published_schedule_row_count": 66,
+          "excluded_schedule_rows": {
+            "speakerless": 23
+          },
+          "source_snapshot": {
+            "retrieved_at": "2026-08-10T07:21:01Z",
+            "url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/schedule",
+            "sha256": "57359303a3cbb7a4dff071777c2dab18670266f43b2ded01aa70d223e4970f24",
+            "sha256_scope": "canonical data-schedule-data JSON"
+          },
+          "talks": [
+            {
+              "external_key": "1483",
+              "title": "“Good Enough” Architecture",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1483",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Stefan Tilkov",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1468",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1495",
+              "title": "Stop punching yourself in the face",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1495",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Hannes Lowette",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1465",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1496",
+              "title": "A TypeScript Fan's KotlinJS Adventures",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1496",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Eamonn Boyle",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1440",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Garth Gilmour",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1439",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1498",
+              "title": "HTTP/3 is next Generation HTTP. Is it QUIC enough?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1498",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Daniel Stenberg",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1427",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1500",
+              "title": "Life After Business Objects - Confessions of an OOP Veteran",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1500",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Vagif Abilov",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1431",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1501",
+              "title": "The Development Metrics You Should Use (but Don’t)",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "metrics",
+                "teams"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1501",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Catherine Swetel",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1462",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1504",
+              "title": "Apps, Algorithms and Abstractions",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1504",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Dylan Beattie",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1461",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1505",
+              "title": "Futurology for Dummies - the Next 30 Years in Tech",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1505",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Mark Rendle",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1464",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1506",
+              "title": "An Introduction to GraphQL",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1506",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Uri Goldshtein",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1433",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1508",
+              "title": "Kafka as a Platform: the Ecosystem from the Ground Up",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1508",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Robin Moffatt",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1435",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1509",
+              "title": "Solving Complex Problems Using Simple, Pragmatic Solutions",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1509",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Daniel Terhorst-North",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1442",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1518",
+              "title": "Common Retrospectives Traps and Solutions",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "teams"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1518",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Aino Vonge Corry",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1428",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1521",
+              "title": "Where We’re Going, We Don’t Need Servers!",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1521",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Sam Newman",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1425",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1523",
+              "title": "What’s new in SwiftUI and Combine",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "swift",
+                "programming",
+                "ios",
+                "mobile"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1523",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Daniel H Steinberg",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1426",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1524",
+              "title": "An Average Working Day on Visionary NASA Projects",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1524",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Kenneth Harris II",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1450",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1525",
+              "title": "The Future of Sustainable Transportation",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1525",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Anita Sengupta",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1467",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1529",
+              "title": "Why your React and Angular applications need GraphQL",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1529",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Uri Goldshtein",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1433",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1531",
+              "title": "Prioritizing Technical Debt as if Time and Money Matters",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "developer productivity",
+                "programming",
+                "teams",
+                "backend",
+                "frontend"
+              ],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1531",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Adam Tornhill",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1438",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1541",
+              "title": "Coding Lessons From the Cage: When Software Meets MMA",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1541",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Adam Tornhill",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1438",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Garth Gilmour",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1439",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "1542",
+              "title": "Is Software Engineering Still an Oxymoron?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/sessions/1542",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Alan Kay",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1463",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_274",
+              "title": "2 days: CSPO – Certified Scrum Product Owner",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/masterclasses/274",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Arne Åhlander",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1448",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_275",
+              "title": "2 days: CSM - Certified ScrumMaster",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/masterclasses/275",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jens Østergaard",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1449",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_276",
+              "title": "Monolith to Microservices",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/masterclasses/276",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Sam Newman",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1425",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_281",
+              "title": "2 days: Scrum Patterns Training",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/masterclasses/281",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "James Coplien",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1470",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_282",
+              "title": "Retrospective facilitation - how to get useful, enjoyable retrospectives",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/masterclasses/282",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Aino Vonge Corry",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1428",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_283",
+              "title": "Microservice Integration: Events, Sagas and Schemas",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/masterclasses/283",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Sam Newman",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1425",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "ws_284",
+              "title": "Learning Kotlin/JS by Building Web Apps in React & Redux",
+              "abstract": "",
+              "session_format": "Workshop",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/masterclasses/284",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Eamonn Boyle",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1440",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Garth Gilmour",
+                  "source_url": "https://web.archive.org/web/20200922205801id_/https://gotocph.com/november-2020/speakers/1439",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            }
+          ]
         },
         {
           "external_key": "goto-copenhagen-2021",
@@ -22668,10 +24475,953 @@
         {
           "external_key": "goto-copenhagen-2026",
           "name": "GOTO Copenhagen 2026",
-          "location": "",
-          "source_url": "https://gotopia.tech/conferences/135/goto-copenhagen-2026",
-          "source_updated_at": "2026-08-09T15:35:00Z",
+          "date_from": "2026-09-28",
+          "date_to": "2026-10-02",
+          "location": "Copenhagen, Denmark",
+          "source_url": "https://gotocph.com/2026",
+          "source_updated_at": "2026-08-10T07:21:01Z",
+          "source_version": "sha256:d4aea002edb0b016a6139abce020618529cc68d5e1a5555e78852414a1010825",
+          "published_schedule_row_count": 85,
+          "excluded_schedule_rows": {
+            "outside_main_program": 32,
+            "speakerless": 11
+          },
+          "source_snapshot": {
+            "retrieved_at": "2026-08-10T07:21:01Z",
+            "url": "https://gotocph.com/2026/schedule?date=2026-09-28&video=false",
+            "sha256": "d4aea002edb0b016a6139abce020618529cc68d5e1a5555e78852414a1010825",
+            "sha256_scope": "canonical data-schedule-data JSON"
+          },
           "talks": [
+            {
+              "external_key": "3973",
+              "title": "Building Composable Platforms: Patterns, Practices, and Pratfalls",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "platforms",
+                "architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3973",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Daniel Bryant",
+                  "source_url": "https://gotocph.com/2026/speakers/4269",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3974",
+              "title": "What If Your Biggest Technical Debt Is Social?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "artificial intelligence (AI)",
+                "ways of working"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3974",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Xin Yao",
+                  "source_url": "https://gotocph.com/2026/speakers/4282",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3975",
+              "title": "Playing The Long Game: A Hobby Project For 2029",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ways of working"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3975",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jon Skeet",
+                  "source_url": "https://gotocph.com/2026/speakers/4283",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3976",
+              "title": "Security Is No Longer For Security Teams. It's For Everyone",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "security"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3976",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Laurentiu Spilcă",
+                  "source_url": "https://gotocph.com/2026/speakers/4277",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3977",
+              "title": "Keeping Humans In The Loop With AI Coding Agents",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "quality",
+                "ways of working",
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3977",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Gojko Adzic",
+                  "source_url": "https://gotocph.com/2026/speakers/4270",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3978",
+              "title": "Generating Test Inputs and Interactions with the Fandango Fuzzer",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "security",
+                "quality"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3978",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Andreas Zeller",
+                  "source_url": "https://gotocph.com/2026/speakers/4276",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3981",
+              "title": "AI-Friendly Code: The Missing Link for Speed with Quality",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "quality",
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3981",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Adam Tornhill",
+                  "source_url": "https://gotocph.com/2026/speakers/4284",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3984",
+              "title": "The Pub-Time Parliament",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture",
+                "data"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3984",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jim Webber",
+                  "source_url": "https://gotocph.com/2026/speakers/4300",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3985",
+              "title": "Spotting Digital Waste in Code Gives You Energy",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "quality",
+                "sustainability"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3985",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Wilco Burggraaf",
+                  "source_url": "https://gotocph.com/2026/speakers/4299",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3988",
+              "title": "Biocomputers: When Living Neurons Become Hardware",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "sustainability",
+                "hardware"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3988",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Ewelina Kurtys",
+                  "source_url": "https://gotocph.com/2026/speakers/4305",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3992",
+              "title": "Functional Programming for Parallel and Concurrent Systems - Theory and Practice",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming languages"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3992",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Gabriele Keller",
+                  "source_url": "https://gotocph.com/2026/speakers/4290",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3995",
+              "title": "All about dependencies",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "security",
+                "architecture",
+                "quality"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3995",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Ixchel Ruiz",
+                  "source_url": "https://gotocph.com/2026/speakers/4321",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3996",
+              "title": "The Reliable AI: Bridging System Engineering and Large Language Models",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "artificial intelligence (AI)",
+                "architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3996",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Alex Ewerlöf",
+                  "source_url": "https://gotocph.com/2026/speakers/4306",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3999",
+              "title": "Rethinking Observability as a Platform Product",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture",
+                "platforms"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/3999",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Kasper Borg Nissen",
+                  "source_url": "https://gotocph.com/2026/speakers/4330",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4000",
+              "title": "Learning Modern Java The Playful Way",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming languages"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4000",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Marit van Dijk",
+                  "source_url": "https://gotocph.com/2026/speakers/4331",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Piotr Przybyl",
+                  "source_url": "https://gotocph.com/2026/speakers/4332",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4001",
+              "title": "To RAG Or Not To RAG",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture",
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4001",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Piotr Przybyl",
+                  "source_url": "https://gotocph.com/2026/speakers/4332",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4005",
+              "title": "AI Engineering: A production story, from first LLM call to multi-agent chaos",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture",
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4005",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Marie-Alice Blete",
+                  "source_url": "https://gotocph.com/2026/speakers/4322",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4007",
+              "title": "AI as an Amplifier: State of AI-assisted Software Development",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "quality",
+                "artificial intelligence (AI)",
+                "platforms"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4007",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Nathen Harvey",
+                  "source_url": "https://gotocph.com/2026/speakers/4337",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4010",
+              "title": "A Brief History of Artificial Intelligence",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4010",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Tim Berglund",
+                  "source_url": "https://gotocph.com/2026/speakers/4268",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4032",
+              "title": "When every FLOPS counts: GPU Sharing Strategies at CERN",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "platforms",
+                "hardware"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4032",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Diana Gaponcic",
+                  "source_url": "https://gotocph.com/2026/speakers/4345",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4033",
+              "title": "Engineer Confidence with Reliable Training Programs",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ways of working"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4033",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jennifer Petoff",
+                  "source_url": "https://gotocph.com/2026/speakers/4346",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4042",
+              "title": "Dark modules, Cobots, and Architecting for AI",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4042",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Sam Newman",
+                  "source_url": "https://gotocph.com/2026/speakers/4243",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4118",
+              "title": "Green AI: Making Machine Learning Environmentally Sustainable",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4118",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Charles Humble",
+                  "source_url": "https://gotocph.com/2026/speakers/4313",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4124",
+              "title": "Watch Your Language",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4124",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Kevlin Henney",
+                  "source_url": "https://gotocph.com/2026/speakers/4513",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4125",
+              "title": "Grokking the Brain: What AI Reveals About How You Really Learn",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4125",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Barbara Oakley",
+                  "source_url": "https://gotocph.com/2026/speakers/4420",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4139",
+              "title": "The Philosophy of Software Architecture",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "philosophy",
+                "software architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4139",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Barry O'Reilly",
+                  "source_url": "https://gotocph.com/2026/speakers/4264",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4151",
+              "title": "Basics Designs and How We Got Them Wrong",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming languages"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4151",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Adam Furmanek",
+                  "source_url": "https://gotocph.com/2026/speakers/4285",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4153",
+              "title": "Lu Wilson: Talk details coming soon",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4153",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Lu Wilson",
+                  "source_url": "https://gotocph.com/2026/speakers/4298",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4154",
+              "title": "Am I holding this right?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4154",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Daniel Terhorst-North",
+                  "source_url": "https://gotocph.com/2026/speakers/4235",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4155",
+              "title": "The Validation-First Loop: How to Ship Production Code with AI Coding Assistants",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "quality",
+                "AI engineering"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4155",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Cole Medin",
+                  "source_url": "https://gotocph.com/2026/speakers/4379",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4156",
+              "title": "Plus c'est la même chose",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4156",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Dave Thomas",
+                  "source_url": "https://gotocph.com/2026/speakers/4275",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4157",
+              "title": "Group Intelligence: What Science Says About the Intelligence of Groups",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "(tech) teams"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4157",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Linda Rising",
+                  "source_url": "https://gotocph.com/2026/speakers/4254",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4159",
+              "title": "Troy Hunt & Scott Helme",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4159",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Troy Hunt",
+                  "source_url": "https://gotocph.com/2026/speakers/4295",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Scott Helme",
+                  "source_url": "https://gotocph.com/2026/speakers/4289",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4160",
+              "title": "Making the Impossible Possible: Ten Years of Flexible Paxos",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4160",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Heidi Howard",
+                  "source_url": "https://gotocph.com/2026/speakers/4314",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4164",
+              "title": "Among the Agents: What it's like inside a company staffed (almost) entirely by AI",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4164",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Evan Ratliff",
+                  "source_url": "https://gotocph.com/2026/speakers/4316",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4166",
+              "title": "Linda Liukas: Talk details coming soon",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4166",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Linda Liukas",
+                  "source_url": "https://gotocph.com/2026/speakers/4553",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4167",
+              "title": "Nobody Reads the Code Anymore: Quality Engineering for the Software Factory",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4167",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Vilhelm von Ehrenheim",
+                  "source_url": "https://gotocph.com/2026/speakers/4540",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4168",
+              "title": "Spying on your Agent: Security and Privacy Observability",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "security",
+                "Privacy"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4168",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Katharine Jarmul",
+                  "source_url": "https://gotocph.com/2026/speakers/4272",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4169",
+              "title": "Orion Reed: Talk details coming soon",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4169",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Orion Reed",
+                  "source_url": "https://gotocph.com/2026/speakers/4414",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4172",
+              "title": "Andrea Magnorsky: Talk details coming soon",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4172",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Andrea Magnorsky",
+                  "source_url": "https://gotocph.com/2026/speakers/4563",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4173",
+              "title": "Simon White: Talk details coming soon",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4173",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Simon White",
+                  "source_url": "https://gotocph.com/2026/speakers/4564",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4176",
+              "title": "Compliant, Not Slow: Shipping Every Day in a Highly Regulated Environment",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/sessions/4176",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Anders Sveen",
+                  "source_url": "https://gotocph.com/2026/speakers/4565",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
             {
               "external_key": "masterclass-569",
               "title": "Collaborative Problem-solving – Establishing a Culture With Working Practices to Deal Effectively With Impediments",
@@ -22714,127 +25464,6 @@
                 {
                   "name": "Aino Vonge Corry",
                   "source_url": "https://gotocph.com/2026/masterclasses/570/skill-up-with-smarter-learning",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-574",
-              "title": "Understanding Async Machinery Down to a Single Detail",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "programming languages",
-                "quality"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/574/understanding-async-machinery-down-to-a-single-detail",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Adam Furmanek",
-                  "source_url": "https://gotocph.com/2026/masterclasses/574/understanding-async-machinery-down-to-a-single-detail",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-578",
-              "title": "From Developer to Tech Lead: Mastering the Shift",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "leadership",
-                "ways of working"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/578/from-developer-to-tech-lead-mastering-the-shift",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Søren Toft Odgaard",
-                  "source_url": "https://gotocph.com/2026/masterclasses/578/from-developer-to-tech-lead-mastering-the-shift",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                },
-                {
-                  "name": "Claus Vagner Pedersen",
-                  "source_url": "https://gotocph.com/2026/masterclasses/578/from-developer-to-tech-lead-mastering-the-shift",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-581",
-              "title": "Communicate Like a CTO",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "ways of working",
-                "leadership"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/581/communicate-like-a-cto",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Patrick Kua",
-                  "source_url": "https://gotocph.com/2026/masterclasses/581/communicate-like-a-cto",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-587",
-              "title": "Neuroinclusive Engineering: Turning Cognitive Difference into Software Engineering Strength",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "ways of working",
-                "leadership"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/587/neuroinclusive-engineering-turning-cognitive-difference-into-software-engineering-strength",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Katrine Hald Kjeldsen",
-                  "source_url": "https://gotocph.com/2026/masterclasses/587/neuroinclusive-engineering-turning-cognitive-difference-into-software-engineering-strength",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-592",
-              "title": "Modernising Architecture For AI And More",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "architecture",
-                "artificial intelligence (AI)"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/592/modernising-architecture-for-ai-and-more",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Sam Newman",
-                  "source_url": "https://gotocph.com/2026/masterclasses/592/modernising-architecture-for-ai-and-more",
                   "source_updated_at": "2026-08-09T20:00:00Z",
                   "biography": ""
                 }
@@ -22887,6 +25516,53 @@
               ]
             },
             {
+              "external_key": "masterclass-573",
+              "title": "2 Days: Thinking Together with Domain-Driven Design (DDD)",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ways of working",
+                "architecture",
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/573/2-days-thinking-together-with-domain-driven-design-ddd",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Xin Yao",
+                  "source_url": "https://gotocph.com/2026/masterclasses/573/2-days-thinking-together-with-domain-driven-design-ddd",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-574",
+              "title": "Understanding Async Machinery Down to a Single Detail",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "programming languages",
+                "quality"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/574/understanding-async-machinery-down-to-a-single-detail",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Adam Furmanek",
+                  "source_url": "https://gotocph.com/2026/masterclasses/574/understanding-async-machinery-down-to-a-single-detail",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
               "external_key": "masterclass-575",
               "title": "Understanding Windows and .NET through debugging",
               "abstract": "",
@@ -22927,6 +25603,57 @@
                 {
                   "name": "Linda Rising",
                   "source_url": "https://gotocph.com/2026/masterclasses/576/group-decision-making-how-groups-can-overcome-the-influences-of-group-member-biases-and-social-dynamics",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-577",
+              "title": "2 Days: Hack Yourself First",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "security"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/577/2-days-hack-yourself-first",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Scott Helme",
+                  "source_url": "https://gotocph.com/2026/masterclasses/577/2-days-hack-yourself-first",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-578",
+              "title": "From Developer to Tech Lead: Mastering the Shift",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "leadership",
+                "ways of working"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/578/from-developer-to-tech-lead-mastering-the-shift",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Søren Toft Odgaard",
+                  "source_url": "https://gotocph.com/2026/masterclasses/578/from-developer-to-tech-lead-mastering-the-shift",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Claus Vagner Pedersen",
+                  "source_url": "https://gotocph.com/2026/masterclasses/578/from-developer-to-tech-lead-mastering-the-shift",
                   "source_updated_at": "2026-08-09T20:00:00Z",
                   "biography": ""
                 }
@@ -22980,159 +25707,23 @@
               ]
             },
             {
-              "external_key": "masterclass-586",
-              "title": "OKR for Software Developers:  Align Engineering Work with Real Outcomes",
+              "external_key": "masterclass-581",
+              "title": "Communicate Like a CTO",
               "abstract": "",
               "session_format": "Masterclass",
               "track": "",
               "level": "",
               "topics": [
-                "product development",
+                "ways of working",
                 "leadership"
               ],
               "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/586/okr-for-software-developers-align-engineering-work-with-real-outcomes",
+              "source_url": "https://gotocph.com/2026/masterclasses/581/communicate-like-a-cto",
               "source_updated_at": "2026-08-09T20:00:00Z",
               "speakers": [
                 {
-                  "name": "Kresten Banke",
-                  "source_url": "https://gotocph.com/2026/masterclasses/586/okr-for-software-developers-align-engineering-work-with-real-outcomes",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-588",
-              "title": "Sustainable Systems Architecture: Faster, Cheaper, Greener Software",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "architecture",
-                "sustainability"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/588/sustainable-systems-architecture-faster-cheaper-greener-software",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Charles Humble",
-                  "source_url": "https://gotocph.com/2026/masterclasses/588/sustainable-systems-architecture-faster-cheaper-greener-software",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-593",
-              "title": "Resilient Distributed Systems",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "architecture"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/593/resilient-distributed-systems",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Sam Newman",
-                  "source_url": "https://gotocph.com/2026/masterclasses/593/resilient-distributed-systems",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-595",
-              "title": "Agentic Engineering - The New Software Development Lifecycle",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "ways of working",
-                "artificial intelligence (AI)"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/595/agentic-engineering-the-new-software-development-lifecycle",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Cole Medin",
-                  "source_url": "https://gotocph.com/2026/masterclasses/595/agentic-engineering-the-new-software-development-lifecycle",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-601",
-              "title": "Learning How to Learn in an Age of AI",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "artificial intelligence (AI)"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/601/learning-how-to-learn-in-an-age-of-ai",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Barbara Oakley",
-                  "source_url": "https://gotocph.com/2026/masterclasses/601/learning-how-to-learn-in-an-age-of-ai",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-573",
-              "title": "2 Days: Thinking Together with Domain-Driven Design (DDD)",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "ways of working",
-                "architecture",
-                "artificial intelligence (AI)"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/573/2-days-thinking-together-with-domain-driven-design-ddd",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Xin Yao",
-                  "source_url": "https://gotocph.com/2026/masterclasses/573/2-days-thinking-together-with-domain-driven-design-ddd",
-                  "source_updated_at": "2026-08-09T20:00:00Z",
-                  "biography": ""
-                }
-              ]
-            },
-            {
-              "external_key": "masterclass-577",
-              "title": "2 Days: Hack Yourself First",
-              "abstract": "",
-              "session_format": "Masterclass",
-              "track": "",
-              "level": "",
-              "topics": [
-                "security"
-              ],
-              "recording_url": "",
-              "source_url": "https://gotocph.com/2026/masterclasses/577/2-days-hack-yourself-first",
-              "source_updated_at": "2026-08-09T20:00:00Z",
-              "speakers": [
-                {
-                  "name": "Scott Helme",
-                  "source_url": "https://gotocph.com/2026/masterclasses/577/2-days-hack-yourself-first",
+                  "name": "Patrick Kua",
+                  "source_url": "https://gotocph.com/2026/masterclasses/581/communicate-like-a-cto",
                   "source_updated_at": "2026-08-09T20:00:00Z",
                   "biography": ""
                 }
@@ -23230,6 +25821,165 @@
               ]
             },
             {
+              "external_key": "masterclass-586",
+              "title": "OKR for Software Developers:  Align Engineering Work with Real Outcomes",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "product development",
+                "leadership"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/586/okr-for-software-developers-align-engineering-work-with-real-outcomes",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Kresten Banke",
+                  "source_url": "https://gotocph.com/2026/masterclasses/586/okr-for-software-developers-align-engineering-work-with-real-outcomes",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-587",
+              "title": "Neuroinclusive Engineering: Turning Cognitive Difference into Software Engineering Strength",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ways of working",
+                "leadership"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/587/neuroinclusive-engineering-turning-cognitive-difference-into-software-engineering-strength",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Katrine Hald Kjeldsen",
+                  "source_url": "https://gotocph.com/2026/masterclasses/587/neuroinclusive-engineering-turning-cognitive-difference-into-software-engineering-strength",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-588",
+              "title": "Sustainable Systems Architecture: Faster, Cheaper, Greener Software",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture",
+                "sustainability"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/588/sustainable-systems-architecture-faster-cheaper-greener-software",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Charles Humble",
+                  "source_url": "https://gotocph.com/2026/masterclasses/588/sustainable-systems-architecture-faster-cheaper-greener-software",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-592",
+              "title": "Modernising Architecture For AI And More",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture",
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/592/modernising-architecture-for-ai-and-more",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sam Newman",
+                  "source_url": "https://gotocph.com/2026/masterclasses/592/modernising-architecture-for-ai-and-more",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-593",
+              "title": "Resilient Distributed Systems",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/593/resilient-distributed-systems",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Sam Newman",
+                  "source_url": "https://gotocph.com/2026/masterclasses/593/resilient-distributed-systems",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-595",
+              "title": "Agentic Engineering - The New Software Development Lifecycle",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ways of working",
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/595/agentic-engineering-the-new-software-development-lifecycle",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Cole Medin",
+                  "source_url": "https://gotocph.com/2026/masterclasses/595/agentic-engineering-the-new-software-development-lifecycle",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "masterclass-601",
+              "title": "Learning How to Learn in an Age of AI",
+              "abstract": "",
+              "session_format": "Masterclass",
+              "track": "",
+              "level": "",
+              "topics": [
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotocph.com/2026/masterclasses/601/learning-how-to-learn-in-an-age-of-ai",
+              "source_updated_at": "2026-08-09T20:00:00Z",
+              "speakers": [
+                {
+                  "name": "Barbara Oakley",
+                  "source_url": "https://gotocph.com/2026/masterclasses/601/learning-how-to-learn-in-an-age-of-ai",
+                  "source_updated_at": "2026-08-09T20:00:00Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
               "external_key": "masterclass-602",
               "title": "2 Days: Event Modeling & AI-Native Software Design",
               "abstract": "",
@@ -23256,10 +26006,649 @@
         {
           "external_key": "accelerate-chicago-2026",
           "name": "Accelerate Chicago 2026",
-          "location": "",
-          "source_url": "https://gotopia.tech/conferences/142/accelerate-chicago-2026",
-          "source_updated_at": "2026-08-09T15:35:00Z",
+          "date_from": "2026-06-22",
+          "date_to": "2026-06-24",
+          "location": "Chicago, IL",
+          "source_url": "https://gotochgo.com/accelerate-chicago-2026",
+          "source_updated_at": "2026-08-10T07:21:01Z",
+          "source_version": "sha256:6028273124bd15c0463957117f5c9abc0db2a73c7768a7284a607ebca5a7fb39",
+          "published_schedule_row_count": 31,
+          "excluded_schedule_rows": {
+            "outside_main_program": 2,
+            "speakerless": 1
+          },
+          "source_snapshot": {
+            "retrieved_at": "2026-08-10T07:21:01Z",
+            "url": "https://gotochgo.com/accelerate-chicago-2026/schedule",
+            "sha256": "6028273124bd15c0463957117f5c9abc0db2a73c7768a7284a607ebca5a7fb39",
+            "sha256_scope": "canonical data-schedule-data JSON"
+          },
           "talks": [
+            {
+              "external_key": "3994",
+              "title": "The Validation-First Loop: How to Ship Production Code with AI Coding Assistants",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "AI engineering",
+                "quality"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/3994",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Cole Medin",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4318",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4004",
+              "title": "The EiC Problem: Junior Developers, AI Agents, and the Missing Context Layer",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "productivity"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4004",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Scott Hanselman",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4333",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4006",
+              "title": "AI as an Amplifier: State of AI-Assisted Software Development",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "productivity",
+                "AI engineering"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4006",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Nathen Harvey",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4336",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4027",
+              "title": "From Automation to Augmentation: Designing AI Coaches That Amplify Expertise",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "AI engineering",
+                "architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4027",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Mike Amundsen",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4363",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4038",
+              "title": "Design in Software Is Deciding Where to Put the Line of Code, for Every Line of Code",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "quality",
+                "software architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4038",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Alistair Cockburn",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4325",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4041",
+              "title": "Seizing the Means of Computation with Local AI",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "emerging tech"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4041",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jeremy Kahn",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4380",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4044",
+              "title": "Tag. Publish. Hope.",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4044",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Aubrey Chipman",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4517",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Roberto Perez Alcolea",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4384",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4045",
+              "title": "Self-Building Software: Lessons from the HydraFlow Experiment",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "AI engineering",
+                "architecture"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4045",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Travis Frisinger",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4391",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4046",
+              "title": "Lightning Talks - AI Is an Amplifier: Harness Engineering for 3x Velocity",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "AI engineering",
+                "productivity"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4046",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Phil Borel",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4393",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4047",
+              "title": "Lightning Talks - Your Agent Doesn’t Need a Bigger Context Window — It Needs a State File",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "AI engineering"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4047",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Wil Mckenney",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4394",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4048",
+              "title": "Qubits & Neurons",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "emerging tech"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4048",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Carl Anderson",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4395",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4049",
+              "title": "The Stack You Can't Refactor",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "leadership"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4049",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jenny Richards",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4397",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Tanarra Schneider",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4396",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4050",
+              "title": "Proactive Inclusion: Embedding Accessibility into the AI Revolution at Coinbase",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "AI engineering"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4050",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Sam Smith",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4398",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4052",
+              "title": "Protecting Your GitHub From Supply Chain Attacks",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "security",
+                "quality"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4052",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Bret Fisher",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4335",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4054",
+              "title": "Lightning Talks - A day in the life of a Quantum software engineer",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "emerging tech"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4054",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Victory Omole",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4408",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4056",
+              "title": "You Gave Your AI Agent Cloud Access. Here's What Can Go Wrong at 2am",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "AI engineering",
+                "security"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4056",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Advait Patel",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4409",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4058",
+              "title": "Spec-Driven Development for Airflow DAGs",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "AI engineering"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4058",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Kyle McCluskey",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4412",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4061",
+              "title": "From Data to Discovery: How AI Is Finding Hidden Cures — and Making Them Human",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "data"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4061",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Brian Martin",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4406",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Mark Rickmeier",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4405",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4064",
+              "title": "How to Be a Curiosity Curator",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4064",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jessie Shternshus",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4418",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4072",
+              "title": "Agents Gonna Agent: Deterministic Orchestration for Systems You Can't Predict",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Event Driven Architecture",
+                "large language models (LLM)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4072",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Eric Johnson",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4385",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4074",
+              "title": "How to Stay Human in the Age of AI - The Skills That Matter When AI Changes What Good Looks Like",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4074",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Serena H. Huang",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4481",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4122",
+              "title": "Stick with it: making “glue work,” work",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4122",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Gayle Silverman",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4506",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4127",
+              "title": "Fast Code That Misses the User’s Reality Is Still the Wrong Code",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4127",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Rafał Truszkowski",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4509",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4129",
+              "title": "I installed Open Claw. Here is how I did it and what I've learned",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4129",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Cedric Hurst",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4342",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4130",
+              "title": "Parallelized Agentic Development with Worktrees",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4130",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Nieky Allen",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4424",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4134",
+              "title": "Lightning Talks - Do You Really Need That AI Subscription? Build Production SaaS with Local Models",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4134",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Sanskriti Lamsal",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4524",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4142",
+              "title": "Open Conversation: The Presence And Future Of Software Development",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4142",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Alex Castrounis",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4536",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "4143",
+              "title": "How my team ships software with OpenClaw: Middle Management for Robots",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/accelerate-chicago-2026/sessions/4143",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Cedric Hurst",
+                  "source_url": "https://gotochgo.com/accelerate-chicago-2026/speakers/4342",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
             {
               "external_key": "masterclass-589",
               "title": "Hexagonal architecture",
@@ -23769,10 +27158,665 @@
         {
           "external_key": "goto-community-day-chicago-2023",
           "name": "GOTO Community Day Chicago 2023",
-          "location": "",
-          "source_url": "https://gotopia.tech/conferences/78/goto-community-day-chicago-2023",
-          "source_updated_at": "2026-08-09T15:35:00Z",
-          "talks": []
+          "date_from": "2023-10-24",
+          "date_to": "2023-10-24",
+          "location": "Chicago, IL",
+          "source_url": "https://gotochgo.com/ai-days-2023",
+          "source_updated_at": "2026-08-10T07:21:01Z",
+          "source_version": "sha256:57ae8e2d4866124fd3fdbd50af2f25d82276bac7b0c6f6789747beda620ed3b5",
+          "published_schedule_row_count": 30,
+          "excluded_schedule_rows": {
+            "furniture": 1,
+            "speakerless": 1
+          },
+          "source_snapshot": {
+            "retrieved_at": "2026-08-10T07:21:01Z",
+            "url": "https://gotochgo.com/ai-days-2023/schedule",
+            "sha256": "57ae8e2d4866124fd3fdbd50af2f25d82276bac7b0c6f6789747beda620ed3b5",
+            "sha256_scope": "canonical data-schedule-data JSON"
+          },
+          "talks": [
+            {
+              "external_key": "3014",
+              "title": "AI Workshop",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "artificial intelligence (AI)"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3014",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Alex Castrounis",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/2921",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3016",
+              "title": "Build Your Own GenAI Model",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "generative AI"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3016",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Vikram Tiwari",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3192",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3017",
+              "title": "Saturday: A natural language network scanning tool",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "ChatGPT",
+                "WolframAlpha",
+                "large language models (LLM)",
+                "Python",
+                "Langchain"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3017",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Joshua Herman",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3189",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3018",
+              "title": "The Future of Scalable Web Applications: What's new in Angular",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "web frameworks",
+                "angular"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3018",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Stephen Fluin",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3191",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3019",
+              "title": "5 Python modules for Fun and Profit",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "Python"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3019",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Joe Jasinski",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3188",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3020",
+              "title": "Why Projects Succeed: Lessons Learned from Building the Android OS",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "History",
+                "(tech) teams"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3020",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Chet Haase",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3184",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3032",
+              "title": "Optimizing Performance Analytics using Statistics",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3032",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jen Anderson",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3187",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3033",
+              "title": "Alt Text Is Your Superpower",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3033",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Clarissa Peterson",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3186",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3034",
+              "title": "Drinking my own champaign; hosting the AWS user group website on AWS Amplify",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3034",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Margaret Valtierra",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3206",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3035",
+              "title": "Common Ground: Uniting Technical & Non-Technical Voices in the Modern Hybrid Workspace",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3035",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Alexander Daines",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3194",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3036",
+              "title": "Will You Be the First To Know About the Next Cybersecurity Catastrophe?",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3036",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Amanda Viers",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3208",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Chloe Wallach",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3185",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3037",
+              "title": "C# and .Net 8 - Who Needs Reflection Anymore? Accessing private members without reflection",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3037",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "David Allen",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3196",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3038",
+              "title": "Serverless Computing: The Future of App Development is Here!",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3038",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Vishal Kumar Bhagchandani",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3195",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3039",
+              "title": "Server Side Rendering in Rails",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3039",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jared Shay",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3197",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3040",
+              "title": "Turbocharge your K8s Infrastructure Monitoring!",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3040",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Pete Wall",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3200",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3041",
+              "title": "LLMs in Test Driven Development",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3041",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Simen Huuse",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3201",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3045",
+              "title": "Safe Financial AI with Claude 2 and AWS Bedrock",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3045",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Richard Whaling",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3207",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3046",
+              "title": "Let's Build a Chrome Extension that Steals Everything",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3046",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Matt Frisbie",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3210",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3047",
+              "title": "Deploying your Dynamic Web App to Google Cloud",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3047",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Martin Omander",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3190",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Sequoia Omander",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3211",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3048",
+              "title": "A natural language network scanning tool",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3048",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Joshua Herman",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3189",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3050",
+              "title": "Amazon Bedrock & Generative AI: Pioneering the Future of Cloud Computing",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3050",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Timothy Patterson",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3203",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3051",
+              "title": "Database Engineering for the Full Stack Developer",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3051",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Bryce Lobdell",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3212",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                },
+                {
+                  "name": "Wayne Taylor",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3213",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3052",
+              "title": "Local Data Storage using Drift",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3052",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Valeria Durán Ruiz",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3205",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3053",
+              "title": "From Color Schemes to Code: How Designers & Developers Can Learn from One Another",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3053",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Miranda Reese",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3199",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3054",
+              "title": "AI in the \"PaLM\" of Your Hand",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3054",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Stephen Wylie",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3214",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3056",
+              "title": "Supercharge your GraphQL with Ktor and GraalVM",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3056",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Derek Kuc",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3202",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3057",
+              "title": "Incorporating Pydantic into an Existing System",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3057",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Michael Misiak",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3204",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            },
+            {
+              "external_key": "3058",
+              "title": "American Sign Language Gesture Recognition With Python and Machine Learning",
+              "abstract": "",
+              "session_format": "Session",
+              "track": "",
+              "level": "",
+              "topics": [
+                "GOTO"
+              ],
+              "recording_url": "",
+              "source_url": "https://gotochgo.com/ai-days-2023/sessions/3058",
+              "source_updated_at": "2026-08-10T07:21:01Z",
+              "speakers": [
+                {
+                  "name": "Jimmy Scray",
+                  "source_url": "https://gotochgo.com/ai-days-2023/speakers/3209",
+                  "source_updated_at": "2026-08-10T07:21:01Z",
+                  "biography": ""
+                }
+              ]
+            }
+          ]
         },
         {
           "external_key": "goto-eda-day-london-2024",

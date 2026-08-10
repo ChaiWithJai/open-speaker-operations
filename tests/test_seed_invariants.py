@@ -1,17 +1,24 @@
 import pytest
 from django.core.management import call_command
 from django_scopes import scope
+from pretalx.common.models import ActivityLog
 from pretalx.event.models import Event
 from pretalx.person.models import User
+from pretalx.submission.models import Answer
 
+from pretalx_speakerops.cfp import AIE_TRACKS
+from pretalx_speakerops.demo_assets import DEMO_HEADSHOT_BY_EMAIL
 from pretalx_speakerops.management.commands.speakerops_seed import (
     CFP_DEADLINE,
     CFP_OPENING,
     CONFLICT_FIXTURE_TITLES,
     CURATED_PROGRAM,
+    CURATED_RELIABLE_TRACK_INDICES,
+    CURATED_SPEAKER_ROLES,
     DEMO_END,
     DEMO_START,
     DEMO_WALKTHROUGH_AT,
+    EVALUATOR_SIGNUP_EMAIL,
 )
 from pretalx_speakerops.models import (
     ExternalIdentity,
@@ -50,6 +57,14 @@ def _released_program(event):
 
 
 def _baseline(event):
+    released_submission_ids = (
+        event.schedules.get(version="m3-demo")
+        .talks.filter(
+            submission__isnull=False,
+            is_visible=True,
+        )
+        .values("submission_id")
+    )
     return {
         "event": (
             event.date_from,
@@ -59,6 +74,16 @@ def _baseline(event):
             event.cfp.deadline,
         ),
         "released_program": _released_program(event),
+        "tracks": tuple(
+            str(name)
+            for name in event.tracks.order_by("position", "pk").values_list("name", flat=True)
+        ),
+        "avatars": tuple(
+            (speaker.name, bool(speaker.avatar))
+            for speaker in User.objects.filter(submissions__in=released_submission_ids)
+            .distinct()
+            .order_by("name")
+        ),
         "tasks": tuple(
             OnboardingTask.objects.filter(event=event)
             .values_list(
@@ -125,7 +150,13 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
     monkeypatch.setenv("PRETALX_INIT_ORGANISER_SLUG", "seed-test-organiser")
     call_command("init", interactive=False, verbosity=0)
 
+    User.objects.create_user(
+        email=EVALUATOR_SIGNUP_EMAIL,
+        name="Priya Raman",
+        password="throwaway-password",
+    )
     call_command("speakerops_seed", verbosity=0)
+    assert not User.objects.filter(email=EVALUATOR_SIGNUP_EMAIL).exists()
     event = Event.objects.get(slug="speakerops-demo")
     with scope(event=event):
         first = _baseline(event)
@@ -140,6 +171,22 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         assert CFP_DEADLINE < DEMO_WALKTHROUGH_AT
         assert DEMO_WALKTHROUGH_AT.date() < DEMO_START
         assert event.get_feature_flag("use_tracks") is True
+        assert first["tracks"] == (
+            "Human-Centered Operations",
+            "Reliable AI Systems",
+            *AIE_TRACKS,
+        )
+        assert len(first["tracks"]) == len(set(first["tracks"]))
+        released = event.schedules.get(version="m3-demo")
+        released_tracks = list(
+            released.talks.filter(is_visible=True, submission__isnull=False)
+            .values_list("submission__track__name", flat=True)
+            .order_by("start", "room__position", "pk")
+        )
+        assert released_tracks.count("Reliable AI Systems") == len(CURATED_RELIABLE_TRACK_INDICES)
+        assert released_tracks.count("Human-Centered Operations") == len(CURATED_PROGRAM) - len(
+            CURATED_RELIABLE_TRACK_INDICES
+        )
         assert "Browse the released schedule" in str(event.landing_page_text)
         assert "/speakerops-demo/speaker-operations/embed/" in str(event.landing_page_text)
         primary_speaker = User.objects.get(email="speaker@example.org")
@@ -167,6 +214,23 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             if "speaker@example.org" in {email for email, _name in row[4]}
         ]
         assert demo_speaker_sessions == [CURATED_PROGRAM[0][1]]
+        public_identity_answers = Answer.objects.filter(
+            question__event=event,
+            question__question__in=("Job title", "Company"),
+            question__is_public=True,
+            person__submissions__in=event.schedules.get(version="m3-demo").talks.values(
+                "submission_id"
+            ),
+        ).distinct()
+        assert public_identity_answers.count() == len(CURATED_PROGRAM) * 2
+        assert set(public_identity_answers.values_list("answer", flat=True)) == {
+            value for role in CURATED_SPEAKER_ROLES for value in role
+        }
+        avatar_by_name = dict(first["avatars"])
+        assert len(avatar_by_name) == len(CURATED_PROGRAM)
+        assert not any(avatar_by_name.values())
+        assert len(DEMO_HEADSHOT_BY_EMAIL) == len(CURATED_PROGRAM) - 1
+        assert "curated-speaker-12@democon.test" not in DEMO_HEADSHOT_BY_EMAIL
 
         wip_warnings = classify_warnings(event.wip_schedule)
         assert {warning["category"] for warning in wip_warnings} == {"room", "speaker"}
@@ -193,7 +257,21 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             CONFLICT_FIXTURE_TITLES[1],
         }
 
+    evaluator = User.objects.create_user(
+        email=EVALUATOR_SIGNUP_EMAIL,
+        name="Priya Raman",
+        password="throwaway-password",
+    )
+    with scope(event=event):
+        ActivityLog.objects.create(
+            event=event,
+            person=evaluator,
+            content_object=event,
+            action_type="speakerops.browser_evaluator_fixture",
+        )
+
     call_command("speakerops_seed", verbosity=0)
+    assert not User.objects.filter(email=EVALUATOR_SIGNUP_EMAIL).exists()
     event.refresh_from_db()
     with scope(event=event):
         assert _baseline(event) == first

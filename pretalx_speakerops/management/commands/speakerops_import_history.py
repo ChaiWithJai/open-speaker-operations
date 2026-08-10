@@ -10,6 +10,15 @@ from pretalx_speakerops.conference_memory import (
     verify_imported_catalog,
 )
 from pretalx_speakerops.history_coverage import analyze_catalog
+from pretalx_speakerops.history_curation import (
+    apply_identity_decisions,
+    load_identity_decisions,
+)
+
+BUNDLED_CATALOG = Path(__file__).resolve().parents[2] / "data" / "conferences"
+BUNDLED_IDENTITY_DECISIONS = (
+    Path(__file__).resolve().parents[2] / "data" / "conference_identity_decisions.json"
+)
 
 
 class Command(BaseCommand):
@@ -30,6 +39,13 @@ class Command(BaseCommand):
             help="Fail unless database identities exactly match the contracted catalog",
         )
         parser.add_argument("--report", help="Write the successful verification JSON here")
+        parser.add_argument(
+            "--identity-decisions",
+            help=(
+                "Version-controlled identity decisions JSON. The bundled full catalog applies "
+                "its bundled decisions automatically."
+            ),
+        )
 
     def handle(self, *args, **options):
         try:
@@ -60,12 +76,21 @@ class Command(BaseCommand):
                 )
                 if verification and not verification.complete:
                     raise CommandError("Imported conference history does not match its catalog")
+                decisions_path = options["identity_decisions"]
+                if not decisions_path and Path(options["source"]).resolve() == BUNDLED_CATALOG:
+                    decisions_path = BUNDLED_IDENTITY_DECISIONS
+                identity_curation = (
+                    apply_identity_decisions(load_identity_decisions(decisions_path))
+                    if decisions_path
+                    else None
+                )
         except (OSError, ValueError) as exc:
             raise CommandError(str(exc)) from exc
         report = {
             "catalog": coverage.as_dict(),
             "database": verification.as_dict() if verification else None,
             "imported": totals,
+            "identity_curation": identity_curation.as_dict() if identity_curation else None,
         }
         if options["report"]:
             Path(options["report"]).write_text(
@@ -88,5 +113,14 @@ class Command(BaseCommand):
                     f"{verification.talks} talks, {verification.speaker_credits} credits, "
                     f"{verification.speakers} speakers, and "
                     f"{verification.source_identities} source identities."
+                )
+            )
+        if identity_curation:
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "Applied verified identity curation: "
+                    f"{identity_curation.groups} groups, "
+                    f"{identity_curation.identities} identities, "
+                    f"{identity_curation.decisions_created} new decisions."
                 )
             )

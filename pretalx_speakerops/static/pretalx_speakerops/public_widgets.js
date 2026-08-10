@@ -5,9 +5,13 @@
   const cards = [...document.querySelectorAll("[data-filter-card]")];
   const query = document.querySelector("#widget-search");
   const track = document.querySelector("#widget-track");
+  const format = document.querySelector("#widget-format");
   const room = document.querySelector("#widget-room");
   const status = document.querySelector("#widget-status");
   const selectedOnly = document.querySelector("#selected-only");
+  const dayTabs = [...document.querySelectorAll("[data-day-tab]")];
+  const dayPanels = [...document.querySelectorAll("[data-day-panel]")];
+  const speakerDetailLinks = [...document.querySelectorAll("[data-speaker-detail]")];
   const storageKey = `speakerops:${eventKey}:personal-schedule`;
 
   function selected() {
@@ -44,11 +48,27 @@
       const matches =
         (!needle || card.dataset.search.includes(needle)) &&
         (!track?.value || card.dataset.track === track.value) &&
+        (!format?.value || card.dataset.format === format.value) &&
         (!room?.value || card.dataset.room === room.value);
       card.hidden = !matches;
       if (matches) visible += 1;
     });
     if (status) status.textContent = `${visible} result${visible === 1 ? "" : "s"}`;
+    if (query) {
+      const search = query.value.trim();
+      const currentUrl = new URL(window.location.href);
+      if (search) currentUrl.searchParams.set("q", search);
+      else currentUrl.searchParams.delete("q");
+      window.history.replaceState({}, "", currentUrl);
+      if (["speakers", "gallery"].includes(root.dataset.widget)) {
+        speakerDetailLinks.forEach((link) => {
+          const detailUrl = new URL(link.href);
+          if (search) detailUrl.searchParams.set("q", search);
+          else detailUrl.searchParams.delete("q");
+          link.href = detailUrl;
+        });
+      }
+    }
   }
 
   if (track && root.dataset.selectedTrack) track.value = root.dataset.selectedTrack;
@@ -63,10 +83,34 @@
       if (root.dataset.widget !== "itinerary") updateFilter();
     });
   });
-  [query, track, room].filter(Boolean).forEach((control) => {
+  [query, track, format, room].filter(Boolean).forEach((control) => {
     control.addEventListener(control === query ? "input" : "change", updateFilter);
   });
   selectedOnly?.addEventListener("change", syncStars);
+  dayTabs.forEach((tab, index) => {
+    tab.addEventListener("click", (event) => {
+      event.preventDefault();
+      dayTabs.forEach((candidate) => {
+        const active = candidate === tab;
+        candidate.setAttribute("aria-selected", String(active));
+        candidate.tabIndex = active ? 0 : -1;
+      });
+      dayPanels.forEach((panel) => {
+        panel.hidden = panel.dataset.dayPanel !== tab.dataset.dayTab;
+      });
+      const url = new URL(window.location.href);
+      url.searchParams.set("day", tab.dataset.dayTab);
+      window.history.replaceState({}, "", url);
+    });
+    tab.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+      event.preventDefault();
+      const offset = event.key === "ArrowRight" ? 1 : -1;
+      const next = dayTabs[(index + offset + dayTabs.length) % dayTabs.length];
+      next.click();
+      next.focus();
+    });
+  });
   syncStars();
   if (root.dataset.widget !== "itinerary") updateFilter();
 })();

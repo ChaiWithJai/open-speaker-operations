@@ -25,7 +25,7 @@ def schedule_slots(schedule):
             end__isnull=False,
             is_visible=True,
         )
-        .select_related("room", "submission")
+        .select_related("room", "submission", "submission__track")
         .prefetch_related("submission__speakers")
         .order_by("start", "pk")
     )

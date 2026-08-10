@@ -1,6 +1,7 @@
 # PyCon-family historical backfill provenance and gaps
 
-Retrieved and normalized on 2026-08-09 from first-party conference pages or
+Retrieved and normalized on 2026-08-09, with the legacy PyCon DE recovery
+refreshed on 2026-08-10, from first-party conference pages or
 official Pretalx exports. `source_updated_at` is the retrieval time because the
 static schedules do not expose a per-record modification timestamp. The
 committed catalog retains metadata and links, not abstracts or biographies.
@@ -12,8 +13,10 @@ committed catalog retains metadata and links, not abstracts or biographies.
   1,452 credited talks.
 - PyCon Italia: 2023 (130), 2024 (114), 2025 (124), and 2026 (117), for 485
   credited schedule sessions from the official year sites.
-- PyCon DE & PyData: 2016 (29), 2017 (54), 2019 (97), 2022 (107), 2023
-  (113), 2024 (118), 2025 (164), and 2026 (140), for 822 credited talks.
+- PyCon DE & PyData: the archived PyCon DE programs for 2011 (54), 2012 (69),
+  and 2013 (70), plus 2016 (29), 2017 (54), 2018 (79), 2019 (97), 2022
+  (107), 2023 (113), 2024 (118), 2025 (164), and 2026 (140), for 1,094
+  credited sessions.
 - PyLadiesCon: the complete global-conference run to date: 2023 (41), 2024
   (54), and 2025 (70). The removed 2023 Pretalx feed was recovered from the
   PyLadies-owned `pyladies/global-conference-2023` session CSV.
@@ -23,7 +26,7 @@ committed catalog retains metadata and links, not abstracts or biographies.
   `djangocon` organization repositories; the 2026 published program was read
   from its official sitemap and talk detail pages.
 
-Total: 48 editions, 3,630 credited talks, and 4,173 speaker credits. Speaker
+Total: 52 editions, 3,902 credited talks, and 4,463 speaker credits. Speaker
 credits count appearances, so the same person may be represented in several
 sessions or editions.
 
@@ -34,6 +37,10 @@ Primary official sources:
 - `https://us.pycon.org/{year}/schedule/talks/` for 2013–2020 and 2022–2026
 - <https://pycon.it/en/schedule>
 - <https://pycon.de/archive/> and the year-specific PyCon DE sites
+- <https://web.archive.org/web/20110809094614id_/http://de.pycon.org/2011/schedule/lists/talks/>
+- <https://web.archive.org/web/20121101164923id_/https://2012.de.pycon.org/programm/schedule/>
+- <https://web.archive.org/web/20150906080952id_/https://2013.de.pycon.org/programm/zeitplan/>
+- <https://2018.pycon.de/schedule/>
 - <https://pretalx.com/pyconde-pydata-2025/schedule/export/schedule.json>
   (with equivalent official exports for 2023 and 2024)
 - <https://pretalx.com/pyladiescon-2025/schedule/export/schedule.json>
@@ -53,13 +60,14 @@ Primary official sources:
   session track field. Historical subdomains before 2023 no longer resolve or
   expose a centralized official archive; the Python Italia application
   repositories contain no historical schedule fixture.
-- Legacy PyCon DE hosts before 2016 fail TLS validation or no longer resolve,
-  while the current first-party archive does not expose those talk catalogs.
-  No insecure transport bypass was used.
-- PyCon DE 2018 advertises about 60 talks, trainings, and posters, but the
-  archived `/schedule/` URL currently resolves to the event landing page and
-  exposes no talk catalog. No 2018 records were invented. The 2020–2021 archive
-  likewise exposes no completed edition catalog.
+- The legacy PyCon DE hosts no longer resolve reliably, but preserved snapshots
+  of their official schedules provide deterministic title-to-speaker mappings
+  for 2011–2013. The live official 2018 schedule is at `2018.pycon.de`, not the
+  previously recorded `2018.de.pycon.org` hostname.
+- Official PyCon DE history identifies 2014 as a satellite within EuroPython
+  2014 and lists no standalone 2015 edition. The EuroPython program is not
+  relabelled as PyCon DE. The 2020–2021 archive likewise exposes no completed
+  edition catalog.
 - Two speakerless PyCon DE 2016 archive cards, two in 2023, five in 2026, one
   PyLadiesCon 2025 organizer block, and four anonymous PyCon US 2025 lightning
   placeholders were excluded because a historical talk requires a credited

@@ -234,6 +234,21 @@ def test_replacement_upload_keeps_version_history_and_is_retry_safe(event, users
         TaskEvidence.PENDING,
         TaskEvidence.PENDING,
     ]
+    checklist = client.get(f"/{event.slug}/speaker-operations/checklist/")
+    assert checklist.content.count(b"Download v") == 2
+    assert checklist.content.count(b"Current/latest") == 1
+    for item in evidence:
+        download = client.get(f"/{event.slug}/speaker-operations/evidence/{item.pk}/download/")
+        assert download.status_code == 200
+        assert b"%PDF-1.7" in b"".join(download.streaming_content)
+
+    client.force_login(users["reviewer"])
+    assert (
+        client.get(
+            f"/{event.slug}/speaker-operations/evidence/{evidence[0].pk}/download/"
+        ).status_code
+        == 404
+    )
 
 
 @pytest.mark.django_db(transaction=True)

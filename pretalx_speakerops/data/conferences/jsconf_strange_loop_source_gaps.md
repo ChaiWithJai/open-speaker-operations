@@ -143,8 +143,9 @@ republished.
 
 ## JSConf Belgium
 
-- Official archived edition pages cover 2014–2019 (6 editions, 60
+- Official archived edition pages cover 2014–2019 (6 editions, 84
   speaker-attributed talks).
-- Ten 2015 schedule titles cannot be linked deterministically to the separately
-  listed speaker roster, and the 2018 schedule snapshot is unavailable. These
-  remain explicit machine-readable gaps rather than guessed pairings.
+- The official archived 2018 schedule contributes 24 deterministic credited
+  sessions. Ten 2015 schedule titles still cannot be linked deterministically
+  to the separately listed speaker roster; they remain explicit
+  machine-readable gaps rather than guessed pairings.

@@ -29,7 +29,7 @@ identity, invitation boundaries, or cross-speaker authorization.
 ## Full conference-memory backfill
 
 The event seed and the historical corpus are intentionally separate: reseeding the
-judged event stays fast and does not silently rewrite 18,432 source-backed records.
+judged event stays fast and does not silently rewrite 19,466 source-backed records.
 Load and verify the complete known corpus explicitly after migrations or into a clean
 environment:
 
@@ -48,10 +48,14 @@ python -m pretalx speakerops_import_history \
 The first command fails on catalog, edition, count, identity, digest, or provenance-gap
 drift. The second performs one atomic import and then compares every database series,
 edition, talk, speaker credit, and canonical speaker key with the contracted catalog.
-The committed expectation is 13 series, 199 editions, 18,432 talks, 20,238 credits,
-20,174 edition-scoped source identities, and 13,376 provisional person clusters;
-120 declared gaps, 9 empty editions, 1,067 missing format labels,
-and 5,590 missing track labels remain explicit rather than inferred. The additional
+For the bundled catalog it also applies the version-controlled, source-backed identity
+groups in `pretalx_speakerops/data/conference_identity_decisions.json`. These decisions
+are idempotent and make verified cross-edition recurrence explicit without treating a
+matching name as proof of identity.
+The committed expectation is 13 series, 204 editions, 19,466 talks, 21,419 credits,
+21,355 edition-scoped source identities, and 14,068 provisional person clusters;
+122 declared gaps, 9 empty editions, 1,067 missing format labels,
+and 5,678 missing track labels remain explicit rather than inferred. The additional
 JSConf US 2009/2011/2012 and JSConf China 2012–2015 rows come from immutable
 first-party repository branches. Their unavailable track labels remain explicit
 instead of being guessed.

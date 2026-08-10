@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.views.generic import TemplateView, View
 from django_scopes import scope
+from PIL import Image, UnidentifiedImageError
 from pretalx.person.models import SpeakerProfile, User
 from pretalx.submission.models import Submission
 
@@ -127,6 +128,9 @@ class ContentOperationsView(EventContextMixin, TemplateView):
                 for speaker in submission.speakers.all():
                     profile = SpeakerProfile.objects.filter(event=self.event, user=speaker).first()
                     speaker.speakerops_biography = profile.biography if profile else ""
+                    speaker.speakerops_avatar_url = (
+                        speaker.get_avatar_url(event=self.event, thumbnail="tiny") or ""
+                    )
                     speaker.speakerops_revisions = [
                         revision
                         for revision in revisions
@@ -225,6 +229,26 @@ class EvidenceDownloadView(EventContextMixin, View):
     def get(self, request, event, pk):
         with scope(event=self.event):
             evidence = get_object_or_404(TaskEvidence, pk=pk, event=self.event)
+            if not evidence.upload:
+                raise Http404
+            evidence.upload.open("rb")
+            return FileResponse(
+                evidence.upload.file,
+                as_attachment=True,
+                filename=PurePath(evidence.upload.name).name,
+                content_type=evidence.content_type or "application/octet-stream",
+            )
+
+
+class SpeakerEvidenceDownloadView(EventContextMixin, View):
+    def get(self, request, event, pk):
+        with scope(event=self.event):
+            evidence = get_object_or_404(
+                TaskEvidence.objects.select_related("task"),
+                pk=pk,
+                event=self.event,
+                task__speaker=request.user,
+            )
             if not evidence.upload:
                 raise Http404
             evidence.upload.open("rb")
@@ -394,6 +418,21 @@ class SpeakerContentEditView(EventContextMixin, View):
 
     def post(self, request, event, pk):
         biography = request.POST.get("biography", "").strip()
+        headshot = request.FILES.get("headshot")
+        if headshot:
+            if headshot.size > 5_000_000:
+                messages.error(request, "Headshots must be no larger than 5 MB.")
+                return redirect(_content_url(event, f"#speaker-content-{pk}"))
+            try:
+                image = Image.open(headshot)
+                image.verify()
+            except (UnidentifiedImageError, OSError):
+                messages.error(request, "Choose a valid JPG or PNG headshot.")
+                return redirect(_content_url(event, f"#speaker-content-{pk}"))
+            if image.format not in {"JPEG", "PNG"}:
+                messages.error(request, "Choose a JPG or PNG headshot.")
+                return redirect(_content_url(event, f"#speaker-content-{pk}"))
+            headshot.seek(0)
         with scope(event=self.event), transaction.atomic():
             speaker = get_object_or_404(
                 User.objects.filter(submissions__event=self.event).distinct(), pk=pk
@@ -406,12 +445,14 @@ class SpeakerContentEditView(EventContextMixin, View):
                 content_type=ContentRevision.SPEAKER,
                 object_id=speaker.pk,
                 label=speaker.get_display_name(),
-                snapshot={"biography": profile.biography},
+                snapshot={"biography": profile.biography, "avatar": speaker.avatar.name},
                 actor=request.user,
             )
             profile.biography = biography
             profile.save(update_fields=["biography", "updated"])
-        messages.success(request, "Speaker biography saved; the prior version remains restorable.")
+            if headshot:
+                speaker.avatar.save(headshot.name, headshot, save=True)
+        messages.success(request, "Speaker profile saved; the prior version remains restorable.")
         return redirect(_content_url(event, f"#speaker-content-{pk}"))
 
 
@@ -452,12 +493,16 @@ class ContentRevisionRestoreView(EventContextMixin, View):
                     content_type=ContentRevision.SPEAKER,
                     object_id=speaker.pk,
                     label=speaker.get_display_name(),
-                    snapshot={"biography": profile.biography},
+                    snapshot={"biography": profile.biography, "avatar": speaker.avatar.name},
                     actor=request.user,
                     restored_from=revision,
                 )
                 profile.biography = revision.snapshot.get("biography", profile.biography)
                 profile.save(update_fields=["biography", "updated"])
+                prior_avatar = revision.snapshot.get("avatar")
+                if prior_avatar is not None:
+                    speaker.avatar.name = prior_avatar
+                    speaker.save(update_fields=["avatar"])
                 fragment = f"#speaker-content-{speaker.pk}"
             else:
                 raise Http404

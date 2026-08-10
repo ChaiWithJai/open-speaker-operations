@@ -12,15 +12,18 @@ from .content_ops import (
     SessionPublicationApprovalView,
     SpeakerContentEditView,
     SpeakerEvidenceCommentView,
+    SpeakerEvidenceDownloadView,
 )
 from .crm import CRMDirectoryView
 from .public_widgets import (
     EmbedBuilderView,
+    PublicSessionDetailView,
     PublicSpeakerDetailView,
     PublicWidgetView,
     SelectedScheduleIcsView,
 )
 from .speaker_operations import SpeakerImportView, SpeakerOperationsView
+from .speaker_profile import SpeakerPortalProfileView
 from .views import (
     AgendaReleaseView,
     CfpRoutingView,
@@ -40,6 +43,7 @@ from .views import (
     ResourceView,
     ReviewerScoringView,
     RoleEntryView,
+    SpeakerSubmissionPresentersView,
     StatusView,
     SyncConsoleView,
     SyncPreviewView,
@@ -96,6 +100,11 @@ urlpatterns = [
         name="speakerops_entry",
     ),
     path(
+        "<slug:event>/speaker-operations/submissions/<slug:code>/presenters/",
+        SpeakerSubmissionPresentersView.as_view(),
+        name="speakerops_submission_presenters",
+    ),
+    path(
         "<slug:event>/speaker-operations/schedule.ics",
         PublishedIcsView.as_view(),
         name="speakerops_ics",
@@ -119,6 +128,11 @@ urlpatterns = [
         "<slug:event>/speaker-operations/widgets/speakers/<slug:code>/",
         PublicSpeakerDetailView.as_view(),
         name="speakerops_public_speaker",
+    ),
+    path(
+        "<slug:event>/speaker-operations/widgets/sessions/<slug:code>/",
+        PublicSessionDetailView.as_view(),
+        name="speakerops_public_session",
     ),
     path(
         "<slug:event>/speaker-operations/my-schedule.ics",
@@ -244,6 +258,16 @@ urlpatterns = [
         "<slug:event>/speaker-operations/checklist/",
         ChecklistView.as_view(),
         name="speakerops_checklist",
+    ),
+    path(
+        "<slug:event>/speaker-operations/evidence/<int:pk>/download/",
+        SpeakerEvidenceDownloadView.as_view(),
+        name="speakerops_speaker_evidence_download",
+    ),
+    path(
+        "<slug:event>/speaker-operations/profile/",
+        SpeakerPortalProfileView.as_view(),
+        name="speakerops_speaker_profile",
     ),
     path(
         "<slug:event>/speaker-operations/checklist/<int:pk>/complete/",

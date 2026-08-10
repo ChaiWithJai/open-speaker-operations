@@ -10,16 +10,20 @@ app_dir="${SPEAKEROPS_APP_DIR:-$default_app_dir}"
 public_url="${SPEAKEROPS_PUBLIC_URL:-https://loop.dharmicdata.org}"
 current_image=""
 previous_image=""
+current_version=""
+previous_version=""
 confirmed=false
 
 usage() {
-  echo "usage: drill-image-rollback.sh --current IMAGE_SHA --previous IMAGE_SHA [--app-dir PATH] [--public-url URL] [--yes]"
+  echo "usage: drill-image-rollback.sh --current IMAGE --current-version SHA --previous IMAGE --previous-version SHA [--app-dir PATH] [--public-url URL] [--yes]"
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --current) current_image="${2:?missing --current value}"; shift 2 ;;
+    --current-version) current_version="${2:?missing --current-version value}"; shift 2 ;;
     --previous) previous_image="${2:?missing --previous value}"; shift 2 ;;
+    --previous-version) previous_version="${2:?missing --previous-version value}"; shift 2 ;;
     --app-dir) app_dir="${2:?missing --app-dir value}"; shift 2 ;;
     --public-url) public_url="${2:?missing --public-url value}"; shift 2 ;;
     --yes) confirmed=true; shift ;;
@@ -28,9 +32,14 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-image_pattern='^ghcr\.io/chaiwithjai/open-speaker-operations:[0-9a-f]{40}$'
-[[ "$current_image" =~ $image_pattern ]] || { echo "Current image must use a full GHCR commit-SHA tag." >&2; exit 2; }
-[[ "$previous_image" =~ $image_pattern ]] || { echo "Previous image must use a full GHCR commit-SHA tag." >&2; exit 2; }
+tag_pattern='^ghcr\.io/chaiwithjai/open-speaker-operations:([0-9a-f]{40})$'
+digest_pattern='^ghcr\.io/chaiwithjai/open-speaker-operations@sha256:[0-9a-f]{64}$'
+if [[ "$current_image" =~ $tag_pattern ]]; then current_version="${BASH_REMATCH[1]}"; fi
+if [[ "$previous_image" =~ $tag_pattern ]]; then previous_version="${BASH_REMATCH[1]}"; fi
+[[ "$current_image" =~ $tag_pattern || "$current_image" =~ $digest_pattern ]] || { echo "Current image must use a full GHCR digest (or a commit tag for dry-run/local rehearsal)." >&2; exit 2; }
+[[ "$previous_image" =~ $tag_pattern || "$previous_image" =~ $digest_pattern ]] || { echo "Previous image must use a full GHCR digest (or a commit tag for dry-run/local rehearsal)." >&2; exit 2; }
+[[ "$current_version" =~ ^[0-9a-f]{40}$ ]] || { echo "Current version must be a full commit SHA." >&2; exit 2; }
+[[ "$previous_version" =~ ^[0-9a-f]{40}$ ]] || { echo "Previous version must be a full commit SHA." >&2; exit 2; }
 test "$current_image" != "$previous_image" || { echo "Current and previous images must differ." >&2; exit 2; }
 app_dir="$(cd "$app_dir" && pwd)"
 test -f "$app_dir/.env"
@@ -53,6 +62,13 @@ if [ "$confirmed" != true ]; then
 fi
 test -n "${SPEAKEROPS_SMOKE_PASSWORD:-}" || { echo "Set SPEAKEROPS_SMOKE_PASSWORD." >&2; exit 2; }
 
+if [ "${SPEAKEROPS_SKIP_PULL:-false}" != "true" ]; then
+  [[ "$current_image" =~ $digest_pattern && "$previous_image" =~ $digest_pattern ]] || {
+    echo "Confirmed production drills require immutable digest references." >&2
+    exit 2
+  }
+fi
+
 if [ "${SPEAKEROPS_SKIP_PULL:-false}" = "true" ]; then
   for image in "$current_image" "$previous_image"; do
     image_id="$(docker image inspect --format '{{.Id}}' "$image" 2>/dev/null)" || {
@@ -73,8 +89,9 @@ restore_current() {
   if [ "$returned_to_current" != true ]; then
     echo "Returning to declared current image after drill exit." >&2
     SPEAKEROPS_APP_DIR="$app_dir" SPEAKEROPS_PUBLIC_URL="$public_url" \
-      SPEAKEROPS_COMPOSE_PROJECT="${SPEAKEROPS_COMPOSE_PROJECT:-speakerops}" \
+    SPEAKEROPS_COMPOSE_PROJECT="${SPEAKEROPS_COMPOSE_PROJECT:-speakerops}" \
       SPEAKEROPS_SKIP_PULL="${SPEAKEROPS_SKIP_PULL:-false}" \
+      SPEAKEROPS_EXPECTED_APP_VERSION="$current_version" \
       "$deploy_script" "$current_image" || true
   fi
   trap - EXIT
@@ -85,6 +102,7 @@ trap restore_current EXIT
 SPEAKEROPS_APP_DIR="$app_dir" SPEAKEROPS_PUBLIC_URL="$public_url" \
   SPEAKEROPS_COMPOSE_PROJECT="${SPEAKEROPS_COMPOSE_PROJECT:-speakerops}" \
   SPEAKEROPS_SKIP_PULL="${SPEAKEROPS_SKIP_PULL:-false}" \
+  SPEAKEROPS_EXPECTED_APP_VERSION="$previous_version" \
   "$deploy_script" "$previous_image"
 SPEAKEROPS_SMOKE_PASSWORD="$SPEAKEROPS_SMOKE_PASSWORD" \
   python3 "$smoke_script" --base-url "$public_url"
@@ -92,6 +110,7 @@ SPEAKEROPS_SMOKE_PASSWORD="$SPEAKEROPS_SMOKE_PASSWORD" \
 SPEAKEROPS_APP_DIR="$app_dir" SPEAKEROPS_PUBLIC_URL="$public_url" \
   SPEAKEROPS_COMPOSE_PROJECT="${SPEAKEROPS_COMPOSE_PROJECT:-speakerops}" \
   SPEAKEROPS_SKIP_PULL="${SPEAKEROPS_SKIP_PULL:-false}" \
+  SPEAKEROPS_EXPECTED_APP_VERSION="$current_version" \
   "$deploy_script" "$current_image"
 SPEAKEROPS_SMOKE_PASSWORD="$SPEAKEROPS_SMOKE_PASSWORD" \
   python3 "$smoke_script" --base-url "$public_url"

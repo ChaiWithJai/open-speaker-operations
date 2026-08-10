@@ -107,6 +107,14 @@ def _configure_submission_types(event):
 def configure_demo_cfp(event):
     """Configure the seeded AIE CFP using pretalx's native question system."""
     with scope(event=event):
+        # Keep the native abstract field available for post-submit editing, but
+        # do not make it block the evaluator's title-only draft workflow. The
+        # program's canonical "Session abstract" question remains required
+        # before final submission.
+        cfp_fields = dict(event.cfp.fields)
+        cfp_fields["abstract"] = {**cfp_fields["abstract"], "visibility": "optional"}
+        event.cfp.fields = cfp_fields
+        event.cfp.save(update_fields=["fields", "updated"])
         submission_types = _configure_submission_types(event)
         Question.all_objects.filter(event=event, question="Session format").update(active=False)
         for position, name in enumerate(AIE_TRACKS):

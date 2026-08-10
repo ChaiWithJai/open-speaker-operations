@@ -38,8 +38,8 @@ organization CRM without automatic duplicate merging.
 
 ## Corpus and release contract
 
-The contracted corpus contains 13 series, 199 editions, 18,432 talks, 20,238 credits,
-20,174 active edition-scoped source identities, and 13,376 provisional person clusters.
+The contracted corpus contains 13 series, 204 editions, 19,466 talks, 21,419 credits,
+21,355 active edition-scoped source identities, and 14,068 provisional person clusters.
 The PyLadies collision is conservatively split: Sarah's two source records remain
 separate until reviewed, while Marie receives her own cluster.
 

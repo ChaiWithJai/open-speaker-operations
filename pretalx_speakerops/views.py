@@ -1,4 +1,5 @@
 import csv
+import re
 import uuid
 from urllib.parse import urlencode
 
@@ -20,7 +21,8 @@ from django.views.generic import TemplateView, View
 from django_scopes import scope
 from pretalx.event.models import Event
 from pretalx.person.models import User
-from pretalx.submission.models import Review, ReviewScore, Submission, SubmissionStates
+from pretalx.schedule.models import Room
+from pretalx.submission.models import Review, ReviewScore, Submission, SubmissionStates, Track
 
 from .auth import can_manage, is_speaker, require_event_permission, role_home_url, role_navigation
 from .cfp_forms import ConditionalQuestionRuleForm, ReviewerPoolForm
@@ -54,6 +56,7 @@ from .models import (
     ReviewRecommendation,
     SessionPublicationApproval,
     SpeakerMemoryProfile,
+    SubmissionPresenterRole,
     SyncItem,
     SyncPreview,
     SyncRun,
@@ -62,6 +65,7 @@ from .models import (
 )
 from .onboarding.reminders import queue_reminders
 from .onboarding.services import record_evidence
+from .presenter_roles import presenter_rows
 from .program.auto_schedule import apply_schedule_proposal, build_schedule_proposal
 from .program.calendar import released_ical
 from .program.decisions import (
@@ -244,6 +248,9 @@ class ConferenceMemoryView(EventContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get("q", "").strip()
         series_slug = self.request.GET.get("series", "").strip()
+        timing = self.request.GET.get("timing", "all").strip()
+        if timing not in {"all", "past", "upcoming", "undated"}:
+            timing = "all"
         talks = HistoricalTalk.objects.select_related("edition__series").prefetch_related(
             "credits__speaker"
         )
@@ -260,6 +267,13 @@ class ConferenceMemoryView(EventContextMixin, TemplateView):
             ).distinct()
         if series_slug:
             talks = talks.filter(edition__series__slug=series_slug)
+        today = timezone.localdate()
+        if timing == "past":
+            talks = talks.filter(edition__date_from__lte=today)
+        elif timing == "upcoming":
+            talks = talks.filter(edition__date_from__gt=today)
+        elif timing == "undated":
+            talks = talks.filter(edition__date_from__isnull=True)
         talks = talks.order_by("-edition__date_from", "title")
         result_count = talks.count()
         page = Paginator(talks, 50).get_page(self.request.GET.get("page"))
@@ -267,6 +281,7 @@ class ConferenceMemoryView(EventContextMixin, TemplateView):
             event=self.event,
             query=query,
             selected_series=series_slug,
+            selected_timing=timing,
             conference_series=ConferenceSeries.objects.prefetch_related("editions"),
             historical_talks=page.object_list,
             page_obj=page,
@@ -577,10 +592,34 @@ class ProgramDecisionsView(EventContextMixin, TemplateView):
                 except ValidationError as error:
                     messages.error(request, "; ".join(error.messages))
                 else:
-                    messages.success(request, f"Released {released} staged acceptances.")
+                    if released:
+                        messages.success(
+                            request,
+                            f"Released {released} staged acceptance"
+                            f"{'s' if released != 1 else ''} and queued the native speaker "
+                            f"notification{'s' if released != 1 else ''}.",
+                        )
+                    else:
+                        messages.info(
+                            request,
+                            "No staged acceptances were released; no speaker notifications "
+                            "were queued.",
+                        )
             elif action == "finalize_rejections":
                 finalized = finalize_rejections(self.event, request.user)
-                messages.success(request, f"Finalized {finalized} staged rejections.")
+                if finalized:
+                    messages.success(
+                        request,
+                        f"Finalized {finalized} staged rejection"
+                        f"{'s' if finalized != 1 else ''} and queued the native speaker "
+                        f"notification{'s' if finalized != 1 else ''}.",
+                    )
+                else:
+                    messages.info(
+                        request,
+                        "No staged rejections were finalized; no speaker notifications "
+                        "were queued.",
+                    )
             else:
                 messages.error(request, "Choose a valid program decision action.")
         return redirect(request.path)
@@ -1052,6 +1091,62 @@ class ChecklistView(EventContextMixin, TemplateView):
         return context
 
 
+class SpeakerSubmissionPresentersView(EventContextMixin, TemplateView):
+    template_name = "pretalx_speakerops/submission_presenters.html"
+
+    def _submission(self, *, lock=False):
+        submissions = Submission.objects.filter(
+            event=self.event,
+            code__iexact=self.kwargs["code"],
+            speakers=self.request.user,
+        ).prefetch_related("speakers", "speakerops_presenter_roles__speaker")
+        if lock:
+            submissions = submissions.select_for_update()
+        # The native submission-speaker through table is unique per speaker, so this
+        # filter cannot duplicate a submission. Avoid DISTINCT here because the POST
+        # path also applies SELECT FOR UPDATE, a combination PostgreSQL rejects.
+        return get_object_or_404(submissions)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        submission = self._submission()
+        context.update(
+            submission=submission,
+            presenters=presenter_rows(submission),
+            role_choices=SubmissionPresenterRole.ROLE_CHOICES,
+        )
+        return context
+
+    def post(self, request, event, code):
+        with transaction.atomic(), scope(event=self.event):
+            submission = self._submission(lock=True)
+            speakers = list(submission.speakers.order_by("pk"))
+            choices = dict(SubmissionPresenterRole.ROLE_CHOICES)
+            selected = {
+                speaker.pk: request.POST.get(f"role_{speaker.pk}", "") for speaker in speakers
+            }
+            if any(role not in choices for role in selected.values()):
+                messages.error(request, "Choose a valid role for every attached presenter.")
+                return redirect(request.path)
+            if list(selected.values()).count(SubmissionPresenterRole.PRIMARY_AUTHOR) != 1:
+                messages.error(request, "Choose exactly one primary author.")
+                return redirect(request.path)
+            SubmissionPresenterRole.objects.filter(
+                event=self.event,
+                submission=submission,
+                role=SubmissionPresenterRole.PRIMARY_AUTHOR,
+            ).update(role=SubmissionPresenterRole.CO_PRESENTER)
+            for speaker in speakers:
+                SubmissionPresenterRole.objects.update_or_create(
+                    event=self.event,
+                    submission=submission,
+                    speaker=speaker,
+                    defaults={"role": selected[speaker.pk]},
+                )
+        messages.success(request, "Presenter role labels saved.")
+        return redirect(request.path)
+
+
 class ReviewerScoringView(EventContextMixin, TemplateView):
     permission = "review"
     template_name = "pretalx_speakerops/reviewer_scoring.html"
@@ -1126,6 +1221,11 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
             next_submission = None
             if submission and len(queue) > 1:
                 next_submission = queue[(queue.index(submission) + 1) % len(queue)]
+            presenters = (
+                presenter_rows(submission)
+                if submission and can_manage(self.request.user, self.event)
+                else []
+            )
         context.update(
             event=self.event,
             queue=queue,
@@ -1140,6 +1240,7 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
             can_decide=can_manage(self.request.user, self.event),
             historical_matches=historical_matches,
             next_submission=next_submission,
+            presenters=presenters,
         )
         return context
 
@@ -1260,6 +1361,7 @@ class ReviewerScoringView(EventContextMixin, TemplateView):
 class AgendaReleaseView(EventContextMixin, TemplateView):
     permission = "manage"
     template_name = "pretalx_speakerops/agenda_release.html"
+    MAX_ROOM_CAPACITY = 2_147_483_647
 
     def _conflict_feedback(self, blocking):
         session_key = f"speakerops:agenda-conflicts:{self.event.pk}"
@@ -1304,6 +1406,16 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
         with scope(event=self.event):
             schedule = self.event.wip_schedule
             slots = schedule_slots(schedule) if schedule else []
+            scheduled_submission_ids = {
+                slot.submission_id for slot in slots if slot.submission_id is not None
+            }
+            unscheduled = list(
+                Submission.objects.filter(event=self.event, state=SubmissionStates.ACCEPTED)
+                .exclude(pk__in=scheduled_submission_ids)
+                .select_related("track")
+                .prefetch_related("speakers")
+                .order_by("title", "pk")
+            )
             warnings = classify_warnings(schedule, slots=slots) if schedule else []
             for warning in warnings:
                 warning["resolve_url"] = warning["talk"].submission.orga_urls.quick_schedule
@@ -1315,15 +1427,68 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
             event=self.event,
             schedule=schedule,
             slots=slots,
+            rooms=self.event.rooms.order_by("position", "name"),
+            tracks=self.event.tracks.order_by("position", "name"),
+            unscheduled=unscheduled,
             warnings=warnings,
             blocking=blocking,
             gate_feedback=self._conflict_feedback(blocking),
             proposed_placements=kwargs.get("proposed_placements"),
+            can_edit_structure=self.request.user.is_administrator
+            or self.request.user.has_perm("event.update_event", self.event),
         )
         return context
 
+    def _create_room(self, request):
+        require_event_permission(request.user, self.event, "event.update_event")
+        name = request.POST.get("room_name", "").strip()
+        capacity_raw = request.POST.get("room_capacity", "").strip()
+        if not name:
+            messages.error(request, "Room name is required.")
+            return redirect(f"{request.path}#program-setup")
+        if capacity_raw and (
+            not capacity_raw.isdigit() or int(capacity_raw) > self.MAX_ROOM_CAPACITY
+        ):
+            messages.error(request, "Room capacity must be a whole number within range.")
+            return redirect(f"{request.path}#program-setup")
+        with scope(event=self.event):
+            if any(str(room.name).casefold() == name.casefold() for room in self.event.rooms.all()):
+                messages.error(request, f"A room named {name} already exists.")
+                return redirect(f"{request.path}#program-setup")
+            Room.objects.create(
+                event=self.event,
+                name=name,
+                capacity=int(capacity_raw) if capacity_raw else None,
+            )
+        messages.success(request, f"Room {name} added and ready for scheduling.")
+        return redirect(f"{request.path}#program-setup")
+
+    def _create_track(self, request):
+        require_event_permission(request.user, self.event, "event.update_event")
+        name = request.POST.get("track_name", "").strip()
+        color = request.POST.get("track_color", "").strip() or "#3aa57c"
+        if not name:
+            messages.error(request, "Track name is required.")
+            return redirect(f"{request.path}#program-setup")
+        if not re.fullmatch(r"#([0-9A-Fa-f]{3}){1,2}", color):
+            messages.error(request, "Track colour must be a hex value like #3aa57c.")
+            return redirect(f"{request.path}#program-setup")
+        with scope(event=self.event):
+            if any(
+                str(track.name).casefold() == name.casefold() for track in self.event.tracks.all()
+            ):
+                messages.error(request, f"A track named {name} already exists.")
+                return redirect(f"{request.path}#program-setup")
+            Track.objects.create(event=self.event, name=name, color=color)
+        messages.success(request, f"Track {name} added and ready for submissions.")
+        return redirect(f"{request.path}#program-setup")
+
     def post(self, request, event):
         action = request.POST.get("action")
+        if action == "create_room":
+            return self._create_room(request)
+        if action == "create_track":
+            return self._create_track(request)
         if action == "preview_assisted_schedule":
             try:
                 with scope(event=self.event):
@@ -1646,29 +1811,37 @@ class ReminderView(EventContextMixin, View):
 
     def post(self, request, event):
         if request.POST.get("confirm_reminders") != "yes":
-            messages.error(request, "Confirm the overdue reminder recipients first.")
+            messages.error(request, "Confirm the outstanding reminder recipients first.")
             return redirect(
                 reverse("plugins:speakerops:speakerops_dashboard", kwargs={"event": event})
             )
         today = timezone.localdate()
         with scope(event=self.event):
-            overdue_tasks = OnboardingTask.objects.filter(
+            task_ids = {int(value) for value in request.POST.getlist("tasks") if value.isdigit()}
+            outstanding_tasks = OnboardingTask.objects.filter(
                 event=self.event,
-                due_date__lt=today,
                 status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED),
             ).select_related("speaker", "submission", "definition")
+            if task_ids:
+                outstanding_tasks = outstanding_tasks.filter(pk__in=task_ids)
+                reminder_key = f"onboarding-selected:{today.isoformat()}"
+                label = "selected outstanding"
+            else:
+                outstanding_tasks = outstanding_tasks.filter(due_date__lt=today)
+                reminder_key = f"onboarding-overdue:{today.isoformat()}"
+                label = "overdue"
             queued = queue_reminders(
                 self.event,
-                tasks=overdue_tasks,
-                reminder_key=f"onboarding-overdue:{today.isoformat()}",
+                tasks=outstanding_tasks,
+                reminder_key=reminder_key,
             )
         if queued:
             messages.success(
                 request,
-                f"Queued {queued} overdue reminder{'s' if queued != 1 else ''}.",
+                f"Queued {queued} {label} reminder{'s' if queued != 1 else ''}.",
             )
         else:
-            messages.info(request, "No new overdue reminders were queued.")
+            messages.info(request, f"No new {label} reminders were queued.")
         return redirect(reverse("plugins:speakerops:speakerops_dashboard", kwargs={"event": event}))
 
 

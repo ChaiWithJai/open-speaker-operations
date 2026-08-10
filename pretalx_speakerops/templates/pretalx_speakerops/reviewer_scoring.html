@@ -44,6 +44,7 @@
         <p>{{ submission.abstract }}</p>
         {% if submission.description %}<h3>Description</h3><p>{{ submission.description }}</p>{% endif %}
       </section>
+      {% if can_decide %}<section aria-labelledby="organizer-presenters-title"><h3 id="organizer-presenters-title">Presenters</h3><ul>{% for presenter in presenters %}<li>{{ presenter.speaker.get_display_name }} — {{ presenter.role_label }}</li>{% empty %}<li>No presenter attached</li>{% endfor %}</ul></section>{% endif %}
 
       {% if historical_matches %}
       <section class="speakerops-review-memory" aria-labelledby="review-memory-title">

@@ -107,5 +107,32 @@ services:
       redis:
         condition: service_healthy
 
+  beat:
+    image: ${APP_IMAGE:-open-speaker-operations:local}
+    build: .
+    restart: unless-stopped
+    environment:
+      PRETALX_CONFIG_FILE: /app/docker/pretalx.cfg
+      PRETALX_SITE_URL: ${PRETALX_SITE_URL:-http://127.0.0.1:8001}
+      PRETALX_HTTPS: ${PRETALX_HTTPS:-False}
+      PRETALX_DEBUG: ${PRETALX_DEBUG:-False}
+      PRETALX_DB_NAME: ${POSTGRES_DB:-speakerops}
+      PRETALX_DB_USER: ${POSTGRES_USER:-speakerops}
+      PRETALX_DB_PASS: ${POSTGRES_PASSWORD:-speakerops}
+      PRETALX_DB_HOST: postgres
+      PRETALX_REDIS: redis://redis:6379/0
+      PRETALX_CELERY_BROKER: redis://redis:6379/0
+      PRETALX_CELERY_BACKEND: redis://redis:6379/0
+      RUN_MIGRATIONS: "false"
+      SEED_DEMO: "false"
+    command: celery -A pretalx.celery_app:app beat --loglevel=INFO --schedule=/data/celerybeat-schedule --pidfile=/tmp/celerybeat.pid
+    volumes:
+      - pretalx-data:/data
+    depends_on:
+      web:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   pretalx-data:

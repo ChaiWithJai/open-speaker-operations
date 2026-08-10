@@ -71,7 +71,7 @@ def test_role_navigation_is_named_current_and_permission_filtered(event, users, 
         reverse("plugins:speakerops:speakerops_checklist", kwargs={"event": event.slug})
     )
     checklist_body = checklist.content.decode()
-    assert 'aria-label="Speaker Operations"' in checklist_body
+    assert "Speaker Operations workflow navigation" in checklist_body
     assert checklist.context["speakerops_navigation"][0]["active"]
     assert "aria-current=page" in checklist_body
     assert ">Speaker tasks</a>" in checklist_body
@@ -88,7 +88,7 @@ def test_role_navigation_is_named_current_and_permission_filtered(event, users, 
         reverse("plugins:speakerops:speakerops_review_queue", kwargs={"event": event.slug})
     )
     review_body = review.content.decode()
-    assert 'aria-label="Speaker Operations"' in review_body
+    assert "Speaker Operations global navigation" in review_body
     assert any(
         item["label"] == "Review queue" and item["active"]
         for item in review.context["speakerops_navigation"]

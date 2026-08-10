@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from pretalx.common.models.mixins import PretalxModel
@@ -291,6 +292,7 @@ class SpeakerOperationsProfile(EventOwnedModel):
         on_delete=models.CASCADE,
         related_name="speakerops_event_profiles",
     )
+    social_url = models.URLField(blank=True, default="")
     workflow_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=INVITED)
     travel_preferences = models.TextField(blank=True, default="")
     dietary_requirements = models.TextField(blank=True, default="")
@@ -304,6 +306,46 @@ class SpeakerOperationsProfile(EventOwnedModel):
                 fields=("event", "speaker"),
                 name="speakerops_event_speaker_operations_profile",
             )
+        ]
+
+
+class SpeakerCommunicationLog(EventOwnedModel):
+    """Immutable, per-recipient evidence for operator-triggered speaker mail."""
+
+    INVITATION = "invitation"
+    BULK_EMAIL = "bulk_email"
+    KIND_CHOICES = (
+        (INVITATION, "Invitation / onboarding"),
+        (BULK_EMAIL, "Selected-speaker email"),
+    )
+    SENT = "sent"
+    FAILED = "failed"
+    OUTCOME_CHOICES = ((SENT, "Sent"), (FAILED, "Failed"))
+
+    speaker = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="speakerops_communications",
+    )
+    kind = models.CharField(max_length=24, choices=KIND_CHOICES)
+    subject = models.CharField(max_length=200)
+    rendered_body = models.TextField()
+    outcome = models.CharField(max_length=16, choices=OUTCOME_CHOICES)
+    outcome_detail = models.TextField(blank=True, default="")
+    queued_mail_id = models.PositiveBigIntegerField(null=True, blank=True)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="speakerops_communications_sent",
+    )
+    attempted_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ("-attempted_at", "-pk")
+        indexes = [
+            models.Index(fields=("event", "speaker", "kind"), name="speakerops_comm_event_speaker")
         ]
 
 
@@ -1008,6 +1050,62 @@ class ReviewRecommendation(EventOwnedModel):
                 name="speakerops_recommendation_event_submission_reviewer",
             )
         ]
+
+
+class SubmissionPresenterRole(EventOwnedModel):
+    """A role label for a user already attached to a native pretalx submission."""
+
+    PRIMARY_AUTHOR = "primary_author"
+    CO_AUTHOR = "co_author"
+    CO_PRESENTER = "co_presenter"
+    ROLE_CHOICES = (
+        (PRIMARY_AUTHOR, "Primary author"),
+        (CO_AUTHOR, "Co-author"),
+        (CO_PRESENTER, "Co-presenter"),
+    )
+
+    submission = models.ForeignKey(
+        "submission.Submission",
+        on_delete=models.CASCADE,
+        related_name="speakerops_presenter_roles",
+    )
+    speaker = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="speakerops_submission_roles",
+    )
+    role = models.CharField(max_length=24, choices=ROLE_CHOICES)
+
+    class Meta:
+        ordering = ("role", "speaker__name", "speaker__email")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "submission", "speaker"),
+                name="speakerops_presenter_role_event_submission_speaker",
+            ),
+            models.UniqueConstraint(
+                fields=("submission",),
+                condition=models.Q(role="primary_author"),
+                name="speakerops_presenter_role_one_primary",
+            ),
+        ]
+
+    def clean(self):
+        errors = {}
+        if self.submission_id and self.event_id != self.submission.event_id:
+            errors["submission"] = "Choose a submission from this event."
+        if (
+            self.submission_id
+            and self.speaker_id
+            and not self.submission.speakers.filter(pk=self.speaker_id).exists()
+        ):
+            errors["speaker"] = "Role labels require an attached submission presenter."
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
 
 class EvaluationRound(EventOwnedModel):

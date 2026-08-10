@@ -33,15 +33,25 @@ def role_navigation(user, event, current_path=""):
 
     destinations = []
     if is_speaker(user, event):
-        destinations.append(
-            {
-                "label": "Speaker tasks",
-                "url": reverse(
-                    "plugins:speakerops:speakerops_checklist",
-                    kwargs={"event": event.slug},
-                ),
-                "section": "checklist",
-            }
+        destinations.extend(
+            (
+                {
+                    "label": "Speaker tasks",
+                    "url": reverse(
+                        "plugins:speakerops:speakerops_checklist",
+                        kwargs={"event": event.slug},
+                    ),
+                    "section": "checklist",
+                },
+                {
+                    "label": "Profile",
+                    "url": reverse(
+                        "plugins:speakerops:speakerops_speaker_profile",
+                        kwargs={"event": event.slug},
+                    ),
+                    "section": "profile",
+                },
+            )
         )
     if can_review(user, event):
         destinations.extend(

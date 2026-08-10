@@ -1,0 +1,29 @@
+{% extends "cfp/event/base.html" %}
+{% load static %}
+
+{% block cfp_stylesheets %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">
+{% endblock cfp_stylesheets %}
+
+{% block content %}
+<div class="speakerops speakerops--portal" aria-labelledby="presenter-roles-title">
+  <header class="speakerops__header">
+    <div><p class="speakerops__eyebrow">Proposal participants</p><h1 id="presenter-roles-title">{{ submission.title }}</h1><p>Keep authorship and presentation responsibilities explicit for reviewers and program operators.</p></div>
+    <a class="speakerops__return" href="{{ submission.urls.user_base }}">&larr; Back to proposal</a>
+  </header>
+  <section class="speakerops-panel" aria-labelledby="participants-title">
+    <div><h2 id="participants-title">Presenters and role labels</h2><p>Invite additional presenters through the native proposal flow, then label every attached person here.</p></div>
+    <form method="post">
+      {% csrf_token %}
+      {% for presenter in presenters %}
+      <label for="presenter-role-{{ presenter.speaker.pk }}">{{ presenter.speaker.get_display_name }}</label>
+      <select class="form-control" id="presenter-role-{{ presenter.speaker.pk }}" name="role_{{ presenter.speaker.pk }}" required>
+        {% for value,label in role_choices %}<option value="{{ value }}"{% if presenter.role == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+      {% empty %}<p>No presenters are attached to this proposal.</p>{% endfor %}
+      {% if presenters %}<button class="btn btn-primary" type="submit">Save presenter roles</button>{% endif %}
+    </form>
+    <p><a class="btn btn-outline-primary" href="{{ submission.urls.invite }}">Invite another presenter</a></p>
+  </section>
+</div>
+{% endblock content %}

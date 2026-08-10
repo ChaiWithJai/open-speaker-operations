@@ -61,7 +61,7 @@
       </form>
       {% if row.submission.speakerops_revisions %}<details><summary>Session revision history ({{ row.submission.speakerops_revisions|length }})</summary><ol>{% for revision in row.submission.speakerops_revisions %}<li><strong>{{ revision.label }}</strong> · {{ revision.actor|default:"System" }} · <time datetime="{{ revision.created_at|date:'c' }}">{{ revision.created_at|date:"M j, Y, P" }}</time><p>{{ revision.snapshot.abstract|truncatechars:180 }}</p><form method="post" action="{% url 'plugins:speakerops:speakerops_content_revision_restore' event.slug revision.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Restore this session version</button></form></li>{% endfor %}</ol></details>{% endif %}
       {% for speaker in row.submission.speakers.all %}<div id="speaker-content-{{ speaker.pk }}">
-        <form method="post" action="{% url 'plugins:speakerops:speakerops_speaker_content_edit' event.slug speaker.pk %}">{% csrf_token %}<label for="speaker-bio-{{ row.submission.pk }}-{{ speaker.pk }}">Biography for {{ speaker.get_display_name }}</label><textarea class="form-control" id="speaker-bio-{{ row.submission.pk }}-{{ speaker.pk }}" name="biography" rows="3">{{ speaker.speakerops_biography }}</textarea><button class="btn btn-sm btn-outline-primary" type="submit">Save speaker biography</button></form>
+        <form method="post" enctype="multipart/form-data" action="{% url 'plugins:speakerops:speakerops_speaker_content_edit' event.slug speaker.pk %}">{% csrf_token %}{% if speaker.speakerops_avatar_url %}<img class="speakerops-avatar" src="{{ speaker.speakerops_avatar_url }}" alt="Current headshot for {{ speaker.get_display_name }}">{% endif %}<label for="speaker-bio-{{ row.submission.pk }}-{{ speaker.pk }}">Biography for {{ speaker.get_display_name }}</label><textarea class="form-control" id="speaker-bio-{{ row.submission.pk }}-{{ speaker.pk }}" name="biography" rows="3">{{ speaker.speakerops_biography }}</textarea><label for="speaker-headshot-{{ row.submission.pk }}-{{ speaker.pk }}">Replace headshot <small>JPG or PNG, up to 5 MB</small></label><input class="form-control" id="speaker-headshot-{{ row.submission.pk }}-{{ speaker.pk }}" name="headshot" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png"><button class="btn btn-sm btn-outline-primary" type="submit">Save speaker profile</button></form>
         {% if speaker.speakerops_revisions %}<details><summary>Biography revision history ({{ speaker.speakerops_revisions|length }})</summary><ol>{% for revision in speaker.speakerops_revisions %}<li>{{ revision.actor|default:"System" }} · <time datetime="{{ revision.created_at|date:'c' }}">{{ revision.created_at|date:"M j, Y, P" }}</time><p>{{ revision.snapshot.biography|truncatechars:180 }}</p><form method="post" action="{% url 'plugins:speakerops:speakerops_content_revision_restore' event.slug revision.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Restore this biography</button></form></li>{% endfor %}</ol></details>{% endif %}
       </div>{% endfor %}
     </article>{% empty %}<p>No session content is available.</p>{% endfor %}
@@ -79,12 +79,13 @@
       <button class="btn btn-outline-primary" type="submit">Apply filters</button> <a href="{% url 'plugins:speakerops:speakerops_content_operations' event.slug %}#deliverables-title">Clear filters</a>
     </form>
     <form id="zip-form" method="post" action="{% url 'plugins:speakerops:speakerops_latest_evidence_zip' event.slug %}">{% csrf_token %}</form>
+    <form id="reminder-form" method="post" action="{% url 'plugins:speakerops:speakerops_reminders' event.slug %}">{% csrf_token %}<input type="hidden" name="confirm_reminders" value="yes"></form>
       <ul class="speakerops-list">
       {% for task in rows %}<li id="task-{{ task.pk }}">
-        <label><input type="checkbox" name="tasks" value="{{ task.pk }}" form="zip-form"> <strong>{{ task.definition.name }} · {{ task.speaker }}</strong></label>
+        <label><input type="checkbox" name="tasks" value="{{ task.pk }}" form="zip-form"> <strong>{{ task.definition.name }} · {{ task.speaker }}</strong></label>{% if task.status == 'pending' or task.status == 'reopened' %} <label><input type="checkbox" name="tasks" value="{{ task.pk }}" form="reminder-form"> Remind</label>{% endif %}
         <span>{% if task.submission %}{{ task.submission.title }} · {% endif %}{{ task.speaker.email }}</span>
         <ol>{% for evidence in task.speakerops_evidence_items %}<li id="evidence-{{ evidence.pk }}">
-          <strong>v{{ evidence.version }} · <a href="{% url 'plugins:speakerops:speakerops_evidence_download' event.slug evidence.pk %}">Download {{ evidence.upload.name|cut:"speakerops/evidence/" }}</a></strong>
+          <strong>v{{ evidence.version }}{% if forloop.first %} · Current/latest{% endif %} · <a href="{% url 'plugins:speakerops:speakerops_evidence_download' event.slug evidence.pk %}">Download {{ evidence.upload.name|cut:"speakerops/evidence/" }}</a></strong>
           <span>{{ evidence.created_at|date:"M j, Y, P" }} · {{ evidence.get_review_status_display }}{% if evidence.reviewed_by %} by {{ evidence.reviewed_by }}{% endif %}</span>
           {% if evidence.review_note %}<p><strong>Review note:</strong> {{ evidence.review_note }}</p>{% endif %}
           <div aria-label="Comments on version {{ evidence.version }}">
@@ -95,7 +96,7 @@
         </li>{% empty %}<li><strong>Missing upload</strong> · due {{ task.due_date|default:"not set" }}</li>{% endfor %}</ol>
       </li>{% empty %}<li>No uploaded content awaits review.</li>{% endfor %}
       </ul>
-      {% if rows %}<button class="btn btn-primary" type="submit" form="zip-form">Download latest selected versions (.zip)</button>{% endif %}
+      {% if rows %}<button class="btn btn-primary" type="submit" form="zip-form">Download latest selected versions (.zip)</button> <button class="btn btn-secondary" type="submit" form="reminder-form">Send reminders to selected outstanding tasks</button>{% endif %}
   </section>
 </main>
 {% endblock content %}

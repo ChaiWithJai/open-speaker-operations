@@ -5,6 +5,7 @@ from zipfile import ZipFile
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django_scopes import scope
+from PIL import Image
 from pretalx.person.models import SpeakerProfile
 
 from pretalx_speakerops.models import (
@@ -219,9 +220,18 @@ def test_session_and_speaker_edits_are_attributed_and_restorable(event, users, c
         {"title": "Revised session title", "abstract": "Revised abstract"},
     )
     assert session_edit.status_code == 302
+    headshot_bytes = BytesIO()
+    Image.new("RGB", (8, 8), color=(23, 92, 211)).save(headshot_bytes, format="PNG")
     speaker_edit = client.post(
         f"/orga/{event.slug}/speaker-operations/content/speakers/{users['speaker'].pk}/edit/",
-        {"biography": "Revised biography"},
+        {
+            "biography": "Revised biography",
+            "headshot": SimpleUploadedFile(
+                "headshot.png",
+                headshot_bytes.getvalue(),
+                content_type="image/png",
+            ),
+        },
     )
     assert speaker_edit.status_code == 302
 
@@ -241,13 +251,22 @@ def test_session_and_speaker_edits_are_attributed_and_restorable(event, users, c
         "abstract": original_abstract,
     }
     assert session_revision.actor == users["chair"]
-    assert speaker_revision.snapshot == {"biography": "Original biography"}
+    assert speaker_revision.snapshot == {"biography": "Original biography", "avatar": ""}
+    users["speaker"].refresh_from_db()
+    assert users["speaker"].avatar.name.endswith(".png")
+    assert users["speaker"].avatar.storage.exists(users["speaker"].avatar.name)
+    avatar_url = users["speaker"].get_avatar_url(event=event, thumbnail="tiny")
 
     history = client.get(f"/orga/{event.slug}/speaker-operations/content/")
     assert original_title.encode() in history.content
     assert b"Original biography" in history.content
     assert users["chair"].name.encode() in history.content
     assert b"Restore this session version" in history.content
+    assert b"Current headshot for" in history.content
+    assert avatar_url.encode() in history.content
+    assert (
+        avatar_url.encode() in client.get(f"/orga/{event.slug}/speaker-operations/content/").content
+    )
 
     restored_session = client.post(
         f"/orga/{event.slug}/speaker-operations/content/revisions/{session_revision.pk}/restore/"
@@ -259,8 +278,54 @@ def test_session_and_speaker_edits_are_attributed_and_restorable(event, users, c
     assert restored_speaker.status_code == 302
     submission.refresh_from_db()
     profile.refresh_from_db()
+    users["speaker"].refresh_from_db()
     assert submission.title == original_title
     assert submission.abstract == original_abstract
     assert profile.biography == "Original biography"
+    assert users["speaker"].avatar.name == ""
     with scope(event=event):
         assert ContentRevision.objects.filter(event=event, restored_from__isnull=False).count() == 2
+
+
+@pytest.mark.django_db(transaction=True)
+def test_session_restore_removes_second_edit_but_keeps_first(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        submission = event.submissions.first()
+
+    client.force_login(users["chair"])
+    edit_url = f"/orga/{event.slug}/speaker-operations/content/submissions/{submission.pk}/edit/"
+    assert (
+        client.post(
+            edit_url,
+            {"title": "First approved edit", "abstract": "First sentence retained."},
+        ).status_code
+        == 302
+    )
+    assert (
+        client.post(
+            edit_url,
+            {
+                "title": "Second temporary edit",
+                "abstract": "First sentence retained. Second sentence removed.",
+            },
+        ).status_code
+        == 302
+    )
+
+    with scope(event=event):
+        restore_point = ContentRevision.objects.get(
+            event=event,
+            content_type=ContentRevision.SESSION,
+            object_id=submission.pk,
+            snapshot__title="First approved edit",
+        )
+    response = client.post(
+        f"/orga/{event.slug}/speaker-operations/content/revisions/{restore_point.pk}/restore/"
+    )
+
+    assert response.status_code == 302
+    submission.refresh_from_db()
+    assert submission.title == "First approved edit"
+    assert submission.abstract == "First sentence retained."
+    assert "Second" not in submission.abstract

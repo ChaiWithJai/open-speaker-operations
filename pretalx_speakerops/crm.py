@@ -144,7 +144,9 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
             contacts = contacts.filter(segments__pk=segment_id, segments__organiser=self.organiser)
         return contacts.distinct().select_related("source_speaker", "pipeline_card")
 
-    def post(self, request, event):
+    def post(self, request, *args, **kwargs):
+        """Handle both event-nested and canonical organisation CRM routes."""
+
         action = request.POST.get("action", "")
         handlers = {
             "save_contact": self._save_contact,
@@ -372,8 +374,15 @@ class CRMDirectoryView(EventContextMixin, TemplateView):
 
     def _add_to_event(self, request):
         contact = self._owned_contact(request.POST.get("contact_id"))
-        if not contact or not contact.email:
-            messages.error(request, "A CRM contact with an email is required for event handoff.")
+        if not contact:
+            messages.error(request, "Choose a valid CRM contact for event handoff.")
+            return self._redirect()
+        if not contact.email:
+            messages.error(
+                request,
+                "Verify and save the contact email before event handoff. "
+                "No contact data was inferred or invented.",
+            )
             return self._redirect()
         target_event = Event.objects.filter(
             organiser=self.organiser, pk=request.POST.get("target_event") or self.event.pk

@@ -10,6 +10,31 @@
     <a class="btn btn-primary" href="{% url 'plugins:speakerops:speakerops_speaker_import' event.slug %}">Import speaker CSV</a>
   </header>
 
+  <section class="speakerops-panel" aria-labelledby="add-speaker-title">
+    <div><p class="speakerops__eyebrow">Individual record</p><h2 id="add-speaker-title">Add one speaker</h2><p>Create or attach one account without preparing a CSV.</p></div>
+    <form method="post">
+      {% csrf_token %}<input type="hidden" name="action" value="create_speaker">
+      <label for="new-speaker-name">Name</label><input class="form-control" id="new-speaker-name" name="name" required>
+      <label for="new-speaker-email">Email</label><input class="form-control" id="new-speaker-email" name="email" type="email" required>
+      <label for="new-speaker-biography">Biography <small>optional</small></label><textarea class="form-control" id="new-speaker-biography" name="biography" rows="4"></textarea>
+      <button class="btn btn-primary" type="submit">Add speaker</button>
+    </form>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="speaker-email-title">
+    <div><p class="speakerops__eyebrow">Selected outreach</p><h2 id="speaker-email-title">Email selected speakers</h2><p>Preview every personalized message, then send through the event mail service with a per-recipient audit record.</p></div>
+    <form method="post">
+      {% csrf_token %}
+      <fieldset><legend>Select speakers</legend><div class="speakerops__grid">{% for speaker in all_speakers %}<label class="speakerops-check"><input type="checkbox" name="speakers" value="{{ speaker.pk }}"{% if speaker.pk in selected_speaker_ids %} checked{% endif %}> {{ speaker.get_display_name }} <small>{{ speaker.email }}</small></label>{% empty %}<p>No speakers are attached to this event yet.</p>{% endfor %}</div></fieldset>
+      <label for="speaker-email-subject">Subject</label><input class="form-control" id="speaker-email-subject" name="subject" value="{{ email_form.subject|default:'' }}" required>
+      <label for="speaker-email-body">Message</label><textarea class="form-control" id="speaker-email-body" name="body" rows="7" required>{{ email_form.body|default:'' }}</textarea>
+      <p>Merge fields: {% for field in merge_fields %}<code>{% templatetag openvariable %} {{ field }} {% templatetag closevariable %}</code>{% if not forloop.last %}, {% endif %}{% endfor %}.</p>
+      <button class="btn btn-secondary" name="action" value="preview_email" type="submit">Preview personalization</button>
+      <button class="btn btn-primary" name="action" value="send_bulk_email" type="submit">Send selected email</button>
+    </form>
+    {% if email_preview %}<section aria-labelledby="email-preview-title"><h3 id="email-preview-title">Personalized preview</h3>{% for item in email_preview %}<article class="speakerops-task"><p><strong>To:</strong> {{ item.speaker.get_display_name }} &lt;{{ item.speaker.email }}&gt;</p><p><strong>Subject:</strong> {{ item.subject }}</p><pre>{{ item.body }}</pre></article>{% endfor %}</section>{% endif %}
+  </section>
+
   <section class="speakerops-panel" aria-labelledby="assign-action-title">
     <div><p class="speakerops__eyebrow">General action</p><h2 id="assign-action-title">Assign a task to multiple speakers</h2><p>The task appears immediately in each selected speaker’s private checklist.</p></div>
     <form method="post">
@@ -35,8 +60,18 @@
       {% for row in rows %}
       <details class="speakerops-task" id="speaker-{{ row.speaker.pk }}">
         <summary><strong>{{ row.speaker.get_display_name }}</strong> · {{ row.speaker.email }} · <span class="speakerops-badge">{{ row.workflow_status|title }}</span> · {{ row.counts.resolved }}/{{ row.counts.total }} tasks resolved</summary>
+        <div class="speakerops-panel speakerops-panel--quiet" aria-label="Speaker-owned profile for {{ row.speaker.get_display_name }}">
+          {% if row.speaker.has_avatar %}<img data-speakerops-headshot src="{{ row.speaker.get_avatar_url }}" alt="Headshot for {{ row.speaker.get_display_name }}" width="96" height="96">{% else %}<p>No headshot supplied.</p>{% endif %}
+          <p><strong>Biography</strong><br>{{ row.speaker_profile.biography|default:"No biography supplied." }}</p>
+          <p><strong>Professional link</strong><br>{% if row.profile.social_url %}<a href="{{ row.profile.social_url }}" rel="noreferrer noopener" target="_blank">{{ row.profile.social_url }}</a>{% else %}No professional link supplied.{% endif %}</p>
+          <p><strong>Session assignments</strong></p><ul>{% for assignment in row.assignments %}<li>{{ assignment.title }}</li>{% empty %}<li>No sessions assigned.</li>{% endfor %}</ul>
+        </div>
         <form method="post">
           {% csrf_token %}<input type="hidden" name="action" value="update_speaker"><input type="hidden" name="speaker_id" value="{{ row.speaker.pk }}">
+          <label for="name-{{ row.speaker.pk }}">Name</label><input class="form-control" id="name-{{ row.speaker.pk }}" name="name" value="{{ row.speaker.get_display_name }}" required>
+          <label for="email-{{ row.speaker.pk }}">Email</label><input class="form-control" id="email-{{ row.speaker.pk }}" name="email" value="{{ row.speaker.email }}" type="email" required>
+          <label for="biography-{{ row.speaker.pk }}">Biography</label><textarea class="form-control" id="biography-{{ row.speaker.pk }}" name="biography" rows="5">{% if row.speaker_profile %}{{ row.speaker_profile.biography }}{% endif %}</textarea>
+          <label for="social-{{ row.speaker.pk }}">Professional link</label><input class="form-control" id="social-{{ row.speaker.pk }}" name="social_url" value="{% if row.profile %}{{ row.profile.social_url }}{% endif %}" type="url" placeholder="https://">
           <label for="status-{{ row.speaker.pk }}">Workflow status</label><select class="form-control" id="status-{{ row.speaker.pk }}" name="workflow_status">{% for value,label in statuses %}<option value="{{ value }}"{% if row.workflow_status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
           <label for="travel-{{ row.speaker.pk }}">Travel preferences</label><textarea class="form-control" id="travel-{{ row.speaker.pk }}" name="travel_preferences">{% if row.profile %}{{ row.profile.travel_preferences }}{% endif %}</textarea>
           <label for="dietary-{{ row.speaker.pk }}">Dietary requirements</label><textarea class="form-control" id="dietary-{{ row.speaker.pk }}" name="dietary_requirements">{% if row.profile %}{{ row.profile.dietary_requirements }}{% endif %}</textarea>
@@ -44,9 +79,24 @@
           <label for="notes-{{ row.speaker.pk }}">Private logistics notes</label><textarea class="form-control" id="notes-{{ row.speaker.pk }}" name="logistics_notes">{% if row.profile %}{{ row.profile.logistics_notes }}{% endif %}</textarea>
           <button class="btn btn-primary" type="submit">Save speaker workflow</button>
         </form>
+        <form method="post">
+          {% csrf_token %}<input type="hidden" name="action" value="send_invitation"><input type="hidden" name="speaker_id" value="{{ row.speaker.pk }}">
+          <input type="hidden" name="subject" value="Your {{ event.name }} speaker onboarding">
+          <input type="hidden" name="body" value="Hello {% templatetag openvariable %} first_name {% templatetag closevariable %},&#10;&#10;You are invited to complete speaker onboarding for {% templatetag openvariable %} event_name {% templatetag closevariable %}.&#10;Assigned sessions: {% templatetag openvariable %} session_titles {% templatetag closevariable %}.&#10;Set up your account or sign in: {% templatetag openvariable %} account_setup_url {% templatetag closevariable %}&#10;Open your private speaker portal: {% templatetag openvariable %} speaker_portal_url {% templatetag closevariable %}">
+          <button class="btn btn-secondary" type="submit">Send onboarding invitation</button>
+        </form>
+        <form method="post">
+          {% csrf_token %}<input type="hidden" name="action" value="remove_speaker"><input type="hidden" name="speaker_id" value="{{ row.speaker.pk }}">
+          <button class="btn btn-danger" type="submit">Remove unassigned speaker</button>
+        </form>
       </details>
       {% empty %}<div class="speakerops-empty"><p>No speakers match these filters.</p></div>{% endfor %}
     </div>
+  </section>
+
+  <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="communication-log-title">
+    <div><h2 id="communication-log-title">Communication log</h2><p>Latest delivery outcome for each personalized recipient.</p></div>
+    <div class="speakerops-table-wrap"><table class="speakerops-table"><thead><tr><th scope="col">When</th><th scope="col">Speaker</th><th scope="col">Type</th><th scope="col">Subject</th><th scope="col">Outcome</th><th scope="col">Operator</th></tr></thead><tbody>{% for log in recent_communications %}<tr><td>{{ log.attempted_at|date:"M j, Y, P" }}</td><td>{{ log.speaker.get_display_name }}</td><td>{{ log.get_kind_display }}</td><td>{{ log.subject }}</td><td>{{ log.get_outcome_display }}{% if log.outcome_detail %} · {{ log.outcome_detail }}{% endif %}</td><td>{{ log.actor.get_display_name|default:"System" }}</td></tr>{% empty %}<tr><td colspan="6">No speaker messages have been sent yet.</td></tr>{% endfor %}</tbody></table></div>
   </section>
 </div>
 {% endblock content %}

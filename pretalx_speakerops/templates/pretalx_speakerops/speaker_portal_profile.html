@@ -1,0 +1,30 @@
+{% extends "cfp/event/base.html" %}
+{% load static %}
+
+{% block cfp_stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock cfp_stylesheets %}
+{% block content %}
+<div class="speakerops" aria-labelledby="speaker-profile-title">
+  {% include "pretalx_speakerops/includes/role_navigation.html" %}
+  <header class="speakerops__header">
+    <div><p class="speakerops__eyebrow">Speaker portal</p><h1 id="speaker-profile-title">Your speaker profile</h1><p>Update the biography, professional link, and headshot that organizers use for this event.</p></div>
+    {% if speaker.has_avatar %}<img src="{{ speaker.get_avatar_url }}" alt="Current headshot for {{ speaker.get_display_name }}" width="112" height="112">{% endif %}
+  </header>
+
+  <section class="speakerops-panel speakerops-panel--quiet" aria-labelledby="speaker-assignments-title">
+    <div><h2 id="speaker-assignments-title">Your session assignments</h2><p>These are the sessions currently connected to your account for this event.</p></div>
+    <ul class="speakerops-list">{% for assignment in assignments %}<li><strong>{{ assignment.title }}</strong><span>{{ assignment.get_state_display }}</span></li>{% empty %}<li>No sessions are assigned to you yet.</li>{% endfor %}</ul>
+  </section>
+
+  <section class="speakerops-panel" aria-labelledby="profile-form-title">
+    <div><h2 id="profile-form-title">Profile details</h2><p>Only you can update this route. Organizers see the saved result in Speaker operations.</p></div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+      <label for="{{ form.biography.id_for_label }}">Biography</label>{{ form.biography }}{{ form.biography.errors }}<p class="help-block">{{ form.biography.help_text }}</p>
+      <label for="{{ form.social_url.id_for_label }}">Professional or social URL</label>{{ form.social_url }}{{ form.social_url.errors }}<p class="help-block">{{ form.social_url.help_text }}</p>
+      <label for="{{ form.headshot.id_for_label }}">Headshot{% if speaker.has_avatar %} <small>optional replacement</small>{% endif %}</label>{{ form.headshot }}{{ form.headshot.errors }}<p class="help-block">{{ form.headshot.help_text }}</p>
+      <button class="btn btn-primary" type="submit">Save speaker profile</button>
+    </form>
+  </section>
+</div>
+{% endblock content %}

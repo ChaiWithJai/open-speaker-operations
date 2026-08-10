@@ -52,6 +52,22 @@
   <section class="speakerops__success"><strong>Release gate clear.</strong> No blocking room or speaker conflicts.</section>
   {% endif %}
 
+  <section class="speakerops-panel" id="program-setup" aria-labelledby="program-setup-title">
+    <div><p class="speakerops__eyebrow">Program setup</p><h2 id="program-setup-title">Rooms &amp; tracks</h2><p>{% if can_edit_structure %}Add program dimensions here; new values become available to the native editor and agenda assistant immediately.{% else %}Creating rooms and tracks requires event-settings access. Ask an event administrator to add them.{% endif %}</p></div>
+    {% if can_edit_structure %}<div class="speakerops__grid">
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="create_room"><label for="new-room">Room name</label><input class="form-control" id="new-room" name="room_name" required maxlength="100"><label for="new-room-capacity">Capacity (optional)</label><input class="form-control" id="new-room-capacity" name="room_capacity" inputmode="numeric" pattern="[0-9]*"><button class="btn btn-secondary" type="submit">Add room</button></form>
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="create_track"><label for="new-track">Track name</label><input class="form-control" id="new-track" name="track_name" required maxlength="200"><label for="new-track-color">Colour</label><input class="form-control" id="new-track-color" name="track_color" type="color" value="#3aa57c"><button class="btn btn-secondary" type="submit">Add track</button></form>
+    </div>
+    {% endif %}
+    <p><strong>Available rooms:</strong> {% for room in rooms %}<span class="speakerops-badge">{{ room.name }}{% if room.capacity %} · {{ room.capacity }} seats{% endif %}</span>{% empty %}None yet{% endfor %}</p>
+    <p><strong>Available tracks:</strong> {% for track in tracks %}<span class="speakerops-badge"><span class="speakerops-swatch" style="background:{{ track.color }}" aria-hidden="true"></span>{{ track.name }}</span>{% empty %}None yet{% endfor %}</p>
+  </section>
+
+  <section class="speakerops-panel" id="unscheduled" aria-labelledby="unscheduled-title">
+    <div><p class="speakerops__eyebrow">Accepted handoff</p><h2 id="unscheduled-title">Unscheduled sessions · {{ unscheduled|length }}</h2><p>Accepted sessions stay visible here until an organizer gives them a day, time, and room.</p></div>
+    <ul class="speakerops-list">{% for submission in unscheduled %}<li id="unscheduled-{{ submission.pk }}"><strong>{{ submission.title }}</strong><span>{{ submission.display_speaker_names }}{% if submission.track %} · {{ submission.track.name }}{% endif %}</span><a class="btn btn-outline-primary" href="{{ submission.orga_urls.quick_schedule }}">Place in agenda</a></li>{% empty %}<li>Every accepted session has a draft placement.</li>{% endfor %}</ul>
+  </section>
+
   <section class="speakerops-panel" aria-labelledby="agenda-assist-title">
     <div>
       <p class="speakerops__eyebrow">Operator-controlled assistance</p>
@@ -100,7 +116,7 @@
         <tr id="slot-{{ slot.pk }}">
           <td data-label="Time">{{ slot.start|date:"D, M j · H:i" }}–{{ slot.end|time:"H:i" }}</td>
           <td data-label="Room">{{ slot.room.name|default:"Unplaced" }}</td>
-          <td data-label="Session"><strong>{{ slot.submission.title }}</strong><br><small>{{ slot.submission.code }}</small></td>
+          <td data-label="Session"><strong>{{ slot.submission.title }}</strong><br><small>{{ slot.submission.code }}{% if slot.submission.track %} · {{ slot.submission.track.name }}{% endif %}</small></td>
           <td data-label="Speakers">{{ slot.submission.display_speaker_names }}</td>
         </tr>
       {% empty %}<tr><td colspan="4">No scheduled sessions yet.</td></tr>{% endfor %}

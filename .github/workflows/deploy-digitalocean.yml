@@ -11,9 +11,14 @@ on:
         description: Full 40-character commit SHA to deploy or roll back to
         required: true
         type: string
+      image_digest:
+        description: Immutable sha256 registry digest produced by the image job
+        required: true
+        type: string
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: speakerops-production
@@ -31,10 +36,25 @@ jobs:
     steps:
       - name: Validate immutable image SHA
         run: test "$(printf '%s' "$DEPLOY_SHA" | sed 's/[^0-9a-f]//g')" = "$DEPLOY_SHA" && test "${#DEPLOY_SHA}" -eq 40
-      - name: Check out current deployment tooling
-        uses: actions/checkout@v4
+      - name: Download image digest from successful CI
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
         with:
-          path: deployment-tooling
+          name: production-image-digest
+          path: release-metadata
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Resolve immutable image digest
+        env:
+          DISPATCH_DIGEST: ${{ github.event.inputs.image_digest }}
+        run: |
+          if [ "${{ github.event_name }}" = workflow_dispatch ]; then
+            digest="$DISPATCH_DIGEST"
+          else
+            digest="$(tr -d '\r\n' < release-metadata/production-image-digest.txt)"
+          fi
+          test "$(printf '%s' "$digest" | sed 's/^sha256:[0-9a-f]\{64\}$//')" = ""
+          printf 'IMAGE_DIGEST=%s\n' "$digest" >> "$GITHUB_ENV"
       - name: Check out release contract
         uses: actions/checkout@v4
         with:
@@ -62,11 +82,11 @@ jobs:
           HOST: ${{ secrets.DIGITALOCEAN_HOST }}
           USER: ${{ secrets.DIGITALOCEAN_USER }}
         run: |
-          scp release/docker-compose.yml deployment-tooling/deploy/smoke_journey.py deployment-tooling/deploy/scripts/{deploy-digitalocean.sh,backup-nightly.sh,verify-restore.sh,drill-image-rollback.sh} "$USER@$HOST:/tmp/"
+          scp release/docker-compose.yml release/deploy/smoke_journey.py release/deploy/scripts/{deploy-digitalocean.sh,backup-nightly.sh,verify-restore.sh,drill-image-rollback.sh} "$USER@$HOST:/tmp/"
           ssh "$USER@$HOST" "install -m 0644 /tmp/docker-compose.yml '$APP_DIR/docker-compose.yml' && install -m 0755 /tmp/deploy-digitalocean.sh '$APP_DIR/deploy-digitalocean.sh' && install -m 0755 /tmp/smoke_journey.py '$APP_DIR/smoke_journey.py' && install -m 0755 /tmp/backup-nightly.sh '$APP_DIR/backup-nightly.sh' && install -m 0755 /tmp/verify-restore.sh '$APP_DIR/verify-restore.sh' && install -m 0755 /tmp/drill-image-rollback.sh '$APP_DIR/drill-image-rollback.sh'"
       - name: Back up, deploy, and verify
         env:
           HOST: ${{ secrets.DIGITALOCEAN_HOST }}
           USER: ${{ secrets.DIGITALOCEAN_USER }}
-          IMAGE: ghcr.io/chaiwithjai/open-speaker-operations:${{ env.DEPLOY_SHA }}
-        run: ssh "$USER@$HOST" "SPEAKEROPS_APP_DIR='$APP_DIR' SPEAKEROPS_PUBLIC_URL='$PUBLIC_URL' '$APP_DIR/deploy-digitalocean.sh' '$IMAGE'"
+          IMAGE: ghcr.io/chaiwithjai/open-speaker-operations@${{ env.IMAGE_DIGEST }}
+        run: ssh "$USER@$HOST" "SPEAKEROPS_APP_DIR='$APP_DIR' SPEAKEROPS_PUBLIC_URL='$PUBLIC_URL' SPEAKEROPS_EXPECTED_APP_VERSION='$DEPLOY_SHA' '$APP_DIR/deploy-digitalocean.sh' '$IMAGE'"
