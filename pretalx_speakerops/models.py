@@ -293,6 +293,8 @@ class SpeakerOperationsProfile(EventOwnedModel):
         related_name="speakerops_event_profiles",
     )
     social_url = models.URLField(blank=True, default="")
+    headshot_original_filename = models.CharField(max_length=255, blank=True, default="")
+    headshot_uploaded_at = models.DateTimeField(null=True, blank=True)
     workflow_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=INVITED)
     travel_preferences = models.TextField(blank=True, default="")
     dietary_requirements = models.TextField(blank=True, default="")

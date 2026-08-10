@@ -509,6 +509,8 @@ def test_session_and_speaker_edits_are_attributed_and_restorable(event, users, c
     assert users["chair"].name.encode() in history.content
     assert b"Restore this session version" in history.content
     assert b"Current headshot for" in history.content
+    assert b"headshot.png" in history.content
+    assert b"Uploaded" in history.content
     assert avatar_url.encode() in history.content
     assert (
         avatar_url.encode() in client.get(f"/orga/{event.slug}/speaker-operations/content/").content

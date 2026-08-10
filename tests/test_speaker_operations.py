@@ -456,6 +456,8 @@ def test_speaker_portal_profile_roundtrips_to_organizer(event, users, client):
         )
         assert str(own_profile.biography) == biography
         assert operations.social_url == social_url
+        assert operations.headshot_original_filename == "speaker-headshot.png"
+        assert operations.headshot_uploaded_at is not None
         assert str(other_profile.biography) == "Other speaker biography must remain unchanged."
         assert not SpeakerOperationsProfile.objects.filter(event=event, speaker=second).exists()
         users["speaker"].refresh_from_db()
@@ -478,6 +480,8 @@ def test_speaker_portal_profile_roundtrips_to_organizer(event, users, client):
     assert biography.encode() in organiser.content
     assert social_url.encode() in organiser.content
     assert b"data-speakerops-headshot" in organiser.content
+    assert b"speaker-headshot.png" in organiser.content
+    assert b"Uploaded" in organiser.content
 
 
 @pytest.mark.django_db(transaction=True)

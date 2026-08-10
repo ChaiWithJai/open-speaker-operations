@@ -23,6 +23,7 @@ from .models import (
     EvidenceComment,
     OnboardingTask,
     SessionPublicationApproval,
+    SpeakerOperationsProfile,
     TaskDefinition,
     TaskEvidence,
 )
@@ -124,6 +125,10 @@ class ContentOperationsView(EventContextMixin, TemplateView):
             revisions = list(
                 ContentRevision.objects.filter(event=self.event).select_related("actor")[:200]
             )
+            operation_profiles = {
+                profile.speaker_id: profile
+                for profile in SpeakerOperationsProfile.objects.filter(event=self.event)
+            }
             for row in publication_rows:
                 submission = row["submission"]
                 submission.speakerops_revisions = [
@@ -142,6 +147,13 @@ class ContentOperationsView(EventContextMixin, TemplateView):
                         )
                         if speaker.avatar
                         else ""
+                    )
+                    operations_profile = operation_profiles.get(speaker.pk)
+                    speaker.speakerops_headshot_filename = (
+                        operations_profile.headshot_original_filename if operations_profile else ""
+                    )
+                    speaker.speakerops_headshot_uploaded_at = (
+                        operations_profile.headshot_uploaded_at if operations_profile else None
                     )
                     speaker.speakerops_revisions = [
                         revision
@@ -544,6 +556,20 @@ class SpeakerContentEditView(EventContextMixin, View):
             profile.biography = biography
             profile.save(update_fields=["biography", "updated"])
             if headshot:
+                operations_profile, _ = (
+                    SpeakerOperationsProfile.objects.select_for_update().get_or_create(
+                        event=self.event, speaker=speaker
+                    )
+                )
+                operations_profile.headshot_original_filename = headshot.name
+                operations_profile.headshot_uploaded_at = timezone.now()
+                operations_profile.save(
+                    update_fields=[
+                        "headshot_original_filename",
+                        "headshot_uploaded_at",
+                        "updated",
+                    ]
+                )
                 speaker.avatar.save(headshot.name, headshot, save=True)
         messages.success(request, "Speaker profile saved; the prior version remains restorable.")
         return redirect(_content_url(event, f"#speaker-content-{pk}"))
