@@ -58,7 +58,7 @@ def test_cfp_has_exact_evaluation_fields_and_workshop_scope(event):
         prerequisites = questions["Workshop prerequisites"]
 
         assert audience.variant == QuestionVariant.CHOICES
-        assert audience.required
+        assert not audience.required
         assert list(audience.options.order_by("position").values_list("answer", flat=True)) == [
             "Beginner",
             "Intermediate",
