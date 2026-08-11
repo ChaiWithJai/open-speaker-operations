@@ -23,6 +23,7 @@ Environment:
 import os
 import re
 import sys
+from contextlib import redirect_stdout
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import partial
@@ -45,7 +46,16 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pretalx.settings")
 
 import django  # noqa: E402
 
-django.setup()
+
+def _setup_django(setup=None) -> None:
+    """Keep framework startup diagnostics off the JSON-RPC stdout stream."""
+
+    setup = django.setup if setup is None else setup
+    with redirect_stdout(sys.stderr):
+        setup()
+
+
+_setup_django()
 
 import anyio  # noqa: E402
 from mcp.server import Server  # noqa: E402

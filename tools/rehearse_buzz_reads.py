@@ -281,7 +281,6 @@ def validate_local_runtime(environment: dict[str, str], repo_root: Path) -> None
 
 def workflow_prompt(workflow: Workflow, repo_root: Path, event_slug: str) -> str:
     return (
-        f"{load_agent_prompt(workflow.profile, repo_root)}\n\n"
         f"For event {event_slug}, call {workflow.tool} exactly once and answer this "
         f"question: {workflow.question}\n\n"
         "Copy the complete formatted tool output byte for byte into one Markdown code block. "
@@ -305,6 +304,8 @@ def rehearse_workflow(
             LOCAL_MODEL,
             "--format",
             "default",
+            "--agent",
+            f"speakerops-{workflow.profile}",
             "--title",
             f"Buzz read {workflow.number}: {workflow.tool}",
             workflow_prompt(workflow, repo_root, event_slug),

@@ -11,6 +11,7 @@ from tools.rehearse_buzz_reads import (
     child_environment,
     database_digest,
     load_agent_prompt,
+    rehearse_workflow,
     run_checked,
     validate_local_opencode_config,
     workflow_prompt,
@@ -101,6 +102,48 @@ def test_agent_prompt_comes_from_the_reviewed_snapshot():
 
     assert "only speaker_next_actions" in prompt
     assert "verbatim" in prompt
+
+
+def test_opencode_agents_load_the_reviewed_snapshot_prompts_as_system_prompts():
+    config = json.loads((ROOT / "opencode.json").read_text())
+
+    assert set(config["agent"]) == {
+        "speakerops-operator",
+        "speakerops-speaker",
+        "speakerops-reviewer",
+    }
+    for profile in ("operator", "speaker", "reviewer"):
+        agent = config["agent"][f"speakerops-{profile}"]
+        prompt_path = ROOT / "tools" / f"speakerops-{profile}.prompt.md"
+        assert agent == {
+            "description": f"Read-only SpeakerOps {profile} agent",
+            "mode": "primary",
+            "prompt": f"{{file:./tools/speakerops-{profile}.prompt.md}}",
+            "tools": {"*": False, "speakerops-reads_*": True},
+        }
+        assert prompt_path.read_text().strip() == load_agent_prompt(profile, ROOT)
+
+
+def test_rehearsal_invokes_the_matching_opencode_system_agent(monkeypatch):
+    calls = []
+
+    def fake_run(command, **kwargs):
+        calls.append(command)
+        return type("Result", (), {"stdout": "complete answer"})()
+
+    monkeypatch.setattr("tools.rehearse_buzz_reads.run_checked", fake_run)
+    workflow = WORKFLOWS[5]
+
+    rehearse_workflow(
+        workflow,
+        environment={},
+        repo_root=ROOT,
+        event_slug="speakerops-demo",
+    )
+
+    command = calls[0]
+    assert command[command.index("--agent") + 1] == "speakerops-speaker"
+    assert load_agent_prompt("speaker", ROOT) not in command[-1]
 
 
 def test_child_environment_drops_paid_provider_and_unrelated_credentials():

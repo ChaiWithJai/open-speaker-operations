@@ -85,6 +85,17 @@ def _scope_bridge(
         monkeypatch.delenv("SPEAKEROPS_MCP_SUBJECT_EMAIL", raising=False)
 
 
+def test_django_startup_diagnostics_do_not_pollute_jsonrpc_stdout(capsys):
+    def noisy_setup():
+        print("pretalx startup diagnostic")
+
+    bridge._setup_django(noisy_setup)
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == "pretalx startup diagnostic\n"
+
+
 def _arrange_verified_conference_memory():
     updated = timezone.now()
     series = ConferenceSeries.objects.create(
