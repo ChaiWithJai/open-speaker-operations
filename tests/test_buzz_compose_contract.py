@@ -79,7 +79,11 @@ def test_runbook_has_disk_guardrails_and_project_scoped_teardown():
     runbook = RUNBOOK_PATH.read_text()
 
     assert "at least 10 GiB free" in runbook
-    assert "utilization is below 80%" in runbook
+    assert "Native Linux production hosts" in runbook
+    assert "utilization below 80%" in runbook
+    assert "Docker Desktop demo hosts" in runbook
+    assert "do not use the host volume's percentage as a standalone stop gate" in runbook
+    assert "virtual-disk allocation" in runbook
     assert "docker system df -v" in runbook
     assert "DockerRootDir` is inside the Linux VM" in runbook
     assert "--project-name buzz-demo" in runbook

@@ -1,11 +1,14 @@
 import hashlib
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from django.http import Http404
 from django_scopes import scope
 from pretalx.schedule.ical import get_slots_ical
 
 from ..models import ScheduleIcsIdentity, SessionPublicationApproval
+
+UTC = ZoneInfo("UTC")
 
 
 def _fingerprint(slot):
@@ -63,8 +66,9 @@ def released_ical(event):
             component.add("uid").value = identity.uid
             component.add("sequence").value = str(identity.sequence)
             component.add("status").value = "CANCELLED"
-            component.add("dtstamp").value = datetime.now(timezone.utc)
-            component.add("dtstart").value = datetime.now(timezone.utc)
-            component.add("dtend").value = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
+            component.add("dtstamp").value = now
+            component.add("dtstart").value = now
+            component.add("dtend").value = now
             component.add("summary").value = "Cancelled session"
         return calendar.serialize()

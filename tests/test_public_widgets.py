@@ -10,6 +10,7 @@ from django.utils.html import strip_tags
 from django_scopes import scope
 from pretalx.person.models import SpeakerProfile
 
+from pretalx_speakerops.models import SessionPublicationApproval
 from pretalx_speakerops.receivers import speakerops_cfp_assets
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -549,6 +550,38 @@ def test_selected_calendar_exports_only_released_requested_sessions(event, clien
     if len(slots) > 1:
         assert slots[1].submission.title.encode() not in response.content
     assert client.get(f"/{event.slug}/speaker-operations/my-schedule.ics").status_code == 404
+
+
+@pytest.mark.django_db(transaction=True)
+def test_selected_calendar_respects_content_publication_approval(event, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        slots = list(
+            event.current_schedule.talks.filter(is_visible=True, submission__isnull=False)
+            .select_related("submission")
+            .order_by("pk")[:2]
+        )
+        assert len(slots) == 2
+        approved, pending = slots
+        SessionPublicationApproval.objects.update_or_create(
+            event=event,
+            submission=approved.submission,
+            defaults={"status": SessionPublicationApproval.APPROVED},
+        )
+        SessionPublicationApproval.objects.update_or_create(
+            event=event,
+            submission=pending.submission,
+            defaults={"status": SessionPublicationApproval.PENDING},
+        )
+
+    response = client.get(
+        f"/{event.slug}/speaker-operations/my-schedule.ics",
+        {"sessions": f"{approved.submission.code},{pending.submission.code}"},
+    )
+
+    assert response.status_code == 200
+    assert approved.submission.title.encode() in response.content
+    assert pending.submission.title.encode() not in response.content
 
 
 @pytest.mark.django_db(transaction=True)

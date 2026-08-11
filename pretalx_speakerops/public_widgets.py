@@ -323,6 +323,12 @@ class SelectedScheduleIcsView(View):
                     submission__isnull=False,
                     submission__code__in=codes,
                 )
+                .exclude(
+                    submission__speakerops_publication_approval__status__in=(
+                        SessionPublicationApproval.PENDING,
+                        SessionPublicationApproval.CHANGES_REQUESTED,
+                    )
+                )
                 .select_related("submission", "room")
                 .order_by("start", "room__position", "pk")
             )

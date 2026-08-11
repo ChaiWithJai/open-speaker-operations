@@ -13,9 +13,11 @@ project is stopped.
 2. Keep both auth and membership gates enabled. Set `RELAY_OWNER_PUBKEY` to
    the 64-hex public key controlled by the demo operator; never commit the key
    material or reuse a SpeakerOps credential.
-3. Confirm Docker storage has at least 10 GiB free and utilization is below 80%
-   before starting. On native Linux, Docker's root directory is a
-   host path and can be checked directly:
+3. Apply the storage gate for the host type before starting. All hosts need at
+   least 10 GiB free on the filesystem that contains Docker data and enough
+   remaining Docker virtual-disk allocation for the bounded relay.
+   Native Linux production hosts additionally require utilization below 80%;
+   Docker's root directory is a host path and can be checked directly:
 
    ```sh
    docker_root=$(docker info --format '{{.DockerRootDir}}')
@@ -23,12 +25,18 @@ project is stopped.
    docker system df -v
    ```
 
-   On Docker Desktop, `DockerRootDir` is inside the Linux VM and is not a
-   valid macOS/Windows host path. Use `docker system df -v`, check the host
-   filesystem that stores Docker Desktop data, and inspect the virtual-disk
-   allocation in Desktop settings instead. Stop and reclaim unrelated data
-   deliberately if either threshold fails; this runbook never prunes Docker
-   globally.
+   Docker Desktop demo hosts do not use the host volume's percentage as a standalone stop gate:
+   large APFS/NTFS volumes can remain above 80% while
+   still satisfying the demo's explicit free-space budget.
+   `DockerRootDir` is inside the Linux VM and is not a valid macOS/Windows host path.
+   Use `docker
+   system df -v`, confirm at least 10 GiB free on the host filesystem that
+   stores Docker Desktop data, and inspect the virtual-disk allocation in
+   Desktop settings. Stop if either free space or remaining virtual-disk
+   allocation is below 10 GiB. Reclaim unrelated data only through a deliberate
+   owner-reviewed action; this runbook never prunes Docker globally. This
+   Desktop exception is for the bounded local demo, not a production-host
+   capacity policy.
 4. Verify the host-side agent prerequisites. Compose does not install Buzz
    Desktop, OpenCode, or SpeakerOps:
 
@@ -94,6 +102,22 @@ project is stopped.
    opencode mcp list
    ```
 
+   The repo also provides a fail-closed preflight for all three profiles and a
+   serial eight-read rehearsal. It refuses any model other than the approved
+   loopback `llama-server/qwen3.5-2b` and never starts or changes containers:
+
+   ```sh
+   python3 tools/rehearse_buzz_reads.py --check-only
+   python3 tools/rehearse_buzz_reads.py \
+     --output-dir /absolute/private/evidence/directory
+   ```
+
+   The rehearsal proves OpenCode/MCP behavior, not Buzz channel delivery. Do
+   not put the evidence directory in Git. The command strips ambient provider,
+   cloud, repository, and database credentials from every child process before
+   forcing the approved local model. Do not mark a workflow channel demonstrated
+   until the owner repeats it in Buzz Desktop.
+
    Log into SpeakerOps once in three separate browser profiles before taking a
    database snapshot: `chair@example.org`, `speaker@example.org`, and
    `reviewer@example.org`, all with the deterministic local demo password.
@@ -123,8 +147,9 @@ docker stats --no-stream $(docker compose --project-name buzz-demo \
 Only `127.0.0.1:${BUZZ_HTTP_PORT:-3100}` is published. Use a separately
 approved reverse proxy or SSH tunnel for remote access; never widen the bind
 in this file. During the demo, record host usage with `df -Pk` and
-`docker system df -v`; stop if free space falls below 10 GiB or utilization
-reaches 80%.
+`docker system df -v`; stop if free space or Docker Desktop virtual-disk
+headroom falls below 10 GiB. The 80% utilization stop remains mandatory on
+native Linux production hosts.
 
 ## Stop, teardown, and retention
 

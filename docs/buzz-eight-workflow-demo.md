@@ -71,6 +71,22 @@ python3 tools/run_speakerops_mcp_bridge.py --check
 opencode mcp list
 ```
 
+For tonight's zero-paid rehearsal, the same checks and all eight prompts are
+automated serially without exposing any credential:
+
+```sh
+python3 tools/rehearse_buzz_reads.py --check-only
+python3 tools/rehearse_buzz_reads.py \
+  --output-dir /absolute/private/evidence/directory
+```
+
+The command refuses a non-loopback or non-`llama-server/qwen3.5-2b` model,
+strips ambient paid-provider and unrelated credentials from its child
+processes, applies each least-privilege profile separately, and writes a
+digest-bearing manifest. Its manifest deliberately says
+`channel_demonstrated: false`; only a real Buzz channel or DM can change that
+evidence status.
+
 The first command must name a running `web` service and prove that its image
 contains `tools/mcp_speakerops_server.py`. A connection failure after the
 branch is built is a real runtime blocker; do not fall back to the host SQLite

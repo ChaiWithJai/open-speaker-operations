@@ -184,8 +184,20 @@ def test_acceptance_handoff_preserves_metadata_in_wip_agenda(event, users, clien
     assert handed_off.title == "Acceptance handoff retains this exact title"
     assert set(handed_off.speakers.values_list("pk", flat=True)) == expected_speaker_ids
     assert handed_off.track_id == expected_track_id
-    assert str(handed_off.orga_urls.quick_schedule).encode() in response.content
     assert handed_off.title.encode() in response.content
+
+    placement = client.post(
+        f"/orga/{event.slug}/speaker-operations/agenda/",
+        {"action": "prepare_placement", "submission_id": handed_off.pk},
+    )
+    assert placement.status_code == 302
+    assert placement.url == str(handed_off.orga_urls.quick_schedule)
+    native_schedule = client.get(placement.url)
+    assert native_schedule.status_code == 200
+    assert handed_off.title.encode() in native_schedule.content
+    with scope(event=event):
+        slots = event.wip_schedule.talks.filter(submission=handed_off)
+        assert slots.count() == handed_off.slot_count == 1
 
 
 @pytest.mark.django_db(transaction=True)
