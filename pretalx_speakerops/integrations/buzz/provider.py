@@ -10,11 +10,11 @@ Invariants enforced here:
 - The provider dialect is pinned to Buzz's generic OpenAI-compatible chat mode.
 - Configuration fails closed: a missing or malformed provider, model, or base
   URL raises with every problem named, and never echoes secret values.
-- Plain-HTTP endpoints are accepted only for loopback/private IP addresses,
-  well-known local hostnames, or hosts explicitly allow-listed via
-  ``BUZZ_AGENT_PRIVATE_HOSTS``. A bare single-label hostname is NOT assumed
-  private: search domains or controlled DNS can resolve it anywhere, so it
-  must be allow-listed to count as private topology.
+- Plain-HTTP endpoints are accepted only for loopback/private IP literals,
+  ``localhost``, ``host.docker.internal``, or hosts explicitly allow-listed
+  via ``BUZZ_AGENT_PRIVATE_HOSTS``. No hostname — bare, ``.internal``,
+  ``.local``, or otherwise — is assumed private lexically: search domains or
+  controlled DNS can resolve any name anywhere.
 - Public endpoints require an API key; a provider-side "latest" model alias is
   rejected as a production pin.
 - The provider client contract forbids following redirects
@@ -51,7 +51,6 @@ SUPPORTED_PROVIDER = "openai"
 SUPPORTED_API = "chat"
 
 _PRIVATE_HOSTS = {"localhost", "host.docker.internal"}
-_PRIVATE_SUFFIXES = (".internal", ".local", ".localdomain")
 _PROVIDER_LABELS = {"api.together.ai": "Together AI", "api.together.xyz": "Together AI"}
 
 
@@ -94,14 +93,13 @@ def _is_private_host(host: str, allowed_hosts: frozenset[str] = frozenset()) -> 
     lowered = host.lower()
     if lowered in _PRIVATE_HOSTS or lowered in allowed_hosts:
         return True
-    if lowered.endswith(_PRIVATE_SUFFIXES):
-        return True
     try:
         address = ipaddress.ip_address(lowered)
     except ValueError:
-        # Hostnames — including bare single-label names, which search domains
-        # or controlled DNS can resolve anywhere — are private only when
-        # explicitly allow-listed above.
+        # Hostnames are private only when explicitly allow-listed above: a
+        # lexical suffix like .internal or .local is not proof the connected
+        # address is private, and search domains or controlled DNS can
+        # resolve any name anywhere.
         return False
     return address.is_private or address.is_loopback
 

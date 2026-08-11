@@ -25,9 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-os.environ.setdefault(
-    "PRETALX_CONFIG_FILE", str(REPO_ROOT / "docker" / "pretalx-local.cfg")
-)
+os.environ.setdefault("PRETALX_CONFIG_FILE", str(REPO_ROOT / "docker" / "pretalx-local.cfg"))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pretalx.common.settings.test_settings")
 os.environ.setdefault("SPEAKEROPS_BASE_URL", "http://localhost:8000")
 
@@ -60,8 +58,7 @@ READ_SCHEMA = {
         "event_slug": {"type": "string", "description": "Event slug, e.g. demo."},
         "base_url": {
             "type": "string",
-            "description": "Origin used to absolutize go/ links. Defaults to "
-            "SPEAKEROPS_BASE_URL.",
+            "description": "Origin used to absolutize go/ links. Defaults to SPEAKEROPS_BASE_URL.",
         },
     },
     "required": ["event_slug"],
@@ -113,9 +110,7 @@ async def _handle_call_tool(ctx, params: CallToolRequestParams) -> CallToolResul
             partial(read, arguments["event_slug"], base_url=base_url)
         )
     except (KeyError, ValueError) as exc:
-        return CallToolResult(
-            content=[TextContent(type="text", text=str(exc))], is_error=True
-        )
+        return CallToolResult(content=[TextContent(type="text", text=str(exc))], is_error=True)
     return CallToolResult(content=[TextContent(type="text", text=result)])
 
 

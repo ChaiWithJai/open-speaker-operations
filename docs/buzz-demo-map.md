@@ -18,9 +18,15 @@ POST-only **commands** (links navigate, commands mutate — a command route is
 never handed out as a link), and grades every anchor's exactness:
 exact-record, filtered-collection, aggregate-screen, or public-output.
 `tests/test_buzz_resource_registry.py` fails when a named route or judged row
-drifts, and exercises the seeded chair/reviewer/speaker role matrix over HTTP:
-intended audiences reach their surfaces, unauthorized roles get non-disclosing
-404s, stale IDs fail safely, and command endpoints refuse GET.
+drifts, and exercises the seeded role matrix over HTTP for a defined subset:
+organiser consoles (chair 200; reviewer and speaker 404; anonymous redirected
+to login), reviewer and speaker surfaces, public surfaces, one valid
+exact-record access per self-scoped and reviewer-scoped route, stale/deleted
+IDs failing safely with 404, every command endpoint refusing GET, and the
+`go/` resolver authorizing before it redirects (exactly one redirect, never
+to a command route). Not yet tested — deferred until the resolver grows
+record-level resources: cross-event identifier rejection, revoked users, and
+destination-content-matches-record assertions.
 
 Delivery order follows the walking skeleton, not this document's breadth:
 first `release_readiness` end-to-end (row 5), then content readiness (row 6),
@@ -72,8 +78,9 @@ never do.
   the task's transition receipt and the new `TaskEvidence` version.
 - **Reads:** onboarding tasks by state/deadline, evidence versions, profile
   completeness (`SpeakerOperationsProfile`).
-- **Links:** `speakerops_checklist`, `speakerops_speaker_profile` (speaker
-  audience); task admin drilldown for organisers. **Gap:** no per-task detail
+- **Links:** `speakerops_checklist`, `speakerops_speaker_profile`, and the
+  speaker's own `speakerops_submission_presenters` (exact, self-scoped by
+  code); task admin drilldown for organisers. **Gap:** no per-task detail
   GET — tasks resolve to checklist anchors today; the resolver needs an
   `onboarding-task` resource.
 - **Writes via Buzz:** reminder send after preview (see row 7); task state
@@ -88,10 +95,11 @@ never do.
   accepts it in the web UI → thread receives the decision receipt.
 - **Reads:** submission funnel by state/track, presenter roles
   (`SubmissionPresenterRole`), anomalies.
-- **Links:** `speakerops_abstract_management` (console),
-  `speakerops_submission_presenters` (per-submission, by code). **Gap:**
-  per-submission operational detail is a fragment on the console page — the
-  resolver needs a `submission` resource.
+- **Links:** `speakerops_abstract_management` (console) only. **Gap:** no
+  organiser-facing exact submission GET exists anywhere in the plugin
+  (`speakerops_submission_presenters` is self-scoped to the submission's own
+  presenters and 404s for a chair) — the resolver owes a real `submission`
+  resource before this row can claim a record-level link.
 - **Writes via Buzz:** none; accept/decline is row 4/decision territory.
 
 ### 4. Evaluation & review workflows (High)

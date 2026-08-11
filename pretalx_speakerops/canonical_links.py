@@ -139,16 +139,21 @@ RESOURCES = (
         audience="organiser",
         object_kind="submission-queue",
         exactness=AGGREGATE_SCREEN,
-        note="Resolver gap: per-submission operational detail is a fragment.",
+        note="Resolver gap: no organiser-facing exact submission GET exists "
+        "anywhere in the plugin; operational detail is a console fragment. "
+        "The go/ resolver owes a real submission resource before this row "
+        "can claim a record-level link.",
     ),
     ResourceLink(
-        resource="submission-presenters",
-        judged_row="abstract-management",
+        resource="own-submission-presenters",
+        judged_row="speaker-portal",
         route_name="speakerops_submission_presenters",
         url_kwargs=("event", "code"),
-        audience="organiser",
-        object_kind="submission",
+        audience="speaker",
+        object_kind="submission-presenter-roles",
         exactness=EXACT_RECORD,
+        note="Self-scoped: the view filters speakers=request.user, so only a "
+        "presenter of the submission can open it. Organisers get 404.",
     ),
     # 4. Evaluation & review workflows
     ResourceLink(

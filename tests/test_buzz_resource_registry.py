@@ -91,8 +91,12 @@ def test_registry_hygiene_rows_covered_commands_excluded_nothing_implemented():
         for link in RESOURCES
         if link.interaction == LINK and link.exactness == EXACT_RECORD
     }
-    for row in ("review-workflows", "abstract-management", "content-production"):
+    for row in ("review-workflows", "content-production"):
         assert row in exact_link_rows, f"{row} lost its record-level GET anchor"
+    # Honest gap: no organiser-facing exact submission GET exists anywhere in
+    # the plugin, so abstract-management may NOT claim a record-level anchor
+    # until the go/ resolver ships a real submission resource.
+    assert "abstract-management" not in exact_link_rows
 
 
 def test_speaker_audience_links_never_land_on_organiser_paths():
@@ -137,15 +141,19 @@ ORGANISER_CONSOLES = (
 
 
 @pytest.mark.parametrize("resource", ORGANISER_CONSOLES)
-def test_organiser_surfaces_open_for_chair_and_404_for_speaker(
-    enabled_event, users, client, resource
-):
+def test_organiser_surfaces_open_for_chair_only(enabled_event, users, client, resource):
     link = by_resource(resource)
     url = url_for(link, event=enabled_event.slug)
     client.force_login(users["chair"])
     assert client.get(url).status_code == 200, resource
-    client.force_login(users["speaker"])
-    assert client.get(url).status_code == 404, f"{resource} leaked to a speaker"
+    for role in ("speaker", "reviewer"):
+        client.force_login(users[role])
+        assert client.get(url).status_code == 404, f"{resource} leaked to a {role}"
+    client.logout()
+    anonymous = client.get(url)
+    assert anonymous.status_code == 302 and "login" in anonymous["Location"], (
+        f"{resource} must send anonymous users to login, never render"
+    )
 
 
 @pytest.mark.parametrize("kind", ["conflicts", "tasks"])
@@ -204,8 +212,8 @@ def test_stale_or_deleted_identifiers_fail_safely_with_404(enabled_event, users,
 
 
 def test_stale_public_and_submission_codes_fail_safely(enabled_event, users, client):
-    client.force_login(users["chair"])
-    presenters = by_resource("submission-presenters")
+    client.force_login(users["speaker"])
+    presenters = by_resource("own-submission-presenters")
     assert (
         client.get(url_for(presenters, event=enabled_event.slug, code="ZZZZZX")).status_code == 404
     )
@@ -215,6 +223,44 @@ def test_stale_public_and_submission_codes_fail_safely(enabled_event, users, cli
         client.get(url_for(public_speaker, event=enabled_event.slug, code="ZZZZZX")).status_code
         == 404
     )
+
+
+def test_assigned_reviewer_opens_a_real_review_and_a_speaker_cannot(enabled_event, users, client):
+    from pretalx.submission.models import SubmissionStates
+
+    from pretalx_speakerops.program.reviews import configure_review_rounds
+
+    with scope(event=enabled_event):
+        submission = enabled_event.submissions.first()
+        submission.state = SubmissionStates.SUBMITTED
+        submission.save(update_fields=["state", "updated"])
+        submission.assigned_reviewers.add(users["reviewer"])
+        configure_review_rounds(enabled_event)
+        pk = submission.pk
+    link = by_resource("review-assignment")
+    url = url_for(link, event=enabled_event.slug, pk=pk)
+    client.force_login(users["reviewer"])
+    assert client.get(url).status_code == 200
+    client.force_login(users["speaker"])
+    assert client.get(url).status_code == 404, "a valid review URL leaked to a speaker"
+
+
+def test_speaker_opens_their_own_submission_presenters_and_a_chair_cannot(
+    enabled_event, users, client
+):
+    with scope(event=enabled_event):
+        submission = enabled_event.submissions.first()
+        submission.speakers.add(users["speaker"])
+        code = submission.code
+    link = by_resource("own-submission-presenters")
+    url = url_for(link, event=enabled_event.slug, code=code)
+    client.force_login(users["speaker"])
+    assert client.get(url).status_code == 200
+    # The view is self-scoped by design: even a chair who is not a presenter
+    # receives a non-disclosing 404. This is why abstract-management has no
+    # organiser-facing exact submission link.
+    client.force_login(users["chair"])
+    assert client.get(url).status_code == 404
 
 
 def test_command_endpoints_refuse_get_so_links_can_never_mutate(enabled_event, users, client):
@@ -253,9 +299,11 @@ def test_go_redirects_chair_to_the_exact_organiser_view(enabled_event, users, cl
 
 def test_go_redirects_to_two_kwarg_exact_records(enabled_event, users, client):
     slug = enabled_event.slug
-    client.force_login(users["chair"])
-    presenters = by_resource("submission-presenters")
-    response = client.get(_go_url("submission-presenters", f"{slug}{RESOURCE_SEP}ABCDEF"))
+    with scope(event=enabled_event):
+        enabled_event.submissions.first().speakers.add(users["speaker"])
+    client.force_login(users["speaker"])
+    presenters = by_resource("own-submission-presenters")
+    response = client.get(_go_url("own-submission-presenters", f"{slug}{RESOURCE_SEP}ABCDEF"))
     assert response.status_code == 302
     assert response["Location"] == url_for(presenters, event=slug)
 

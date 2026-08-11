@@ -75,9 +75,7 @@ def release_readiness(event_slug, base_url=DEFAULT_BASE_URL):
         overdue = OnboardingTask.objects.filter(event=event).aggregate(
             value=Count("pk", filter=Q(due_date__lt=today, status__in=active_states)),
         )["value"]
-        undecided = Submission.objects.filter(
-            event=event, state=SubmissionStates.SUBMITTED
-        ).count()
+        undecided = Submission.objects.filter(event=event, state=SubmissionStates.SUBMITTED).count()
         pending_content = SessionPublicationApproval.objects.filter(
             event=event, status=SessionPublicationApproval.PENDING
         ).count()
@@ -157,7 +155,7 @@ def render_release_readiness(result):
             talk = row["talk"]
             lines.append(
                 f"- **[type: {row['type']}]** {row['message']} — `{mark}` — "
-                f"talk #{talk['pk']} \"{talk['title']}\" "
+                f'talk #{talk["pk"]} "{talk["title"]}" '
                 f"({talk['start']}–{talk['end']}, {talk['room']})"
             )
         lines.append("")
@@ -182,8 +180,7 @@ def render_release_readiness(result):
     lines.append("")
 
     lines.append(
-        "## Sources — canonical URL list "
-        "(check against `pretalx_speakerops/canonical_links.py`)"
+        "## Sources — canonical URL list (check against `pretalx_speakerops/canonical_links.py`)"
     )
     lines.append("")
     lines.append("| Resource | go/ link | Routes to | Audience | Exactness |")
@@ -245,7 +242,9 @@ def release_readiness_message(event_slug, base_url=DEFAULT_BASE_URL):
 
 
 def _display_name(user):
-    return user.get_display_name() if user else "unknown"
+    # Empty string for "no user" so call sites can apply their own fallback
+    # label ("not yet reviewed", "unknown reviewer") with `or`.
+    return user.get_display_name() if user else ""
 
 
 def _evidence_info(evidence, event_slug, base_url):
@@ -279,9 +278,7 @@ def _classify_file_request(task, evidence, base_url):
     detail = _evidence_info(latest, task.event.slug, base_url)
     if latest.review_status == TaskEvidence.APPROVED:
         return "approved", _display_name(task.speaker), False, detail
-    superseded = any(
-        item.review_status == TaskEvidence.APPROVED for item in evidence[1:]
-    )
+    superseded = any(item.review_status == TaskEvidence.APPROVED for item in evidence[1:])
     if latest.review_status == TaskEvidence.CHANGES_REQUESTED:
         owner = _display_name(latest.reviewed_by) or "unknown reviewer"
         state = "stale" if superseded else "changes_requested"
@@ -379,7 +376,10 @@ def content_readiness(event_slug, base_url=DEFAULT_BASE_URL):
             items = session["items"]
             blockers = [item for item in items if item["state"] != "approved"]
             publication = session["publication"]
-            if publication is not None and publication["status"] != SessionPublicationApproval.APPROVED:
+            if (
+                publication is not None
+                and publication["status"] != SessionPublicationApproval.APPROVED
+            ):
                 state = (
                     "publication_pending"
                     if publication["status"] == SessionPublicationApproval.PENDING
@@ -476,7 +476,7 @@ def render_content_readiness(result):
             label = f"{subject['title']}{code}"
             if row["state"].startswith("publication"):
                 publication = row["publication"]
-                note = f" — \"{publication['note']}\"" if publication and publication["note"] else ""
+                note = f' — "{publication["note"]}"' if publication and publication["note"] else ""
                 lines.append(
                     f"- **{label}** — **[publication: {row['state']}]** "
                     f"gate owner **{row['owner']}**{note}"
@@ -485,12 +485,10 @@ def render_content_readiness(result):
             for item in row["items"]:
                 if item["state"] == "approved":
                     continue
-                note = f" — \"{item['note']}\"" if item["note"] else ""
+                note = f' — "{item["note"]}"' if item["note"] else ""
                 evidence = item["latest_evidence"]
                 link = (
-                    f" — [evidence v{evidence['version']}]({evidence['url']})"
-                    if evidence
-                    else ""
+                    f" — [evidence v{evidence['version']}]({evidence['url']})" if evidence else ""
                 )
                 lines.append(
                     f"- **{label}** — **[type: {item['state']}]** "
@@ -533,8 +531,7 @@ def render_content_readiness(result):
     lines.append("")
 
     lines.append(
-        "## Sources — canonical URL list "
-        "(check against `pretalx_speakerops/canonical_links.py`)"
+        "## Sources — canonical URL list (check against `pretalx_speakerops/canonical_links.py`)"
     )
     lines.append("")
     lines.append("| Resource | go/ link | Routes to | Audience | Exactness |")
@@ -575,10 +572,7 @@ def render_content_readiness(result):
             "(content-console, evidence-file), absolutized against "
             f"{base}."
         ),
-        (
-            f"Verdict: {rollup['not_ready']} of {rollup['sessions']} "
-            "sessions not AV-ready."
-        ),
+        (f"Verdict: {rollup['not_ready']} of {rollup['sessions']} sessions not AV-ready."),
     ]
     for index, step in enumerate(trace, 1):
         lines.append(f"{index}. {step}")

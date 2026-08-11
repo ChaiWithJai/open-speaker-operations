@@ -47,13 +47,21 @@ _UPLOAD_FILES = (
 )
 
 
-def _make_session_content(event, users, submission, speaker, slides_action="approve", slides_note=""):
+def _make_session_content(
+    event, users, submission, speaker, slides_action="approve", slides_note=""
+):
     """Give a session upload evidence for every upload file request.
 
     Everything is approved except slides, which takes ``slides_action``
     (``approve`` or ``request-changes``). Returns ``{slug: evidence}``.
     """
-    submission.speakers.add(speaker)
+    # submission_state_change is an EventPluginSignal: the acceptance receiver
+    # that provisions onboarding tasks only fires when the plugin is enabled
+    # for the event.
+    if "pretalx_speakerops" not in event.plugin_list:
+        event.enable_plugin("pretalx_speakerops")
+        event.save()
+    submission.speakers.set([speaker])
     submission.accept(person=users["chair"], force=True)
     results = {}
     for slug, filename, data, content_type in _UPLOAD_FILES:
@@ -174,10 +182,7 @@ def test_release_readiness_message_formats_verdict_sources_and_trace(event, user
 
     assert "## Sources — canonical URL list" in message
     assert "pretalx_speakerops/canonical_links.py" in message
-    assert (
-        f"http://example.test/go/conflicts-drilldown/{event.slug}~conflicts/"
-        in message
-    )
+    assert f"http://example.test/go/conflicts-drilldown/{event.slug}~conflicts/" in message
     assert "| conflicts-drilldown |" in message
     assert "| speakerops_drilldown | organiser | filtered-collection |" in message
     assert "| operations-dashboard |" in message
@@ -330,9 +335,7 @@ def test_call_tool_in_process_protocol_roundtrip():
             tg.start_soon(run_server)
             tg.start_soon(pump_client_to_server)
             tg.start_soon(pump_server_to_client)
-            async with ClientSession(
-                read_stream=client_read, write_stream=client_write
-            ) as session:
+            async with ClientSession(read_stream=client_read, write_stream=client_write) as session:
                 await session.initialize()
                 tools = await session.list_tools()
                 assert len(tools.tools) == 2
@@ -372,7 +375,9 @@ def test_content_readiness_reports_changes_requested_with_owner(event, users):
     ready = {row["submission"]["pk"]: row for row in result["ready"]}
     assert ready[ready_sub.pk]["state"] == "ready"
     assert all(i["state"] == "approved" for i in ready[ready_sub.pk]["items"])
-    assert ready_evidence.version in {i["latest_evidence"]["version"] for i in ready[ready_sub.pk]["items"]}
+    assert ready_evidence.version in {
+        i["latest_evidence"]["version"] for i in ready[ready_sub.pk]["items"]
+    }
 
     rollup = result["rollup"]
     assert rollup["ready"] + rollup["not_ready"] == rollup["sessions"]
@@ -410,7 +415,9 @@ def test_content_readiness_flags_stale_superseded_approval(event, users):
 def test_content_readiness_flags_missing_file_request_with_speaker_owner(event, users):
     with scope(event=event):
         sub = event.submissions.first()
-        sub.speakers.add(users["speaker"])
+        event.enable_plugin("pretalx_speakerops")
+        event.save()
+        sub.speakers.set([users["speaker"]])
         sub.accept(person=users["chair"], force=True)
         OnboardingTask.objects.get(
             event=event, submission=sub, speaker=users["speaker"], definition__slug="slides"
