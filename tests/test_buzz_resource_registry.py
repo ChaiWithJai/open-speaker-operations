@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 from django.urls import reverse
 from django_scopes import scope
+from pretalx.submission.models import SubmissionStates
 
 from pretalx_speakerops.canonical_links import (
     COMMAND,
@@ -297,24 +298,62 @@ def test_go_redirects_chair_to_the_exact_organiser_view(enabled_event, users, cl
     assert response["Location"] == url_for(link, event=slug), resource
 
 
-def test_go_redirects_to_two_kwarg_exact_records(enabled_event, users, client):
+def test_go_opens_only_the_speakers_real_submission_record(enabled_event, users, client):
     slug = enabled_event.slug
     with scope(event=enabled_event):
-        enabled_event.submissions.first().speakers.add(users["speaker"])
-    client.force_login(users["speaker"])
+        submission, other_submission = enabled_event.submissions.order_by("pk")[:2]
+        submission.speakers.add(users["speaker"])
+        other_submission.speakers.add(users["reviewer"])
+
     presenters = by_resource("own-submission-presenters")
-    response = client.get(_go_url("own-submission-presenters", f"{slug}{RESOURCE_SEP}ABCDEF"))
-    assert response.status_code == 302
-    assert response["Location"] == url_for(presenters, event=slug)
+
+    client.force_login(users["speaker"])
+    target = url_for(presenters, event=slug, code=submission.code)
+    response = client.get(
+        _go_url("own-submission-presenters", f"{slug}{RESOURCE_SEP}{submission.code}"),
+        follow=True,
+    )
+    assert response.status_code == 200
+    assert response.redirect_chain == [(target, 302)]
+
+    # This user is a speaker at the event, so the event-level resolver may
+    # redirect, but the record view must still deny a submission they do not
+    # present. Following the redirect proves the record-level authorization.
+    client.force_login(users["reviewer"])
+    denied = client.get(
+        _go_url("own-submission-presenters", f"{slug}{RESOURCE_SEP}{submission.code}"),
+        follow=True,
+    )
+    assert denied.status_code == 404
+    assert denied.redirect_chain == [(target, 302)]
 
 
 def test_go_redirects_reviewer_to_reviewer_exact_record(enabled_event, users, client):
     link = by_resource("review-assignment")
     slug = enabled_event.slug
+    with scope(event=enabled_event):
+        submission, unassigned = enabled_event.submissions.order_by("pk")[:2]
+        enabled_event.submissions.filter(pk__in=(submission.pk, unassigned.pk)).update(
+            state=SubmissionStates.SUBMITTED
+        )
+        submission.assigned_reviewers.add(users["reviewer"])
+
     client.force_login(users["reviewer"])
-    response = client.get(_go_url("review-assignment", f"{slug}{RESOURCE_SEP}1"))
-    assert response.status_code == 302
-    assert response["Location"] == url_for(link, event=slug)
+    target = url_for(link, event=slug, pk=submission.pk)
+    response = client.get(
+        _go_url("review-assignment", f"{slug}{RESOURCE_SEP}{submission.pk}"),
+        follow=True,
+    )
+    assert response.status_code == 200
+    assert response.redirect_chain == [(target, 302)]
+
+    denied_target = url_for(link, event=slug, pk=unassigned.pk)
+    denied = client.get(
+        _go_url("review-assignment", f"{slug}{RESOURCE_SEP}{unassigned.pk}"),
+        follow=True,
+    )
+    assert denied.status_code == 404
+    assert denied.redirect_chain == [(denied_target, 302)]
 
 
 def test_go_redirects_speaker_to_their_own_portal_surface(enabled_event, users, client):

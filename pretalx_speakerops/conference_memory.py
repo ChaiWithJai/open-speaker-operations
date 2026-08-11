@@ -334,13 +334,16 @@ def memory_decision_support(talks):
 
     aie_topics = Counter(
         topic
-        for topics in aie_talks.order_by().values_list("topics", flat=True)
+        # Include the primary key so a DISTINCT queryset created by a
+        # speaker/topic search cannot collapse two talks with identical topic
+        # arrays and undercount the signal.
+        for _, topics in aie_talks.order_by().values_list("pk", "topics")
         for topic in (topics or [])
         if topic
     )
     peer_topics = Counter(
         topic
-        for topics in peer_talks.order_by().values_list("topics", flat=True)
+        for _, topics in peer_talks.order_by().values_list("pk", "topics")
         for topic in (topics or [])
         if topic
     )

@@ -7,7 +7,11 @@
       "enabled": true,
       "environment": {
         "PRETALX_CONFIG_FILE": "docker/pretalx-local.cfg",
-        "SPEAKEROPS_BASE_URL": "http://localhost:8000"
+        "SPEAKEROPS_BASE_URL": "{env:SPEAKEROPS_BASE_URL}",
+        "SPEAKEROPS_MCP_PRINCIPAL": "{env:SPEAKEROPS_MCP_PRINCIPAL}",
+        "SPEAKEROPS_MCP_ALLOWED_EVENTS": "{env:SPEAKEROPS_MCP_ALLOWED_EVENTS}",
+        "SPEAKEROPS_MCP_CAPABILITIES": "{env:SPEAKEROPS_MCP_CAPABILITIES}",
+        "SPEAKEROPS_MCP_SUBJECT_EMAIL": "{env:SPEAKEROPS_MCP_SUBJECT_EMAIL}"
       }
     }
   }

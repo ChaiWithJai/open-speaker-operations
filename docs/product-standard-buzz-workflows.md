@@ -80,7 +80,33 @@ The model only ever sees these typed reads; it has no database access. The
 rendered message is the workflow answer: the model relays it verbatim rather
 than paraphrasing against a raw payload.
 
-## Current state (honest baseline)
+The bridge process fails closed unless deployment supplies a named read
+principal, an explicit comma-separated event allow-list, an explicit
+capability allow-list, and a fixed canonical SpeakerOps origin. Tool callers
+can select only an allowed event slug; they cannot expand their tools or
+supply/redirect the link origin. Self-service reads additionally receive a
+fixed subject email from deployment identity, never from a model argument.
+This is the bounded demo identity contract, not a substitute for the durable
+principal-binding API required before multi-tenant adoption.
+
+## Competition workflow inventory
+
+The required product set is the eight buyer jobs from issue #66. They are
+machine-checked in `integrations/buzz/buyer_workflows.py`: release readiness,
+speaker nudges, review progress, content readiness, sync recovery, speaker next
+actions, reviewer next assignment, and executive readiness. Conference Memory
+is a separate issue #41 hero differentiator and does not silently inflate the
+mandatory count to nine.
+
+All eight mandatory typed reads now exist, along with the separate issue #41
+`conference_memory` differentiator. They are partitioned across operator,
+speaker, and reviewer process profiles so self-service subject identity never
+comes from a model argument. No channel workflow is marked demonstrated until
+a real Buzz channel executes a read and posts the grounded answer, source
+evidence, and links end to end. The owner-run evidence script is
+`docs/buzz-eight-workflow-demo.md`.
+
+## Engine scaffold baseline
 
 | Workflow | Conformant? | Why |
 | --- | --- | --- |
@@ -92,10 +118,11 @@ than paraphrasing against a raw payload.
 | `test-approval` | No | Scaffold; approval gates unimplemented upstream |
 | `test-delay` | No | Timing scaffold; no DB query, no link |
 
-These eight workflows were built to verify the Buzz workflow engine, not to
+These seven named workflows were built to verify the Buzz workflow engine, not to
 serve this standard. They occupy the workflow surface and must be reworked or
-replaced by workflows that conform. See the investigation issue for the
-focused landing path.
+replaced by workflows that conform. Earlier audit text called this set eight,
+but no eighth identifier was recorded; do not invent one. See the investigation
+issue for the focused landing path.
 
 ## Supporting contracts
 
@@ -114,3 +141,6 @@ focused landing path.
   `tests/test_speakerops_mcp.py`, which covers the data contract, the link
   grammar, the rendered message (verdict, source list, trace of inference),
   the MCP tool registration, and the JSON-RPC framing.
+- The `conference_memory` read is exercised in the same suite with explicitly
+  verified identities spanning two AIE editions, source citations, missing
+  metadata preservation, exact speaker links, bridge scoping, and MCP framing.

@@ -1,0 +1,102 @@
+# Human demo: eight SpeakerOps buyer workflows in Buzz
+
+This is the zero-paid-evaluation proof path for issues #66, #74, and the #41
+Conference Memory differentiator. It does not replace the immutable #49 SBEK
+baseline. A workflow earns **channel demonstrated** only after the evidence
+listed here is captured from a real Buzz channel or DM.
+
+## Three least-privilege agents
+
+Import the three secret-free snapshots in Buzz Desktop:
+
+| Agent | Snapshot | Allowed read tools | Fixed subject |
+| --- | --- | --- | --- |
+| Operator | `tools/speakerops-operator.agent.json` | release, nudges, review progress, content, sync, executive, memory | none |
+| Speaker | `tools/speakerops-speaker.agent.json` | `speaker_next_actions` only | required |
+| Reviewer | `tools/speakerops-reviewer.agent.json` | `reviewer_next_assignment` only | required |
+
+Buzz snapshots deliberately exclude environment variables. After import, set
+these non-secret process bindings in each agent's Desktop configuration:
+
+```text
+SPEAKEROPS_BASE_URL=http://127.0.0.1:38001
+SPEAKEROPS_MCP_ALLOWED_EVENTS=speakerops-demo
+```
+
+Then set one profile per process:
+
+```text
+# Operator
+SPEAKEROPS_MCP_PRINCIPAL=buzz-demo-operator-reader
+SPEAKEROPS_MCP_CAPABILITIES=release_readiness,speaker_nudges,review_progress,content_readiness,sync_recovery,executive_readiness,conference_memory
+SPEAKEROPS_MCP_SUBJECT_EMAIL=
+
+# Speaker
+SPEAKEROPS_MCP_PRINCIPAL=buzz-demo-speaker-reader
+SPEAKEROPS_MCP_CAPABILITIES=speaker_next_actions
+SPEAKEROPS_MCP_SUBJECT_EMAIL=speaker@example.org
+
+# Reviewer
+SPEAKEROPS_MCP_PRINCIPAL=buzz-demo-reviewer-reader
+SPEAKEROPS_MCP_CAPABILITIES=reviewer_next_assignment
+SPEAKEROPS_MCP_SUBJECT_EMAIL=reviewer@example.org
+```
+
+Do not put model credentials, relay keys, passwords, or connector credentials
+in an agent snapshot, channel, screenshot, or checked-in file. OpenCode resolves
+these process values into `opencode.json`; the MCP bridge refuses missing,
+wildcard, cross-event, and out-of-capability calls.
+
+## Capture standard for every workflow
+
+For every row below, retain:
+
+1. the prompt and complete grounded answer in the Buzz thread;
+2. the authoritative records/counts, why they matter now, and next action;
+3. the source/trace section and generated timestamp;
+4. the permission-aware `go/` link opening in at most one redirect;
+5. a role-denial check where the row is self-scoped;
+6. proof that the read caused no database mutation.
+
+Do not mark a command-bearing flow complete until the same thread also shows
+preview, explicit authoritative confirmation, idempotent result, and correlated
+SpeakerOps receipt. The current nudge and sync tools intentionally stop at safe
+preview, so their read demonstrations can pass while their action/receipt loops
+remain open.
+
+## Mandatory eight
+
+| # | Agent / prompt | Required answer evidence | Required link/action evidence |
+| ---: | --- | --- | --- |
+| 1 | Operator: “What blocks release?” | Named schedule/content/task/decision/sync blockers and release verdict | Open each relevant resolution link; release action and thread receipt remain a separate write gate |
+| 2 | Operator: “Who needs a nudge today?” | Deadline-ranked named recipients/tasks; explicit preview-only statement | Open filtered overdue tasks; later prove reminder preview → confirm → send receipt |
+| 3 | Operator: “Where is review stalled?” | Round/pool progress, incomplete and overdue assignments, saved rubric state | Open organizer progress; exact reviewer links must recheck the destination user |
+| 4 | Operator: “Which latest decks are ready for AV?” | Latest-version approval, missing/pending/changes/stale state, and owner | Open content/evidence links and the existing bundle surface |
+| 5 | Operator: “Why is Accelevents out of sync?” | Failed item, sanitized failure class, latest attempt, selective retry preview | Open sync evidence; later prove confirmed retry preserves successes and posts receipt |
+| 6 | Speaker DM: “What do I owe?” | Only `speaker@example.org` tasks, profile, and sessions | Open self-scoped checklist/profile/submission; prove another speaker is absent/denied |
+| 7 | Reviewer DM: “What is next?” | Only `reviewer@example.org` open assignment, rubric, and saved state | Open exact assigned review; prove other reviewer, speaker identity, and organizer progress are absent/denied |
+| 8 | Operator: “Are we ready?” | Aggregate funnel, exceptions, risks, and public evidence only | Open public status; prove no people, private notes, payloads, or admin capability appear |
+
+## #41 hero differentiator (separate from the eight)
+
+Ask the Operator:
+
+> From our sourced conference history, who has verified return appearances and
+> what Agent/Evals programming signals should the chair consider? Cite the
+> records and tell me what the source does not provide.
+
+The answer must show the real corpus totals; matching source-linked talks;
+AIE-versus-peer topic counts; only explicitly verified cross-edition returning
+speakers; missing format/track metadata left as not supplied; exact Conference
+Memory and gated CRM links; and the statement that history is evidence, not an
+acceptance recommendation. The literal historical catalog contains documented
+source gaps, so never claim that every record has format and track metadata.
+
+## Honest completion boundary
+
+Passing the typed-read regressions proves deterministic database behavior; it
+does not prove Buzz channel delivery. Passing this human script proves the nine
+read conversations. Full #66 completion additionally needs at least one real
+preview → confirmation → command → receipt loop, outbox/thread correlation, and
+failure/replay evidence. #49 remains open until its 31-row human ledger and 22
+official manual checks are completed and reviewed.

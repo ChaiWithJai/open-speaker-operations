@@ -1,5 +1,5 @@
 import asyncio
-from datetime import timedelta
+from datetime import date, timedelta
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -8,6 +8,8 @@ from django_scopes import scope
 from mcp.types import CallToolRequestParams, RequestParams
 
 from pretalx_speakerops.buzz_reads import (
+    conference_memory,
+    conference_memory_message,
     content_readiness,
     content_readiness_message,
     release_readiness,
@@ -15,9 +17,26 @@ from pretalx_speakerops.buzz_reads import (
     render_content_readiness,
     render_release_readiness,
 )
-from pretalx_speakerops.models import OnboardingTask, SessionPublicationApproval, TaskEvidence
-from pretalx_speakerops.onboarding.services import record_evidence
+from pretalx_speakerops.conference_memory import SOURCE_NOT_PROVIDED
+from pretalx_speakerops.models import (
+    ConferenceEdition,
+    ConferenceSeries,
+    HistoricalSourceIdentity,
+    HistoricalSpeaker,
+    HistoricalSpeakerCredit,
+    HistoricalTalk,
+    OnboardingTask,
+    SessionPublicationApproval,
+    TaskEvidence,
+)
+from pretalx_speakerops.onboarding.services import ensure_acceptance_plan, record_evidence
 from tools import mcp_speakerops_server as bridge
+
+ALL_BUZZ_READS = (
+    "release_readiness,speaker_nudges,review_progress,content_readiness,"
+    "sync_recovery,speaker_next_actions,reviewer_next_assignment,"
+    "executive_readiness,conference_memory"
+)
 
 
 def _arrange_room_conflict(event, users):
@@ -47,6 +66,81 @@ _UPLOAD_FILES = (
 )
 
 
+def _scope_bridge(
+    monkeypatch,
+    *event_slugs,
+    base_url="https://example.test",
+    subject_email="",
+):
+    monkeypatch.setenv("SPEAKEROPS_MCP_PRINCIPAL", "test-read-principal")
+    monkeypatch.setenv("SPEAKEROPS_MCP_ALLOWED_EVENTS", ",".join(event_slugs))
+    monkeypatch.setenv(
+        "SPEAKEROPS_MCP_CAPABILITIES",
+        ALL_BUZZ_READS,
+    )
+    monkeypatch.setenv("SPEAKEROPS_BASE_URL", base_url)
+    if subject_email:
+        monkeypatch.setenv("SPEAKEROPS_MCP_SUBJECT_EMAIL", subject_email)
+    else:
+        monkeypatch.delenv("SPEAKEROPS_MCP_SUBJECT_EMAIL", raising=False)
+
+
+def _arrange_verified_conference_memory():
+    updated = timezone.now()
+    series = ConferenceSeries.objects.create(
+        slug="ai-engineer",
+        name="AI Engineer",
+        website="https://www.ai.engineer/",
+        source_policy={"known_gaps": ["Some source tracks are not published."]},
+    )
+    speaker = HistoricalSpeaker.objects.create(
+        canonical_key="returning-builder",
+        name="Returning Builder",
+        source_url="https://www.ai.engineer/speakers/returning-builder",
+        source_updated_at=updated,
+    )
+    for year in (2024, 2025):
+        edition = ConferenceEdition.objects.create(
+            series=series,
+            external_key=str(year),
+            name=f"AI Engineer {year}",
+            date_from=date(year, 6, 1),
+            date_to=date(year, 6, 3),
+            source_url=f"https://www.ai.engineer/worldsfair/{year}/schedule",
+            source_updated_at=updated,
+        )
+        identity = HistoricalSourceIdentity.objects.create(
+            edition=edition,
+            source_key=f"returning-builder-{year}",
+            speaker=speaker,
+            display_name="Returning Builder",
+            source_url=f"https://www.ai.engineer/worldsfair/{year}/speakers/returning-builder",
+            source_updated_at=updated,
+            resolution_status=HistoricalSourceIdentity.VERIFIED,
+        )
+        talk = HistoricalTalk.objects.create(
+            edition=edition,
+            external_key=f"agent-evals-{year}",
+            title=f"Agent Evals in {year}",
+            abstract="A sourced evaluation practice.",
+            session_format="Talk",
+            track="" if year == 2024 else "Evaluation",
+            topics=["Agents", "Evals"],
+            source_url=f"https://www.ai.engineer/worldsfair/{year}/schedule/agent-evals",
+            source_updated_at=updated,
+        )
+        talk.speakers.add(speaker)
+        HistoricalSpeakerCredit.objects.create(
+            talk=talk,
+            speaker=speaker,
+            source_identity=identity,
+            name_at_source="Returning Builder",
+            source_url=identity.source_url,
+            source_updated_at=updated,
+        )
+    return speaker
+
+
 def _make_session_content(
     event, users, submission, speaker, slides_action="approve", slides_note=""
 ):
@@ -63,6 +157,7 @@ def _make_session_content(
         event.save()
     submission.speakers.set([speaker])
     submission.accept(person=users["chair"], force=True)
+    ensure_acceptance_plan(submission)
     results = {}
     for slug, filename, data, content_type in _UPLOAD_FILES:
         task = OnboardingTask.objects.get(
@@ -113,6 +208,7 @@ def test_release_readiness_reports_conflicts_and_links(event, users):
 
     assert result["event"] == event.slug
     assert result["release_blocked"] is True
+    assert result["blocking_reasons"] == ["schedule_conflicts"]
     assert result["schedule"]["has_wip"] is True
     assert result["attention"] == {
         "overdue_tasks": 0,
@@ -163,6 +259,32 @@ def test_release_readiness_clean_event_not_blocked(event):
     assert result["event"] == event.slug
     assert result["release_blocked"] is False
     assert result["conflicts"] == []
+    assert result["blocking_reasons"] == []
+
+
+@pytest.mark.django_db(transaction=True)
+def test_release_readiness_blocks_unapproved_content_without_schedule_conflicts(event):
+    with scope(event=event):
+        start = timezone.now().replace(microsecond=0)
+        for offset, talk in enumerate(
+            event.wip_schedule.talks.filter(submission__isnull=False).order_by("pk")
+        ):
+            talk.start = start + timedelta(days=offset)
+            talk.end = talk.start + timedelta(minutes=30)
+            talk.save(update_fields=["start", "end", "updated"])
+        submission = event.submissions.first()
+        SessionPublicationApproval.objects.create(
+            event=event,
+            submission=submission,
+            status=SessionPublicationApproval.PENDING,
+        )
+
+    result = release_readiness(event.slug)
+
+    assert result["conflicts"] == []
+    assert result["attention"]["unapproved_content"] == 1
+    assert result["release_blocked"] is True
+    assert result["blocking_reasons"] == ["unapproved_content"]
 
 
 @pytest.mark.django_db
@@ -178,7 +300,7 @@ def test_release_readiness_message_formats_verdict_sources_and_trace(event, user
 
     assert message.startswith(f"# Release readiness — {event.slug}")
     assert "**Blocked**" in message
-    assert "release-blocking." in message
+    assert "schedule conflicts" in message
 
     assert "## Sources — canonical URL list" in message
     assert "pretalx_speakerops/canonical_links.py" in message
@@ -222,6 +344,7 @@ def test_render_release_readiness_requires_no_db():
         {
             "event": "demo",
             "release_blocked": True,
+            "blocking_reasons": ["unapproved_content"],
             "conflicts": [],
             "attention": {
                 "overdue_tasks": 0,
@@ -249,22 +372,44 @@ def test_build_server_registers_tools():
     assert server.get_request_handler("tools/call") is not None
 
 
-def test_list_tools_exposes_release_readiness_schema():
+def test_list_tools_exposes_release_readiness_schema(monkeypatch):
+    _scope_bridge(monkeypatch, "speakerops-demo")
     result = asyncio.run(bridge._handle_list_tools(None, RequestParams()))
-    assert len(result.tools) == 2
+    assert len(result.tools) == 9
+    assert {tool.name for tool in result.tools} == set(ALL_BUZZ_READS.split(","))
     tool = next(t for t in result.tools if t.name == "release_readiness")
     assert tool.input_schema["required"] == ["event_slug"]
     assert "event_slug" in tool.input_schema["properties"]
+    assert "base_url" not in tool.input_schema["properties"]
     content = next(t for t in result.tools if t.name == "content_readiness")
     assert content.input_schema["required"] == ["event_slug"]
     assert "event_slug" in content.input_schema["properties"]
+    memory = next(t for t in result.tools if t.name == "conference_memory")
+    assert memory.input_schema["required"] == ["event_slug"]
+    assert memory.input_schema["properties"]["query"]["maxLength"] == 160
+
+
+def test_list_tools_exposes_only_principal_capabilities(monkeypatch):
+    _scope_bridge(monkeypatch, "speakerops-demo")
+    monkeypatch.setenv(
+        "SPEAKEROPS_MCP_CAPABILITIES",
+        "release_readiness,conference_memory",
+    )
+
+    result = asyncio.run(bridge._handle_list_tools(None, RequestParams()))
+
+    assert [tool.name for tool in result.tools] == [
+        "release_readiness",
+        "conference_memory",
+    ]
 
 
 @pytest.mark.django_db(transaction=True)
-def test_call_tool_returns_release_readiness_message(event):
+def test_call_tool_returns_release_readiness_message(event, monkeypatch):
+    _scope_bridge(monkeypatch, event.slug)
     params = CallToolRequestParams(
         name="release_readiness",
-        arguments={"event_slug": event.slug, "base_url": "http://example.test"},
+        arguments={"event_slug": event.slug},
     )
     result = asyncio.run(bridge._handle_call_tool(None, params))
 
@@ -273,12 +418,13 @@ def test_call_tool_returns_release_readiness_message(event):
     assert text.startswith(f"# Release readiness — {event.slug}")
     assert "## Sources — canonical URL list" in text
     assert "## Trace of inference" in text
-    assert f"http://example.test/go/operations-dashboard/{event.slug}/" in text
+    assert f"https://example.test/go/operations-dashboard/{event.slug}/" in text
     assert "Generated " in text
 
 
 @pytest.mark.django_db(transaction=True)
-def test_call_tool_unknown_event_is_error():
+def test_call_tool_unknown_event_is_error(monkeypatch):
+    _scope_bridge(monkeypatch, "missing-event")
     params = CallToolRequestParams(
         name="release_readiness", arguments={"event_slug": "missing-event"}
     )
@@ -288,13 +434,115 @@ def test_call_tool_unknown_event_is_error():
     assert "missing-event" in result.content[0].text
 
 
+@pytest.mark.django_db(transaction=True)
+def test_call_tool_rejects_event_outside_principal_scope(event, monkeypatch):
+    _scope_bridge(monkeypatch, "different-event")
+    params = CallToolRequestParams(name="release_readiness", arguments={"event_slug": event.slug})
+
+    result = asyncio.run(bridge._handle_call_tool(None, params))
+
+    assert result.is_error is True
+    assert result.content[0].text == "event is not authorized for this read principal"
+
+
+@pytest.mark.parametrize(
+    "environ",
+    (
+        {},
+        {
+            "SPEAKEROPS_MCP_PRINCIPAL": "agent",
+            "SPEAKEROPS_MCP_ALLOWED_EVENTS": "*",
+            "SPEAKEROPS_MCP_CAPABILITIES": "release_readiness",
+            "SPEAKEROPS_BASE_URL": "https://loop.dharmicdata.org",
+        },
+        {
+            "SPEAKEROPS_MCP_PRINCIPAL": "agent",
+            "SPEAKEROPS_MCP_ALLOWED_EVENTS": "speakerops-demo",
+            "SPEAKEROPS_MCP_CAPABILITIES": "release_readiness",
+            "SPEAKEROPS_BASE_URL": "http://public.example",
+        },
+    ),
+)
+def test_read_policy_fails_closed(environ):
+    with pytest.raises(ValueError):
+        bridge.load_read_policy(environ)
+
+
+def test_read_policy_pins_principal_events_and_origin():
+    policy = bridge.load_read_policy(
+        {
+            "SPEAKEROPS_MCP_PRINCIPAL": "buzz-demo-reader",
+            "SPEAKEROPS_MCP_ALLOWED_EVENTS": "speakerops-demo,second-event",
+            "SPEAKEROPS_MCP_CAPABILITIES": "release_readiness,conference_memory",
+            "SPEAKEROPS_BASE_URL": "https://loop.dharmicdata.org/",
+            "SPEAKEROPS_MCP_SUBJECT_EMAIL": "Speaker@Example.ORG",
+        }
+    )
+
+    assert policy.principal == "buzz-demo-reader"
+    assert policy.allowed_events == {"speakerops-demo", "second-event"}
+    assert policy.capabilities == {"release_readiness", "conference_memory"}
+    assert policy.base_url == "https://loop.dharmicdata.org"
+    assert policy.subject_email == "speaker@example.org"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_call_tool_rejects_capability_outside_principal_scope(event, monkeypatch):
+    _scope_bridge(monkeypatch, event.slug)
+    monkeypatch.setenv("SPEAKEROPS_MCP_CAPABILITIES", "content_readiness")
+    params = CallToolRequestParams(name="release_readiness", arguments={"event_slug": event.slug})
+
+    result = asyncio.run(bridge._handle_call_tool(None, params))
+
+    assert result.is_error is True
+    assert result.content[0].text == "tool is not authorized for this read principal"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_self_scoped_tool_requires_and_injects_deployment_subject(event, monkeypatch):
+    _scope_bridge(monkeypatch, event.slug)
+    params = CallToolRequestParams(
+        name="speaker_next_actions",
+        arguments={"event_slug": event.slug},
+    )
+    denied = asyncio.run(bridge._handle_call_tool(None, params))
+    assert denied.is_error is True
+    assert denied.content[0].text == (
+        "self-scoped tool requires a deployment-bound subject identity"
+    )
+
+    captured = {}
+
+    def fake_read(event_slug, *, subject_email, base_url):
+        captured.update(
+            event_slug=event_slug,
+            subject_email=subject_email,
+            base_url=base_url,
+        )
+        return "subject-bound answer"
+
+    monkeypatch.setitem(bridge.READS, "speaker_next_actions", fake_read)
+    _scope_bridge(monkeypatch, event.slug, subject_email="Speaker@Example.ORG")
+    allowed = asyncio.run(bridge._handle_call_tool(None, params))
+
+    assert allowed.is_error is not True
+    assert allowed.content[0].text == "subject-bound answer"
+    assert captured == {
+        "event_slug": event.slug,
+        "subject_email": "speaker@example.org",
+        "base_url": "https://example.test",
+    }
+
+
 def test_call_tool_unknown_tool_raises():
     params = CallToolRequestParams(name="bogus_tool", arguments={})
     with pytest.raises(ValueError):
         asyncio.run(bridge._handle_call_tool(None, params))
 
 
-def test_call_tool_in_process_protocol_roundtrip():
+def test_call_tool_in_process_protocol_roundtrip(monkeypatch):
+    _scope_bridge(monkeypatch, "speakerops-demo")
+
     async def _roundtrip():
         import anyio
         from mcp.client.session import ClientSession
@@ -338,8 +586,8 @@ def test_call_tool_in_process_protocol_roundtrip():
             async with ClientSession(read_stream=client_read, write_stream=client_write) as session:
                 await session.initialize()
                 tools = await session.list_tools()
-                assert len(tools.tools) == 2
-                assert {t.name for t in tools.tools} == {"release_readiness", "content_readiness"}
+                assert len(tools.tools) == 9
+                assert {t.name for t in tools.tools} == set(ALL_BUZZ_READS.split(","))
                 from mcp.shared.exceptions import MCPError
 
                 with pytest.raises(MCPError) as exc_info:
@@ -419,6 +667,7 @@ def test_content_readiness_flags_missing_file_request_with_speaker_owner(event, 
         event.save()
         sub.speakers.set([users["speaker"]])
         sub.accept(person=users["chair"], force=True)
+        ensure_acceptance_plan(sub)
         OnboardingTask.objects.get(
             event=event, submission=sub, speaker=users["speaker"], definition__slug="slides"
         )
@@ -522,14 +771,15 @@ def test_render_content_readiness_clean_requires_no_db():
 
 
 @pytest.mark.django_db(transaction=True)
-def test_call_tool_content_readiness_returns_message(event, users):
+def test_call_tool_content_readiness_returns_message(event, users, monkeypatch):
+    _scope_bridge(monkeypatch, event.slug)
     with scope(event=event):
         sub = event.submissions.first()
         _session_changes_requested(event, users, sub, users["speaker"])
 
     params = CallToolRequestParams(
         name="content_readiness",
-        arguments={"event_slug": event.slug, "base_url": "http://example.test"},
+        arguments={"event_slug": event.slug},
     )
     result = asyncio.run(bridge._handle_call_tool(None, params))
 
@@ -538,11 +788,12 @@ def test_call_tool_content_readiness_returns_message(event, users):
     assert text.startswith(f"# Content readiness — {event.slug}")
     assert "## Sources — canonical URL list" in text
     assert "## Trace of inference" in text
-    assert f"http://example.test/go/content-console/{event.slug}/" in text
+    assert f"https://example.test/go/content-console/{event.slug}/" in text
 
 
 @pytest.mark.django_db(transaction=True)
-def test_call_tool_content_readiness_unknown_event_is_error():
+def test_call_tool_content_readiness_unknown_event_is_error(monkeypatch):
+    _scope_bridge(monkeypatch, "missing-event")
     params = CallToolRequestParams(
         name="content_readiness", arguments={"event_slug": "missing-event"}
     )
@@ -550,3 +801,80 @@ def test_call_tool_content_readiness_unknown_event_is_error():
 
     assert result.is_error is True
     assert "missing-event" in result.content[0].text
+
+
+@pytest.mark.django_db(transaction=True)
+def test_conference_memory_reports_verified_recurrence_sources_and_exact_links(event):
+    speaker = _arrange_verified_conference_memory()
+
+    result = conference_memory(event.slug, query="Agent", base_url="https://example.test")
+
+    assert result["matching_talks"] == 2
+    assert result["corpus"] == {
+        "series": 1,
+        "editions": 2,
+        "talks": 2,
+        "speaker_credits": 2,
+        "source_identities": 2,
+        "people": 1,
+    }
+    assert result["missing_metadata_is_not_inferred"] is True
+    assert result["aie"]["missing_track"] == 1
+    assert result["topic_signals"] == [
+        {"label": "Agents", "aie": 2, "peers": 0},
+        {"label": "Evals", "aie": 2, "peers": 0},
+    ]
+    assert len(result["evidence_sample"]) == 2
+    assert {row["title"] for row in result["evidence_sample"]} == {
+        "Agent Evals in 2024",
+        "Agent Evals in 2025",
+    }
+    assert all(
+        row["source_url"].startswith("https://www.ai.engineer/")
+        for row in result["evidence_sample"]
+    )
+    assert any(row["track"] == SOURCE_NOT_PROVIDED for row in result["evidence_sample"])
+    returning = result["returning_speakers"]
+    assert len(returning) == 1
+    assert returning[0]["speaker_pk"] == speaker.pk
+    assert returning[0]["edition_count"] == 2
+    assert len(returning[0]["verified_sources"]) == 2
+    assert returning[0]["link"] == (
+        f"https://example.test/go/conference-speaker/{event.slug}~{speaker.pk}/"
+    )
+    assert result["links"]["memory"] == (f"https://example.test/go/conference-memory/{event.slug}/")
+
+    message = conference_memory_message(event.slug, query="Agent", base_url="https://example.test")
+    assert "# Conference Memory" in message
+    assert "Verified returning AIE speakers" in message
+    assert "Returning Builder" in message
+    assert "## What the evidence says" in message
+    assert "Agent Evals in 2024" in message
+    assert "programming-memory signals, not acceptance recommendations" in message
+    assert "Missing metadata and unverified identity recurrence are never inferred" in message
+    assert "https://www.ai.engineer/worldsfair/2024/speakers/returning-builder" in message
+    assert "## Trace of inference" in message
+
+
+@pytest.mark.django_db(transaction=True)
+def test_call_tool_conference_memory_is_scoped_and_grounded(event, monkeypatch):
+    _arrange_verified_conference_memory()
+    _scope_bridge(monkeypatch, event.slug)
+    params = CallToolRequestParams(
+        name="conference_memory",
+        arguments={"event_slug": event.slug, "query": "Agent"},
+    )
+
+    result = asyncio.run(bridge._handle_call_tool(None, params))
+
+    assert result.is_error is not True
+    text = result.content[0].text
+    assert "2 sourced talks across 2 editions" in text
+    assert "Returning Builder" in text
+    assert f"https://example.test/go/conference-memory/{event.slug}/" in text
+
+
+@pytest.mark.django_db(transaction=True)
+def test_conference_memory_rejects_oversized_query(event):
+    with pytest.raises(ValueError, match="at most 160"):
+        conference_memory(event.slug, query="x" * 161)

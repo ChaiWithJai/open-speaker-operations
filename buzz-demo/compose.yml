@@ -1,22 +1,24 @@
 # Buzz demo relay (ADR 014 ephemeral demo mode).
 #
 # A separate Compose project from the protected `speakerops` stack. Uses the
-# pinned upstream deployment bundle with demo-specific overrides: local bind,
-# project name `buzz-demo`, open membership for one-command provisioning.
-# Teardown removes containers, volumes, and keys — see README.md.
+# pinned upstream deployment bundle with demo-specific overrides: loopback bind,
+# project name `buzz-demo`, and closed authentication and membership gates.
+# Teardown is operator-explicit — see README.md. It is never run by SpeakerOps.
 #
 # Host port defaults to 3100: 3000 is reserved for the wiki-demo dev server.
 name: buzz-demo
 
 services:
   relay:
-    image: ${BUZZ_IMAGE:-ghcr.io/block/buzz:main}
-    env_file:
-      - .env
+    image: ${BUZZ_IMAGE:?set BUZZ_IMAGE to the audited immutable digest from .env.example}
     environment:
       BUZZ_BIND_ADDR: 0.0.0.0:3000
+      BUZZ_DOMAIN: ${BUZZ_DOMAIN:-localhost}
       BUZZ_HEALTH_PORT: "8080"
       BUZZ_METRICS_PORT: "9102"
+      RELAY_URL: ${RELAY_URL:-ws://127.0.0.1:3100}
+      BUZZ_MEDIA_BASE_URL: ${BUZZ_MEDIA_BASE_URL:-http://127.0.0.1:3100/media}
+      BUZZ_MEDIA_SERVER_DOMAIN: ${BUZZ_MEDIA_SERVER_DOMAIN:-localhost}
       DATABASE_URL: postgres://${POSTGRES_USER:-buzz}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-buzz}
       REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379
       BUZZ_S3_ENDPOINT: http://minio:9000
@@ -25,14 +27,19 @@ services:
       BUZZ_S3_SECRET_KEY: ${BUZZ_S3_SECRET_KEY:?set BUZZ_S3_SECRET_KEY}
       BUZZ_S3_BUCKET: ${BUZZ_S3_BUCKET:-buzz-media}
       BUZZ_GIT_REPO_PATH: /data/git
+      BUZZ_RELAY_PRIVATE_KEY: ${BUZZ_RELAY_PRIVATE_KEY:?set BUZZ_RELAY_PRIVATE_KEY}
+      BUZZ_GIT_HOOK_HMAC_SECRET: ${BUZZ_GIT_HOOK_HMAC_SECRET:?set BUZZ_GIT_HOOK_HMAC_SECRET}
       BUZZ_AUTO_MIGRATE: ${BUZZ_AUTO_MIGRATE:-false}
       BUZZ_GIT_CONFORMANCE_PROBE: ${BUZZ_GIT_CONFORMANCE_PROBE:-true}
-      BUZZ_REQUIRE_AUTH_TOKEN: ${BUZZ_REQUIRE_AUTH_TOKEN:-false}
-      BUZZ_REQUIRE_RELAY_MEMBERSHIP: ${BUZZ_REQUIRE_RELAY_MEMBERSHIP:-false}
+      # The bounded demo cannot opt out through a permissive .env override.
+      BUZZ_REQUIRE_AUTH_TOKEN: "true"
+      BUZZ_REQUIRE_RELAY_MEMBERSHIP: "true"
+      BUZZ_ALLOW_NIP_OA_AUTH: ${BUZZ_ALLOW_NIP_OA_AUTH:-true}
       BUZZ_CORS_ORIGINS: ${BUZZ_CORS_ORIGINS:-http://127.0.0.1:3100}
-      RELAY_OWNER_PUBKEY: ${RELAY_OWNER_PUBKEY:-}
+      RELAY_OWNER_PUBKEY: ${RELAY_OWNER_PUBKEY:?set RELAY_OWNER_PUBKEY}
+      RUST_LOG: ${RUST_LOG:-buzz_relay=info,buzz_db=info,buzz_auth=info,buzz_pubsub=info,tower_http=info}
     ports:
-      - "${BUZZ_HTTP_PORT:-3100}:3000"
+      - "127.0.0.1:${BUZZ_HTTP_PORT:-3100}:3000"
     volumes:
       - buzz-git-data:/data/git
     depends_on:
@@ -55,6 +62,8 @@ services:
       retries: 12
       start_period: 30s
     restart: unless-stopped
+    cpus: "1.00"
+    mem_limit: 1g
     networks:
       - buzz-demo-net
 
@@ -74,6 +83,8 @@ services:
       retries: 12
       start_period: 10s
     restart: unless-stopped
+    cpus: "0.75"
+    mem_limit: 768m
     networks:
       - buzz-demo-net
 
@@ -91,6 +102,8 @@ services:
       retries: 12
       start_period: 5s
     restart: unless-stopped
+    cpus: "0.25"
+    mem_limit: 256m
     networks:
       - buzz-demo-net
 
@@ -109,6 +122,8 @@ services:
       retries: 12
       start_period: 10s
     restart: unless-stopped
+    cpus: "0.50"
+    mem_limit: 512m
     networks:
       - buzz-demo-net
 
@@ -128,6 +143,8 @@ services:
         mc anonymous set none "local/$${BUZZ_S3_BUCKET}"
       '
     restart: "no"
+    cpus: "0.25"
+    mem_limit: 256m
     networks:
       - buzz-demo-net
 

@@ -11,6 +11,8 @@ canonical URL source list, trace of inference) for the agent to relay.
   (demo-map row 5).
 - ``content_readiness`` answers "which latest decks are AV-ready, and who
   owns what's not?" (demo-map row 6).
+- ``conference_memory`` answers the issue #41 differentiation question with
+  sourced corpus coverage and verified returning-speaker evidence.
 
 Further workflow questions add functions here and expose them through
 ``tools/mcp_speakerops_server.py``.
@@ -23,7 +25,14 @@ from pretalx.event.models import Event
 from pretalx.submission.models import Submission, SubmissionStates
 
 from .canonical_links import RESOURCES
+from .conference_memory import SOURCE_NOT_PROVIDED, memory_decision_support
 from .models import (
+    ConferenceEdition,
+    ConferenceSeries,
+    HistoricalSourceIdentity,
+    HistoricalSpeaker,
+    HistoricalSpeakerCredit,
+    HistoricalTalk,
     OnboardingTask,
     SessionPublicationApproval,
     SyncItem,
@@ -81,17 +90,26 @@ def release_readiness(event_slug, base_url=DEFAULT_BASE_URL):
         ).count()
         sync_errors = SyncItem.objects.filter(event=event, status=SyncItem.FAILED).count()
 
+        attention = {
+            "overdue_tasks": overdue,
+            "undecided_proposals": undecided,
+            "unapproved_content": pending_content,
+            "sync_errors": sync_errors,
+        }
+        blocking_reasons = []
+        if schedule is None:
+            blocking_reasons.append("missing_schedule")
+        if blocking:
+            blocking_reasons.append("schedule_conflicts")
+        blocking_reasons.extend(name for name, count in attention.items() if count)
+
         base = base_url.rstrip("/")
         return {
             "event": event.slug,
-            "release_blocked": bool(blocking),
+            "release_blocked": bool(blocking_reasons),
+            "blocking_reasons": blocking_reasons,
             "conflicts": [_conflict_row(row) for row in conflicts],
-            "attention": {
-                "overdue_tasks": overdue,
-                "undecided_proposals": undecided,
-                "unapproved_content": pending_content,
-                "sync_errors": sync_errors,
-            },
+            "attention": attention,
             "schedule": {
                 "has_wip": schedule is not None,
                 "published_version": (
@@ -135,21 +153,30 @@ def render_release_readiness(result):
     blocking = [row for row in conflicts if row["blocking"]]
     attention = result["attention"]
     schedule = result["schedule"]
+    blocking_reasons = result.get("blocking_reasons", [])
     base = result["links"]["operations"].rsplit("/go/", 1)[0]
 
     lines = [f"# Release readiness — {result['event']}", ""]
     if result["release_blocked"]:
-        lines.append(
-            f"**Blocked** — {len(blocking)} of {len(conflicts)} schedule "
-            "warnings are release-blocking."
-        )
+        labels = ", ".join(reason.replace("_", " ") for reason in blocking_reasons)
+        lines.append(f"**Blocked** — {labels or 'a release gate is unresolved'}.")
     else:
         lines.append("**Release-ready** — no release-blocking schedule warnings.")
     lines.append("")
 
-    if conflicts:
+    if conflicts or blocking_reasons:
         lines.append("## What blocks release")
         lines.append("")
+        if "missing_schedule" in blocking_reasons:
+            lines.append("- No work-in-progress schedule exists.")
+        for key, label in (
+            ("overdue_tasks", "overdue onboarding tasks"),
+            ("undecided_proposals", "undecided proposals"),
+            ("unapproved_content", "unapproved content records"),
+            ("sync_errors", "failed synchronization records"),
+        ):
+            if attention[key]:
+                lines.append(f"- {attention[key]} {label}.")
         for row in conflicts:
             mark = "release-blocking" if row["blocking"] else "non-blocking warning"
             talk = row["talk"]
@@ -218,9 +245,9 @@ def render_release_readiness(result):
         ),
         (
             f"Verdict: release_blocked = {str(result['release_blocked']).lower()} "
-            "because release-blocking schedule warnings exist."
+            f"because these gates are unresolved: {', '.join(blocking_reasons)}."
             if result["release_blocked"]
-            else "Verdict: release_blocked = false (no blocking warnings)."
+            else "Verdict: release_blocked = false (all release gates are clear)."
         ),
     ]
     for index, step in enumerate(trace, 1):
@@ -337,7 +364,9 @@ def content_readiness(event_slug, base_url=DEFAULT_BASE_URL):
                 if approval is not None and session["publication"] is None:
                     session["publication"] = {
                         "status": approval.status,
-                        "owner": _display_name(approval.reviewed_by),
+                        "owner": (
+                            _display_name(approval.reviewed_by) if approval.reviewed_by_id else ""
+                        ),
                         "note": approval.note,
                     }
             else:
@@ -584,3 +613,210 @@ def render_content_readiness(result):
 def content_readiness_message(event_slug, base_url=DEFAULT_BASE_URL):
     """Read-tool message variant for content readiness (row 6)."""
     return render_content_readiness(content_readiness(event_slug, base_url=base_url))
+
+
+def conference_memory(event_slug, query="", base_url=DEFAULT_BASE_URL):
+    """Return sourced conference-memory evidence without inventing identity links."""
+
+    event = Event.objects.filter(slug=event_slug).select_related("organiser").first()
+    if event is None:
+        raise KeyError(f"unknown event: {event_slug}")
+    query = " ".join(query.strip().split())
+    if len(query) > 160:
+        raise ValueError("conference memory query must be at most 160 characters")
+
+    talks = HistoricalTalk.objects.select_related("edition__series").prefetch_related(
+        "credits__speaker"
+    )
+    if query:
+        talks = talks.filter(
+            Q(title__icontains=query)
+            | Q(abstract__icontains=query)
+            | Q(track__icontains=query)
+            | Q(session_format__icontains=query)
+            | Q(level__icontains=query)
+            | Q(topics__icontains=query)
+            | Q(speakers__name__icontains=query)
+            | Q(edition__name__icontains=query)
+        ).distinct()
+    insights = memory_decision_support(talks)
+    base = base_url.rstrip("/")
+
+    matching_evidence = []
+    for talk in talks.order_by(
+        "-edition__date_from", "edition__series__name", "edition__name", "title", "pk"
+    )[:8]:
+        matching_evidence.append(
+            {
+                "talk_pk": talk.pk,
+                "title": talk.title,
+                "series": talk.edition.series.name,
+                "edition": talk.edition.name,
+                "edition_date": (
+                    talk.edition.date_from.isoformat() if talk.edition.date_from else None
+                ),
+                "session_format": talk.session_format or SOURCE_NOT_PROVIDED,
+                "track": talk.track or SOURCE_NOT_PROVIDED,
+                "topics": list(talk.topics or []),
+                "speakers": [credit.name_at_source for credit in talk.credits.all()],
+                "source_url": talk.source_url,
+                "source_updated_at": (
+                    talk.source_updated_at.isoformat() if talk.source_updated_at else None
+                ),
+            }
+        )
+
+    returning = []
+    for speaker in insights["returning_speakers"]:
+        verified_sources = list(
+            HistoricalSourceIdentity.objects.filter(
+                speaker=speaker,
+                active=True,
+                resolution_status=HistoricalSourceIdentity.VERIFIED,
+                edition__series__slug="ai-engineer",
+            )
+            .select_related("edition__series")
+            .order_by("edition__date_from", "edition__name")
+        )
+        returning.append(
+            {
+                "speaker_pk": speaker.pk,
+                "name": speaker.name,
+                "appearance_count": speaker.appearance_count,
+                "edition_count": speaker.edition_count,
+                "latest_appearance": (
+                    speaker.latest_appearance.isoformat() if speaker.latest_appearance else None
+                ),
+                "link": f"{base}{_go('conference-speaker', f'{event.slug}~{speaker.pk}')}",
+                "verified_sources": [
+                    {
+                        "series": identity.edition.series.name,
+                        "edition": identity.edition.name,
+                        "display_name": identity.display_name,
+                        "source_url": identity.source_url,
+                    }
+                    for identity in verified_sources
+                ],
+            }
+        )
+
+    identity_counts = {
+        row["resolution_status"]: row["count"]
+        for row in HistoricalSourceIdentity.objects.filter(active=True)
+        .values("resolution_status")
+        .annotate(count=Count("pk"))
+    }
+    return {
+        "event": event.slug,
+        "query": query,
+        "matching_talks": talks.count(),
+        "corpus": {
+            "series": ConferenceSeries.objects.count(),
+            "editions": ConferenceEdition.objects.count(),
+            "talks": HistoricalTalk.objects.count(),
+            "speaker_credits": HistoricalSpeakerCredit.objects.count(),
+            "source_identities": HistoricalSourceIdentity.objects.filter(active=True).count(),
+            "people": HistoricalSpeaker.objects.count(),
+        },
+        "aie": {
+            "talks": insights["aie"]["talks"],
+            "editions": insights["aie"]["editions"],
+            "missing_format": insights["aie_missing_format"],
+            "missing_track": insights["aie_missing_track"],
+        },
+        "evidence_sample": matching_evidence,
+        "topic_signals": insights["topics"],
+        "format_signals": insights["formats"],
+        "track_signals": insights["tracks"],
+        "returning_speakers": returning,
+        "identity_evidence": identity_counts,
+        "missing_metadata_is_not_inferred": True,
+        "links": {
+            "memory": f"{base}{_go('conference-memory', event.slug)}",
+            "crm": f"{base}{_go('crm-directory', event.organiser.slug)}",
+        },
+        "generated_at": timezone.now().isoformat(),
+    }
+
+
+def render_conference_memory(result):
+    corpus = result["corpus"]
+    aie = result["aie"]
+    lines = [f"# Conference Memory — {result['event']}", ""]
+    lines.append(
+        f"**Evidence corpus:** {corpus['talks']} sourced talks across "
+        f"{corpus['editions']} editions, {corpus['speaker_credits']} speaker credits, "
+        f"{corpus['source_identities']} active source identities, and {corpus['people']} people."
+    )
+    if result["query"]:
+        lines.append(f"Query `{result['query']}` matched {result['matching_talks']} sourced talks.")
+    lines.extend(("", "## What the evidence says", ""))
+    if result["topic_signals"]:
+        lines.append("Topic frequency in the matching evidence (AIE / peer conferences):")
+        for topic in result["topic_signals"]:
+            lines.append(f"- **{topic['label']}** — {topic['aie']} / {topic['peers']}")
+    else:
+        lines.append("No source-declared topic labels matched; no topic was inferred.")
+    if result["evidence_sample"]:
+        lines.extend(("", "Recent matching source records:", ""))
+        for talk in result["evidence_sample"]:
+            speakers = ", ".join(talk["speakers"]) or "speaker not supplied"
+            labels = ", ".join(talk["topics"]) or "topics not supplied"
+            lines.append(
+                f"- [{talk['title']}]({talk['source_url']}) — {talk['series']} / "
+                f"{talk['edition']}; {speakers}; format `{talk['session_format']}`; "
+                f"track `{talk['track']}`; topics {labels}."
+            )
+    lines.append(
+        "These are programming-memory signals, not acceptance recommendations; "
+        "the chair retains judgment."
+    )
+    lines.extend(("", "## Verified returning AIE speakers", ""))
+    if not result["returning_speakers"]:
+        lines.append(
+            "No speaker has verified source identities across at least two matching AIE editions."
+        )
+    for speaker in result["returning_speakers"]:
+        lines.append(
+            f"- [{speaker['name']}]({speaker['link']}) — {speaker['appearance_count']} talks "
+            f"across {speaker['edition_count']} verified editions."
+        )
+        for source in speaker["verified_sources"]:
+            lines.append(
+                f"  - [{source['series']} / {source['edition']}]({source['source_url']}) "
+                f"as {source['display_name']}"
+            )
+    lines.extend(
+        (
+            "",
+            "## Provenance limits",
+            "",
+            f"- AIE scope: {aie['talks']} talks across {aie['editions']} editions.",
+            f"- Source omitted format on {aie['missing_format']} AIE talks and track on "
+            f"{aie['missing_track']}; those values remain `{SOURCE_NOT_PROVIDED}` or blank.",
+            "- Missing metadata and unverified identity recurrence are never inferred.",
+            "",
+            "## Continue in the system of record",
+            "",
+            f"- [Conference Memory evidence]({result['links']['memory']})",
+            f"- [Source-linked CRM]({result['links']['crm']})",
+            "",
+            "## Trace of inference",
+            "",
+            f"1. Resolved event `{result['event']}` under the bridge's allowed event scope.",
+            f"2. Queried {result['matching_talks']} matching sourced talk records and returned "
+            f"a bounded sample of {len(result['evidence_sample'])} source-linked records.",
+            "3. Counted recurrence only where active source identities are explicitly verified "
+            "across at least two AIE editions.",
+            "4. Preserved source-declared metadata gaps without filling them.",
+            "5. Built permission-aware Conference Memory and CRM links from the "
+            "canonical registry.",
+            "",
+            f"Generated {result['generated_at']} (ISO-8601).",
+        )
+    )
+    return "\n".join(lines)
+
+
+def conference_memory_message(event_slug, query="", base_url=DEFAULT_BASE_URL):
+    return render_conference_memory(conference_memory(event_slug, query=query, base_url=base_url))

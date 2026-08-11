@@ -62,6 +62,23 @@ def test_bare_hostnames_are_private_only_when_explicitly_allow_listed():
     assert ProviderProfile.from_env(allow_listed).is_private_endpoint
 
 
+@pytest.mark.parametrize(
+    "hostname",
+    ["model.internal", "model.local", "model.localdomain"],
+)
+def test_private_looking_dns_suffixes_require_an_explicit_allow_list(hostname):
+    private_looking = dict(
+        LOCAL_ENV,
+        OPENAI_COMPAT_BASE_URL=f"http://{hostname}:11434/v1",
+    )
+    with pytest.raises(ProviderConfigError) as excinfo:
+        ProviderProfile.from_env(private_looking)
+    assert "BUZZ_AGENT_PRIVATE_HOSTS" in str(excinfo.value)
+
+    allow_listed = dict(private_looking, BUZZ_AGENT_PRIVATE_HOSTS=hostname)
+    assert ProviderProfile.from_env(allow_listed).is_private_endpoint
+
+
 def test_provider_client_contract_never_follows_redirects():
     assert ProviderProfile.from_env(TOGETHER_ENV).follow_redirects is False
     assert ProviderProfile.from_env(LOCAL_ENV).follow_redirects is False

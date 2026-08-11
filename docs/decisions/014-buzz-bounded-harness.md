@@ -17,9 +17,12 @@ The pinned upstream revision establishes Buzz's operational footprint. Its
 production Compose bundle runs five services (relay on
 `ghcr.io/block/buzz`, Postgres 17, Redis 7, MinIO plus an init job) with four
 named volumes (Postgres, Redis, MinIO, git data) and no default resource
-limits; the relay image floats on `main` unless explicitly pinned. Five state
-classes must be backed up: relay private key, owner key, Postgres, object
-storage, and the git volume. Security is Nostr-based: NIP-42 for WebSocket,
+limits; the upstream relay image floats on `main` unless explicitly pinned.
+The bounded harness instead pins the multi-architecture image built from the
+audited source revision by OCI digest
+`sha256:ff848b46692ca254d0b275deaa24a8e32e4e510ab28787027178453b729f7ebd`.
+Five state classes must be backed up: relay private key, owner key, Postgres,
+object storage, and the git volume. Security is Nostr-based: NIP-42 for WebSocket,
 NIP-98 for REST; channel membership is the only access control; the audit
 chain is tamper-evident, not tamper-resistant; TLS is delegated to a reverse
 proxy. Buzz is pre-1.0 and only `main` receives security fixes. Workflow
@@ -88,6 +91,16 @@ endpoint substitutable; the shared Droplet has headroom for a
 resource-limited one-week demo; upstream approval-execution gaps will not
 block read-only briefs.
 
+The executable demo contract is `buzz-demo/compose.yml` plus
+`buzz-demo/README.md`. It hard-enables the relay auth-token and membership
+gates, requires a non-empty owner pubkey, publishes HTTP on loopback only,
+and caps every service's CPU and memory. Operators must use the explicit
+`buzz-demo` project name, check for at least 10 GiB free and less than 80%
+disk utilization before and during the run, and use the scoped teardown
+command documented there. The command removes only this project's containers
+and four labeled volumes; key revocation and demo-only DNS removal remain
+explicit operator steps. No global Docker prune is part of this contract.
+
 ## Upgrade and security impact
 
 Re-audit this record before moving off the pinned Buzz revision: re-read the
@@ -114,3 +127,7 @@ import the adapter each require a new decision record.
 `tests/test_buzz_resource_registry.py::test_registry_hygiene_rows_covered_commands_excluded_nothing_implemented`,
 `tests/test_buzz_resource_registry.py::test_organiser_surfaces_open_for_chair_and_404_for_speaker`, and
 `tests/test_buzz_resource_registry.py::test_command_endpoints_refuse_get_so_links_can_never_mutate`.
+The deployment boundary itself is covered by
+`tests/test_buzz_compose_contract.py`, including the immutable image,
+loopback-only publication, fail-closed gates, per-service limits, isolated
+project resources, disk threshold, and scoped teardown command.
