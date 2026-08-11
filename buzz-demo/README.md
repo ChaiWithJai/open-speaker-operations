@@ -35,12 +35,46 @@ project is stopped.
    ```sh
    opencode --version
    opencode acp --help
+   opencode models
+   opencode debug config
    uv --version
    ```
 
+   For the zero-paid rehearsal on the current demo machine, `opencode debug
+   config` must resolve the local `llama-server/qwen3.5-2b` model at
+   `http://127.0.0.1:8080/v1`. Do not add or use an Anthropic credential for
+   this rehearsal. A pickup machine may use another explicitly approved local
+   tool-capable model, but must prove it can call `speakerops-reads` before the
+   Buzz channel run.
+
    Start the local deterministic SpeakerOps stack separately and confirm its
    configured origin is reachable before asking the agent to call a typed
-   read. Buzz starts OpenCode in `~/.buzz`, so every imported agent must set
+   read. The event seed deliberately does not import the much larger Conference
+   Memory catalog. Load and verify that contracted catalog before the #41 hero
+   conversation; a zero-row memory response is a failed preflight, not a valid
+   demo result:
+
+   ```sh
+   docker compose --project-name speakerops-hci exec -T web \
+     python -m pretalx speakerops_history_coverage \
+     /app/pretalx_speakerops/data/conferences \
+     --contract /app/pretalx_speakerops/data/conference_history_contract.json \
+     --strict
+   docker compose --project-name speakerops-hci exec -T web \
+     python -m pretalx speakerops_import_history \
+     /app/pretalx_speakerops/data/conferences \
+     --contract /app/pretalx_speakerops/data/conference_history_contract.json \
+     --prune --confirm-prune --verify \
+     --report /tmp/speakerops-history-verification.json
+   docker compose --project-name speakerops-hci exec -T web \
+     test -s /tmp/speakerops-history-verification.json
+   ```
+
+   The strict contract must report 13 series, 204 editions, 19,466 talks,
+   21,419 credits, 21,355 source identities, and 14,068 provisional people,
+   while preserving 1,067 missing formats and 6,077 missing tracks as unknown.
+
+   Buzz starts OpenCode in `~/.buzz`, so every imported agent must set
    `OPENCODE_CONFIG` to the absolute checked-in `opencode.json` path,
    `SPEAKEROPS_REPO_ROOT` to the absolute checkout, and
    `SPEAKEROPS_COMPOSE_PROJECT` to the explicitly targeted project. The
@@ -59,6 +93,16 @@ project is stopped.
    python3 tools/run_speakerops_mcp_bridge.py --check
    opencode mcp list
    ```
+
+   Log into SpeakerOps once in three separate browser profiles before taking a
+   database snapshot: `chair@example.org`, `speaker@example.org`, and
+   `reviewer@example.org`, all with the deterministic local demo password.
+   Confirm the chair can open an organizer `go/` destination, the speaker can
+   open only their checklist/profile destinations, and the reviewer can open
+   only their assigned-review destination. A speaker or reviewer request for an
+   organizer destination, and a reviewer request for the native speaker list,
+   must return a non-disclosing 403/404. Keep cookies and credentials out of
+   screenshots and channel messages.
 
 ## Start and observe
 

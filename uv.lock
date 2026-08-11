@@ -817,8 +817,8 @@ name = "httpcore2"
 version = "2.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "h11" },
-    { name = "truststore" },
+    { name = "h11", marker = "python_full_version < '3.12' or python_full_version >= '3.14' or sys_platform != 'emscripten'" },
+    { name = "truststore", marker = "python_full_version < '3.12' or python_full_version >= '3.14' or sys_platform != 'emscripten'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a9/83/a896fc59940fc5a6e2aff3a4be1d92fa890112936803b331cae75a993c34/httpcore2-2.10.0.tar.gz", hash = "sha256:13c0cc3d1919d4f28457f60cd2c2abe04113a8af184ccf1142811beba936f9dc", size = 67427, upload-time = "2026-08-09T09:11:32.123Z" }
 wheels = [
@@ -1123,6 +1123,7 @@ dependencies = [
     { name = "faker" },
     { name = "freezegun" },
     { name = "gunicorn" },
+    { name = "mcp" },
     { name = "pretalx" },
     { name = "psycopg", extra = ["binary"] },
     { name = "redis" },
@@ -1139,11 +1140,6 @@ dev = [
     { name = "ruff" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "mcp" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "bleach", marker = "extra == 'dev'" },
@@ -1153,6 +1149,7 @@ requires-dist = [
     { name = "faker" },
     { name = "freezegun" },
     { name = "gunicorn" },
+    { name = "mcp", specifier = ">=2.0.0" },
     { name = "pretalx", specifier = "==2025.2.2" },
     { name = "psycopg", extras = ["binary"] },
     { name = "pytest", marker = "extra == 'dev'" },
@@ -1162,9 +1159,6 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'" },
 ]
 provides-extras = ["dev"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "mcp", specifier = ">=2.0.0" }]
 
 [[package]]
 name = "opentelemetry-api"
@@ -2049,8 +2043,8 @@ name = "uvicorn"
 version = "0.52.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click" },
-    { name = "h11" },
+    { name = "click", marker = "python_full_version < '3.12' or python_full_version >= '3.14' or sys_platform != 'emscripten'" },
+    { name = "h11", marker = "python_full_version < '3.12' or python_full_version >= '3.14' or sys_platform != 'emscripten'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/03/18/ccce41535dee1be77735592bd19965f3972c82e07ee703d324709496b716/uvicorn-0.52.1.tar.gz", hash = "sha256:112ec661814189acbccd3f7b86460147cc065fc92c0821afa78918780e4354dd", size = 100571, upload-time = "2026-08-01T18:19:30.732Z" }
 wheels = [

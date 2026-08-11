@@ -7,6 +7,17 @@ from tools.run_speakerops_mcp_bridge import POLICY_ENV, bridge_command, check_ru
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_runtime_image_contains_the_bridge_path_required_by_the_launcher():
+    dockerfile = (ROOT / "Dockerfile").read_text()
+    dockerignore = (ROOT / ".dockerignore").read_text().splitlines()
+    runtime_dependencies = (
+        (ROOT / "pyproject.toml").read_text().split("[project.optional-dependencies]", 1)[0]
+    )
+    assert "COPY tools/mcp_speakerops_server.py /app/tools/mcp_speakerops_server.py" in dockerfile
+    assert "!tools/mcp_speakerops_server.py" in dockerignore
+    assert '"mcp>=2.0.0"' in runtime_dependencies
+
+
 def _environment(**overrides):
     values = {
         "SPEAKEROPS_REPO_ROOT": str(ROOT),

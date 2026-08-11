@@ -39,6 +39,7 @@ BUYER_WORKFLOWS = (
             "agenda-release",
             "content-console",
             "program-decisions",
+            "operations-dashboard",
         ),
         read_status=IMPLEMENTED,
     ),
@@ -56,7 +57,7 @@ BUYER_WORKFLOWS = (
         persona="reviewer-lead",
         question="Where is review stalled?",
         read_tool="review_progress",
-        link_resources=("review-queue", "round-review-assignment"),
+        link_resources=("abstract-console", "review-queue", "round-review-assignment"),
         read_status=IMPLEMENTED,
     ),
     BuyerWorkflow(
@@ -81,7 +82,11 @@ BUYER_WORKFLOWS = (
         persona="speaker",
         question="What do I owe?",
         read_tool="speaker_next_actions",
-        link_resources=("speaker-checklist", "speaker-profile"),
+        link_resources=(
+            "speaker-checklist",
+            "speaker-profile",
+            "own-submission-presenters",
+        ),
         read_status=IMPLEMENTED,
     ),
     BuyerWorkflow(
@@ -89,7 +94,7 @@ BUYER_WORKFLOWS = (
         persona="reviewer",
         question="What is next?",
         read_tool="reviewer_next_assignment",
-        link_resources=("review-assignment", "review-queue"),
+        link_resources=("review-queue", "round-review-assignment"),
         read_status=IMPLEMENTED,
     ),
     BuyerWorkflow(

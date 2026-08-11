@@ -6,8 +6,10 @@ The Buzz agent runtime is ``opencode acp``; this server is registered in
 read tools (never direct database access). See
 ``docs/product-standard-buzz-workflows.md``.
 
-Run (from the repo root):
-    .venv/bin/python tools/mcp_speakerops_server.py
+Run through ``tools/run_speakerops_mcp_bridge.py``. Direct execution is
+refused unless the caller explicitly supplies ``PRETALX_CONFIG_FILE`` or
+``DJANGO_SETTINGS_MODULE``; silently falling back to a checkout database would
+produce a confidently wrong operational answer.
 
 Environment:
     PRETALX_CONFIG_FILE             path to the pretalx config
@@ -21,6 +23,7 @@ Environment:
 import os
 import re
 import sys
+from copy import deepcopy
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
@@ -30,8 +33,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-os.environ.setdefault("PRETALX_CONFIG_FILE", str(REPO_ROOT / "docker" / "pretalx-local.cfg"))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pretalx.common.settings.test_settings")
+if not (
+    os.environ.get("PRETALX_CONFIG_FILE", "").strip()
+    or os.environ.get("DJANGO_SETTINGS_MODULE", "").strip()
+):
+    raise SystemExit(
+        "SpeakerOps MCP refuses an implicit database: set PRETALX_CONFIG_FILE or "
+        "DJANGO_SETTINGS_MODULE, or use tools/run_speakerops_mcp_bridge.py"
+    )
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pretalx.settings")
 
 import django  # noqa: E402
 
@@ -149,7 +159,13 @@ def load_read_policy(environ=None) -> ReadPolicy:
 READ_SCHEMA = {
     "type": "object",
     "properties": {
-        "event_slug": {"type": "string", "description": "Event slug, e.g. demo."},
+        "event_slug": {
+            "type": "string",
+            "description": (
+                "Exact event slug named by the operator. Preserve it verbatim; "
+                "never shorten or infer it."
+            ),
+        },
     },
     "required": ["event_slug"],
     "additionalProperties": False,
@@ -284,7 +300,14 @@ SELF_SCOPED_READS = {"speaker_next_actions", "reviewer_next_assignment"}
 
 async def _handle_list_tools(ctx, params: RequestParams) -> ListToolsResult:
     policy = load_read_policy()
-    return ListToolsResult(tools=[tool for tool in TOOLS if tool.name in policy.capabilities])
+    tools = []
+    for tool in TOOLS:
+        if tool.name not in policy.capabilities:
+            continue
+        schema = deepcopy(tool.input_schema)
+        schema["properties"]["event_slug"]["enum"] = sorted(policy.allowed_events)
+        tools.append(tool.model_copy(update={"input_schema": schema}))
+    return ListToolsResult(tools=tools)
 
 
 async def _handle_call_tool(ctx, params: CallToolRequestParams) -> CallToolResult:

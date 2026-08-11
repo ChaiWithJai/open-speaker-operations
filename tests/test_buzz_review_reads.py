@@ -8,6 +8,7 @@ from django_scopes import scope
 from pretalx.person.models import User
 from pretalx.submission.models import SubmissionStates
 
+from pretalx_speakerops.integrations.buzz.buyer_workflows import BUYER_WORKFLOWS
 from pretalx_speakerops.integrations.buzz.review_reads import (
     review_progress,
     review_progress_message,
@@ -213,6 +214,8 @@ def test_review_progress_reports_round_pool_saved_state_overdue_and_order(event,
     assert result["rollup"]["incomplete"] == 3
     assert "abstract-console" in {row["resource"] for row in result["sources"]}
     assert "round-review-assignment" in {row["resource"] for row in result["sources"]}
+    workflow = next(item for item in BUYER_WORKFLOWS if item.read_tool == "review_progress")
+    assert {row["resource"] for row in result["sources"]} == set(workflow.link_resources)
     assert completed.submitted_at.isoformat() not in result["rendered_review_progress_message"]
 
 
@@ -326,6 +329,10 @@ def test_reviewer_next_assignment_is_strictly_self_scoped_and_ordered(event, use
         "review-queue",
         "round-review-assignment",
     }
+    workflow = next(
+        item for item in BUYER_WORKFLOWS if item.read_tool == "reviewer_next_assignment"
+    )
+    assert {row["resource"] for row in result["sources"]} == set(workflow.link_resources)
     assert result["mutation_performed"] is False
     assert "Own urgent assignment" in result["rendered_reviewer_next_assignment_message"]
 

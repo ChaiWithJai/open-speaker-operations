@@ -1,7 +1,9 @@
 import os
 from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import BaseCommand, call_command
 from django.db import transaction
 from django.utils import timezone
@@ -22,18 +24,25 @@ from ...models import (
     AcceleventsConnection,
     CRMContact,
     CRMPipelineCard,
+    EvaluationAnswer,
+    EvaluationCriterion,
+    EvaluationRound,
     ExternalIdentity,
     OnboardingTask,
     ReminderReceipt,
     Resource,
     ResourceVersion,
     ReviewRecommendation,
+    RoundReviewAssignment,
+    RoundReviewer,
+    SessionPublicationApproval,
     SubmissionPresenterRole,
     SyncAttempt,
     SyncItem,
     SyncPreview,
     SyncRun,
     TaskDefinition,
+    TaskEvidence,
 )
 from ...onboarding.reminders import queue_reminders
 from ...onboarding.services import (
@@ -168,6 +177,208 @@ CRM_FIXTURE_NOTES = (
     "SBEK deterministic CRM primary fixture",
     "SBEK deterministic CRM imported duplicate fixture",
 )
+
+
+def _seed_buzz_review_fixture(event, users, submission):
+    """Restore one useful, blinded, partially saved review queue."""
+    # Benchmark and browser runs create their own rounds. A seed restore is an
+    # explicit reset boundary, so remove those first and recreate one canonical
+    # queue after all cleanup has finished.
+    EvaluationRound.objects.filter(event=event).delete()
+    round_obj = EvaluationRound.objects.create(
+        event=event,
+        name="DemoCon blinded review",
+        position=0,
+        opens_at=CFP_OPENING.date(),
+        closes_at=CFP_DEADLINE.date(),
+        blinded=True,
+        active=True,
+    )
+    impact = EvaluationCriterion.objects.create(
+        event=event,
+        round=round_obj,
+        name="Program impact",
+        field_type=EvaluationCriterion.NUMERIC,
+        position=0,
+        required=True,
+        weight=Decimal("2.00"),
+        minimum=Decimal("1"),
+        maximum=Decimal("5"),
+    )
+    EvaluationCriterion.objects.create(
+        event=event,
+        round=round_obj,
+        name="Reviewer rationale",
+        field_type=EvaluationCriterion.TEXT,
+        position=1,
+        required=True,
+        weight=Decimal("1.00"),
+    )
+    RoundReviewer.objects.create(
+        event=event,
+        round=round_obj,
+        reviewer=users["reviewer"],
+        assignment_limit=5,
+    )
+    assignment = RoundReviewAssignment.objects.create(
+        event=event,
+        round=round_obj,
+        reviewer=users["reviewer"],
+        submission=submission,
+        status=RoundReviewAssignment.ASSIGNED,
+    )
+    EvaluationAnswer.objects.create(
+        event=event,
+        assignment=assignment,
+        criterion=impact,
+        numeric_value=Decimal("4"),
+    )
+
+
+def _replace_task_evidence(task, speaker, versions, reviewer):
+    """Replace upload history without leaving collision-prone seed files behind."""
+    for evidence in task.evidence_items.all():
+        if evidence.upload:
+            evidence.upload.storage.delete(evidence.upload.name)
+    task.evidence_items.all().delete()
+    for version, fixture in enumerate(versions, start=1):
+        upload_field = TaskEvidence._meta.get_field("upload")
+        canonical_name = upload_field.generate_filename(
+            TaskEvidence(event=task.event, task=task, speaker=speaker),
+            fixture["filename"],
+        )
+        # A test database or interrupted restore can leave an unreferenced media
+        # file behind. Remove this one exact canonical seed target before saving.
+        upload_field.storage.delete(canonical_name)
+        evidence, _complete = record_evidence(
+            task,
+            speaker,
+            "upload",
+            upload=SimpleUploadedFile(
+                fixture["filename"],
+                fixture["content"],
+                content_type=fixture["content_type"],
+            ),
+        )
+        evidence.review_status = fixture["status"]
+        evidence.review_note = fixture.get("note", "")
+        evidence.created_at = DEMO_WALKTHROUGH_AT - timedelta(days=len(versions) - version)
+        if evidence.review_status != TaskEvidence.PENDING:
+            evidence.reviewed_at = evidence.created_at + timedelta(hours=2)
+            evidence.reviewed_by = reviewer
+        evidence.save(
+            update_fields=[
+                "review_status",
+                "review_note",
+                "created_at",
+                "reviewed_at",
+                "reviewed_by",
+                "updated",
+            ]
+        )
+    task.status = OnboardingTask.COMPLETE
+    task.completed_at = DEMO_WALKTHROUGH_AT
+    task.save(update_fields=["status", "completed_at", "updated"])
+
+
+def _seed_buzz_content_fixture(event, users, accepted, ready_submission):
+    """Restore AV-ready and blocked content examples with real version history."""
+    slides = TaskDefinition.objects.get(event=event, slug="slides")
+    ready_task, _ = OnboardingTask.objects.get_or_create(
+        event=event,
+        submission=ready_submission,
+        speaker=users["speaker"],
+        definition=slides,
+        defaults={"due_date": DEMO_START - timedelta(days=3)},
+    )
+    ready_task.due_date = DEMO_START - timedelta(days=3)
+    ready_task.save(update_fields=["due_date", "updated"])
+    accepted_tasks = {
+        task.definition.slug: task
+        for task in OnboardingTask.objects.filter(
+            event=event,
+            submission=accepted,
+            speaker=users["speaker"],
+            definition__completion_evaluator="upload",
+        ).select_related("definition")
+    }
+    _replace_task_evidence(
+        ready_task,
+        users["speaker"],
+        (
+            {
+                "filename": "trustworthy-ai-final.pdf",
+                "content": b"%PDF-1.7\n% deterministic AV-ready deck\n%%EOF",
+                "content_type": "application/pdf",
+                "status": TaskEvidence.APPROVED,
+            },
+        ),
+        users["chair"],
+    )
+    _replace_task_evidence(
+        accepted_tasks["headshot"],
+        users["speaker"],
+        (
+            {
+                "filename": "priya-headshot.png",
+                "content": b"\x89PNG\r\n\x1a\n deterministic headshot",
+                "content_type": "image/png",
+                "status": TaskEvidence.APPROVED,
+            },
+        ),
+        users["chair"],
+    )
+    _replace_task_evidence(
+        accepted_tasks["slides"],
+        users["speaker"],
+        (
+            {
+                "filename": "operations-that-scale-v1.pdf",
+                "content": b"%PDF-1.7\n% approved first version\n%%EOF",
+                "content_type": "application/pdf",
+                "status": TaskEvidence.APPROVED,
+            },
+            {
+                "filename": "operations-that-scale-v2.pdf",
+                "content": b"%PDF-1.7\n% pending latest version\n%%EOF",
+                "content_type": "application/pdf",
+                "status": TaskEvidence.PENDING,
+            },
+        ),
+        users["chair"],
+    )
+    _replace_task_evidence(
+        accepted_tasks["supporting-document"],
+        users["speaker"],
+        (
+            {
+                "filename": "operations-handout.pdf",
+                "content": b"%PDF-1.7\n% handout needing revision\n%%EOF",
+                "content_type": "application/pdf",
+                "status": TaskEvidence.CHANGES_REQUESTED,
+                "note": "Replace the draft watermark before publication.",
+            },
+        ),
+        users["chair"],
+    )
+
+    SessionPublicationApproval.objects.filter(event=event).delete()
+    SessionPublicationApproval.objects.create(
+        event=event,
+        submission=ready_submission,
+        status=SessionPublicationApproval.APPROVED,
+        note="Deck and session copy are approved for the public program.",
+        reviewed_at=DEMO_WALKTHROUGH_AT,
+        reviewed_by=users["chair"],
+    )
+    SessionPublicationApproval.objects.create(
+        event=event,
+        submission=accepted,
+        status=SessionPublicationApproval.APPROVED,
+        note="Publication is approved; the latest deck still needs AV review.",
+        reviewed_at=DEMO_WALKTHROUGH_AT,
+        reviewed_by=users["chair"],
+    )
 
 
 class Command(BaseCommand):
@@ -467,6 +678,7 @@ class Command(BaseCommand):
                 },
             )
             ReviewRecommendation.objects.filter(event=event, reviewer=users["reviewer"]).delete()
+            _seed_buzz_review_fixture(event, users, queued)
             draft.abstract = (
                 "A field guide to introducing AI into consequential workflows without "
                 "removing human judgment or accountability."
@@ -679,6 +891,17 @@ class Command(BaseCommand):
                     defaults={"answer": company},
                 )
                 proposal.speakers.set([speaker])
+
+            _seed_buzz_content_fixture(
+                event,
+                users,
+                accepted,
+                next(
+                    slot.submission
+                    for slot in curated_slots
+                    if slot.submission.title == "Trustworthy AI Needs Operational Guardrails"
+                ),
+            )
 
             room_fixture_speaker, _ = User.objects.get_or_create(
                 email="conflict-room@democon.test",

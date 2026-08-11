@@ -225,6 +225,21 @@ def test_release_readiness_reports_conflicts_and_links(event, users):
         and row["talk"]["pk"] == first.pk
         for row in conflicts
     )
+    conflict = conflicts[0]
+    assert conflict["competitor"]["pk"] in {first.pk, second.pk}
+    assert conflict["links"] == {
+        "conflict": (
+            f"http://example.test/go/agenda-release/{event.slug}/"
+            f"#conflict-{conflict['conflict_key']}"
+        ),
+        "talk_slot": (
+            f"http://example.test/go/agenda-release/{event.slug}/#slot-{conflict['talk']['pk']}"
+        ),
+        "competitor_slot": (
+            f"http://example.test/go/agenda-release/{event.slug}/"
+            f"#slot-{conflict['competitor']['pk']}"
+        ),
+    }
 
     links = result["links"]
     assert links["conflicts"] == (
@@ -380,6 +395,8 @@ def test_list_tools_exposes_release_readiness_schema(monkeypatch):
     tool = next(t for t in result.tools if t.name == "release_readiness")
     assert tool.input_schema["required"] == ["event_slug"]
     assert "event_slug" in tool.input_schema["properties"]
+    assert "e.g." not in tool.input_schema["properties"]["event_slug"]["description"]
+    assert tool.input_schema["properties"]["event_slug"]["enum"] == ["speakerops-demo"]
     assert "base_url" not in tool.input_schema["properties"]
     content = next(t for t in result.tools if t.name == "content_readiness")
     assert content.input_schema["required"] == ["event_slug"]
@@ -630,6 +647,7 @@ def test_content_readiness_reports_changes_requested_with_owner(event, users):
     rollup = result["rollup"]
     assert rollup["ready"] + rollup["not_ready"] == rollup["sessions"]
     assert result["sources"]["console"] == f"http://example.test/go/content-console/{event.slug}/"
+    assert result["sources"]["bundle"] == f"http://example.test/go/av-bundle/{event.slug}/"
     assert "generated_at" in result
 
 
@@ -697,6 +715,25 @@ def test_content_readiness_publication_gate_blocks_ready_session(event, users):
     assert result["rollup"]["publication_pending"] >= 1
 
 
+@pytest.mark.django_db(transaction=True)
+def test_content_readiness_includes_publication_gate_without_upload_tasks(event):
+    with scope(event=event):
+        sub = event.submissions.first()
+        assert not OnboardingTask.objects.filter(event=event, submission=sub).exists()
+        SessionPublicationApproval.objects.create(
+            event=event,
+            submission=sub,
+            status=SessionPublicationApproval.PENDING,
+            note="Awaiting copy approval.",
+        )
+
+    result = content_readiness(event.slug, base_url="http://example.test")
+    row = next(r for r in result["not_ready"] if r["submission"]["pk"] == sub.pk)
+    assert row["items"] == []
+    assert row["state"] == "publication_pending"
+    assert row["publication"]["note"] == "Awaiting copy approval."
+
+
 @pytest.mark.django_db
 def test_content_readiness_unknown_event_raises():
     with pytest.raises(KeyError):
@@ -726,6 +763,8 @@ def test_content_readiness_message_formats_not_ready_sources_and_trace(event, us
 
     assert "## Sources — canonical URL list" in message
     assert "| content-console |" in message
+    assert "| av-bundle |" in message
+    assert f"http://example.test/go/av-bundle/{event.slug}/" in message
     assert f"http://example.test/go/content-console/{event.slug}/" in message
     assert "| speakerops_content_operations | organiser | aggregate-screen |" in message
 
@@ -760,6 +799,7 @@ def test_render_content_readiness_clean_requires_no_db():
             "sources": {
                 "console": "http://x/go/content-console/demo/",
                 "evidence": "http://x/go/evidence-file/demo~{evidence_pk}/",
+                "bundle": "http://x/go/av-bundle/demo/",
             },
             "generated_at": "2026-08-11T00:00:00+00:00",
         }

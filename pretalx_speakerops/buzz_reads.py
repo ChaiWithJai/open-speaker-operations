@@ -47,9 +47,12 @@ def _go(resource, opaque_id):
     return f"/go/{resource}/{opaque_id}/"
 
 
-def _conflict_row(row):
+def _conflict_row(row, event_slug, base_url):
     talk = row["talk"]
+    competitor = row["competitor"]
+    agenda = f"{base_url}{_go('agenda-release', event_slug)}"
     return {
+        "conflict_key": row["conflict_key"],
         "type": row["category"],
         "message": row["message"],
         "resource": row["resource"],
@@ -60,6 +63,18 @@ def _conflict_row(row):
             "start": f"{talk.start:%Y-%m-%d %H:%M}",
             "end": f"{talk.end:%H:%M}",
             "room": str(talk.room.name) if talk.room_id else "Unplaced",
+        },
+        "competitor": {
+            "pk": competitor.pk,
+            "title": competitor.submission.title,
+            "start": f"{competitor.start:%Y-%m-%d %H:%M}",
+            "end": f"{competitor.end:%H:%M}",
+            "room": str(competitor.room.name) if competitor.room_id else "Unplaced",
+        },
+        "links": {
+            "conflict": f"{agenda}#conflict-{row['conflict_key']}",
+            "talk_slot": f"{agenda}#slot-{talk.pk}",
+            "competitor_slot": f"{agenda}#slot-{competitor.pk}",
         },
     }
 
@@ -108,7 +123,7 @@ def release_readiness(event_slug, base_url=DEFAULT_BASE_URL):
             "event": event.slug,
             "release_blocked": bool(blocking_reasons),
             "blocking_reasons": blocking_reasons,
-            "conflicts": [_conflict_row(row) for row in conflicts],
+            "conflicts": [_conflict_row(row, event.slug, base) for row in conflicts],
             "attention": attention,
             "schedule": {
                 "has_wip": schedule is not None,
@@ -180,10 +195,15 @@ def render_release_readiness(result):
         for row in conflicts:
             mark = "release-blocking" if row["blocking"] else "non-blocking warning"
             talk = row["talk"]
+            competitor = row["competitor"]
             lines.append(
-                f"- **[type: {row['type']}]** {row['message']} — `{mark}` — "
-                f'talk #{talk["pk"]} "{talk["title"]}" '
-                f"({talk['start']}–{talk['end']}, {talk['room']})"
+                f"- **[type: {row['type']}]** "
+                f"[conflict record]({row['links']['conflict']}) — `{mark}` — "
+                f"[talk #{talk['pk']} “{talk['title']}”]({row['links']['talk_slot']}) "
+                f"({talk['start']}–{talk['end']}, {talk['room']}) conflicts with "
+                f"[talk #{competitor['pk']} “{competitor['title']}”]"
+                f"({row['links']['competitor_slot']}) "
+                f"({competitor['start']}–{competitor['end']}, {competitor['room']})."
             )
         lines.append("")
 
@@ -333,13 +353,15 @@ def content_readiness(event_slug, base_url=DEFAULT_BASE_URL):
                 definition__completion_evaluator="upload",
             )
             .select_related("speaker", "definition", "submission")
-            .prefetch_related("evidence_items")
+            .prefetch_related("evidence_items", "submission__speakers")
             .order_by("definition__position", "pk")
         )
-        approvals = {
-            approval.submission_id: approval
-            for approval in SessionPublicationApproval.objects.filter(event=event)
-        }
+        approval_rows = list(
+            SessionPublicationApproval.objects.filter(event=event)
+            .select_related("submission", "reviewed_by")
+            .prefetch_related("submission__speakers")
+        )
+        approvals = {approval.submission_id: approval for approval in approval_rows}
 
         sessions = {}
         order = []
@@ -398,6 +420,31 @@ def content_readiness(event_slug, base_url=DEFAULT_BASE_URL):
                     "latest_evidence": detail,
                 }
             )
+
+        # A publication decision is itself a content gate even when a session
+        # has no upload request. Omitting it would let a pending gate disappear
+        # from the AV-readiness answer.
+        for approval in approval_rows:
+            if approval.submission_id in sessions:
+                continue
+            submission = approval.submission
+            sessions[submission.pk] = {
+                "submission": {
+                    "pk": submission.pk,
+                    "code": submission.code,
+                    "title": submission.title,
+                },
+                "speakers": [u.get_display_name() for u in submission.speakers.all()],
+                "items": [],
+                "publication": {
+                    "status": approval.status,
+                    "owner": (
+                        _display_name(approval.reviewed_by) if approval.reviewed_by_id else ""
+                    ),
+                    "note": approval.note,
+                },
+            }
+            order.append(submission.pk)
 
         rows = []
         for key in order:
@@ -461,6 +508,7 @@ def content_readiness(event_slug, base_url=DEFAULT_BASE_URL):
             "sources": {
                 "console": f"{base}{_go('content-console', event.slug)}",
                 "evidence": f"{base}/go/evidence-file/{event.slug}~{{evidence_pk}}/",
+                "bundle": f"{base}{_go('av-bundle', event.slug)}",
             },
             "generated_at": timezone.now().isoformat(),
         }
@@ -471,6 +519,7 @@ def content_readiness(event_slug, base_url=DEFAULT_BASE_URL):
 _CONTENT_SOURCE_RESOURCES = {
     "console": "content-console",
     "evidence": "evidence-file",
+    "bundle": "av-bundle",
 }
 
 
@@ -598,7 +647,7 @@ def render_content_readiness(result):
         ),
         (
             "Built go/ links from the canonical registry "
-            "(content-console, evidence-file), absolutized against "
+            "(content-console, evidence-file, av-bundle), absolutized against "
             f"{base}."
         ),
         (f"Verdict: {rollup['not_ready']} of {rollup['sessions']} sessions not AV-ready."),

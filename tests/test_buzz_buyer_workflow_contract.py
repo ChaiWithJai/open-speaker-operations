@@ -1,3 +1,4 @@
+from pretalx_speakerops.buzz_reads import _CONTENT_SOURCE_RESOURCES, _SOURCE_RESOURCES
 from pretalx_speakerops.canonical_links import COMMAND, RESOURCES
 from pretalx_speakerops.integrations.buzz.buyer_workflows import (
     BUYER_WORKFLOWS,
@@ -40,6 +41,14 @@ def test_every_buyer_workflow_has_a_typed_read_and_safe_canonical_links():
         for name in workflow.link_resources:
             assert name in resources, (workflow.key, name)
             assert resources[name].interaction != COMMAND, (workflow.key, name)
+
+
+def test_declared_release_and_content_resources_equal_the_rendered_source_contracts():
+    workflows = {workflow.read_tool: workflow for workflow in BUYER_WORKFLOWS}
+    assert set(workflows["release_readiness"].link_resources) == set(_SOURCE_RESOURCES.values())
+    assert set(workflows["content_readiness"].link_resources) == set(
+        _CONTENT_SOURCE_RESOURCES.values()
+    )
 
 
 def test_command_workflows_name_commands_and_require_receipts():

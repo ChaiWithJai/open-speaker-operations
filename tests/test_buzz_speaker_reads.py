@@ -6,6 +6,7 @@ from django.utils import timezone
 from django_scopes import scope
 from pretalx.mail.models import QueuedMail
 
+from pretalx_speakerops.integrations.buzz.buyer_workflows import BUYER_WORKFLOWS
 from pretalx_speakerops.integrations.buzz.speaker_reads import (
     render_speaker_next_actions,
     render_speaker_nudges,
@@ -242,6 +243,8 @@ def test_speaker_next_actions_has_zero_other_speaker_leakage(event, users):
     assert result["sources"][0]["audience"] == "speaker"
     assert result["sources"][1]["resource"] == "speaker-profile"
     assert result["sources"][2]["exactness"] == "exact-record"
+    workflow = next(item for item in BUYER_WORKFLOWS if item.read_tool == "speaker_next_actions")
+    assert {row["resource"] for row in result["sources"]} == set(workflow.link_resources)
     serialized = json.dumps(result)
     assert users["reviewer"].email not in serialized
     assert users["reviewer"].get_display_name() not in serialized

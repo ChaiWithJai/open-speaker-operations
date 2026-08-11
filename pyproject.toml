@@ -11,6 +11,7 @@ dependencies = [
     "Faker",
     "freezegun",
     "gunicorn",
+    "mcp>=2.0.0",
     "pretalx==2025.2.2",
     "psycopg[binary]",
     "redis",
@@ -48,8 +49,3 @@ exclude = ["pretalx_speakerops/migrations"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B"]
-
-[dependency-groups]
-dev = [
-    "mcp>=2.0.0",
-]

@@ -1,4 +1,7 @@
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 from pretalx_speakerops.integrations.buzz.agent_profiles import AGENT_PROFILES
@@ -8,6 +11,24 @@ from pretalx_speakerops.integrations.buzz.buyer_workflows import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_direct_mcp_server_refuses_an_implicit_database_configuration():
+    environment = os.environ.copy()
+    environment.pop("PRETALX_CONFIG_FILE", None)
+    environment.pop("DJANGO_SETTINGS_MODULE", None)
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "mcp_speakerops_server.py")],
+        cwd=ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    assert "refuses an implicit database" in result.stderr
+
+
 CONFIG = ROOT / "opencode.json"
 
 

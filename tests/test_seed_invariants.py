@@ -9,8 +9,13 @@ from pretalx.event.models import Event, Team
 from pretalx.person.models import SpeakerProfile, User
 from pretalx.submission.models import Answer
 
+from pretalx_speakerops.buzz_reads import content_readiness
 from pretalx_speakerops.cfp import AIE_TRACKS
 from pretalx_speakerops.demo_assets import DEMO_HEADSHOT_BY_EMAIL
+from pretalx_speakerops.integrations.buzz.review_reads import (
+    review_progress,
+    reviewer_next_assignment,
+)
 from pretalx_speakerops.management.commands.speakerops_seed import (
     CFP_DEADLINE,
     CFP_OPENING,
@@ -32,13 +37,20 @@ from pretalx_speakerops.management.commands.speakerops_seed import (
 from pretalx_speakerops.models import (
     CRMContact,
     CRMPipelineCard,
+    EvaluationAnswer,
+    EvaluationCriterion,
+    EvaluationRound,
     ExternalIdentity,
     OnboardingTask,
+    RoundReviewAssignment,
+    RoundReviewer,
+    SessionPublicationApproval,
     SubmissionPresenterRole,
     SyncAttempt,
     SyncItem,
     SyncPreview,
     SyncRun,
+    TaskEvidence,
 )
 from pretalx_speakerops.program.policy import classify_warnings
 
@@ -113,6 +125,86 @@ def _baseline(event):
             .values_list("submission__title", "speaker__email", "role")
             .order_by("submission__title", "speaker__email")
         ),
+        "buzz_review": {
+            "rounds": tuple(
+                EvaluationRound.objects.filter(event=event)
+                .values_list("name", "position", "opens_at", "closes_at", "blinded", "active")
+                .order_by("position", "pk")
+            ),
+            "criteria": tuple(
+                EvaluationCriterion.objects.filter(event=event)
+                .values_list(
+                    "round__name",
+                    "name",
+                    "field_type",
+                    "position",
+                    "required",
+                    "weight",
+                    "minimum",
+                    "maximum",
+                )
+                .order_by("round__position", "position", "pk")
+            ),
+            "memberships": tuple(
+                RoundReviewer.objects.filter(event=event)
+                .values_list("round__name", "reviewer__email", "assignment_limit")
+                .order_by("round__position", "reviewer__email")
+            ),
+            "assignments": tuple(
+                RoundReviewAssignment.objects.filter(event=event)
+                .values_list("round__name", "reviewer__email", "submission__title", "status")
+                .order_by("round__position", "reviewer__email", "submission__title")
+            ),
+            "answers": tuple(
+                EvaluationAnswer.objects.filter(event=event)
+                .values_list(
+                    "assignment__submission__title",
+                    "criterion__name",
+                    "numeric_value",
+                    "choice_value",
+                    "text_value",
+                )
+                .order_by("assignment__submission__title", "criterion__position")
+            ),
+        },
+        "buzz_content": {
+            "tasks": tuple(
+                OnboardingTask.objects.filter(
+                    event=event, definition__completion_evaluator="upload"
+                )
+                .values_list(
+                    "submission__title",
+                    "speaker__email",
+                    "definition__slug",
+                    "status",
+                    "due_date",
+                )
+                .order_by("submission__title", "definition__position", "pk")
+            ),
+            "evidence": tuple(
+                (
+                    evidence.task.submission.title,
+                    evidence.task.definition.slug,
+                    evidence.version,
+                    evidence.upload.name.rsplit("/", 1)[-1],
+                    evidence.review_status,
+                    evidence.review_note,
+                    evidence.reviewed_by.email if evidence.reviewed_by else None,
+                    evidence.created_at,
+                )
+                for evidence in TaskEvidence.objects.filter(
+                    event=event,
+                    task__definition__completion_evaluator="upload",
+                )
+                .select_related("task__submission", "task__definition", "reviewed_by")
+                .order_by("task__submission__title", "task__definition__position", "version")
+            ),
+            "approvals": tuple(
+                SessionPublicationApproval.objects.filter(event=event)
+                .values_list("submission__title", "status", "note", "reviewed_by__email")
+                .order_by("submission__title")
+            ),
+        },
         "crm_fixtures": tuple(
             CRMContact.objects.filter(
                 organiser=event.organiser,
@@ -304,6 +396,60 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             ("speaker@example.org", SubmissionPresenterRole.PRIMARY_AUTHOR),
             ("speaker2@example.org", SubmissionPresenterRole.CO_AUTHOR),
         }
+        progress = review_progress(event.slug, base_url="http://speakerops.test")
+        assert progress["rollup"] == {
+            "rounds": 1,
+            "assignments": 1,
+            "complete": 0,
+            "incomplete": 1,
+            "recused": 0,
+            "overdue": 1,
+            "completion_percent": 0.0,
+        }
+        assert progress["rounds"][0]["blinded"] is True
+        assert progress["incomplete_assignments"][0]["rubric"]["required_answered"] == 1
+        assert progress["incomplete_assignments"][0]["rubric"]["required_total"] == 2
+
+        personal = reviewer_next_assignment(
+            event.slug,
+            "reviewer@example.org",
+            base_url="http://speakerops.test",
+        )
+        assert personal["rollup"] == {"remaining": 1, "overdue": 1}
+        assert personal["next_assignment"]["submission"]["title"] == (
+            "Review: Designing Trustworthy Systems"
+        )
+        assert personal["next_assignment"]["save_state"] == {
+            "has_saved_answers": True,
+            "saved_criteria": 1,
+            "required_criteria": 2,
+            "required_answered": 1,
+        }
+
+        content = content_readiness(event.slug, base_url="http://speakerops.test")
+        assert content["rollup"] == {
+            "upload_tasks": 4,
+            "sessions": 2,
+            "ready": 1,
+            "not_ready": 1,
+            "missing_file_requests": 0,
+            "pending_review": 0,
+            "changes_requested": 1,
+            "stale": 1,
+            "publication_approved": 2,
+            "publication_pending": 0,
+            "publication_changes": 0,
+        }
+        assert [row["submission"]["title"] for row in content["ready"]] == [
+            "Trustworthy AI Needs Operational Guardrails"
+        ]
+        assert [row["submission"]["title"] for row in content["not_ready"]] == [
+            "Accepted: Operations That Scale"
+        ]
+        blocked_items = {item["file_request"]: item for item in content["not_ready"][0]["items"]}
+        assert blocked_items["Upload slides"]["state"] == "stale"
+        assert blocked_items["Upload slides"]["latest_evidence"]["version"] == 2
+        assert blocked_items["Upload supporting document"]["state"] == "changes_requested"
         crm_pair = CRMContact.objects.filter(
             organiser=event.organiser,
             email=CRM_DUPLICATE_EMAIL,

@@ -33,6 +33,12 @@ typed reads use the deterministic PostgreSQL data. It does not publish the
 database or attach Buzz to a SpeakerOps network. Do not point it at another
 Compose project.
 
+On the current demo machine OpenCode's resolved default is the zero-paid local
+`llama-server/qwen3.5-2b` endpoint. Confirm it with `opencode debug config`
+before importing the snapshots. Keep the Buzz model/provider fields unset so
+OpenCode uses that reviewed local configuration; do not introduce a paid model
+credential during this rehearsal.
+
 Then set one profile per process:
 
 ```text
@@ -70,6 +76,42 @@ contains `tools/mcp_speakerops_server.py`. A connection failure after the
 branch is built is a real runtime blocker; do not fall back to the host SQLite
 configuration because it is not the demo system of record.
 
+The #41 memory read has an additional clean-stack gate. Run the strict
+coverage/import/verify commands in `buzz-demo/README.md` and retain the
+verification report before opening the Operator channel. The expected corpus
+is 13 series, 204 editions, 19,466 talks, 21,419 credits, 21,355 source
+identities, and 14,068 provisional people. It must also report—not fill in—
+1,067 missing formats and 6,077 missing tracks.
+
+Before the nine prompts, authenticate three separate browser profiles with the
+deterministic chair, speaker, and reviewer accounts. Open one allowed canonical
+destination for each role, then preserve a non-disclosing denial for a speaker
+or reviewer organizer URL and for the reviewer's native speaker directory.
+This separates an MCP capability check from the destination's own server-side
+authorization check.
+
+For executable no-mutation evidence, take a digest immediately before the
+nine MCP calls and again immediately after them, before any separately approved
+write demonstration. Run from the repository root; these commands stream the
+database dump into the digest and do not retain its contents:
+
+```sh
+docker compose --project-name speakerops-hci exec -T postgres sh -c \
+  'pg_dump --data-only --no-owner --no-privileges --username="$POSTGRES_USER" "$POSTGRES_DB"' \
+  | shasum -a 256 > /tmp/speakerops-buzz-before.sha256
+
+# Run the nine typed reads and allowed GET-only link checks here.
+
+docker compose --project-name speakerops-hci exec -T postgres sh -c \
+  'pg_dump --data-only --no-owner --no-privileges --username="$POSTGRES_USER" "$POSTGRES_DB"' \
+  | shasum -a 256 > /tmp/speakerops-buzz-after.sha256
+cmp /tmp/speakerops-buzz-before.sha256 /tmp/speakerops-buzz-after.sha256
+```
+
+The digest must match. If it does not, stop and investigate; do not relabel the
+conversation read-only. Browser login must happen before the first digest so
+session bookkeeping cannot contaminate the comparison.
+
 ## Capture standard for every workflow
 
 For every row below, retain:
@@ -99,6 +141,30 @@ remain open.
 | 6 | Speaker DM: “What do I owe?” | Only `speaker@example.org` tasks, profile, and sessions | Open self-scoped checklist/profile/submission; prove another speaker is absent/denied |
 | 7 | Reviewer DM: “What is next?” | Only `reviewer@example.org` open assignment, rubric, and saved state | Open exact assigned review; prove other reviewer, speaker identity, and organizer progress are absent/denied |
 | 8 | Operator: “Are we ready?” | Aggregate funnel, exceptions, risks, and public evidence only | Open public status; prove no people, private notes, payloads, or admin capability appear |
+
+## Clean-seed anchors
+
+Use these fixed records to detect a wrong database, stale seed, or hallucinated
+answer before accepting screenshots:
+
+- Review progress names one blinded `DemoCon blinded review` round with one
+  incomplete, overdue assignment and a rubric saved at 1 of 2 required answers.
+- Reviewer next assignment names `Review: Designing Trustworthy Systems`, with
+  one remaining/overdue item and the same 1-of-2 saved state. The blinded answer
+  must not disclose speaker identity, biography, or company.
+- Content readiness reports four upload tasks across two sessions: one ready and
+  one not ready. `Trustworthy AI Needs Operational Guardrails` is ready;
+  `Accepted: Operations That Scale` is blocked by a stale latest slides v2 and
+  a changes-requested supporting document. Both sessions have explicit
+  publication decisions.
+- The Content answer includes canonical `content-console`, `evidence-file`, and
+  `av-bundle` sources. A missing bundle link is a failed workflow.
+- Conference Memory matches the strict corpus totals in the preflight section;
+  it never turns missing format or track values into invented metadata.
+
+The remaining workflow counts are intentionally derived from current event
+state. They must reconcile to the named records in their answer rather than to
+a copied number in this document.
 
 ## #41 hero differentiator (separate from the eight)
 
