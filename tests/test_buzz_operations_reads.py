@@ -125,6 +125,7 @@ def test_sync_recovery_empty_state_is_json_safe_read_only_and_grounded(event):
             "SyncAttempt",
         }
         assert "**In sync**" in result["rendered_sync_recovery_message"]
+        assert result["generated_at"] in result["rendered_sync_recovery_message"]
         assert "## Trace" in sync_recovery_message(event.slug, BASE_URL)
         assert CommandReceipt.objects.filter(event=event).count() == before_receipts
         assert not SyncRun.objects.filter(event=event).exists()
@@ -308,6 +309,7 @@ def test_executive_readiness_empty_program_is_insufficient_public_evidence(event
             }
         ]
         assert "**Insufficient evidence**" in result["rendered_executive_readiness_message"]
+        assert result["generated_at"] in result["rendered_executive_readiness_message"]
 
 
 def test_executive_readiness_matches_aggregates_orders_risks_and_leaks_no_people(event, users):

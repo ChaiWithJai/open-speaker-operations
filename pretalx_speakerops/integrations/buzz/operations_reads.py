@@ -250,6 +250,7 @@ def render_sync_recovery(result):
         lines.append(f"- [Latest run]({result['links']['latest_run']})")
     lines.extend(["", "## Trace", ""])
     lines.extend(f"{index}. {step}" for index, step in enumerate(result["trace"], 1))
+    lines.extend(["", f"Generated {result['generated_at']} (ISO-8601)."])
     return "\n".join(lines)
 
 
@@ -487,6 +488,7 @@ def render_executive_readiness(result):
         ]
     )
     lines.extend(f"{index}. {step}" for index, step in enumerate(result["trace"], 1))
+    lines.extend(["", f"Generated {result['generated_at']} (ISO-8601)."])
     return "\n".join(lines)
 
 

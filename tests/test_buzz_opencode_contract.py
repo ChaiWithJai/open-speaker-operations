@@ -92,3 +92,4 @@ def test_agent_snapshots_are_portable_secret_free_and_role_specific():
     assert "read-only" in operator
     assert "only speaker_next_actions" in speaker
     assert "only reviewer_next_assignment" in reviewer
+    assert all("verbatim" in prompt for prompt in (operator, speaker, reviewer))

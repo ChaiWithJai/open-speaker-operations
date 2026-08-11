@@ -423,6 +423,7 @@ def render_review_progress(result):
         ]
     )
     lines.extend(f"{index}. {step}" for index, step in enumerate(result["trace"], 1))
+    lines.extend(["", f"Generated {result['generated_at']} (ISO-8601)."])
     return "\n".join(lines)
 
 
@@ -545,6 +546,7 @@ def render_reviewer_next_assignment(result):
         ]
     )
     lines.extend(f"{index}. {step}" for index, step in enumerate(result["trace"], 1))
+    lines.extend(["", f"Generated {result['generated_at']} (ISO-8601)."])
     return "\n".join(lines)
 
 

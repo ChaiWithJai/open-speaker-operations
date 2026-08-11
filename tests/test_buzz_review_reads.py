@@ -102,6 +102,7 @@ def test_review_progress_empty_is_json_safe_and_read_only(event):
         f"https://speakerops.example/go/abstract-console/{event.slug}/"
     )
     assert "no incomplete review assignments" in result["rendered_review_progress_message"]
+    assert result["generated_at"] in result["rendered_review_progress_message"]
 
     with scope(event=event):
         after = {
@@ -335,6 +336,7 @@ def test_reviewer_next_assignment_is_strictly_self_scoped_and_ordered(event, use
     assert {row["resource"] for row in result["sources"]} == set(workflow.link_resources)
     assert result["mutation_performed"] is False
     assert "Own urgent assignment" in result["rendered_reviewer_next_assignment_message"]
+    assert result["generated_at"] in result["rendered_reviewer_next_assignment_message"]
 
     with scope(event=event):
         after = {
@@ -383,8 +385,15 @@ def test_message_variants_match_payload_rendering(event, users):
 
     progress = review_progress(event.slug)
     personal = reviewer_next_assignment(event.slug, users["reviewer"].email)
-    assert review_progress_message(event.slug) == progress["rendered_review_progress_message"]
+    progress_message = review_progress_message(event.slug)
+    personal_message = reviewer_next_assignment_message(event.slug, users["reviewer"].email)
     assert (
-        reviewer_next_assignment_message(event.slug, users["reviewer"].email)
-        == personal["rendered_reviewer_next_assignment_message"]
+        progress_message.rsplit("\nGenerated ", 1)[0]
+        == progress["rendered_review_progress_message"].rsplit("\nGenerated ", 1)[0]
     )
+    assert (
+        personal_message.rsplit("\nGenerated ", 1)[0]
+        == personal["rendered_reviewer_next_assignment_message"].rsplit("\nGenerated ", 1)[0]
+    )
+    assert "\nGenerated " in progress_message
+    assert "\nGenerated " in personal_message
