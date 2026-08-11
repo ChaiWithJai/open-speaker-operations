@@ -7,6 +7,7 @@ from unittest.mock import patch
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
+from django.urls import reverse
 from django.utils import timezone
 from django_scopes import scope
 from pretalx.celery_app import app
@@ -468,6 +469,14 @@ def test_speaker_portal_profile_roundtrips_to_organizer(event, users, client):
     assert biography.encode() in reloaded.content
     assert social_url.encode() in reloaded.content
     assert b"Current headshot" in reloaded.content
+    self_headshot_url = reverse(
+        "plugins:speakerops:speakerops_speaker_headshot", kwargs={"event": event.slug}
+    )
+    assert self_headshot_url.encode() in reloaded.content
+    rendered_self_headshot = client.get(self_headshot_url)
+    assert rendered_self_headshot.status_code == 200
+    assert rendered_self_headshot["Content-Type"] == "image/png"
+    assert b"".join(rendered_self_headshot.streaming_content).startswith(b"\x89PNG\r\n\x1a\n")
 
     client.force_login(second)
     scoped = client.get(profile_url)
@@ -482,6 +491,13 @@ def test_speaker_portal_profile_roundtrips_to_organizer(event, users, client):
     assert b"data-speakerops-headshot" in organiser.content
     assert b"speaker-headshot.png" in organiser.content
     assert b"Uploaded" in organiser.content
+    organiser_headshot_url = reverse(
+        "plugins:speakerops:speakerops_organiser_speaker_headshot",
+        kwargs={"event": event.slug, "pk": users["speaker"].pk},
+    )
+    assert organiser_headshot_url.encode() in organiser.content
+    rendered_organiser_headshot = client.get(organiser_headshot_url)
+    assert rendered_organiser_headshot.status_code == 200
 
 
 @pytest.mark.django_db(transaction=True)

@@ -317,16 +317,29 @@ def memory_decision_support(talks):
         editions=Count("edition", distinct=True),
         latest=Max("edition__date_from"),
     )
+    # Recurrence is part of the filtered answer, not a global leaderboard.
+    # Count only credits whose exact source identity is verified and whose talk
+    # is present in the current AIE queryset. This keeps a narrow search from
+    # surfacing unrelated returning speakers or counting their peer talks.
+    verified_matching_credit = Q(
+        credits__talk__in=aie_talks,
+        credits__source_identity__active=True,
+        credits__source_identity__resolution_status=HistoricalSourceIdentity.VERIFIED,
+        credits__source_identity__edition__series__slug="ai-engineer",
+    )
     returning_speakers = list(
-        HistoricalSpeaker.objects.filter(
-            source_identities__active=True,
-            source_identities__resolution_status=HistoricalSourceIdentity.VERIFIED,
-            source_identities__edition__series__slug="ai-engineer",
-        )
+        HistoricalSpeaker.objects.filter(verified_matching_credit)
         .annotate(
-            appearance_count=Count("credits__talk", distinct=True),
-            edition_count=Count("source_identities__edition", distinct=True),
-            latest_appearance=Max("source_identities__edition__date_from"),
+            appearance_count=Count("credits__talk", filter=verified_matching_credit, distinct=True),
+            edition_count=Count(
+                "credits__source_identity__edition",
+                filter=verified_matching_credit,
+                distinct=True,
+            ),
+            latest_appearance=Max(
+                "credits__source_identity__edition__date_from",
+                filter=verified_matching_credit,
+            ),
         )
         .filter(edition_count__gte=2)
         .order_by("-edition_count", "-appearance_count", "name")[:6]

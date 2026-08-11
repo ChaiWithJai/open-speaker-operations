@@ -1,10 +1,12 @@
 (() => {
   document.querySelectorAll("[data-avatar]").forEach((avatar) => {
-    avatar.addEventListener("error", () => {
+    const showFallback = () => {
       avatar.hidden = true;
       const fallback = avatar.parentElement.querySelector("[data-avatar-fallback]");
       if (fallback) fallback.hidden = false;
-    }, { once: true });
+    };
+    avatar.addEventListener("error", showFallback, { once: true });
+    if (avatar.complete && avatar.naturalWidth === 0) showFallback();
   });
   const biography = document.querySelector("[data-biography]");
   const toggle = document.querySelector("[data-biography-toggle]");

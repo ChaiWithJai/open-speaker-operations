@@ -28,6 +28,7 @@ from pretalx.submission.models import Review, ReviewScore, Submission, Submissio
 
 from .auth import (
     can_manage,
+    can_review,
     has_round_assignments,
     is_speaker,
     require_event_permission,
@@ -202,7 +203,8 @@ class EventContextMixin(LoginRequiredMixin):
     def authorize_organiser(self, request):
         permission = getattr(self, "permission", "dashboard")
         if permission == "review":
-            require_event_permission(request.user, self.event, "submission.orga_list_submission")
+            if not can_review(request.user, self.event):
+                raise Http404
             authorized_events = getattr(request.user, "_speakerops_review_event_ids", set())
             authorized_events.add(self.event.pk)
             request.user._speakerops_review_event_ids = authorized_events

@@ -25,7 +25,7 @@ from .public_widgets import (
     SelectedScheduleIcsView,
 )
 from .speaker_operations import SpeakerImportView, SpeakerOperationsView
-from .speaker_profile import SpeakerPortalProfileView
+from .speaker_profile import SpeakerPortalProfileView, SpeakerSelfHeadshotView
 from .views import (
     AgendaReleaseView,
     CfpRoutingView,
@@ -275,6 +275,11 @@ urlpatterns = [
         "<slug:event>/speaker-operations/profile/",
         SpeakerPortalProfileView.as_view(),
         name="speakerops_speaker_profile",
+    ),
+    path(
+        "<slug:event>/speaker-operations/profile/headshot/",
+        SpeakerSelfHeadshotView.as_view(),
+        name="speakerops_speaker_headshot",
     ),
     path(
         "<slug:event>/speaker-operations/checklist/<int:pk>/complete/",

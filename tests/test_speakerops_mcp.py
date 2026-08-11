@@ -858,6 +858,18 @@ def test_conference_memory_reports_verified_recurrence_sources_and_exact_links(e
         "source_identities": 2,
         "people": 1,
     }
+    assert result["scope"] == {
+        "query_applied": True,
+        "matching_talks": 2,
+        "corpus_totals_are_unfiltered": True,
+    }
+    assert result["aie_corpus"] == {
+        "talks": 2,
+        "editions": 2,
+        "missing_format": 0,
+        "missing_track": 1,
+    }
+    assert result["corpus_gaps"] == {"missing_format": 0, "missing_track": 1}
     assert result["missing_metadata_is_not_inferred"] is True
     assert result["aie"]["missing_track"] == 1
     assert result["topic_signals"] == [
@@ -883,17 +895,115 @@ def test_conference_memory_reports_verified_recurrence_sources_and_exact_links(e
         f"https://example.test/go/conference-speaker/{event.slug}~{speaker.pk}/"
     )
     assert result["links"]["memory"] == (f"https://example.test/go/conference-memory/{event.slug}/")
+    assert result["links"]["crm"] == (
+        f"https://example.test/go/crm-directory/{event.organiser.slug}/"
+    )
 
     message = conference_memory_message(event.slug, query="Agent", base_url="https://example.test")
     assert "# Conference Memory" in message
     assert "Verified returning AIE speakers" in message
     assert "Returning Builder" in message
     assert "## What the evidence says" in message
+    assert "Full evidence corpus (unfiltered):** 1 series" in message
+    assert "Query-matched subset" in message
+    assert "Format frequency in the matching evidence" in message
+    assert "Track frequency in the matching evidence" in message
     assert "Agent Evals in 2024" in message
     assert "programming-memory signals, not acceptance recommendations" in message
     assert "Missing metadata and unverified identity recurrence are never inferred" in message
     assert "https://www.ai.engineer/worldsfair/2024/speakers/returning-builder" in message
     assert "## Trace of inference" in message
+
+    unfiltered_message = conference_memory_message(event.slug, base_url="https://example.test")
+    assert "Query-matched subset" not in unfiltered_message
+    assert unfiltered_message.count("- Full AIE corpus:") == 1
+
+
+@pytest.mark.django_db(transaction=True)
+def test_conference_memory_recurrence_is_scoped_to_matching_verified_aie_credits(event):
+    speaker = _arrange_verified_conference_memory()
+    updated = timezone.now()
+    aie = ConferenceSeries.objects.get(slug="ai-engineer")
+    unrelated = HistoricalSpeaker.objects.create(
+        canonical_key="unrelated-returner",
+        name="Unrelated Returner",
+        source_url="https://www.ai.engineer/speakers/unrelated-returner",
+        source_updated_at=updated,
+    )
+    for edition in ConferenceEdition.objects.filter(series=aie).order_by("date_from"):
+        identity = HistoricalSourceIdentity.objects.create(
+            edition=edition,
+            source_key=f"unrelated-returner-{edition.external_key}",
+            speaker=unrelated,
+            display_name=unrelated.name,
+            source_url=(
+                f"https://www.ai.engineer/{edition.external_key}/speakers/unrelated-returner"
+            ),
+            source_updated_at=updated,
+            resolution_status=HistoricalSourceIdentity.VERIFIED,
+        )
+        talk = HistoricalTalk.objects.create(
+            edition=edition,
+            external_key=f"kubernetes-{edition.external_key}",
+            title=f"Kubernetes Operations in {edition.external_key}",
+            session_format="Talk",
+            track="Infrastructure",
+            source_url=f"https://www.ai.engineer/{edition.external_key}/kubernetes",
+            source_updated_at=updated,
+        )
+        talk.speakers.add(unrelated)
+        HistoricalSpeakerCredit.objects.create(
+            talk=talk,
+            speaker=unrelated,
+            source_identity=identity,
+            name_at_source=unrelated.name,
+            source_url=identity.source_url,
+            source_updated_at=updated,
+        )
+
+    peer = ConferenceSeries.objects.create(
+        slug="peer-conf",
+        name="Peer Conf",
+        website="https://peer.example/",
+    )
+    peer_edition = ConferenceEdition.objects.create(
+        series=peer,
+        external_key="2025",
+        name="Peer Conf 2025",
+        date_from=date(2025, 9, 1),
+        source_url="https://peer.example/2025/",
+        source_updated_at=updated,
+    )
+    peer_talk = HistoricalTalk.objects.create(
+        edition=peer_edition,
+        external_key="agent-peer",
+        title="Agent Evals at Peer Conf",
+        session_format="Talk",
+        source_url="https://peer.example/2025/agent-peer",
+        source_updated_at=updated,
+    )
+    peer_talk.speakers.add(speaker)
+    HistoricalSpeakerCredit.objects.create(
+        talk=peer_talk,
+        speaker=speaker,
+        name_at_source=speaker.name,
+        source_url=peer_talk.source_url,
+        source_updated_at=updated,
+    )
+
+    result = conference_memory(event.slug, query="Agent", base_url="https://example.test")
+    assert [row["name"] for row in result["returning_speakers"]] == ["Returning Builder"]
+    assert result["returning_speakers"][0]["appearance_count"] == 2
+    assert result["returning_speakers"][0]["edition_count"] == 2
+    assert len(result["returning_speakers"][0]["verified_sources"]) == 2
+
+    one_edition = conference_memory(
+        event.slug,
+        query="Agent Evals in 2024",
+        base_url="https://example.test",
+    )
+    assert one_edition["matching_talks"] == 1
+    assert one_edition["returning_speakers"] == []
 
 
 @pytest.mark.django_db(transaction=True)

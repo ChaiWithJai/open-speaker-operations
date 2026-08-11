@@ -1,4 +1,8 @@
-from pretalx_speakerops.buzz_reads import _CONTENT_SOURCE_RESOURCES, _SOURCE_RESOURCES
+from pretalx_speakerops.buzz_reads import (
+    _CONFERENCE_MEMORY_SOURCE_RESOURCES,
+    _CONTENT_SOURCE_RESOURCES,
+    _SOURCE_RESOURCES,
+)
 from pretalx_speakerops.canonical_links import COMMAND, RESOURCES
 from pretalx_speakerops.integrations.buzz.buyer_workflows import (
     BUYER_WORKFLOWS,
@@ -78,3 +82,7 @@ def test_conference_memory_is_the_issue_41_differentiator_not_a_ninth_mandatory_
     assert CONFERENCE_MEMORY_DIFFERENTIATOR.read_status == IMPLEMENTED
     assert "conference-memory" in CONFERENCE_MEMORY_DIFFERENTIATOR.link_resources
     assert "conference-speaker" in CONFERENCE_MEMORY_DIFFERENTIATOR.link_resources
+    assert set(CONFERENCE_MEMORY_DIFFERENTIATOR.link_resources) == {
+        *_CONFERENCE_MEMORY_SOURCE_RESOURCES.values(),
+        "conference-speaker",
+    }

@@ -534,7 +534,7 @@ class Command(BaseCommand):
                     "can_change_teams": True,
                 },
             ),
-            ("SpeakerOps reviewers", {"can_change_submissions": False, "is_reviewer": True}),
+            ("SpeakerOps reviewers", {"can_change_submissions": False, "is_reviewer": False}),
         )
         for name, permissions in teams:
             team, _ = Team.objects.get_or_create(organiser=event.organiser, name=name)
@@ -562,6 +562,10 @@ class Command(BaseCommand):
         )
 
         with scope(event=event):
+            # Benchmark rehearsals create temporary plugin-owned rounds and
+            # assignments. The canonical demo does not define one, so a true
+            # deterministic restore must clear that state before rebuilding.
+            EvaluationRound.objects.filter(event=event).delete()
             configure_demo_cfp(event)
             public_speaker_questions = {}
             for label in ("Job title", "Company"):

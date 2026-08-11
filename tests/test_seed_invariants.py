@@ -346,6 +346,7 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             organiser=event.organiser,
             name="SpeakerOps reviewers",
         )
+        assert reviewer_team.is_reviewer is False
         assert (
             client.get(
                 reverse(
@@ -511,6 +512,20 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         password="throwaway-password",
     )
     with scope(event=event):
+        reviewer = User.objects.get(email="reviewer@example.org")
+        contaminated_round = EvaluationRound.objects.create(
+            event=event,
+            name="Browser Blind Round contamination",
+            opens_at="2026-08-01",
+            closes_at="2026-10-15",
+            blinded=True,
+        )
+        RoundReviewAssignment.objects.create(
+            event=event,
+            round=contaminated_round,
+            reviewer=reviewer,
+            submission=event.submissions.filter(assigned_reviewers=reviewer).get(),
+        )
         ActivityLog.objects.create(
             event=event,
             person=evaluator,
@@ -522,4 +537,8 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
     assert not User.objects.filter(email=EVALUATOR_SIGNUP_EMAIL).exists()
     event.refresh_from_db()
     with scope(event=event):
+        assert list(EvaluationRound.objects.filter(event=event).values_list("name", flat=True)) == [
+            "DemoCon blinded review"
+        ]
+        assert RoundReviewAssignment.objects.filter(event=event).count() == 1
         assert _baseline(event) == first

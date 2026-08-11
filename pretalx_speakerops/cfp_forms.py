@@ -4,6 +4,7 @@ from django.db.models import Q, QuerySet
 from pretalx.person.models import User
 from pretalx.submission.models import AnswerOption, Question, Track
 
+from .auth import REVIEWER_TEAM_NAME
 from .models import ConditionalQuestionRule, ReviewerPool, ReviewerPoolTrack
 
 
@@ -86,7 +87,7 @@ class ReviewerPoolForm(forms.Form):
             User.objects.filter(
                 Q(teams__all_events=True, teams__organiser=event.organiser)
                 | Q(teams__limit_events=event),
-                teams__is_reviewer=True,
+                teams__name=REVIEWER_TEAM_NAME,
             )
             .distinct()
             .order_by("email")

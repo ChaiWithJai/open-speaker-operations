@@ -664,6 +664,12 @@ def content_readiness_message(event_slug, base_url=DEFAULT_BASE_URL):
     return render_content_readiness(content_readiness(event_slug, base_url=base_url))
 
 
+_CONFERENCE_MEMORY_SOURCE_RESOURCES = {
+    "memory": "conference-memory",
+    "crm": "crm-directory",
+}
+
+
 def conference_memory(event_slug, query="", base_url=DEFAULT_BASE_URL):
     """Return sourced conference-memory evidence without inventing identity links."""
 
@@ -674,9 +680,10 @@ def conference_memory(event_slug, query="", base_url=DEFAULT_BASE_URL):
     if len(query) > 160:
         raise ValueError("conference memory query must be at most 160 characters")
 
-    talks = HistoricalTalk.objects.select_related("edition__series").prefetch_related(
+    all_talks = HistoricalTalk.objects.select_related("edition__series").prefetch_related(
         "credits__speaker"
     )
+    talks = all_talks
     if query:
         talks = talks.filter(
             Q(title__icontains=query)
@@ -689,6 +696,7 @@ def conference_memory(event_slug, query="", base_url=DEFAULT_BASE_URL):
             | Q(edition__name__icontains=query)
         ).distinct()
     insights = memory_decision_support(talks)
+    full_insights = insights if not query else memory_decision_support(all_talks)
     base = base_url.rstrip("/")
 
     matching_evidence = []
@@ -723,8 +731,10 @@ def conference_memory(event_slug, query="", base_url=DEFAULT_BASE_URL):
                 active=True,
                 resolution_status=HistoricalSourceIdentity.VERIFIED,
                 edition__series__slug="ai-engineer",
+                credits__talk__in=talks,
             )
             .select_related("edition__series")
+            .distinct()
             .order_by("edition__date_from", "edition__name")
         )
         returning.append(
@@ -759,6 +769,11 @@ def conference_memory(event_slug, query="", base_url=DEFAULT_BASE_URL):
         "event": event.slug,
         "query": query,
         "matching_talks": talks.count(),
+        "scope": {
+            "query_applied": bool(query),
+            "matching_talks": talks.count(),
+            "corpus_totals_are_unfiltered": True,
+        },
         "corpus": {
             "series": ConferenceSeries.objects.count(),
             "editions": ConferenceEdition.objects.count(),
@@ -772,6 +787,18 @@ def conference_memory(event_slug, query="", base_url=DEFAULT_BASE_URL):
             "editions": insights["aie"]["editions"],
             "missing_format": insights["aie_missing_format"],
             "missing_track": insights["aie_missing_track"],
+        },
+        "aie_corpus": {
+            "talks": full_insights["aie"]["talks"],
+            "editions": full_insights["aie"]["editions"],
+            "missing_format": full_insights["aie_missing_format"],
+            "missing_track": full_insights["aie_missing_track"],
+        },
+        "corpus_gaps": {
+            "missing_format": all_talks.filter(
+                session_format__in=("", SOURCE_NOT_PROVIDED)
+            ).count(),
+            "missing_track": all_talks.filter(track__in=("", SOURCE_NOT_PROVIDED)).count(),
         },
         "evidence_sample": matching_evidence,
         "topic_signals": insights["topics"],
@@ -791,21 +818,38 @@ def conference_memory(event_slug, query="", base_url=DEFAULT_BASE_URL):
 def render_conference_memory(result):
     corpus = result["corpus"]
     aie = result["aie"]
+    aie_corpus = result.get("aie_corpus", aie)
+    corpus_gaps = result.get(
+        "corpus_gaps",
+        {"missing_format": aie["missing_format"], "missing_track": aie["missing_track"]},
+    )
     lines = [f"# Conference Memory — {result['event']}", ""]
     lines.append(
-        f"**Evidence corpus:** {corpus['talks']} sourced talks across "
-        f"{corpus['editions']} editions, {corpus['speaker_credits']} speaker credits, "
+        f"**Full evidence corpus (unfiltered):** {corpus['series']} series, "
+        f"{corpus['talks']} sourced talks across {corpus['editions']} editions, "
+        f"{corpus['speaker_credits']} speaker credits, "
         f"{corpus['source_identities']} active source identities, and {corpus['people']} people."
     )
     if result["query"]:
-        lines.append(f"Query `{result['query']}` matched {result['matching_talks']} sourced talks.")
+        lines.append(
+            f"**Query-matched subset:** `{result['query']}` matched "
+            f"{result['matching_talks']} sourced talks. Signals and returning-speaker "
+            "counts below use only this subset."
+        )
     lines.extend(("", "## What the evidence says", ""))
-    if result["topic_signals"]:
-        lines.append("Topic frequency in the matching evidence (AIE / peer conferences):")
-        for topic in result["topic_signals"]:
-            lines.append(f"- **{topic['label']}** — {topic['aie']} / {topic['peers']}")
-    else:
-        lines.append("No source-declared topic labels matched; no topic was inferred.")
+    for label, signals in (
+        ("Topic", result.get("topic_signals", [])),
+        ("Format", result.get("format_signals", [])),
+        ("Track", result.get("track_signals", [])),
+    ):
+        if signals:
+            lines.append(f"{label} frequency in the matching evidence (AIE / peer conferences):")
+            for signal in signals:
+                lines.append(f"- **{signal['label']}** — {signal['aie']} / {signal['peers']}")
+        else:
+            lines.append(
+                f"No source-declared {label.casefold()} labels matched; none was inferred."
+            )
     if result["evidence_sample"]:
         lines.extend(("", "Recent matching source records:", ""))
         for talk in result["evidence_sample"]:
@@ -835,14 +879,29 @@ def render_conference_memory(result):
                 f"  - [{source['series']} / {source['edition']}]({source['source_url']}) "
                 f"as {source['display_name']}"
             )
+    provenance_scope = []
+    if result["query"]:
+        provenance_scope.append(
+            f"- Query-matched AIE subset: {aie['talks']} talks across "
+            f"{aie['editions']} editions; format omitted on {aie['missing_format']} and "
+            f"track omitted on {aie['missing_track']}."
+        )
+    provenance_scope.extend(
+        (
+            f"- Full AIE corpus: {aie_corpus['talks']} talks across "
+            f"{aie_corpus['editions']} editions; format omitted on "
+            f"{aie_corpus['missing_format']} and track omitted on "
+            f"{aie_corpus['missing_track']}.",
+            f"- Full corpus omissions: {corpus_gaps['missing_format']} formats and "
+            f"{corpus_gaps['missing_track']} tracks remain `{SOURCE_NOT_PROVIDED}` or blank.",
+        )
+    )
     lines.extend(
         (
             "",
             "## Provenance limits",
             "",
-            f"- AIE scope: {aie['talks']} talks across {aie['editions']} editions.",
-            f"- Source omitted format on {aie['missing_format']} AIE talks and track on "
-            f"{aie['missing_track']}; those values remain `{SOURCE_NOT_PROVIDED}` or blank.",
+            *provenance_scope,
             "- Missing metadata and unverified identity recurrence are never inferred.",
             "",
             "## Continue in the system of record",
@@ -856,7 +915,7 @@ def render_conference_memory(result):
             f"2. Queried {result['matching_talks']} matching sourced talk records and returned "
             f"a bounded sample of {len(result['evidence_sample'])} source-linked records.",
             "3. Counted recurrence only where active source identities are explicitly verified "
-            "across at least two AIE editions.",
+            "across at least two AIE editions in the current evidence scope.",
             "4. Preserved source-declared metadata gaps without filling them.",
             "5. Built permission-aware Conference Memory and CRM links from the "
             "canonical registry.",

@@ -54,8 +54,8 @@ are idempotent and make verified cross-edition recurrence explicit without treat
 matching name as proof of identity.
 The committed expectation is 13 series, 204 editions, 19,466 talks, 21,419 credits,
 21,355 edition-scoped source identities, and 14,068 provisional person clusters;
-122 declared gaps, 9 empty editions, 1,067 missing format labels,
-and 5,678 missing track labels remain explicit rather than inferred. The additional
+115 declared gaps, 5 empty editions, 1,067 missing format labels,
+and 6,077 missing track labels remain explicit rather than inferred. The additional
 JSConf US 2009/2011/2012 and JSConf China 2012–2015 rows come from immutable
 first-party repository branches. Their unavailable track labels remain explicit
 instead of being guessed.
