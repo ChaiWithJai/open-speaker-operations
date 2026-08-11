@@ -32,8 +32,10 @@ from pretalx_speakerops.management.commands.speakerops_seed import (
 from pretalx_speakerops.models import (
     CRMContact,
     CRMPipelineCard,
+    EvaluationRound,
     ExternalIdentity,
     OnboardingTask,
+    RoundReviewAssignment,
     SubmissionPresenterRole,
     SyncAttempt,
     SyncItem,
@@ -366,6 +368,20 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         password="throwaway-password",
     )
     with scope(event=event):
+        reviewer = User.objects.get(email="reviewer@example.org")
+        contaminated_round = EvaluationRound.objects.create(
+            event=event,
+            name="Browser Blind Round contamination",
+            opens_at="2026-08-01",
+            closes_at="2026-10-15",
+            blinded=True,
+        )
+        RoundReviewAssignment.objects.create(
+            event=event,
+            round=contaminated_round,
+            reviewer=reviewer,
+            submission=event.submissions.filter(assigned_reviewers=reviewer).get(),
+        )
         ActivityLog.objects.create(
             event=event,
             person=evaluator,
@@ -377,4 +393,6 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
     assert not User.objects.filter(email=EVALUATOR_SIGNUP_EMAIL).exists()
     event.refresh_from_db()
     with scope(event=event):
+        assert not EvaluationRound.objects.filter(event=event).exists()
+        assert not RoundReviewAssignment.objects.filter(event=event).exists()
         assert _baseline(event) == first

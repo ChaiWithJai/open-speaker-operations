@@ -22,6 +22,7 @@ from ...models import (
     AcceleventsConnection,
     CRMContact,
     CRMPipelineCard,
+    EvaluationRound,
     ExternalIdentity,
     OnboardingTask,
     ReminderReceipt,
@@ -351,6 +352,10 @@ class Command(BaseCommand):
         )
 
         with scope(event=event):
+            # Benchmark rehearsals create temporary plugin-owned rounds and
+            # assignments. The canonical demo does not define one, so a true
+            # deterministic restore must clear that state before rebuilding.
+            EvaluationRound.objects.filter(event=event).delete()
             configure_demo_cfp(event)
             public_speaker_questions = {}
             for label in ("Job title", "Company"):
