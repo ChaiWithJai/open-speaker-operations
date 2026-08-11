@@ -3,10 +3,11 @@
   "mcp": {
     "speakerops-reads": {
       "type": "local",
-      "command": ["uv", "run", "python", "tools/mcp_speakerops_server.py"],
+      "command": ["python3", "{env:SPEAKEROPS_REPO_ROOT}/tools/run_speakerops_mcp_bridge.py"],
       "enabled": true,
       "environment": {
-        "PRETALX_CONFIG_FILE": "docker/pretalx-local.cfg",
+        "SPEAKEROPS_REPO_ROOT": "{env:SPEAKEROPS_REPO_ROOT}",
+        "SPEAKEROPS_COMPOSE_PROJECT": "{env:SPEAKEROPS_COMPOSE_PROJECT}",
         "SPEAKEROPS_BASE_URL": "{env:SPEAKEROPS_BASE_URL}",
         "SPEAKEROPS_MCP_PRINCIPAL": "{env:SPEAKEROPS_MCP_PRINCIPAL}",
         "SPEAKEROPS_MCP_ALLOWED_EVENTS": "{env:SPEAKEROPS_MCP_ALLOWED_EVENTS}",

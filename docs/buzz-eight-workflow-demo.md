@@ -19,9 +19,19 @@ Buzz snapshots deliberately exclude environment variables. After import, set
 these non-secret process bindings in each agent's Desktop configuration:
 
 ```text
+OPENCODE_CONFIG=/absolute/path/to/open-speaker-operations/opencode.json
+SPEAKEROPS_REPO_ROOT=/absolute/path/to/open-speaker-operations
+SPEAKEROPS_COMPOSE_PROJECT=speakerops-hci
 SPEAKEROPS_BASE_URL=http://127.0.0.1:38001
 SPEAKEROPS_MCP_ALLOWED_EVENTS=speakerops-demo
 ```
+
+The absolute OpenCode config path is required because Buzz launches managed
+agents from its `~/.buzz` nest rather than the repository. The checked-in MCP
+launcher then runs the bridge inside the named SpeakerOps `web` container so
+typed reads use the deterministic PostgreSQL data. It does not publish the
+database or attach Buzz to a SpeakerOps network. Do not point it at another
+Compose project.
 
 Then set one profile per process:
 
@@ -46,6 +56,19 @@ Do not put model credentials, relay keys, passwords, or connector credentials
 in an agent snapshot, channel, screenshot, or checked-in file. OpenCode resolves
 these process values into `opencode.json`; the MCP bridge refuses missing,
 wildcard, cross-event, and out-of-capability calls.
+
+Before importing agents, verify the bridge target without starting or changing
+containers (repeat with each profile's variables):
+
+```sh
+python3 tools/run_speakerops_mcp_bridge.py --check
+opencode mcp list
+```
+
+The first command must name a running `web` service and prove that its image
+contains `tools/mcp_speakerops_server.py`. A connection failure after the
+branch is built is a real runtime blocker; do not fall back to the host SQLite
+configuration because it is not the demo system of record.
 
 ## Capture standard for every workflow
 

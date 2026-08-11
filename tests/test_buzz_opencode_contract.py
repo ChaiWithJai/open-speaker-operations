@@ -16,11 +16,15 @@ def test_opencode_bridge_inherits_fail_closed_scope_from_each_buzz_agent_process
     bridge = config["mcp"]["speakerops-reads"]
 
     assert bridge["type"] == "local"
-    assert bridge["command"] == ["uv", "run", "python", "tools/mcp_speakerops_server.py"]
+    assert bridge["command"] == [
+        "python3",
+        "{env:SPEAKEROPS_REPO_ROOT}/tools/run_speakerops_mcp_bridge.py",
+    ]
     assert bridge["enabled"] is True
     environment = bridge["environment"]
     assert environment == {
-        "PRETALX_CONFIG_FILE": "docker/pretalx-local.cfg",
+        "SPEAKEROPS_REPO_ROOT": "{env:SPEAKEROPS_REPO_ROOT}",
+        "SPEAKEROPS_COMPOSE_PROJECT": "{env:SPEAKEROPS_COMPOSE_PROJECT}",
         "SPEAKEROPS_BASE_URL": "{env:SPEAKEROPS_BASE_URL}",
         "SPEAKEROPS_MCP_PRINCIPAL": "{env:SPEAKEROPS_MCP_PRINCIPAL}",
         "SPEAKEROPS_MCP_ALLOWED_EVENTS": "{env:SPEAKEROPS_MCP_ALLOWED_EVENTS}",

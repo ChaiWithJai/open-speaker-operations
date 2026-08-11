@@ -40,11 +40,25 @@ project is stopped.
 
    Start the local deterministic SpeakerOps stack separately and confirm its
    configured origin is reachable before asking the agent to call a typed
-   read. The checked-in `opencode.json` inherits a fail-closed principal,
+   read. Buzz starts OpenCode in `~/.buzz`, so every imported agent must set
+   `OPENCODE_CONFIG` to the absolute checked-in `opencode.json` path,
+   `SPEAKEROPS_REPO_ROOT` to the absolute checkout, and
+   `SPEAKEROPS_COMPOSE_PROJECT` to the explicitly targeted project. The
+   checked-in config uses a stdio-transparent Compose launcher so reads execute
+   inside that project's `web` container against its PostgreSQL database; it
+   never uses the checkout's unrelated SQLite file. It inherits a fail-closed principal,
    event, capability set, and optional self-service subject from each Buzz
    agent process; use explicit reviewed values, never wildcards. For the
    eight-workflow demo, import and configure the three least-privilege agent
    profiles in `docs/buzz-eight-workflow-demo.md`.
+
+   With one profile's environment exported, this read-only preflight must pass
+   before opening a channel:
+
+   ```sh
+   python3 tools/run_speakerops_mcp_bridge.py --check
+   opencode mcp list
+   ```
 
 ## Start and observe
 
