@@ -323,7 +323,7 @@ class Command(BaseCommand):
                     "can_change_teams": True,
                 },
             ),
-            ("SpeakerOps reviewers", {"can_change_submissions": False, "is_reviewer": True}),
+            ("SpeakerOps reviewers", {"can_change_submissions": False, "is_reviewer": False}),
         )
         for name, permissions in teams:
             team, _ = Team.objects.get_or_create(organiser=event.organiser, name=name)

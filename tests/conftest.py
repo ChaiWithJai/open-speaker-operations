@@ -6,6 +6,7 @@ from django.core.management import call_command
 from pretalx.event.models import Event, Team
 from pretalx.person.models import User
 
+from pretalx_speakerops.auth import REVIEWER_TEAM_NAME
 from pretalx_speakerops.cfp import configure_demo_cfp
 
 
@@ -43,8 +44,8 @@ def users(event):
     chair_team.members.add(users["chair"])
     reviewer_team = Team.objects.create(
         organiser=event.organiser,
-        name=f"Reviewer {event.slug}",
-        is_reviewer=True,
+        name=REVIEWER_TEAM_NAME,
+        is_reviewer=False,
     )
     reviewer_team.limit_events.add(event)
     reviewer_team.members.add(users["reviewer"])

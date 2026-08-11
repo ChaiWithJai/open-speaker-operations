@@ -6,6 +6,7 @@ from pretalx.event.models import Team
 from pretalx.person.models import User
 from pretalx.submission.models import Submission, SubmissionStates, Track
 
+from pretalx_speakerops.auth import REVIEWER_TEAM_NAME
 from pretalx_speakerops.cfp import (
     SpeakerOpsQuestionsForm,
     configure_demo_cfp_routing,
@@ -22,7 +23,11 @@ def _configure_routing(event, users):
         name="Second Reviewer",
         password="test-password",
     )
-    team = Team.objects.get(organiser=event.organiser, is_reviewer=True, members=users["reviewer"])
+    team = Team.objects.get(
+        organiser=event.organiser,
+        name=REVIEWER_TEAM_NAME,
+        members=users["reviewer"],
+    )
     team.members.add(second)
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")

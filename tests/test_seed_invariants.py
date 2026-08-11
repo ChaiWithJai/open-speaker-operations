@@ -254,6 +254,7 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             organiser=event.organiser,
             name="SpeakerOps reviewers",
         )
+        assert reviewer_team.is_reviewer is False
         assert (
             client.get(
                 reverse(
