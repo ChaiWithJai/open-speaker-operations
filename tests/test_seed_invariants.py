@@ -409,7 +409,11 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         }
         assert progress["rounds"][0]["blinded"] is True
         assert progress["incomplete_assignments"][0]["rubric"]["required_answered"] == 1
-        assert progress["incomplete_assignments"][0]["rubric"]["required_total"] == 2
+        assert progress["incomplete_assignments"][0]["rubric"]["required_total"] == 4
+        assert [
+            criterion["name"]
+            for criterion in progress["incomplete_assignments"][0]["rubric"]["criteria"]
+        ] == ["Originality", "Relevance", "Recommendation", "Comments"]
 
         personal = reviewer_next_assignment(
             event.slug,
@@ -423,7 +427,7 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         assert personal["next_assignment"]["save_state"] == {
             "has_saved_answers": True,
             "saved_criteria": 1,
-            "required_criteria": 2,
+            "required_criteria": 4,
             "required_answered": 1,
         }
 

@@ -225,7 +225,13 @@ def test_release_readiness_reports_conflicts_and_links(event, users):
         and row["talk"]["pk"] == first.pk
         for row in conflicts
     )
-    conflict = conflicts[0]
+    conflict = next(
+        row
+        for row in conflicts
+        if row["type"] == "room"
+        and row["talk"]["pk"] in {first.pk, second.pk}
+        and row["competitor"]["pk"] in {first.pk, second.pk}
+    )
     assert conflict["competitor"]["pk"] in {first.pk, second.pk}
     assert conflict["links"] == {
         "conflict": (

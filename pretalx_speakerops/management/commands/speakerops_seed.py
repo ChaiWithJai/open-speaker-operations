@@ -194,10 +194,10 @@ def _seed_buzz_review_fixture(event, users, submission):
         blinded=True,
         active=True,
     )
-    impact = EvaluationCriterion.objects.create(
+    originality = EvaluationCriterion.objects.create(
         event=event,
         round=round_obj,
-        name="Program impact",
+        name="Originality",
         field_type=EvaluationCriterion.NUMERIC,
         position=0,
         required=True,
@@ -208,11 +208,32 @@ def _seed_buzz_review_fixture(event, users, submission):
     EvaluationCriterion.objects.create(
         event=event,
         round=round_obj,
-        name="Reviewer rationale",
-        field_type=EvaluationCriterion.TEXT,
+        name="Relevance",
+        field_type=EvaluationCriterion.NUMERIC,
         position=1,
         required=True,
         weight=Decimal("1.00"),
+        minimum=Decimal("1"),
+        maximum=Decimal("5"),
+    )
+    EvaluationCriterion.objects.create(
+        event=event,
+        round=round_obj,
+        name="Recommendation",
+        field_type=EvaluationCriterion.DROPDOWN,
+        position=2,
+        required=True,
+        weight=Decimal("0.00"),
+        options=["Accept", "Maybe", "Reject"],
+    )
+    EvaluationCriterion.objects.create(
+        event=event,
+        round=round_obj,
+        name="Comments",
+        field_type=EvaluationCriterion.TEXT,
+        position=3,
+        required=True,
+        weight=Decimal("0.00"),
     )
     RoundReviewer.objects.create(
         event=event,
@@ -230,7 +251,7 @@ def _seed_buzz_review_fixture(event, users, submission):
     EvaluationAnswer.objects.create(
         event=event,
         assignment=assignment,
-        criterion=impact,
+        criterion=originality,
         numeric_value=Decimal("4"),
     )
 

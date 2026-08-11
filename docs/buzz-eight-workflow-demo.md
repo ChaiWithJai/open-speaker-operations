@@ -148,9 +148,9 @@ Use these fixed records to detect a wrong database, stale seed, or hallucinated
 answer before accepting screenshots:
 
 - Review progress names one blinded `DemoCon blinded review` round with one
-  incomplete, overdue assignment and a rubric saved at 1 of 2 required answers.
+  incomplete, overdue assignment and a rubric saved at 1 of 4 required answers.
 - Reviewer next assignment names `Review: Designing Trustworthy Systems`, with
-  one remaining/overdue item and the same 1-of-2 saved state. The blinded answer
+  one remaining/overdue item and the same 1-of-4 saved state. The blinded answer
   must not disclose speaker identity, biography, or company.
 - Content readiness reports four upload tasks across two sessions: one ready and
   one not ready. `Trustworthy AI Needs Operational Guardrails` is ready;
