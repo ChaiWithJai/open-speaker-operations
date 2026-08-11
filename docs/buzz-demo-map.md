@@ -12,7 +12,7 @@ agents coordinate, while SpeakerOps stays the system of record and every
 message carries an addressable, permission-aware link that lets a human
 confirm, drill deeper, or continue in the actual web UI.
 
-`pretalx_speakerops/integrations/buzz/resources.py` is the machine-checked
+`pretalx_speakerops/canonical_links.py` is the machine-checked
 registry behind this map. It distinguishes shareable GET **links** from
 POST-only **commands** (links navigate, commands mutate — a command route is
 never handed out as a link), and grades every anchor's exactness:

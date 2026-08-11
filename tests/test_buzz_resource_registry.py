@@ -14,7 +14,7 @@ import pytest
 from django.urls import reverse
 from django_scopes import scope
 
-from pretalx_speakerops.integrations.buzz.resources import (
+from pretalx_speakerops.canonical_links import (
     COMMAND,
     CORE_ROWS,
     EXACT_RECORD,
@@ -24,6 +24,7 @@ from pretalx_speakerops.integrations.buzz.resources import (
     PLANNED,
     RESOURCES,
 )
+from pretalx_speakerops.go_resolver import RESOURCE_SEP
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -225,3 +226,103 @@ def test_command_endpoints_refuse_get_so_links_can_never_mutate(enabled_event, u
         assert response.status_code == 405, (
             f"{link.resource}: command endpoints must reject GET navigation"
         )
+
+
+# --- go/ resolver -----------------------------------------------------------
+#
+# The go/{resource}/{opaque-id} contract: durable links resolve server-side,
+# authorize before they redirect, and never expose a command route as a link.
+
+
+def _go_url(resource, opaque_id):
+    return reverse(
+        "plugins:speakerops:speakerops_go",
+        kwargs={"resource": resource, "opaque_id": opaque_id},
+    )
+
+
+@pytest.mark.parametrize("resource", ORGANISER_CONSOLES)
+def test_go_redirects_chair_to_the_exact_organiser_view(enabled_event, users, client, resource):
+    link = by_resource(resource)
+    slug = enabled_event.slug
+    client.force_login(users["chair"])
+    response = client.get(_go_url(resource, slug))
+    assert response.status_code == 302, resource
+    assert response["Location"] == url_for(link, event=slug), resource
+
+
+def test_go_redirects_to_two_kwarg_exact_records(enabled_event, users, client):
+    slug = enabled_event.slug
+    client.force_login(users["chair"])
+    presenters = by_resource("submission-presenters")
+    response = client.get(_go_url("submission-presenters", f"{slug}{RESOURCE_SEP}ABCDEF"))
+    assert response.status_code == 302
+    assert response["Location"] == url_for(presenters, event=slug)
+
+
+def test_go_redirects_reviewer_to_reviewer_exact_record(enabled_event, users, client):
+    link = by_resource("review-assignment")
+    slug = enabled_event.slug
+    client.force_login(users["reviewer"])
+    response = client.get(_go_url("review-assignment", f"{slug}{RESOURCE_SEP}1"))
+    assert response.status_code == 302
+    assert response["Location"] == url_for(link, event=slug)
+
+
+def test_go_redirects_speaker_to_their_own_portal_surface(enabled_event, users, client):
+    with scope(event=enabled_event):
+        enabled_event.submissions.first().speakers.add(users["speaker"])
+    slug = enabled_event.slug
+    client.force_login(users["speaker"])
+    response = client.get(_go_url("speaker-checklist", slug))
+    assert response.status_code == 302
+    assert response["Location"] == url_for(by_resource("speaker-checklist"), event=slug)
+
+
+def test_go_redirects_anonymously_for_public_outputs(enabled_event, client):
+    slug = enabled_event.slug
+    response = client.get(_go_url("status", slug))
+    assert response.status_code == 302
+    assert response["Location"] == url_for(by_resource("status"), event=slug)
+
+
+def test_go_redirects_chair_to_organiser_scoped_crm(enabled_event, users, client):
+    link = by_resource("crm-directory")
+    client.force_login(users["chair"])
+    response = client.get(_go_url("crm-directory", enabled_event.organiser.slug))
+    assert response.status_code == 302
+    assert response["Location"] == url_for(link, organiser=enabled_event.organiser.slug)
+
+
+def test_go_never_redirects_an_unauthorized_audience(enabled_event, users, client):
+    slug = enabled_event.slug
+    client.force_login(users["speaker"])
+    response = client.get(_go_url("abstract-console", slug))
+    assert response.status_code == 404, "speaker must get a non-disclosing 404, not a redirect"
+    client.logout()
+    response = client.get(_go_url("abstract-console", slug))
+    assert response.status_code == 404, "anonymous must get a non-disclosing 404, not a redirect"
+
+
+def test_go_404s_for_unknown_resource(enabled_event, users, client):
+    client.force_login(users["chair"])
+    assert client.get(_go_url("does-not-exist", enabled_event.slug)).status_code == 404
+
+
+def test_go_404s_for_malformed_opaque_ids(enabled_event, users, client):
+    slug = enabled_event.slug
+    client.force_login(users["chair"])
+    assert client.get(_go_url("abstract-console", f"{slug}{RESOURCE_SEP}extra")).status_code == 404
+    bad_pk = _go_url("review-assignment", f"{slug}{RESOURCE_SEP}not-an-int")
+    assert client.get(bad_pk).status_code == 404
+
+
+def test_go_never_exposes_a_command_route_as_a_link(enabled_event, users, client):
+    slug = enabled_event.slug
+    client.force_login(users["chair"])
+    for link in RESOURCES:
+        if link.interaction != COMMAND:
+            continue
+        parts = "".join(f"{RESOURCE_SEP}{SAMPLE_KWARGS[name]}" for name in link.url_kwargs[1:])
+        opaque_id = f"{slug}{parts}"
+        assert client.get(_go_url(link.resource, opaque_id)).status_code == 404, link.resource

@@ -16,6 +16,7 @@ from .content_ops import (
     SpeakerEvidenceDownloadView,
 )
 from .crm import CRMDirectoryView
+from .go_resolver import GoResolveView
 from .public_widgets import (
     EmbedBuilderView,
     PublicSessionDetailView,
@@ -304,5 +305,10 @@ urlpatterns = [
         "<slug:event>/speaker-operations/status.json",
         StatusView.as_view(),
         name="speakerops_status",
+    ),
+    path(
+        "go/<slug:resource>/<str:opaque_id>/",
+        GoResolveView.as_view(),
+        name="speakerops_go",
     ),
 ]

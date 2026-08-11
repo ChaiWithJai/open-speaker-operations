@@ -4,7 +4,12 @@ Pure data: which SpeakerOps routes anchor each judged benchmark row's Buzz
 demo, and how exact each anchor really is. This module must not import
 Django or any runtime plugin code; the cross-checks against the real URL
 surface and the seeded role matrix live in
-``tests/test_buzz_resource_registry.py``.
+``tests/test_buzz_resource_registry.py``. The ``go/`` resolver in
+``go_resolver.py`` serves these links as durable, permission-aware URLs.
+
+It lives in the protected SpeakerOps runtime (not the Buzz adapter package)
+so the runtime can resolve its own links without importing pre-1.0 Buzz
+code; the ADR-014 isolation invariant keeps the adapter isolated.
 
 Honesty rules encoded here (from the PR #69 review):
 
