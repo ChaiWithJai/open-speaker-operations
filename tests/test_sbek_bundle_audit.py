@@ -12,6 +12,7 @@ def make_source(root: Path):
         "secret-value /invitation/demo/abcdefghijklmnopqrstuvwxyzABCDEF"
     )
     (root / "manual-checklist.md").write_text("manual")
+    (root / "unselected-screenshot.png").write_bytes(b"not implicitly staged")
     for index in range(20):
         scenario = root / f"TST-S{index}"
         scenario.mkdir()
@@ -30,6 +31,8 @@ def test_stage_recursively_sanitizes_and_preserves_source(tmp_path):
     receipt = stage(source, destination, {"secret-value"})
 
     assert receipt["scenario_count"] == 20
+    assert receipt["delivery_ready"] is False
+    assert receipt["omitted_source_file_count"] > 0
     assert receipt["redaction_count"] >= 42
     assert (source / "report.json").read_bytes() == original
     staged_text = "\n".join(
@@ -64,6 +67,29 @@ def test_validate_source_rejects_auth_artifacts_and_symlinks(tmp_path):
         validate_source(source)
 
 
+def test_stage_rejects_destination_inside_source_before_writing(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    make_source(source)
+    destination = source / "staged"
+    with pytest.raises(ValueError, match="outside"):
+        stage(source, destination, {"secret-value"})
+    assert not destination.exists()
+
+
+@pytest.mark.parametrize(
+    "name",
+    ["prod.env", "AUTH_STATE.json", "browser-state.json", "Cookies.JSON"],
+)
+def test_validate_source_rejects_alternate_auth_artifact_names(tmp_path, name):
+    source = tmp_path / "source"
+    source.mkdir()
+    make_source(source)
+    (source / name).write_text("private")
+    with pytest.raises(ValueError, match="forbidden"):
+        validate_source(source)
+
+
 def test_cli_reads_credentials_without_copying_config(tmp_path, monkeypatch):
     source = tmp_path / "source"
     source.mkdir()
@@ -84,3 +110,48 @@ def test_cli_reads_credentials_without_copying_config(tmp_path, monkeypatch):
     )
     assert main() == 0
     assert not (destination / config.name).exists()
+
+
+def test_delivery_ready_requires_complete_metadata_and_reviewed_screenshot(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    make_source(source)
+    delivery = tmp_path / "delivery"
+    delivery.mkdir()
+    for name in ("README.md", "manual-results.json", "sanitized-run-config.json"):
+        (delivery / name).write_text("reviewed")
+    screenshot = tmp_path / "reviewed.png"
+    screenshot.write_bytes(b"reviewed screenshot")
+    allowlist = tmp_path / "allowlist.json"
+    from tools.sbek_bundle_audit import file_hash
+
+    allowlist.write_text(
+        json.dumps(
+            [
+                {
+                    "source": str(screenshot),
+                    "destination": "desktop/reviewed.png",
+                    "review_status": "approved",
+                    "sha256": file_hash(screenshot),
+                }
+            ]
+        )
+    )
+    receipt = stage(
+        source,
+        tmp_path / "destination",
+        {"secret-value"},
+        delivery_source=delivery,
+        screenshot_allowlist=allowlist,
+    )
+    assert receipt["delivery_ready"] is True
+    assert receipt["selected_screenshots"] == ["screenshots/desktop/reviewed.png"]
+
+
+def test_post_stage_scan_rejects_unredacted_access_token(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    make_source(source)
+    (source / "report.html").write_text("access_token=unreviewed")
+    with pytest.raises(ValueError, match="security scan"):
+        stage(source, tmp_path / "destination", {"different-secret"})

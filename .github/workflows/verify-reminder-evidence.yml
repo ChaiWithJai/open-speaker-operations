@@ -78,7 +78,7 @@ jobs:
           worker_log="$("${compose[@]}" logs --since "${AS_OF}T08:55:00Z" --until "${AS_OF}T10:05:00Z" worker)"
           evidence="$("${compose[@]}" exec -T web python -m pretalx speakerops_verify_reminder_evidence --event "$EVENT_SLUG" --as-of "$AS_OF")"
           task_id="$(printf '%s' "$evidence" | python3 -c 'import json,sys; print(json.load(sys.stdin)["celery_task_ids"][0])')"
-          printf '%s' "$beat_log" | grep -F 'speakerops-due-speaker-reminders-daily' >/dev/null
+          printf '%s' "$beat_log" | grep -F "speakerops_beat_dispatch schedule=speakerops-due-speaker-reminders-daily task_id=$task_id" >/dev/null
           printf '%s' "$worker_log" | grep -F "$task_id" >/dev/null
           printf 'container_revision=%s\ncontainer_image_id=%s\n' "$container_sha" "$web_image"
           printf '%s\n' "$evidence"
