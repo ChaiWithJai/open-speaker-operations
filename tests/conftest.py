@@ -3,11 +3,21 @@ import uuid
 
 import pytest
 from django.core.management import call_command
+from django.test import override_settings
 from pretalx.event.models import Event, Team
 from pretalx.person.models import User
 
 from pretalx_speakerops.auth import REVIEWER_TEAM_NAME
 from pretalx_speakerops.cfp import configure_demo_cfp
+
+
+@pytest.fixture(autouse=True)
+def shared_test_cache():
+    """Model the cross-process Redis cache with a functional in-memory test backend."""
+    with override_settings(
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+    ):
+        yield
 
 
 @pytest.fixture

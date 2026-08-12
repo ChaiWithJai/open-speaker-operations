@@ -45,7 +45,9 @@ from .conference_memory import (
 )
 from .domain.commands import Command, execute
 from .domain.state import StateMachine, Transition
-from .integrations.sync import execute_item, execute_preview, preview
+from .integrations.sync import SyncItemNotEligible, execute_item, execute_preview, preview
+from .integrations.sync_claims import SyncClaimBlocked
+from .integrations.sync_state import latest_failed_sync_items
 from .models import (
     AcceleventsConnection,
     AcceptanceWave,
@@ -73,10 +75,11 @@ from .models import (
     SyncItem,
     SyncPreview,
     SyncRun,
+    SyncWriteClaim,
     TaskEvidence,
     TransitionLog,
 )
-from .onboarding.reminders import queue_reminders
+from .onboarding.reminders import ReminderOutcomeAmbiguous, queue_reminders
 from .onboarding.services import record_evidence
 from .presenter_roles import presenter_rows
 from .program.auto_schedule import apply_schedule_proposal, build_schedule_proposal
@@ -1702,7 +1705,22 @@ class SyncConsoleView(EventContextMixin, TemplateView):
                 .prefetch_related("items__attempt_history")
                 .order_by("-created")[:10]
             )
-        context.update(event=self.event, connection=connection, previews=previews, runs=runs)
+            ambiguous_claims = list(
+                SyncWriteClaim.objects.filter(
+                    event=self.event,
+                    active=True,
+                    status=SyncWriteClaim.AMBIGUOUS,
+                )
+                .select_related("receipt", "actor")
+                .order_by("claimed_at", "pk")
+            )
+        context.update(
+            event=self.event,
+            connection=connection,
+            previews=previews,
+            runs=runs,
+            ambiguous_claims=ambiguous_claims,
+        )
         return context
 
     def post(self, request, event):
@@ -1714,19 +1732,28 @@ class SyncConsoleView(EventContextMixin, TemplateView):
             elif action == "run" and request.POST.get("confirm_sync") == "yes":
                 try:
                     execute_preview(self.event, request.POST["preview_id"], request.user)
-                except (ValueError, KeyError) as error:
+                except (ValueError, KeyError, SyncClaimBlocked) as error:
                     messages.error(request, str(error))
                 else:
                     messages.success(request, "Synchronization run created.")
             elif action == "retry" and request.POST.get("confirm_sync") == "yes":
                 item = get_object_or_404(
-                    SyncItem,
+                    latest_failed_sync_items(
+                        self.event,
+                        target_ids=[request.POST.get("item_id")],
+                    ),
                     pk=request.POST.get("item_id"),
-                    event=self.event,
-                    status=SyncItem.FAILED,
                 )
-                execute_item(item, request.user)
-                messages.success(request, "Failed item retried.")
+                try:
+                    execute_item(item, request.user)
+                except (SyncClaimBlocked, SyncItemNotEligible):
+                    messages.error(
+                        request,
+                        "This logical record has an unresolved synchronization claim; "
+                        "reconcile it below before retrying.",
+                    )
+                else:
+                    messages.success(request, "Failed item retried.")
             else:
                 messages.error(request, "Choose an action and confirm external writes.")
         return redirect(request.path)
@@ -1936,7 +1963,16 @@ class SyncRunView(EventContextMixin, View):
 
     def post(self, request, event, pk):
         with scope(event=self.event):
-            run = execute_preview(self.event, pk, request.user)
+            try:
+                run = execute_preview(self.event, pk, request.user)
+            except (SyncClaimBlocked, SyncItemNotEligible):
+                return JsonResponse(
+                    {
+                        "error": "sync_item_conflict",
+                        "detail": "A logical record is claimed or stale; reconcile and retry.",
+                    },
+                    status=409,
+                )
         return JsonResponse({"id": run.pk, "status": run.status})
 
 
@@ -1964,11 +2000,24 @@ class ReminderView(EventContextMixin, View):
                 outstanding_tasks = outstanding_tasks.filter(due_date__lt=today)
                 reminder_key = f"onboarding-overdue:{today.isoformat()}"
                 label = "overdue"
-            queued = queue_reminders(
-                self.event,
-                tasks=outstanding_tasks,
-                reminder_key=reminder_key,
-            )
+            try:
+                queued = queue_reminders(
+                    self.event,
+                    tasks=outstanding_tasks,
+                    reminder_key=reminder_key,
+                )
+            except ReminderOutcomeAmbiguous:
+                messages.error(
+                    request,
+                    "A reminder has an unknown broker outcome. "
+                    "Inspect its receipt before retrying.",
+                )
+                return redirect(
+                    reverse(
+                        "plugins:speakerops:speakerops_dashboard",
+                        kwargs={"event": event},
+                    )
+                )
         if queued:
             messages.success(
                 request,

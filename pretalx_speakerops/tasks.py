@@ -8,7 +8,7 @@ from pretalx.celery_app import app
 from pretalx.event.models import Event
 
 from .models import OnboardingTask
-from .onboarding.reminders import queue_reminders
+from .onboarding.reminders import ReminderOutcomeAmbiguous, queue_reminders
 
 
 def send_due_speaker_reminders(event_slug=None, as_of=None):
@@ -46,7 +46,17 @@ def send_due_speaker_reminders(event_slug=None, as_of=None):
     retry_kwargs={"max_retries": 5},
 )
 def send_due_speaker_reminders_task():
-    return send_due_speaker_reminders()
+    try:
+        return send_due_speaker_reminders()
+    except ReminderOutcomeAmbiguous as error:
+        # The durable claim means the broker may already have accepted the
+        # message. A retry would risk duplicate mail, so surface and stop.
+        return {
+            "status": "ambiguous",
+            "task_id": error.receipt.task_id,
+            "reminder_receipt_id": error.receipt.pk,
+            "retry_suppressed": True,
+        }
 
 
 app.conf.beat_schedule.setdefault(

@@ -52,6 +52,15 @@ from .views import (
     SyncRunView,
     TaskAdminView,
 )
+from .workflow_actions import (
+    SpeakerNudgeActionConfirmView,
+    SpeakerNudgeActionPreviewView,
+    SyncRecoveryActionConfirmView,
+    SyncRecoveryActionPreviewView,
+    SyncWriteClaimResolveView,
+    WorkflowActionReceiptListView,
+    WorkflowActionReceiptView,
+)
 
 app_name = "speakerops"
 
@@ -150,6 +159,41 @@ urlpatterns = [
         "orga/<slug:event>/speaker-operations/reminders/",
         ReminderView.as_view(),
         name="speakerops_reminders",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/actions/speaker-nudges/<uuid:correlation>/<uuid:nonce>/",
+        SpeakerNudgeActionPreviewView.as_view(),
+        name="speakerops_speaker_nudge_preview",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/actions/speaker-nudges/<uuid:correlation>/<uuid:nonce>/confirm/",
+        SpeakerNudgeActionConfirmView.as_view(),
+        name="speakerops_speaker_nudge_confirm",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/actions/sync-recovery/<uuid:correlation>/<uuid:nonce>/",
+        SyncRecoveryActionPreviewView.as_view(),
+        name="speakerops_sync_recovery_preview",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/actions/sync-recovery/<uuid:correlation>/<uuid:nonce>/confirm/",
+        SyncRecoveryActionConfirmView.as_view(),
+        name="speakerops_sync_recovery_confirm",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/action-receipts/",
+        WorkflowActionReceiptListView.as_view(),
+        name="speakerops_workflow_action_receipts",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/action-receipts/<int:pk>/",
+        WorkflowActionReceiptView.as_view(),
+        name="speakerops_workflow_action_receipt",
+    ),
+    path(
+        "orga/<slug:event>/speaker-operations/sync-claims/<int:pk>/resolve/",
+        SyncWriteClaimResolveView.as_view(),
+        name="speakerops_sync_claim_resolve",
     ),
     path(
         "orga/<slug:event>/speaker-operations/conference-memory/",

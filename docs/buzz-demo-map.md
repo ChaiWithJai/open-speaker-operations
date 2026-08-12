@@ -52,6 +52,15 @@ Every row's demo is the same five beats, so a buyer learns the pattern once:
 Links navigate; typed commands mutate; receipts cross the bridge; secrets
 never do.
 
+The bounded action routes make that separation concrete. The authenticated
+GET routes `speakerops_speaker_nudge_preview` and
+`speakerops_sync_recovery_preview` display the current targets for a unique
+correlation without mutating them. Their forms POST only after explicit human
+confirmation to `speakerops_speaker_nudge_confirm` and
+`speakerops_sync_recovery_confirm`. Sanitized outcomes remain readable at
+`speakerops_workflow_action_receipts` and the exact
+`speakerops_workflow_action_receipt` record.
+
 ## Row demos
 
 ### 1. Custom submission forms (High)

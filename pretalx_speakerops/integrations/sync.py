@@ -18,8 +18,19 @@ from ..models import (
     SyncRun,
 )
 from .accelevents import AcceleventsClient, AcceleventsError
+from .sync_claims import (
+    SyncClaimBlocked,
+    acquire_sync_claim,
+    mark_sync_claim_ambiguous,
+    release_sync_claim,
+)
 
 log = logging.getLogger(__name__)
+
+
+class SyncItemNotEligible(RuntimeError):
+    pass
+
 
 SYNC_ITEM_MACHINE = StateMachine(
     states=frozenset(
@@ -35,10 +46,12 @@ SYNC_ITEM_MACHINE = StateMachine(
     transitions=(
         Transition(SyncItem.PENDING, SyncItem.RUNNING),
         Transition(SyncItem.PENDING, SyncItem.NOOP),
+        Transition(SyncItem.PENDING, SyncItem.FAILED),
         Transition(SyncItem.RUNNING, SyncItem.SUCCEEDED),
         Transition(SyncItem.RUNNING, SyncItem.FAILED),
         Transition(SyncItem.RUNNING, SyncItem.RECONCILED),
         Transition(SyncItem.FAILED, SyncItem.RUNNING),
+        Transition(SyncItem.FAILED, SyncItem.RECONCILED),
     ),
 )
 SYNC_RUN_MACHINE = StateMachine(
@@ -159,7 +172,25 @@ def execute_preview(event, preview_id, actor, payloads=None, execute_now=True):
             _refresh_run_status(run, actor)
         else:
             for item in items:
-                execute_item(item, actor)
+                try:
+                    execute_item(item, actor)
+                except SyncClaimBlocked:
+                    execute(
+                        Command(
+                            event=event,
+                            aggregate_model=SyncItem,
+                            aggregate_id=item.pk,
+                            action="sync.blocked_by_ambiguous_claim",
+                            target_state=SyncItem.FAILED,
+                            state_machine=SYNC_ITEM_MACHINE,
+                        ),
+                        actor,
+                        key=f"sync-item:{item.pk}:logical-claim-blocked",
+                        expected_version=item.version,
+                    )
+                    item.error = "Blocked by an unresolved synchronization claim."
+                    item.save(update_fields=["error", "updated"])
+            _refresh_run_status(run, actor)
         run.refresh_from_db()
     return run
 
@@ -219,7 +250,7 @@ def _live_payload(event, item):
     return None
 
 
-def execute_item(item, actor):
+def _execute_item_unclaimed(item, actor):
     client = client_for(item.event)
     if item.action == "noop":
         execute(
@@ -330,3 +361,47 @@ def execute_item(item, actor):
         )
     _refresh_run_status(item.run, actor)
     return item
+
+
+def execute_item(item, actor, workflow_receipt=None):
+    """Execute one item under the global event/type/id write invariant.
+
+    The claim is committed before connector I/O. Any exception whose external
+    outcome cannot be proven leaves an active ambiguous claim that every caller
+    must reconcile explicitly before retrying.
+    """
+    claim = acquire_sync_claim(item, actor, receipt=workflow_receipt)
+    with transaction.atomic():
+        current = (
+            SyncItem.objects.select_for_update()
+            .filter(
+                event=item.event,
+                local_type=item.local_type,
+                local_id=item.local_id,
+            )
+            .order_by("-pk")
+            .first()
+        )
+        eligible = (
+            current is not None
+            and current.pk == item.pk
+            and current.status
+            in {
+                SyncItem.PENDING,
+                SyncItem.FAILED,
+            }
+        )
+        if eligible:
+            item = current
+    if not eligible:
+        release_sync_claim(claim, resolution="stale_or_ineligible")
+        raise SyncItemNotEligible(
+            "Sync item is stale or no longer eligible; refresh before retrying."
+        )
+    try:
+        result = _execute_item_unclaimed(item, actor)
+    except Exception:
+        mark_sync_claim_ambiguous(claim)
+        raise
+    release_sync_claim(claim)
+    return result

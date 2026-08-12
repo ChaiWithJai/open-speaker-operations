@@ -8,12 +8,18 @@ from django_scopes import scope
 
 from mock_accelevents.server import Handler, state
 from pretalx_speakerops.integrations.accelevents import AcceleventsClient, AcceleventsError
-from pretalx_speakerops.integrations.sync import execute_item, execute_preview, preview
+from pretalx_speakerops.integrations.sync import (
+    SyncItemNotEligible,
+    execute_item,
+    execute_preview,
+    preview,
+)
 from pretalx_speakerops.models import (
     AcceleventsConnection,
     ExternalIdentity,
     SyncItem,
     SyncRun,
+    SyncWriteClaim,
 )
 
 
@@ -155,3 +161,78 @@ def test_execute_preview_runs_items_and_empty_preview_terminates(event, users, m
         empty = preview(event, [])
         empty_run = execute_preview(event, empty.pk, users["chair"])
         assert empty_run.status == SyncRun.SUCCEEDED
+
+
+@pytest.mark.django_db(transaction=True)
+def test_execute_preview_honors_logical_claim_without_connector_write(event, users, mock_url):
+    with scope(event=event):
+        AcceleventsConnection.objects.create(
+            event=event,
+            base_url=mock_url,
+            event_url="demo",
+            credential_ref="demo-key",
+            status=AcceleventsConnection.STATUS_CONNECTED,
+        )
+        local_id = 9951
+        sync_preview = preview(
+            event,
+            [("speaker", local_id, {"email": "claimed@example.org", "firstName": "Claimed"})],
+        )
+        run = execute_preview(event, sync_preview.pk, users["chair"], execute_now=False)
+        item = run.items.get()
+        SyncWriteClaim.objects.create(
+            event=event,
+            local_type="speaker",
+            local_id=local_id,
+            actor=users["chair"],
+            item=item,
+            status=SyncWriteClaim.AMBIGUOUS,
+        )
+        writes_before = state["writes"]
+        execute_preview_run = run
+        # Mirror the run loop through the public item executor: the central
+        # claim prevents connector I/O regardless of entry point.
+        from pretalx_speakerops.integrations.sync_claims import SyncClaimBlocked
+
+        with pytest.raises(SyncClaimBlocked):
+            execute_item(item, users["chair"])
+        run = execute_preview_run
+        item = run.items.get()
+        assert item.status == SyncItem.PENDING
+        assert state["writes"] == writes_before
+
+
+@pytest.mark.django_db(transaction=True)
+def test_historical_failed_item_cannot_write_after_newer_logical_row(event, users, mock_url):
+    with scope(event=event):
+        AcceleventsConnection.objects.create(
+            event=event,
+            base_url=mock_url,
+            event_url="demo",
+            credential_ref="demo-key",
+            status=AcceleventsConnection.STATUS_CONNECTED,
+        )
+        payload = {"email": "history@example.org", "firstName": "History"}
+        old_run = execute_preview(
+            event, preview(event, [("speaker", 9961, payload)]).pk, users["chair"], False
+        )
+        old_item = old_run.items.get()
+        old_item.status = SyncItem.FAILED
+        old_item.save(update_fields=["status", "updated"])
+        newer_run = execute_preview(
+            event, preview(event, [("speaker", 9961, payload)]).pk, users["chair"], False
+        )
+        newer_item = newer_run.items.get()
+        newer_item.status = SyncItem.SUCCEEDED
+        newer_item.save(update_fields=["status", "updated"])
+        writes_before = state["writes"]
+
+        with pytest.raises(SyncItemNotEligible, match="stale or no longer eligible"):
+            execute_item(old_item, users["chair"])
+
+        assert state["writes"] == writes_before
+        claim = SyncWriteClaim.objects.filter(
+            item=old_item, resolution="stale_or_ineligible"
+        ).latest("pk")
+        assert claim.active is False
+        assert claim.resolution == "stale_or_ineligible"

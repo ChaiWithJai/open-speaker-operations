@@ -48,8 +48,8 @@ BUYER_WORKFLOWS = (
         persona="speaker-coordinator",
         question="Who needs a nudge today?",
         read_tool="speaker_nudges",
-        link_resources=("overdue-tasks",),
-        command_resources=("reminder-send",),
+        link_resources=("overdue-tasks", "speaker-nudge-preview", "workflow-action-receipt"),
+        command_resources=("speaker-nudge-confirm",),
         read_status=IMPLEMENTED,
     ),
     BuyerWorkflow(
@@ -73,8 +73,8 @@ BUYER_WORKFLOWS = (
         persona="integration-operator",
         question="Why is Accelevents out of sync?",
         read_tool="sync_recovery",
-        link_resources=("sync-console",),
-        command_resources=("sync-run-retry",),
+        link_resources=("sync-console", "sync-retry-preview", "workflow-action-receipt"),
+        command_resources=("sync-selective-retry",),
         read_status=IMPLEMENTED,
     ),
     BuyerWorkflow(

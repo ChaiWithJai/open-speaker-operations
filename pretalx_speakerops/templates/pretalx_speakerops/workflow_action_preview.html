@@ -1,0 +1,37 @@
+{% extends "orga/base.html" %}
+{% load static %}
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+{% block content %}
+<div class="speakerops" aria-labelledby="action-title">
+  <header class="speakerops__header">
+    <div><p class="speakerops__eyebrow">Human confirmation required</p><h1 id="action-title">{{ action_title }}</h1><p>{{ action_summary }}</p></div>
+    <a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_workflow_action_receipts' event.slug %}">Action receipts</a>
+  </header>
+  <section class="speakerops-panel">
+    <div><strong>Correlation</strong><p><code>{{ correlation }}</code></p></div>
+    <div><strong>Eligible targets</strong><p>{{ targets|length }}</p></div>
+    <div><strong>Safety cap</strong><p>{{ batch_limit }} targets per confirmation</p></div>
+    <div><strong>Expires</strong><p>{{ expires_at }}</p></div>
+  </section>
+  {% if stale %}<div class="alert alert-warning" role="alert">This snapshot is stale. Request a fresh Buzz answer; confirmation will be rejected.</div>{% endif %}
+  <form method="post" action="{{ confirm_url }}">
+    {% csrf_token %}
+    <div class="speakerops-table-wrap" tabindex="0" aria-label="Action target preview">
+      <table class="speakerops-table">
+        <thead><tr><th scope="col">Target</th><th scope="col">Current state</th><th scope="col">Scope</th></tr></thead>
+        <tbody>
+        {% for target in targets %}
+          <tr id="target-{{ target.pk }}">
+            <td><input type="hidden" name="targets" value="{{ target.pk }}">{% if action_kind == 'speaker_nudges' %}{{ target.definition.name }}{% else %}{{ target.local_type }}:{{ target.local_id }}{% endif %}</td>
+            <td>{% if action_kind == 'speaker_nudges' %}Due {{ target.due_date }}{% else %}{{ target.status }} · {{ target.attempts }} attempt{{ target.attempts|pluralize }}{% endif %}</td>
+            <td>{% if action_kind == 'speaker_nudges' %}{{ target.speaker }}{% if target.submission %} · {{ target.submission.title }}{% endif %}{% else %}Sync item #{{ target.pk }} · run #{{ target.run_id }}{% endif %}</td>
+          </tr>
+        {% empty %}<tr><td colspan="3">No eligible targets remain. Confirming records a no-op receipt.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <label class="speakerops-check"><input type="checkbox" name="confirm_action" value="yes" required> I reviewed these {{ targets|length }} targets and confirm this action</label>
+    <button class="btn btn-primary" type="submit"{% if stale %} disabled{% endif %}>Confirm and execute this bounded batch</button>
+  </form>
+</div>
+{% endblock content %}

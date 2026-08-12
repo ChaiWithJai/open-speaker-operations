@@ -6,6 +6,7 @@ invoking them; ``speaker_next_actions`` additionally scopes its database query
 to the supplied speaker email and never serializes co-presenters.
 """
 
+import uuid
 from urllib.parse import quote
 
 from django.db.models import F
@@ -16,6 +17,7 @@ from pretalx.person.models import User
 
 from pretalx_speakerops.canonical_links import RESOURCES
 from pretalx_speakerops.models import OnboardingTask
+from pretalx_speakerops.workflow_action_tokens import ACTION_BATCH_LIMIT, create_action_snapshot
 
 DEFAULT_BASE_URL = "http://localhost:8000"
 ACTIVE_TASK_STATES = (OnboardingTask.PENDING, OnboardingTask.REOPENED)
@@ -64,7 +66,13 @@ def _task_row(task, task_url):
     }
 
 
-def speaker_nudges(event_slug, base_url=DEFAULT_BASE_URL):
+def speaker_nudges(
+    event_slug,
+    base_url=DEFAULT_BASE_URL,
+    requesting_principal="speakerops-direct-read",
+    claimed_channel_id="",
+    claimed_trigger_event_id="",
+):
     """Answer the coordinator question, "Who needs a nudge today?"
 
     Only overdue pending/reopened tasks are returned.  Results are ranked by
@@ -73,6 +81,7 @@ def speaker_nudges(event_slug, base_url=DEFAULT_BASE_URL):
     """
     event = _event(event_slug)
     today = timezone.localdate()
+    correlation_id = str(uuid.uuid4())
     filtered_url = _go(base_url, "overdue-tasks", f"{event.slug}~tasks")
 
     with scope(event=event):
@@ -127,6 +136,28 @@ def speaker_nudges(event_slug, base_url=DEFAULT_BASE_URL):
         recipient["overdue_task_count"] += 1
 
     generated_at = timezone.now().isoformat()
+    action_target_ids = [task.pk for task in tasks[:ACTION_BATCH_LIMIT]]
+    try:
+        snapshot = create_action_snapshot(
+            event=event,
+            workflow="speaker_nudges",
+            correlation_id=correlation_id,
+            target_ids=action_target_ids,
+            principal=requesting_principal,
+            claimed_channel_id=claimed_channel_id,
+            claimed_trigger_event_id=claimed_trigger_event_id,
+        )
+    except Exception:
+        snapshot = None
+    confirmation_url = (
+        _go(
+            base_url,
+            "speaker-nudge-preview",
+            f"{event.slug}~{correlation_id}~{snapshot.nonce}",
+        )
+        if snapshot
+        else None
+    )
     sources = [
         _canonical_source(
             "overdue-tasks",
@@ -143,6 +174,22 @@ def speaker_nudges(event_slug, base_url=DEFAULT_BASE_URL):
         "as_of": today.isoformat(),
         "preview_only": True,
         "mutation_performed": False,
+        "action_preview": {
+            "available": snapshot is not None,
+            "correlation_id": correlation_id,
+            "confirmation_url": confirmation_url,
+            "requires_authenticated_organiser": True,
+            "requires_explicit_web_confirmation": True,
+            "receipt_tool": "workflow_action_receipts",
+            "batch_limit": ACTION_BATCH_LIMIT,
+            "target_count": len(action_target_ids),
+            "truncated_count": max(0, len(tasks) - len(action_target_ids)),
+            "limitation": (
+                None
+                if snapshot
+                else "Confirmation preview unavailable because shared cache is unavailable."
+            ),
+        },
         "recipients": recipients,
         "overdue_tasks": overdue_tasks,
         "rollup": {
@@ -160,6 +207,13 @@ def speaker_nudges(event_slug, base_url=DEFAULT_BASE_URL):
             "Ranked tasks by oldest deadline, recipient name/email, task position, and id.",
             f"Grouped {len(overdue_tasks)} tasks into {len(recipients)} named recipients.",
             "Built one canonical filtered collection link and exact rendered-row fragments.",
+            (
+                "Built a correlated GET-safe confirmation preview; "
+                "it does not execute on navigation."
+                if snapshot
+                else "Shared cache was unavailable; returned the typed read without an action link."
+            ),
+            f"Capped the confirmable batch at {ACTION_BATCH_LIMIT} targets.",
             "Performed no reminder send, mail queue, receipt creation, or task mutation.",
         ],
         "generated_at": generated_at,
@@ -193,6 +247,13 @@ def render_speaker_nudges(result):
             "## Source",
             "",
             f"- [Filtered overdue task list]({result['links']['filtered_overdue_tasks']})",
+            (
+                "- [Review and confirm this action]"
+                f"({result['action_preview']['confirmation_url']})"
+                if result["action_preview"]["available"]
+                else f"- Action unavailable: {result['action_preview']['limitation']}"
+            ),
+            f"- Correlation: `{result['action_preview']['correlation_id']}`",
             "",
             "## Trace of inference",
             "",
@@ -203,8 +264,8 @@ def render_speaker_nudges(result):
     return "\n".join(lines)
 
 
-def speaker_nudges_message(event_slug, base_url=DEFAULT_BASE_URL):
-    return render_speaker_nudges(speaker_nudges(event_slug, base_url=base_url))
+def speaker_nudges_message(event_slug, base_url=DEFAULT_BASE_URL, **kwargs):
+    return render_speaker_nudges(speaker_nudges(event_slug, base_url=base_url, **kwargs))
 
 
 def speaker_next_actions(event_slug, subject_email, base_url=DEFAULT_BASE_URL):

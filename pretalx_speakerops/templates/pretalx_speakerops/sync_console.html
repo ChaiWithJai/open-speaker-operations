@@ -21,6 +21,29 @@
     <form method="post">{% csrf_token %}<input type="hidden" name="action" value="preview"><button class="btn btn-primary" type="submit">Create preview</button></form>
   </section>
 
+  {% if ambiguous_claims %}
+  <section class="speakerops-panel" aria-labelledby="ambiguous-claims-title">
+    <h2 id="ambiguous-claims-title">Connector outcomes requiring reconciliation</h2>
+    <p>Verify Accelevents before releasing a retry. Each resolution is attributed and audited.</p>
+    {% for claim in ambiguous_claims %}
+    <form method="post" action="{% url 'plugins:speakerops:speakerops_sync_claim_resolve' event.slug claim.pk %}">
+      {% csrf_token %}
+      <p><strong>{{ claim.local_type }}:{{ claim.local_id }}</strong> · claimed {{ claim.claimed_at }}{% if claim.receipt_id %} · <a href="{% url 'plugins:speakerops:speakerops_workflow_action_receipt' event.slug claim.receipt_id %}">receipt #{{ claim.receipt_id }}</a>{% endif %}</p>
+      <label>Verified outcome
+        <select name="resolution" required>
+          <option value="">Choose…</option>
+          <option value="verified_applied">Applied externally; mark reconciled</option>
+          <option value="verified_not_applied">Not applied externally; allow retry</option>
+        </select>
+      </label>
+      <label>Audit note <input name="resolution_note" maxlength="500" required></label>
+      <label class="speakerops-check"><input type="checkbox" name="confirm_resolution" value="yes" required> I verified the external destination</label>
+      <button class="btn btn-danger" type="submit">Record resolution</button>
+    </form>
+    {% endfor %}
+  </section>
+  {% endif %}
+
   <section aria-labelledby="previews-title">
     <h2 id="previews-title">Recent previews</h2>
     <div class="speakerops-stack">

@@ -1,0 +1,13 @@
+{% extends "orga/base.html" %}
+{% load static %}
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+{% block content %}
+<div class="speakerops" aria-labelledby="receipts-title">
+  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Auditable actions</p><h1 id="receipts-title">Workflow action receipts</h1><p>Sanitized, correlation-level proof of human-confirmed operations.</p></div></header>
+  <div class="speakerops-table-wrap" tabindex="0" aria-label="Workflow action receipts">
+    <table class="speakerops-table"><thead><tr><th scope="col">Receipt</th><th scope="col">Workflow</th><th scope="col">Status</th><th scope="col">Actor</th><th scope="col">Confirmed</th></tr></thead><tbody>
+    {% for receipt in receipts %}<tr><td><a href="{% url 'plugins:speakerops:speakerops_workflow_action_receipt' event.slug receipt.pk %}">#{{ receipt.pk }}</a><br><small><code>{{ receipt.correlation_id }}</code></small></td><td>{{ receipt.get_workflow_display }}</td><td>{{ receipt.get_status_display }}</td><td>{{ receipt.actor|default:"Deleted user" }}</td><td>{{ receipt.confirmed_at }}</td></tr>{% empty %}<tr><td colspan="5">No confirmed workflow actions yet.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+{% endblock content %}

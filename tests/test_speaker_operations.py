@@ -20,7 +20,11 @@ from pretalx_speakerops.models import (
     SpeakerCommunicationLog,
     SpeakerOperationsProfile,
 )
-from pretalx_speakerops.tasks import send_due_speaker_reminders
+from pretalx_speakerops.onboarding.reminders import ReminderOutcomeAmbiguous
+from pretalx_speakerops.tasks import (
+    send_due_speaker_reminders,
+    send_due_speaker_reminders_task,
+)
 
 
 def test_daily_reminder_schedule_is_registered_with_celery():
@@ -535,7 +539,7 @@ def test_scheduled_reminder_worker_handles_general_tasks_and_is_daily_idempotent
 
 
 @pytest.mark.django_db(transaction=True)
-def test_scheduled_reminder_broker_failure_remains_retryable(event, users):
+def test_scheduled_reminder_broker_failure_is_durably_ambiguous(event, users, client):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")
         event.save(update_fields=["plugins"])
@@ -553,16 +557,39 @@ def test_scheduled_reminder_broker_failure_remains_retryable(event, users):
             "pretalx.common.mail.mail_send_task.apply_async",
             side_effect=RuntimeError("broker unavailable"),
         ),
-        pytest.raises(RuntimeError, match="broker unavailable"),
+        pytest.raises(ReminderOutcomeAmbiguous),
     ):
         send_due_speaker_reminders(event.slug)
 
     with scope(event=event):
-        assert not ReminderReceipt.objects.filter(task=task).exists()
+        receipt = ReminderReceipt.objects.get(task=task)
+        assert receipt.delivery_status == ReminderReceipt.AMBIGUOUS
+        assert receipt.queued_mail_id
 
     with patch("pretalx.common.mail.mail_send_task.apply_async") as dispatch:
-        assert send_due_speaker_reminders(event.slug)[event.slug] == 1
-    assert dispatch.call_count == 1
-    with scope(event=event):
-        receipt = ReminderReceipt.objects.get(task=task)
-        assert QueuedMail.objects.get(pk=receipt.queued_mail_id).sent is not None
+        with pytest.raises(ReminderOutcomeAmbiguous):
+            send_due_speaker_reminders(event.slug)
+    dispatch.assert_not_called()
+
+    with patch(
+        "pretalx_speakerops.tasks.send_due_speaker_reminders",
+        side_effect=ReminderOutcomeAmbiguous(receipt),
+    ):
+        result = send_due_speaker_reminders_task.run()
+    assert result == {
+        "status": "ambiguous",
+        "task_id": task.pk,
+        "reminder_receipt_id": receipt.pk,
+        "retry_suppressed": True,
+    }
+
+    client.force_login(users["chair"])
+    with patch(
+        "pretalx_speakerops.views.queue_reminders",
+        side_effect=ReminderOutcomeAmbiguous(receipt),
+    ):
+        response = client.post(
+            reverse("plugins:speakerops:speakerops_reminders", args=[event.slug]),
+            {"confirm_reminders": "yes", "tasks": [task.pk]},
+        )
+    assert response.status_code == 302

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from pretalx.common.models.mixins import PretalxModel
 
@@ -22,6 +23,116 @@ class CommandReceipt(EventOwnedModel):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=("event", "key"), name="speakerops_receipt_event_key")
+        ]
+
+
+class WorkflowActionReceipt(EventOwnedModel):
+    """Durable, sanitized proof of a human-confirmed Buzz-assisted action.
+
+    This is deliberately higher-level than ``CommandReceipt`` and
+    ``ReminderReceipt``: one row represents the operator's confirmed workflow
+    action, while the lower-level records retain per-aggregate delivery and
+    transition evidence. ``result`` must contain counts, identifiers, and
+    outcome classes only; connector payloads, responses, request IDs, and
+    contact data do not belong here.
+    """
+
+    SPEAKER_NUDGES = "speaker_nudges"
+    SYNC_RECOVERY = "sync_recovery"
+    WORKFLOW_CHOICES = (
+        (SPEAKER_NUDGES, "Speaker nudges"),
+        (SYNC_RECOVERY, "Synchronization recovery"),
+    )
+
+    PENDING = "pending"
+    SUCCEEDED = "succeeded"
+    PARTIAL = "partial"
+    FAILED = "failed"
+    AMBIGUOUS = "ambiguous"
+    NOOP = "noop"
+    STATUS_CHOICES = (
+        (PENDING, "Pending"),
+        (SUCCEEDED, "Succeeded"),
+        (PARTIAL, "Partial"),
+        (FAILED, "Failed"),
+        (AMBIGUOUS, "Ambiguous; inspect before retrying"),
+        (NOOP, "No action needed"),
+    )
+
+    workflow = models.CharField(max_length=40, choices=WORKFLOW_CHOICES)
+    action = models.CharField(max_length=80)
+    correlation_id = models.UUIDField()
+    requesting_principal = models.CharField(max_length=160)
+    claimed_channel_id = models.CharField(max_length=200, blank=True, default="")
+    claimed_trigger_event_id = models.CharField(max_length=200, blank=True, default="")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="speakerops_workflow_action_receipts",
+    )
+    confirmed_at = models.DateTimeField(default=timezone.now)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    target_count = models.PositiveIntegerField(default=0)
+    result = models.JSONField(default=dict)
+
+    class Meta:
+        ordering = ("-confirmed_at", "-pk")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "correlation_id"),
+                name="speakerops_workflow_receipt_event_correlation",
+            )
+        ]
+
+
+class SyncWriteClaim(EventOwnedModel):
+    """Central logical-record guard for every external synchronization write."""
+
+    IN_PROGRESS = "in_progress"
+    AMBIGUOUS = "ambiguous"
+    STATUS_CHOICES = ((IN_PROGRESS, "In progress"), (AMBIGUOUS, "Ambiguous"))
+
+    local_type = models.CharField(max_length=40)
+    local_id = models.PositiveBigIntegerField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=IN_PROGRESS)
+    active = models.BooleanField(default=True)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    receipt = models.ForeignKey(
+        WorkflowActionReceipt,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="sync_write_claims",
+    )
+    item = models.ForeignKey(
+        "SyncItem",
+        on_delete=models.PROTECT,
+        related_name="write_claims",
+    )
+    claimed_at = models.DateTimeField(default=timezone.now)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolution = models.CharField(max_length=80, blank=True, default="")
+    resolved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="resolved_speakerops_sync_claims",
+    )
+    resolution_note = models.CharField(max_length=500, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "local_type", "local_id"),
+                condition=Q(active=True),
+                name="speakerops_active_sync_logical_claim",
+            )
         ]
 
 
@@ -253,10 +364,19 @@ class ContentRevision(EventOwnedModel):
 
 
 class ReminderReceipt(EventOwnedModel):
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    AMBIGUOUS = "ambiguous"
+    DELIVERY_CHOICES = (
+        (PENDING, "Pending broker handoff"),
+        (ACCEPTED, "Broker accepted"),
+        (AMBIGUOUS, "Broker outcome ambiguous"),
+    )
     task = models.ForeignKey(OnboardingTask, on_delete=models.CASCADE)
     speaker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     reminder_key = models.CharField(max_length=160)
     queued_mail_id = models.PositiveBigIntegerField(null=True, blank=True)
+    delivery_status = models.CharField(max_length=20, choices=DELIVERY_CHOICES, default=PENDING)
 
     class Meta:
         constraints = [

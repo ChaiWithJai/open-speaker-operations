@@ -60,6 +60,9 @@ def test_three_agent_profiles_partition_all_tools_and_keep_self_service_separate
     assert set(profiles) == {"operator", "speaker", "reviewer"}
     expected = {workflow.read_tool for workflow in BUYER_WORKFLOWS}
     expected.add(CONFERENCE_MEMORY_DIFFERENTIATOR.read_tool)
+    # Receipt lookup closes the two human-confirmed action loops. It is an
+    # auxiliary read, not a ninth buyer question or an agent write capability.
+    expected.add("workflow_action_receipts")
     assert set().union(*(profile.capabilities for profile in AGENT_PROFILES)) == expected
     assert not profiles["operator"].capabilities & {
         "speaker_next_actions",
@@ -67,6 +70,7 @@ def test_three_agent_profiles_partition_all_tools_and_keep_self_service_separate
     }
     assert profiles["speaker"].capabilities == {"speaker_next_actions"}
     assert profiles["reviewer"].capabilities == {"reviewer_next_assignment"}
+    assert "workflow_action_receipts" in profiles["operator"].capabilities
     assert profiles["operator"].subject_required is False
     assert profiles["speaker"].subject_required is True
     assert profiles["reviewer"].subject_required is True

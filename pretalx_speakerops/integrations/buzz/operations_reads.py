@@ -9,6 +9,8 @@ system of record.
 
 from __future__ import annotations
 
+import uuid
+
 from django.db.models import Count, Q
 from django.utils import timezone
 from django_scopes import scope
@@ -24,8 +26,12 @@ from pretalx_speakerops.models import (
     SyncItem,
     SyncRun,
     TaskEvidence,
+    WorkflowActionReceipt,
 )
 from pretalx_speakerops.program.policy import classify_warnings
+from pretalx_speakerops.workflow_action_tokens import ACTION_BATCH_LIMIT, create_action_snapshot
+
+from ..sync_state import latest_failed_sync_items
 
 DEFAULT_BASE_URL = "http://localhost:8000"
 
@@ -76,14 +82,21 @@ def _iso(value):
     return value.isoformat() if value else None
 
 
-def sync_recovery(event_slug, base_url=DEFAULT_BASE_URL):
+def sync_recovery(
+    event_slug,
+    base_url=DEFAULT_BASE_URL,
+    requesting_principal="speakerops-direct-read",
+    claimed_channel_id="",
+    claimed_trigger_event_id="",
+):
     """Answer "Why is Accelevents out of sync?" without performing a write."""
     event = _event(event_slug)
+    correlation_id = str(uuid.uuid4())
     with scope(event=event):
         connection = AcceleventsConnection.objects.filter(event=event).first()
         latest_run = SyncRun.objects.filter(event=event).order_by("-created", "-pk").first()
         failed = list(
-            SyncItem.objects.filter(event=event, status=SyncItem.FAILED)
+            latest_failed_sync_items(event)
             .select_related("run")
             .prefetch_related("attempt_history")
             .order_by("-updated", "local_type", "local_id", "pk")
@@ -138,22 +151,61 @@ def sync_recovery(event_slug, base_url=DEFAULT_BASE_URL):
                 for item in failed_items
             ],
         }
+        action_target_ids = [item["sync_item_id"] for item in failed_items[:ACTION_BATCH_LIMIT]]
+        try:
+            snapshot = create_action_snapshot(
+                event=event,
+                workflow=WorkflowActionReceipt.SYNC_RECOVERY,
+                correlation_id=correlation_id,
+                target_ids=action_target_ids,
+                principal=requesting_principal,
+                claimed_channel_id=claimed_channel_id,
+                claimed_trigger_event_id=claimed_trigger_event_id,
+            )
+        except Exception:
+            snapshot = None
         retry_preview = {
+            "available": snapshot is not None,
             "mode": "selective_failed_items_only",
-            "eligible_count": len(failed_items),
-            "eligible_item_ids": [item["sync_item_id"] for item in failed_items],
+            "eligible_count": len(action_target_ids),
+            "eligible_item_ids": action_target_ids,
+            "total_latest_failed_count": len(failed_items),
+            "batch_limit": ACTION_BATCH_LIMIT,
+            "truncated_count": max(0, len(failed_items) - len(action_target_ids)),
             "preserves_successful_items": True,
             "requires_human_confirmation": True,
             "executable_command_exposed": False,
             "mutation_performed": False,
+            "correlation_id": correlation_id,
+            "confirmation_url": (
+                _go(
+                    base_url,
+                    "sync-retry-preview",
+                    f"{event.slug}~{correlation_id}~{snapshot.nonce}",
+                )
+                if snapshot
+                else None
+            ),
+            "limitation": (
+                None
+                if snapshot
+                else "Confirmation preview unavailable because shared cache is unavailable."
+            ),
+            "receipt_tool": "workflow_action_receipts",
         }
         trace = [
             f"Resolved event `{event.slug}`.",
             "Read connector status and the latest synchronization run.",
-            f"Selected {len(failed_items)} SyncItem records whose current status is failed.",
+            f"Selected {len(failed_items)} latest logical SyncItem records whose status is failed.",
             "Selected the highest-numbered attempt for each failed item.",
             "Removed payloads, responses, request IDs, credentials, and personal contact data.",
             "Built read-only console fragments; no retry command was invoked or exposed.",
+            (
+                "Built a correlated GET-safe retry preview; it requires explicit web confirmation."
+                if snapshot
+                else "Shared cache was unavailable; returned the typed read without an action link."
+            ),
+            f"Capped the confirmable batch at {ACTION_BATCH_LIMIT} targets.",
         ]
         result = {
             "event": event.slug,
@@ -252,6 +304,12 @@ def render_sync_recovery(result):
             "- Successful items are preserved.",
             "- A human confirmation is required in SpeakerOps.",
             "- This answer did not execute or expose a retry command.",
+            (
+                f"- [Review and confirm selective retry]({preview['confirmation_url']})"
+                if preview["available"]
+                else f"- Action unavailable: {preview['limitation']}"
+            ),
+            f"- Correlation: `{preview['correlation_id']}`",
             "",
             "## Evidence",
             "",
@@ -266,8 +324,140 @@ def render_sync_recovery(result):
     return "\n".join(lines)
 
 
-def sync_recovery_message(event_slug, base_url=DEFAULT_BASE_URL):
-    return sync_recovery(event_slug, base_url)["rendered_sync_recovery_message"]
+def sync_recovery_message(event_slug, base_url=DEFAULT_BASE_URL, **kwargs):
+    return sync_recovery(event_slug, base_url, **kwargs)["rendered_sync_recovery_message"]
+
+
+_RECEIPT_RESULT_FIELDS = {
+    WorkflowActionReceipt.SPEAKER_NUDGES: (
+        "outcome",
+        "eligible_count",
+        "completed_count",
+        "failed_count",
+        "ambiguous_count",
+        "queued_count",
+        "noop_count",
+        "not_attempted_count",
+        "task_ids",
+        "attempted_task_ids",
+        "reminder_receipt_ids",
+    ),
+    WorkflowActionReceipt.SYNC_RECOVERY: (
+        "outcome",
+        "eligible_count",
+        "completed_count",
+        "failed_count",
+        "ambiguous_count",
+        "not_attempted_count",
+        "sync_item_ids",
+        "attempted_item_ids",
+        "ambiguous_item_id",
+        "claim_resolution",
+        "claim_resolved_by_id",
+        "claim_resolved_at",
+    ),
+}
+
+
+def workflow_action_receipts(
+    event_slug,
+    correlation_id,
+    base_url=DEFAULT_BASE_URL,
+    requesting_principal="speakerops-direct-read",
+):
+    """Return one principal-scoped receipt for its originating correlation."""
+    event = _event(event_slug)
+    with scope(event=event):
+        receipt = (
+            WorkflowActionReceipt.objects.filter(
+                event=event,
+                requesting_principal=requesting_principal,
+                correlation_id=correlation_id,
+            )
+            .select_related("actor")
+            .first()
+        )
+    if receipt is None:
+        raise KeyError("no action receipt matches this correlation and principal")
+    allowed = _RECEIPT_RESULT_FIELDS.get(receipt.workflow, ("outcome",))
+    safe_result = {key: receipt.result[key] for key in allowed if key in receipt.result}
+    row = {
+        "receipt_id": receipt.pk,
+        "correlation_id": str(receipt.correlation_id),
+        "requesting_principal": receipt.requesting_principal,
+        "claimed_channel_id": receipt.claimed_channel_id,
+        "claimed_trigger_event_id": receipt.claimed_trigger_event_id,
+        "provenance_attested": False,
+        "workflow": receipt.workflow,
+        "action": receipt.action,
+        "status": receipt.status,
+        "actor": {
+            "user_id": receipt.actor_id,
+            "display_name": receipt.actor.get_display_name()
+            if receipt.actor_id
+            else "Deleted user",
+        },
+        "confirmed_at": _iso(receipt.confirmed_at),
+        "completed_at": _iso(receipt.completed_at),
+        "target_count": receipt.target_count,
+        "result": safe_result,
+        "receipt_link": _go(
+            base_url,
+            "workflow-action-receipt",
+            f"{event.slug}~{receipt.pk}",
+        ),
+    }
+    result = {
+        "event": event.slug,
+        "read_only": True,
+        "receipt": row,
+        "trace": [
+            f"Resolved event `{event.slug}`.",
+            "Matched exactly one correlation within the deployment principal scope.",
+            "Serialized only allowlisted high-level outcomes, actor identity, and correlation.",
+            "Reported channel and trigger identifiers as caller-claimed, not attested provenance.",
+            "Excluded connector payloads, responses, request IDs, credentials, and contact data.",
+            "Performed no action or receipt mutation.",
+        ],
+        "generated_at": timezone.now().isoformat(),
+    }
+    result["rendered_workflow_action_receipts_message"] = render_workflow_action_receipts(result)
+    return result
+
+
+def render_workflow_action_receipts(result):
+    lines = [f"# Workflow action receipts — {result['event']}", ""]
+    receipt = result["receipt"]
+    lines.extend(
+        [
+            f"## {receipt['workflow']} · {receipt['status']}",
+            "",
+            f"- Correlation: `{receipt['correlation_id']}`",
+            f"- Actor: {receipt['actor']['display_name']} (user {receipt['actor']['user_id']})",
+            f"- Claimed channel: `{receipt['claimed_channel_id'] or 'not supplied'}`",
+            f"- Claimed trigger event: `{receipt['claimed_trigger_event_id'] or 'not supplied'}`",
+            "- Provenance attested: no",
+            f"- Targets: {receipt['target_count']}",
+            f"- Confirmed: {receipt['confirmed_at']}",
+            f"- Completed: {receipt['completed_at'] or 'not completed'}",
+            f"- [Open receipt]({receipt['receipt_link']})",
+            f"- Sanitized result: `{receipt['result']}`",
+            "",
+            "## Trace",
+            "",
+        ]
+    )
+    lines.extend(f"{index}. {step}" for index, step in enumerate(result["trace"], 1))
+    lines.extend(["", f"Generated {result['generated_at']} (ISO-8601)."])
+    return "\n".join(lines)
+
+
+def workflow_action_receipts_message(
+    event_slug, correlation_id, base_url=DEFAULT_BASE_URL, **kwargs
+):
+    return workflow_action_receipts(event_slug, correlation_id, base_url, **kwargs)[
+        "rendered_workflow_action_receipts_message"
+    ]
 
 
 def _lifecycle_ids(event):
