@@ -327,6 +327,10 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         ).exists()
         assert primary_speaker.check_password("test-demo-password")
         assert second_speaker.check_password("test-demo-password")
+        administrator = User.objects.get(email="admin@example.org")
+        assert administrator.check_password("test-demo-password")
+        assert administrator.is_administrator is True
+        assert administrator.is_staff is True
         devflow = Event.objects.get(slug=DEVFLOW_SLUG)
         assert str(devflow.name) == "DevFlow Conf 2027"
         assert devflow.organiser == event.organiser

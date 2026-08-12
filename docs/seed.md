@@ -19,6 +19,10 @@ Demo credentials use the password `speakerops-demo`:
 - `speaker@example.org` — speaker
 - `speaker2@example.org` — distinct second speaker for co-author and cross-speaker scoping
 
+These identities and their shared password are for the public competition demo only.
+Rotate or disable them after judging, and never reuse the password for infrastructure,
+connectors, or non-demo accounts.
+
 The integration record is a preview-only stub. No external credentials or
 network calls are made.
 

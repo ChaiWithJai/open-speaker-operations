@@ -447,7 +447,6 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         demo_password = os.environ.get("SPEAKEROPS_DEMO_PASSWORD", "speakerops-demo")
-        administrator_password = os.environ.get("DJANGO_SUPERUSER_PASSWORD", demo_password)
         connector_key = os.environ.get("SPEAKEROPS_MOCK_KEY", "demo-key")
         administrator, _ = User.objects.get_or_create(
             email="admin@example.org",
@@ -455,7 +454,10 @@ class Command(BaseCommand):
         )
         administrator.is_administrator = True
         administrator.is_staff = True
-        administrator.set_password(administrator_password)
+        # This command owns only the public judge dataset. Keep its named
+        # administrator aligned with the other documented demo identities even
+        # when the deployment's bootstrap superuser secret is different.
+        administrator.set_password(demo_password)
         administrator.save()
         if not Event.objects.filter(slug="speakerops-demo").exists():
             call_command(

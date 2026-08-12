@@ -47,7 +47,7 @@ def test_recovery_shell_contracts_parse_and_backup_defaults_to_safe_project():
     assert "retention_days=14" in result.stdout
 
 
-def test_smoke_parser_handles_minified_unquoted_csrf_and_covers_six_surfaces():
+def test_smoke_parser_handles_minified_unquoted_csrf_and_covers_all_judge_accounts():
     path = ROOT / "deploy/smoke_journey.py"
     spec = importlib.util.spec_from_file_location("speakerops_smoke_journey", path)
     module = importlib.util.module_from_spec(spec)
@@ -61,7 +61,9 @@ def test_smoke_parser_handles_minified_unquoted_csrf_and_covers_six_surfaces():
     )
     source = path.read_text()
     for fragment in (
+        "admin@example.org",
         "speaker@example.org",
+        "speaker2@example.org",
         "reviewer@example.org",
         "chair@example.org",
         '"sync"',
