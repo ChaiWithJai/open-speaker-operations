@@ -77,6 +77,16 @@ def test_stage_rejects_destination_inside_source_before_writing(tmp_path):
     assert not destination.exists()
 
 
+def test_stage_rejects_nested_destination_without_creating_parent(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    make_source(source)
+    parent = source / "new-parent"
+    with pytest.raises(ValueError, match="outside"):
+        stage(source, parent / "out", {"secret-value"})
+    assert not parent.exists()
+
+
 @pytest.mark.parametrize(
     "name",
     ["prod.env", "AUTH_STATE.json", "browser-state.json", "Cookies.JSON"],
@@ -180,6 +190,26 @@ def test_post_stage_scan_rejects_unredacted_access_token(tmp_path):
         stage(source, tmp_path / "destination", {"different-secret"})
     assert not (tmp_path / "destination").exists()
     assert not list(tmp_path.glob(".destination.staging-*"))
+
+
+@pytest.mark.parametrize(
+    "leak",
+    [
+        "password=unknown-secret",
+        "api_key=also-unknown",
+        "Bearer token-value",
+        "magic_token=unknown-magic",
+    ],
+)
+def test_post_stage_scan_rejects_unknown_text_secrets(tmp_path, leak):
+    source = tmp_path / "source"
+    source.mkdir()
+    make_source(source)
+    (source / "report.html").write_text(leak)
+    destination = tmp_path / "destination"
+    with pytest.raises(ValueError, match="security scan"):
+        stage(source, destination, {"different-secret"})
+    assert not destination.exists()
 
 
 def test_validate_source_rejects_dotenv_environment_suffix(tmp_path):

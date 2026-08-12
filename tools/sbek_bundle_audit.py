@@ -25,7 +25,10 @@ SECRET_KEY_PATTERN = re.compile(
 )
 LEAK_PATTERN = re.compile(
     r"sk-ant-|(?i:authorization)\s*[:=]|(?i:set-cookie)\s*:|"
-    r"(?i:sessionid|csrftoken|access_token|refresh_token|client_secret)\s*[:=]|"
+    r"(?i:password|passphrase|api[_-]?key|sessionid|csrftoken|access[_-]?token|"
+    r"refresh[_-]?token|client[_-]?secret|magic[_-]?(?:link|token)|"
+    r"reset[_-]?(?:link|token))\s*[:=]\s*(?!\[REDACTED_)|"
+    r"(?i:bearer)\s+(?!\[REDACTED_)[A-Za-z0-9._~+/-]{8,}|"
     r"/invitation/[A-Za-z0-9_-]+/[A-Za-z0-9_-]{24,}"
 )
 CORE_FILES = ("report.json", "report.html", "manual-checklist.md")
@@ -252,6 +255,10 @@ def stage(
     delivery_source: Path | None = None,
     screenshot_allowlist: Path | None = None,
 ) -> dict:
+    source_resolved = source.resolve()
+    destination_resolved = destination.resolve()
+    if destination_resolved == source_resolved or source_resolved in destination_resolved.parents:
+        raise ValueError("destination must be outside the source tree")
     destination.parent.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix=f".{destination.name}.staging-", dir=destination.parent))
     try:
