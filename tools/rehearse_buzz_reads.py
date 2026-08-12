@@ -69,6 +69,7 @@ PROFILES = {
             "sync_recovery",
             "executive_readiness",
             "conference_memory",
+            "workflow_action_receipts",
         ),
         subject_email="",
         snapshot="tools/speakerops-operator.agent.json",
@@ -280,9 +281,17 @@ def validate_local_runtime(environment: dict[str, str], repo_root: Path) -> None
 
 
 def workflow_prompt(workflow: Workflow, repo_root: Path, event_slug: str) -> str:
+    correlation_context = ""
+    if workflow.tool in {"speaker_nudges", "sync_recovery"}:
+        correlation_context = (
+            " This is a local rehearsal, so pass claimed_channel_id="
+            "'synthetic-rehearsal-channel' and claimed_trigger_event_id="
+            "'synthetic-rehearsal-trigger'; these are explicitly synthetic claims, "
+            "not attested Buzz provenance."
+        )
     return (
         f"For event {event_slug}, call {workflow.tool} exactly once and answer this "
-        f"question: {workflow.question}\n\n"
+        f"question: {workflow.question}.{correlation_context}\n\n"
         "Copy the complete formatted tool output byte for byte into one Markdown code block. "
         "It is already the final answer. Do not shorten it, change a character or URL, or "
         "add text before or after it."

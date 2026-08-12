@@ -77,6 +77,7 @@ from pretalx_speakerops.buzz_reads import (  # noqa: E402
 from pretalx_speakerops.integrations.buzz.operations_reads import (  # noqa: E402
     executive_readiness_message,
     sync_recovery_message,
+    workflow_action_receipts_message,
 )
 from pretalx_speakerops.integrations.buzz.review_reads import (  # noqa: E402
     review_progress_message,
@@ -181,6 +182,39 @@ READ_SCHEMA = {
     "additionalProperties": False,
 }
 
+CORRELATED_ACTION_READ_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "event_slug": READ_SCHEMA["properties"]["event_slug"],
+        "claimed_channel_id": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Caller-claimed Buzz channel identifier; not independently attested.",
+        },
+        "claimed_trigger_event_id": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Caller-claimed Buzz trigger event identifier; not attested.",
+        },
+    },
+    "required": ["event_slug", "claimed_channel_id", "claimed_trigger_event_id"],
+    "additionalProperties": False,
+}
+
+EXACT_RECEIPT_READ_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "event_slug": READ_SCHEMA["properties"]["event_slug"],
+        "correlation_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Exact correlation identifier returned by the originating workflow.",
+        },
+    },
+    "required": ["event_slug", "correlation_id"],
+    "additionalProperties": False,
+}
+
 RELEASE_READINESS_TOOL = Tool(
     name="release_readiness",
     description=(
@@ -233,7 +267,7 @@ SPEAKER_NUDGES_TOOL = Tool(
         "Answer 'who needs a nudge today?' with a deadline-ranked, preview-only "
         "recipient/task set and permission-aware task links. Never sends mail."
     ),
-    inputSchema=READ_SCHEMA,
+    inputSchema=CORRELATED_ACTION_READ_SCHEMA,
 )
 
 REVIEW_PROGRESS_TOOL = Tool(
@@ -251,7 +285,7 @@ SYNC_RECOVERY_TOOL = Tool(
         "Explain failed Accelevents synchronization items and their sanitized latest "
         "attempt, with a selective retry preview. Never executes or exposes a retry command."
     ),
-    inputSchema=READ_SCHEMA,
+    inputSchema=CORRELATED_ACTION_READ_SCHEMA,
 )
 
 SPEAKER_NEXT_ACTIONS_TOOL = Tool(
@@ -281,6 +315,16 @@ EXECUTIVE_READINESS_TOOL = Tool(
     inputSchema=READ_SCHEMA,
 )
 
+WORKFLOW_ACTION_RECEIPTS_TOOL = Tool(
+    name="workflow_action_receipts",
+    description=(
+        "Read sanitized receipts for recent human-confirmed speaker-nudge and selective-sync "
+        "actions. Returns actor, correlation, outcome counts, and canonical receipt links; "
+        "never performs or approves an action."
+    ),
+    inputSchema=EXACT_RECEIPT_READ_SCHEMA,
+)
+
 READS = {
     "release_readiness": release_readiness_message,
     "speaker_nudges": speaker_nudges_message,
@@ -290,6 +334,7 @@ READS = {
     "speaker_next_actions": speaker_next_actions_message,
     "reviewer_next_assignment": reviewer_next_assignment_message,
     "executive_readiness": executive_readiness_message,
+    "workflow_action_receipts": workflow_action_receipts_message,
     "conference_memory": conference_memory_message,
 }
 
@@ -302,6 +347,7 @@ TOOLS = [
     SPEAKER_NEXT_ACTIONS_TOOL,
     REVIEWER_NEXT_ASSIGNMENT_TOOL,
     EXECUTIVE_READINESS_TOOL,
+    WORKFLOW_ACTION_RECEIPTS_TOOL,
     CONFERENCE_MEMORY_TOOL,
 ]
 
@@ -330,6 +376,21 @@ async def _handle_call_tool(ctx, params: CallToolRequestParams) -> CallToolResul
         event_slug = arguments["event_slug"]
         policy.authorize(event_slug, params.name)
         kwargs = {"base_url": policy.base_url}
+        if params.name in {"speaker_nudges", "sync_recovery"}:
+            claimed_channel_id = str(arguments.get("claimed_channel_id", "")).strip()
+            claimed_trigger_event_id = str(arguments.get("claimed_trigger_event_id", "")).strip()
+            if not claimed_channel_id or not claimed_trigger_event_id:
+                raise ValueError(
+                    "correlated action preview requires claimed channel and trigger event IDs"
+                )
+            kwargs.update(
+                requesting_principal=policy.principal,
+                claimed_channel_id=claimed_channel_id[:200],
+                claimed_trigger_event_id=claimed_trigger_event_id[:200],
+            )
+        if params.name == "workflow_action_receipts":
+            kwargs["requesting_principal"] = policy.principal
+            kwargs["correlation_id"] = arguments["correlation_id"]
         if params.name == "conference_memory":
             kwargs["query"] = arguments.get("query", "")
         if params.name in SELF_SCOPED_READS:

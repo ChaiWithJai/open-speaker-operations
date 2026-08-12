@@ -29,6 +29,7 @@ AGENT_PROFILES = (
                 "sync_recovery",
                 "executive_readiness",
                 "conference_memory",
+                "workflow_action_receipts",
             }
         ),
         subject_required=False,

@@ -20,6 +20,7 @@ from .models import (
     TaskDefinition,
     TaskEvidence,
     TransitionLog,
+    WorkflowActionReceipt,
 )
 
 
@@ -39,6 +40,20 @@ class CommandReceiptAdmin(ReadOnlyAdmin):
     list_display = ("event", "key", "command", "aggregate_type", "created_at")
     list_filter = ("event", "command")
     search_fields = ("key",)
+
+
+@admin.register(WorkflowActionReceipt)
+class WorkflowActionReceiptAdmin(ReadOnlyAdmin):
+    list_display = (
+        "event",
+        "workflow",
+        "status",
+        "correlation_id",
+        "actor",
+        "confirmed_at",
+    )
+    list_filter = ("event", "workflow", "status")
+    search_fields = ("correlation_id",)
 
 
 @admin.register(TransitionLog)

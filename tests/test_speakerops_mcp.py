@@ -36,6 +36,7 @@ ALL_BUZZ_READS = (
     "release_readiness,speaker_nudges,review_progress,content_readiness,"
     "sync_recovery,speaker_next_actions,reviewer_next_assignment,"
     "executive_readiness,conference_memory"
+    ",workflow_action_receipts"
 )
 
 
@@ -407,7 +408,7 @@ def test_build_server_registers_tools():
 def test_list_tools_exposes_release_readiness_schema(monkeypatch):
     _scope_bridge(monkeypatch, "speakerops-demo")
     result = asyncio.run(bridge._handle_list_tools(None, RequestParams()))
-    assert len(result.tools) == 9
+    assert len(result.tools) == 10
     assert {tool.name for tool in result.tools} == set(ALL_BUZZ_READS.split(","))
     tool = next(t for t in result.tools if t.name == "release_readiness")
     assert tool.input_schema["required"] == ["event_slug"]
@@ -421,6 +422,15 @@ def test_list_tools_exposes_release_readiness_schema(monkeypatch):
     memory = next(t for t in result.tools if t.name == "conference_memory")
     assert memory.input_schema["required"] == ["event_slug"]
     assert memory.input_schema["properties"]["query"]["maxLength"] == 160
+    for name in ("speaker_nudges", "sync_recovery"):
+        action_read = next(t for t in result.tools if t.name == name)
+        assert action_read.input_schema["required"] == [
+            "event_slug",
+            "claimed_channel_id",
+            "claimed_trigger_event_id",
+        ]
+    receipt_tool = next(t for t in result.tools if t.name == "workflow_action_receipts")
+    assert receipt_tool.input_schema["required"] == ["event_slug", "correlation_id"]
 
 
 def test_list_tools_exposes_only_principal_capabilities(monkeypatch):
@@ -620,7 +630,7 @@ def test_call_tool_in_process_protocol_roundtrip(monkeypatch):
             async with ClientSession(read_stream=client_read, write_stream=client_write) as session:
                 await session.initialize()
                 tools = await session.list_tools()
-                assert len(tools.tools) == 9
+                assert len(tools.tools) == 10
                 assert {t.name for t in tools.tools} == set(ALL_BUZZ_READS.split(","))
                 from mcp.shared.exceptions import MCPError
 

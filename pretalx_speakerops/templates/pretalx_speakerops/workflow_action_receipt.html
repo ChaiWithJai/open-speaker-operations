@@ -1,0 +1,43 @@
+{% extends "orga/base.html" %}
+{% load static %}
+{% block stylesheets %}{{ block.super }}<link rel="stylesheet" href="{% static 'pretalx_speakerops/speakerops.css' %}">{% endblock stylesheets %}
+{% block content %}
+<div class="speakerops" aria-labelledby="receipt-title">
+  <header class="speakerops__header"><div><p class="speakerops__eyebrow">Action receipt</p><h1 id="receipt-title">Receipt #{{ receipt.pk }}</h1><p><code>{{ receipt.correlation_id }}</code></p></div><a class="btn btn-link" href="{% url 'plugins:speakerops:speakerops_workflow_action_receipts' event.slug %}">All receipts</a></header>
+  <dl class="speakerops-panel">
+    <div><dt>Workflow</dt><dd>{{ receipt.get_workflow_display }}</dd></div>
+    <div><dt>Action</dt><dd>{{ receipt.action }}</dd></div>
+    <div><dt>Status</dt><dd>{{ receipt.get_status_display }}</dd></div>
+    <div><dt>Actor</dt><dd>{{ receipt.actor|default:"Deleted user" }}</dd></div>
+    <div><dt>Requesting principal</dt><dd><code>{{ receipt.requesting_principal }}</code></dd></div>
+    <div><dt>Claimed Buzz channel</dt><dd><code>{{ receipt.claimed_channel_id|default:"Not supplied" }}</code></dd></div>
+    <div><dt>Claimed Buzz trigger event</dt><dd><code>{{ receipt.claimed_trigger_event_id|default:"Not supplied" }}</code></dd></div>
+    <div><dt>Confirmed</dt><dd>{{ receipt.confirmed_at }}</dd></div>
+    <div><dt>Completed</dt><dd>{{ receipt.completed_at|default:"Not completed" }}</dd></div>
+    <div><dt>Targets</dt><dd>{{ receipt.target_count }}</dd></div>
+  </dl>
+  <section aria-labelledby="result-title"><h2 id="result-title">Sanitized result</h2><dl>{% for key, value in receipt.result.items %}<dt>{{ key }}</dt><dd>{{ value }}</dd>{% endfor %}</dl></section>
+  {% if ambiguous_claims %}
+  <section class="speakerops-panel" aria-labelledby="reconcile-title">
+    <h2 id="reconcile-title">Reconcile unknown connector outcome</h2>
+    <p>Verify the destination before releasing a retry. This decision is recorded on the claim and receipt.</p>
+    {% for claim in ambiguous_claims %}
+    <form method="post" action="{% url 'plugins:speakerops:speakerops_sync_claim_resolve' event.slug claim.pk %}">
+      {% csrf_token %}
+      <p><strong>{{ claim.local_type }}:{{ claim.local_id }}</strong> · claimed {{ claim.claimed_at }}</p>
+      <label>Verified outcome
+        <select name="resolution" required>
+          <option value="">Choose…</option>
+          <option value="verified_applied">External write was applied; mark reconciled</option>
+          <option value="verified_not_applied">External write was not applied; allow fresh retry</option>
+        </select>
+      </label>
+      <label>Audit note <input name="resolution_note" maxlength="500" required></label>
+      <label class="speakerops-check"><input type="checkbox" name="confirm_resolution" value="yes" required> I verified the destination outcome</label>
+      <button class="btn btn-danger" type="submit">Resolve ambiguous claim</button>
+    </form>
+    {% endfor %}
+  </section>
+  {% endif %}
+</div>
+{% endblock content %}

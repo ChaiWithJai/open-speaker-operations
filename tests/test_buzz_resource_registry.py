@@ -36,6 +36,8 @@ SAMPLE_KWARGS = {
     "assignment": 1,
     "code": "ABCDEF",
     "kind": "tasks",
+    "correlation": "00000000-0000-4000-8000-000000000001",
+    "nonce": "00000000-0000-4000-8000-000000000002",
 }
 
 

@@ -104,7 +104,18 @@ def test_sync_recovery_empty_state_is_json_safe_read_only_and_grounded(event):
             "last_verified_at": None,
             "last_error": None,
         }
-        assert result["retry_preview"] == {
+        assert {
+            key: result["retry_preview"][key]
+            for key in (
+                "mode",
+                "eligible_count",
+                "eligible_item_ids",
+                "preserves_successful_items",
+                "requires_human_confirmation",
+                "executable_command_exposed",
+                "mutation_performed",
+            )
+        } == {
             "mode": "selective_failed_items_only",
             "eligible_count": 0,
             "eligible_item_ids": [],
@@ -113,6 +124,10 @@ def test_sync_recovery_empty_state_is_json_safe_read_only_and_grounded(event):
             "executable_command_exposed": False,
             "mutation_performed": False,
         }
+        assert result["retry_preview"]["confirmation_url"].startswith(
+            f"https://speakerops.example/go/sync-retry-preview/{event.slug}~"
+        )
+        assert result["retry_preview"]["receipt_tool"] == "workflow_action_receipts"
         assert result["links"] == {
             "sync_console": (f"https://speakerops.example/go/sync-console/{event.slug}/"),
             "latest_run": None,
