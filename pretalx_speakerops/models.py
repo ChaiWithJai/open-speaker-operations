@@ -436,9 +436,11 @@ class SpeakerCommunicationLog(EventOwnedModel):
 
     INVITATION = "invitation"
     BULK_EMAIL = "bulk_email"
+    AUTOMATED_REMINDER = "automated_reminder"
     KIND_CHOICES = (
         (INVITATION, "Invitation / onboarding"),
         (BULK_EMAIL, "Selected-speaker email"),
+        (AUTOMATED_REMINDER, "Automated task reminder"),
     )
     SENT = "sent"
     FAILED = "failed"
