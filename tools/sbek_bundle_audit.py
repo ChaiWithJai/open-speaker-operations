@@ -37,8 +37,20 @@ SENSITIVE_ASSIGNMENT = re.compile(
 CORE_FILES = ("report.json", "report.html", "manual-checklist.md")
 DELIVERY_FILES = (
     "README.md",
+    "human-evidence-index.md",
     "manual-results.json",
     "sanitized-run-config.json",
+)
+SCREENSHOT_ATTRIBUTE = re.compile(
+    r'(?P<attribute>href|src)="(?P<path>[^"<>]*screenshots/[^"<>]+\.(?:png|jpe?g|webp))"',
+    re.I,
+)
+OMITTED_SCREENSHOT_DATA_URI = (
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
+    "width='640' height='360' viewBox='0 0 640 360'%3E%3Crect width='640' "
+    "height='360' fill='%23f3f4f6'/%3E%3Ctext x='320' y='180' "
+    "text-anchor='middle' fill='%236b7280' font-family='sans-serif' "
+    "font-size='18'%3EPrivate screenshot omitted%3C/text%3E%3C/svg%3E"
 )
 
 
@@ -65,6 +77,32 @@ def sanitize_string(value: str, secrets: set[str]) -> tuple[str, int]:
         replacements += count
     value, count = INVITATION_TOKEN.subn(r"\1[REDACTED_INVITATION_TOKEN]", value)
     return value, replacements + count
+
+
+def make_report_portable(value: str) -> tuple[str, int]:
+    """Replace raw screenshot links with bounded, explicit placeholders."""
+
+    omitted = 0
+
+    def replace(match: re.Match) -> str:
+        nonlocal omitted
+        omitted += 1
+        if match.group("attribute").lower() == "href":
+            return 'href="#omitted-screenshot-notice"'
+        return f'src="{OMITTED_SCREENSHOT_DATA_URI}"'
+
+    value = SCREENSHOT_ATTRIBUTE.sub(replace, value)
+    notice = (
+        '<section id="omitted-screenshot-notice"><h2>Private screenshots omitted</h2>'
+        "<p>The raw official-run screenshots are intentionally excluded. See the "
+        "bundle's reviewed <code>screenshots/</code> directory and audit receipt.</p>"
+        "</section>"
+    )
+    if omitted:
+        value = value.replace("</body>", notice + "</body>")
+        if notice not in value:
+            value += notice
+    return value, omitted
 
 
 def sanitize_value(value, secrets: set[str]):
@@ -156,6 +194,7 @@ def _stage(
     before = tree_manifest(source)
     scenarios = validate_source(source)
     replacements = 0
+    omitted_screenshot_references = 0
     staged = []
     source_staged = []
     for source_path in [source / "report.json", *[p / "evidence.json" for p in scenarios]]:
@@ -171,6 +210,8 @@ def _stage(
     for name in CORE_FILES[1:]:
         source_path = source / name
         clean, count = sanitize_string(source_path.read_text(), secrets)
+        if name == "report.html":
+            clean, omitted_screenshot_references = make_report_portable(clean)
         (work / name).write_text(clean)
         replacements += count
         staged.append(name)
@@ -243,6 +284,7 @@ def _stage(
         "delivery_ready": bool(delivery_source),
         "omitted_source_file_count": len(before) - len(source_staged),
         "redaction_count": replacements,
+        "omitted_screenshot_reference_count": omitted_screenshot_references,
         "source_manifest_sha256": hashlib.sha256(
             json.dumps(before, sort_keys=True).encode()
         ).hexdigest(),
