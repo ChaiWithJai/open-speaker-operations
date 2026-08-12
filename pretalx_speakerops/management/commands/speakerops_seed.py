@@ -180,7 +180,7 @@ CRM_FIXTURE_NOTES = (
 
 
 def _seed_buzz_review_fixture(event, users, submission):
-    """Restore one useful, blinded, partially saved review queue."""
+    """Restore a blinded two-reviewer queue with independent saved state."""
     # Benchmark and browser runs create their own rounds. A seed restore is an
     # explicit reset boundary, so remove those first and recreate one canonical
     # queue after all cleanup has finished.
@@ -205,7 +205,7 @@ def _seed_buzz_review_fixture(event, users, submission):
         minimum=Decimal("1"),
         maximum=Decimal("5"),
     )
-    EvaluationCriterion.objects.create(
+    relevance = EvaluationCriterion.objects.create(
         event=event,
         round=round_obj,
         name="Relevance",
@@ -216,7 +216,7 @@ def _seed_buzz_review_fixture(event, users, submission):
         minimum=Decimal("1"),
         maximum=Decimal("5"),
     )
-    EvaluationCriterion.objects.create(
+    recommendation = EvaluationCriterion.objects.create(
         event=event,
         round=round_obj,
         name="Recommendation",
@@ -226,7 +226,7 @@ def _seed_buzz_review_fixture(event, users, submission):
         weight=Decimal("0.00"),
         options=["Accept", "Maybe", "Reject"],
     )
-    EvaluationCriterion.objects.create(
+    comments = EvaluationCriterion.objects.create(
         event=event,
         round=round_obj,
         name="Comments",
@@ -239,6 +239,12 @@ def _seed_buzz_review_fixture(event, users, submission):
         event=event,
         round=round_obj,
         reviewer=users["reviewer"],
+        assignment_limit=5,
+    )
+    RoundReviewer.objects.create(
+        event=event,
+        round=round_obj,
+        reviewer=users["reviewer_systems"],
         assignment_limit=5,
     )
     assignment = RoundReviewAssignment.objects.create(
@@ -254,6 +260,26 @@ def _seed_buzz_review_fixture(event, users, submission):
         criterion=originality,
         numeric_value=Decimal("4"),
     )
+    completed_assignment = RoundReviewAssignment.objects.create(
+        event=event,
+        round=round_obj,
+        reviewer=users["reviewer_systems"],
+        submission=submission,
+        status=RoundReviewAssignment.COMPLETE,
+        submitted_at=DEMO_WALKTHROUGH_AT,
+    )
+    for criterion, values in (
+        (originality, {"numeric_value": Decimal("3")}),
+        (relevance, {"numeric_value": Decimal("4")}),
+        (recommendation, {"choice_value": "Maybe"}),
+        (comments, {"text_value": "Systems reviewer private comment."}),
+    ):
+        EvaluationAnswer.objects.create(
+            event=event,
+            assignment=completed_assignment,
+            criterion=criterion,
+            **values,
+        )
 
 
 def _replace_task_evidence(task, speaker, versions, reviewer):
@@ -1204,7 +1230,8 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 "Seeded speakerops-demo. Accounts: chair@example.org, "
-                "reviewer@example.org, speaker@example.org, speaker2@example.org; "
+                "reviewer@example.org, reviewer-systems@democon.test, "
+                "speaker@example.org, speaker2@example.org; "
                 "password loaded from SPEAKEROPS_DEMO_PASSWORD."
             )
         )

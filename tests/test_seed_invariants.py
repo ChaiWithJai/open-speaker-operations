@@ -410,12 +410,12 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         progress = review_progress(event.slug, base_url="http://speakerops.test")
         assert progress["rollup"] == {
             "rounds": 1,
-            "assignments": 1,
-            "complete": 0,
+            "assignments": 2,
+            "complete": 1,
             "incomplete": 1,
             "recused": 0,
             "overdue": 1,
-            "completion_percent": 0.0,
+            "completion_percent": 50.0,
         }
         assert progress["rounds"][0]["blinded"] is True
         assert progress["incomplete_assignments"][0]["rubric"]["required_answered"] == 1
@@ -440,6 +440,41 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             "required_criteria": 4,
             "required_answered": 1,
         }
+
+        primary_assignment = RoundReviewAssignment.objects.get(
+            event=event,
+            reviewer__email="reviewer@example.org",
+        )
+        systems_assignment = RoundReviewAssignment.objects.get(
+            event=event,
+            reviewer__email="reviewer-systems@democon.test",
+        )
+        assert systems_assignment.status == RoundReviewAssignment.COMPLETE
+        assert systems_assignment.answers.count() == 4
+
+        primary_reviewer = User.objects.get(email="reviewer@example.org")
+        systems_reviewer = User.objects.get(email="reviewer-systems@democon.test")
+        primary_url = reverse(
+            "plugins:speakerops:speakerops_round_review",
+            kwargs={"event": event.slug, "assignment": primary_assignment.pk},
+        )
+        systems_url = reverse(
+            "plugins:speakerops:speakerops_round_review",
+            kwargs={"event": event.slug, "assignment": systems_assignment.pk},
+        )
+        client.force_login(primary_reviewer)
+        assert client.get(primary_url).status_code == 200
+        assert client.get(systems_url).status_code == 404
+        client.force_login(systems_reviewer)
+        own_response = client.get(systems_url)
+        assert own_response.status_code == 200
+        assert b"Systems reviewer private comment" in own_response.content
+        assert b"Strong operational framing" not in own_response.content
+        denied = client.get(primary_url)
+        assert denied.status_code == 404
+        assert b"Strong operational framing" not in denied.content
+        assert b"Systems reviewer private comment" not in denied.content
+        client.logout()
 
         content = content_readiness(event.slug, base_url="http://speakerops.test")
         assert content["rollup"] == {
@@ -554,6 +589,6 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         assert list(EvaluationRound.objects.filter(event=event).values_list("name", flat=True)) == [
             "DemoCon blinded review"
         ]
-        assert RoundReviewAssignment.objects.filter(event=event).count() == 1
+        assert RoundReviewAssignment.objects.filter(event=event).count() == 2
         _assert_sync_attempt_timeline(event)
         assert _baseline(event) == first
