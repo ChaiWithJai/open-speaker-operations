@@ -320,6 +320,7 @@ def test_content_journey_upload_updates_filterable_dashboard_and_library(event, 
         b"2 versions",
         users["speaker"].name.encode(),
         users["speaker"].email.encode(),
+        f"{users['speaker'].name} · {users['speaker'].email}".encode(),
         submission.title.encode(),
         b"slides.pdf",
         b"Current/latest",
@@ -409,6 +410,8 @@ def test_explicit_session_approval_controls_public_widgets(event, users, client)
     client.logout()
     gated = client.get(f"/{event.slug}/speaker-operations/embed/")
     assert title not in gated.content
+    gated_widget = client.get(f"/{event.slug}/speaker-operations/widgets/sessions/")
+    assert title not in gated_widget.content
     gated_ics = client.get(f"/{event.slug}/speaker-operations/schedule.ics")
     assert title not in gated_ics.content
 
@@ -426,6 +429,8 @@ def test_explicit_session_approval_controls_public_widgets(event, users, client)
     client.logout()
     public = client.get(f"/{event.slug}/speaker-operations/embed/")
     assert title in public.content
+    public_widget = client.get(f"/{event.slug}/speaker-operations/widgets/sessions/")
+    assert title in public_widget.content
     public_ics = client.get(f"/{event.slug}/speaker-operations/schedule.ics")
     assert title in public_ics.content
 

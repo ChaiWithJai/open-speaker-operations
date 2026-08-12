@@ -569,6 +569,31 @@ def test_chair_and_reviewer_can_query_conference_memory(event, users, client):
     assert matching.status_code == 200
     assert b"AI-Assisted Contributions" in matching.content
     assert b"Paolo Melchiorre" in matching.content
+    assert matching.context["inventory"] == {
+        "series": 1,
+        "editions": 1,
+        "talks": 1,
+        "credits": 1,
+        "source_identities": 1,
+        "people": 1,
+        "declared_gaps": 0,
+        "empty_editions": 0,
+        "missing_formats": 0,
+        "missing_tracks": 0,
+    }
+    for marker in (
+        b"Full source-backed inventory",
+        b"1</strong> series",
+        b"1</strong> editions",
+        b"1</strong> talks",
+        b"1</strong> speaker credits",
+        b"1</strong> active source identities",
+        b"1</strong> provisional people",
+        b"0</strong> declared gaps",
+        b"0</strong> missing formats",
+        b"0</strong> missing tracks",
+    ):
+        assert marker in matching.content
 
     client.force_login(users["reviewer"])
     reviewer_response = client.get(url, {"q": "maintainer"})
@@ -631,6 +656,15 @@ def test_speaker_crm_layers_tags_notes_and_review_history_without_mutating_sourc
     assert contact.tags == ["AIE alum", "Evals"]
     assert "Invite again" in contact.internal_notes
     assert CRMPipelineCard.objects.filter(contact=contact, organiser=event.organiser).exists()
+    linked_page = client.get(url)
+    crm_url = reverse(
+        "plugins:speakerops:speakerops_crm",
+        kwargs={"event": event.slug},
+    )
+    assert (
+        f'href="{crm_url}?contact={contact.pk}#crm-contact-{contact.pk}"'.encode()
+        in linked_page.content
+    )
     client.post(url, {"action": "add_to_crm"})
     assert CRMContact.objects.filter(organiser=event.organiser, source_speaker=speaker).count() == 1
 

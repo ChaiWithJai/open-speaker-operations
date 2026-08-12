@@ -11,6 +11,9 @@ from django_scopes import scope
 from pretalx.submission.forms import QuestionsForm
 from pretalx.submission.models import Answer, QuestionVariant, Submission, SubmissionStates
 
+from pretalx_speakerops.cfp_lock import proposal_mutations_open
+from pretalx_speakerops.models import SubmissionPresenterRole
+
 
 @pytest.mark.django_db(transaction=True)
 def test_seeded_cfp_renders_accepts_all_p0_field_types_and_resumes_draft(event, users):
@@ -142,6 +145,8 @@ def test_cfp_close_date_blocks_new_submission_and_existing_edit(event, users, cl
     original_title = "Existing submitted proposal"
     original_abstract = "The abstract stored before the CFP closed."
     with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        event.save(update_fields=["plugins"])
         submission = Submission.objects.create(
             event=event,
             title=original_title,
@@ -152,6 +157,14 @@ def test_cfp_close_date_blocks_new_submission_and_existing_edit(event, users, cl
             content_locale=event.locale,
         )
         submission.speakers.add(users["speaker"])
+        draft = Submission.objects.create(
+            event=event,
+            title="Draft that must survive the closed CFP",
+            submission_type=event.cfp.default_type,
+            state=SubmissionStates.DRAFT,
+            content_locale=event.locale,
+        )
+        draft.speakers.add(users["speaker"])
 
         past_deadline = timezone.now() - timedelta(days=1)
         event.cfp.deadline = past_deadline
@@ -160,6 +173,9 @@ def test_cfp_close_date_blocks_new_submission_and_existing_edit(event, users, cl
 
     client.force_login(users["speaker"])
     request_host = settings.SITE_NETLOC
+    with scope(event=event):
+        draft.refresh_from_db()
+        assert proposal_mutations_open(draft) is False
 
     submit_url = reverse("cfp:event.submit", kwargs={"event": event.slug})
     new_submission = client.get(submit_url, HTTP_HOST=request_host)
@@ -194,6 +210,34 @@ def test_cfp_close_date_blocks_new_submission_and_existing_edit(event, users, cl
         assert denied_mutation.status_code in {403, 404}
         submission.refresh_from_db()
         assert submission.state == SubmissionStates.SUBMITTED
+
+    discard_url = reverse(
+        "cfp:event.user.submission.discard",
+        kwargs={"event": event.slug, "code": draft.code},
+    )
+    denied_discard = client.post(discard_url, {}, HTTP_HOST=request_host)
+    assert denied_discard.status_code == 403
+    with scope(event=event):
+        assert Submission.all_objects.filter(pk=draft.pk, state=SubmissionStates.DRAFT).exists()
+        presenter_role = SubmissionPresenterRole.objects.get(
+            event=event,
+            submission=submission,
+            speaker=users["speaker"],
+        )
+    original_role = presenter_role.role
+    presenters_url = reverse(
+        "plugins:speakerops:speakerops_submission_presenters",
+        kwargs={"event": event.slug, "code": submission.code},
+    )
+    denied_presenter_change = client.post(
+        presenters_url,
+        {f"role_{users['speaker'].pk}": SubmissionPresenterRole.CO_AUTHOR},
+        HTTP_HOST=request_host,
+    )
+    assert denied_presenter_change.status_code == 403
+    with scope(event=event):
+        presenter_role.refresh_from_db()
+        assert presenter_role.role == original_role
 
     denied_edit = client.post(
         edit_url,

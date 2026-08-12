@@ -133,6 +133,26 @@ def test_role_navigation_is_named_current_and_permission_filtered(event, users, 
 
 
 @pytest.mark.django_db(transaction=True)
+def test_reviewer_custom_queue_does_not_expose_native_speaker_identity(event, users, client):
+    submission = _prepare_roles(event, users)
+    speaker = users["speaker"]
+    client.force_login(users["reviewer"])
+
+    custom_queue = client.get(
+        reverse("plugins:speakerops:speakerops_review_queue", kwargs={"event": event.slug})
+    )
+    native_directory = client.get(reverse("orga:speakers.list", kwargs={"event": event.slug}))
+    native_profile = client.get(
+        reverse("orga:speakers.view", kwargs={"event": event.slug, "code": speaker.code})
+    )
+
+    assert submission.assigned_reviewers.filter(pk=users["reviewer"].pk).exists()
+    assert custom_queue.status_code == 200
+    assert native_directory.status_code in {403, 404}
+    assert native_profile.status_code in {403, 404}
+
+
+@pytest.mark.django_db(transaction=True)
 def test_explicit_login_return_path_is_preserved(event, users, client):
     _prepare_roles(event, users)
     destination = reverse(

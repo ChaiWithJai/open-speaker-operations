@@ -8,6 +8,7 @@ from pretalx.mail.models import QueuedMail
 from pretalx.person.models import SpeakerProfile, User
 from pretalx.submission.models import SubmissionStates
 
+from pretalx_speakerops.auth import REVIEWER_TEAM_NAME
 from pretalx_speakerops.models import (
     EvaluationAnswer,
     EvaluationCriterion,
@@ -197,6 +198,16 @@ def test_exact_assignments_cap_progress_reminder_and_reviewer_isolation(event, u
     assert "Secret biography" not in body
     assert "Latticework Systems" not in body
     assert "Author identity hidden" in body
+    assert client.get(reverse("orga:speakers.list", kwargs={"event": event.slug})).status_code in {
+        403,
+        404,
+    }
+    assert client.get(
+        reverse(
+            "orga:speakers.view",
+            kwargs={"event": event.slug, "code": users["speaker"].code},
+        )
+    ).status_code in {403, 404}
     legacy_queue = reverse(
         "plugins:speakerops:speakerops_review_queue", kwargs={"event": event.slug}
     )
@@ -221,7 +232,7 @@ def test_exact_assignments_cap_progress_reminder_and_reviewer_isolation(event, u
             name="Unassigned reviewer",
             password="test-password",
         )
-        users["reviewer"].teams.filter(is_reviewer=True).first().members.add(other_reviewer)
+        users["reviewer"].teams.get(name=REVIEWER_TEAM_NAME).members.add(other_reviewer)
     client.force_login(other_reviewer)
     assert client.get(queue_url).status_code == 200
     assert submissions[0].title.encode() not in client.get(queue_url).content

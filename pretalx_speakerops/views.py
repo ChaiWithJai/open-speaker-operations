@@ -28,6 +28,7 @@ from pretalx.submission.models import Review, ReviewScore, Submission, Submissio
 
 from .auth import (
     can_manage,
+    can_review,
     has_round_assignments,
     is_speaker,
     require_event_permission,
@@ -50,12 +51,14 @@ from .models import (
     AcceptanceWave,
     CommandReceipt,
     ConditionalQuestionRule,
+    ConferenceEdition,
     ConferenceSeries,
     CRMContact,
     CRMPipelineCard,
     HistoricalIdentityDecision,
     HistoricalSourceIdentity,
     HistoricalSpeaker,
+    HistoricalSpeakerCredit,
     HistoricalTalk,
     OnboardingTask,
     OutboxEvent,
@@ -202,7 +205,8 @@ class EventContextMixin(LoginRequiredMixin):
     def authorize_organiser(self, request):
         permission = getattr(self, "permission", "dashboard")
         if permission == "review":
-            require_event_permission(request.user, self.event, "submission.orga_list_submission")
+            if not can_review(request.user, self.event):
+                raise Http404
             authorized_events = getattr(request.user, "_speakerops_review_event_ids", set())
             authorized_events.add(self.event.pk)
             request.user._speakerops_review_event_ids = authorized_events
@@ -292,6 +296,7 @@ class ConferenceMemoryView(EventContextMixin, TemplateView):
         talks = talks.order_by("-edition__date_from", "title")
         result_count = talks.count()
         page = Paginator(talks, 50).get_page(self.request.GET.get("page"))
+        coverage_series = conference_coverage()
         context.update(
             event=self.event,
             query=query,
@@ -302,8 +307,20 @@ class ConferenceMemoryView(EventContextMixin, TemplateView):
             page_obj=page,
             result_count=result_count,
             historical_talk_count=HistoricalTalk.objects.count(),
+            inventory={
+                "series": ConferenceSeries.objects.count(),
+                "editions": ConferenceEdition.objects.count(),
+                "talks": HistoricalTalk.objects.count(),
+                "credits": HistoricalSpeakerCredit.objects.count(),
+                "source_identities": HistoricalSourceIdentity.objects.filter(active=True).count(),
+                "people": HistoricalSpeaker.objects.count(),
+                "declared_gaps": sum(item.speakerops_declared_gaps for item in coverage_series),
+                "empty_editions": sum(item.speakerops_empty_editions for item in coverage_series),
+                "missing_formats": sum(item.speakerops_missing_format for item in coverage_series),
+                "missing_tracks": sum(item.speakerops_missing_track for item in coverage_series),
+            },
             memory_insights=memory_decision_support(talks),
-            coverage_series=conference_coverage(),
+            coverage_series=coverage_series,
         )
         return context
 
@@ -1551,12 +1568,31 @@ class AgendaReleaseView(EventContextMixin, TemplateView):
         messages.success(request, f"Track {name} added and ready for submissions.")
         return redirect(f"{request.path}#program-setup")
 
+    def _prepare_placement(self, request):
+        with scope(event=self.event):
+            submission = get_object_or_404(
+                Submission.objects,
+                event=self.event,
+                pk=request.POST.get("submission_id"),
+                state=SubmissionStates.ACCEPTED,
+            )
+            submission.update_talk_slots()
+            if not self.event.wip_schedule.talks.filter(submission=submission).exists():
+                raise Http404
+        messages.success(
+            request,
+            f"{submission.title} is ready for a time and room.",
+        )
+        return redirect(submission.orga_urls.quick_schedule)
+
     def post(self, request, event):
         action = request.POST.get("action")
         if action == "create_room":
             return self._create_room(request)
         if action == "create_track":
             return self._create_track(request)
+        if action == "prepare_placement":
+            return self._prepare_placement(request)
         if action == "preview_assisted_schedule":
             try:
                 with scope(event=self.event):

@@ -7,9 +7,13 @@ from django.utils import timezone
 from django_scopes import scope
 from pretalx.schedule.models import Schedule
 
-from pretalx_speakerops.models import ScheduleIcsIdentity
+from pretalx_speakerops.models import ScheduleIcsIdentity, SessionPublicationApproval
 from pretalx_speakerops.program.calendar import released_ical
-from pretalx_speakerops.program.policy import assert_release_allowed, classify_warnings
+from pretalx_speakerops.program.policy import (
+    assert_release_allowed,
+    classify_warnings,
+    release_schedule,
+)
 from pretalx_speakerops.program.reviews import configure_review_rounds, decision_history
 
 
@@ -165,6 +169,17 @@ def test_released_ics_has_stable_uid_and_incrementing_sequence(event):
         assert "SEQUENCE:0" in first
         assert "SEQUENCE:1" in second
 
+        SessionPublicationApproval.objects.update_or_create(
+            event=event,
+            submission=slot.submission,
+            defaults={"status": SessionPublicationApproval.PENDING},
+        )
+        cancelled = released_ical(event)
+        identity.refresh_from_db()
+        assert identity.canceled is True
+        assert identity.uid in cancelled
+        assert "STATUS:CANCELLED" in cancelled
+
 
 @pytest.mark.django_db(transaction=True)
 def test_published_embed_is_cross_origin_readable_and_released_only(event, client):
@@ -217,6 +232,37 @@ def test_successful_release_hands_exact_schedule_to_public_agenda(event, users, 
     assert expected_title.encode() in public.content
     with scope(event=event):
         assert str(event.current_schedule.version) == "SBEK public handoff"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_release_makes_explicitly_approved_accepted_session_public(event, users, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        slots = list(event.wip_schedule.talks.filter(submission__isnull=False))
+        start = timezone.now().replace(hour=9, minute=0, second=0, microsecond=0)
+        for index, scheduled in enumerate(slots):
+            scheduled.room = event.rooms.first()
+            scheduled.start = start + timedelta(hours=index)
+            scheduled.end = scheduled.start + timedelta(minutes=30)
+            scheduled.save(update_fields=["room", "start", "end", "updated"])
+        slot = slots[0]
+        slot.submission.state = "accepted"
+        slot.submission.save(update_fields=["state", "updated"])
+        slot.is_visible = False
+        slot.save(update_fields=["is_visible", "updated"])
+        SessionPublicationApproval.objects.update_or_create(
+            event=event,
+            submission=slot.submission,
+            defaults={"status": SessionPublicationApproval.APPROVED},
+        )
+        expected_title = slot.submission.title
+        release_schedule(event.wip_schedule, "Approved accepted handoff", users["chair"])
+        released = event.schedules.get(version="Approved accepted handoff")
+        assert released.talks.get(submission=slot.submission).is_visible is True
+
+    public = client.get(f"/{event.slug}/speaker-operations/widgets/agenda/")
+    assert public.status_code == 200
+    assert expected_title.encode() in public.content
 
 
 @pytest.mark.django_db(transaction=True)

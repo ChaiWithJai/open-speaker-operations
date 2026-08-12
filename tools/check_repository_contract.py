@@ -45,6 +45,7 @@ ROOT_ALLOWLIST = {
     "Makefile",
     "README.md",
     "docker-compose.yml",
+    "opencode.json",
     "pyproject.toml",
     "uv.lock",
 }

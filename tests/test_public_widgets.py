@@ -1,12 +1,19 @@
 from datetime import timedelta
 from html.parser import HTMLParser
+from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
+from django.test import RequestFactory
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django_scopes import scope
 from pretalx.person.models import SpeakerProfile
+
+from pretalx_speakerops.models import SessionPublicationApproval
+from pretalx_speakerops.receivers import speakerops_cfp_assets
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def _slot_ids(response):
@@ -79,11 +86,49 @@ def test_agenda_exposes_keyboard_operable_day_tabs(event, client):
     response = client.get(f"/{event.slug}/speaker-operations/widgets/agenda/")
 
     assert response.status_code == 200
-    assert _elements(response, role="tablist")
+    assert _elements(response, tag="div", role="tablist")
+    assert not _elements(response, tag="form", role="tablist")
     assert b"data-agenda-day=" in response.content
     assert b"data-agenda-panel=" in response.content
     assert _elements(response, role="tabpanel")
     assert _elements(response, role="tab", **{"aria-selected": "true"})
+
+
+@pytest.mark.django_db(transaction=True)
+def test_itinerary_uses_valid_tablist_host(event, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+
+    response = client.get(f"/{event.slug}/speaker-operations/widgets/itinerary/")
+
+    assert response.status_code == 200
+    assert _elements(response, tag="div", role="tablist")
+    assert not _elements(response, tag="form", role="tablist")
+
+
+def test_public_widget_mobile_navigation_wraps_without_clipping():
+    stylesheet = (
+        ROOT / "pretalx_speakerops" / "static" / "pretalx_speakerops" / "public_widgets.css"
+    ).read_text()
+
+    mobile_rules = stylesheet.split("@media(max-width:42rem)", maxsplit=1)[1]
+    assert ".widget-nav{overflow-x:visible;flex-wrap:wrap}" in mobile_rules
+    assert ".widget-nav a{white-space:normal}" in mobile_rules
+    assert "flex-wrap:nowrap" not in mobile_rules
+
+
+def test_native_schedule_live_badge_has_contrast_override():
+    assets = speakerops_cfp_assets(
+        sender=object(), request=RequestFactory().get("/event/schedule/")
+    )
+    script = (
+        ROOT / "pretalx_speakerops" / "static" / "pretalx_speakerops" / "cfp-a11y.js"
+    ).read_text()
+
+    assert "pretalx_speakerops/cfp-a11y" in str(assets)
+    assert (
+        ".time-box .is-live { background-color: #b71c1c !important; color: #ffffff !important; }"
+    ) in script
 
 
 @pytest.mark.django_db(transaction=True)
@@ -344,7 +389,7 @@ def test_itinerary_is_grouped_and_server_navigable_by_day(event, client):
     assert response.status_code == 200
     assert response.context["selected_day"] == selected_day
     assert len(response.context["days"]) >= 2
-    assert _elements(response, tag="form", **{"aria-label": "Itinerary days"})
+    assert _elements(response, tag="div", role="tablist", **{"aria-label": "Itinerary days"})
     assert b"data-itinerary-day=" in response.content
     assert b"data-itinerary-panel=" in response.content
     assert _elements(
@@ -508,6 +553,38 @@ def test_selected_calendar_exports_only_released_requested_sessions(event, clien
 
 
 @pytest.mark.django_db(transaction=True)
+def test_selected_calendar_respects_content_publication_approval(event, client):
+    with scope(event=event):
+        event.enable_plugin("pretalx_speakerops")
+        slots = list(
+            event.current_schedule.talks.filter(is_visible=True, submission__isnull=False)
+            .select_related("submission")
+            .order_by("pk")[:2]
+        )
+        assert len(slots) == 2
+        approved, pending = slots
+        SessionPublicationApproval.objects.update_or_create(
+            event=event,
+            submission=approved.submission,
+            defaults={"status": SessionPublicationApproval.APPROVED},
+        )
+        SessionPublicationApproval.objects.update_or_create(
+            event=event,
+            submission=pending.submission,
+            defaults={"status": SessionPublicationApproval.PENDING},
+        )
+
+    response = client.get(
+        f"/{event.slug}/speaker-operations/my-schedule.ics",
+        {"sessions": f"{approved.submission.code},{pending.submission.code}"},
+    )
+
+    assert response.status_code == 200
+    assert approved.submission.title.encode() in response.content
+    assert pending.submission.title.encode() not in response.content
+
+
+@pytest.mark.django_db(transaction=True)
 def test_embed_builder_is_organizer_only_and_exposes_required_controls(event, users, client):
     with scope(event=event):
         event.enable_plugin("pretalx_speakerops")
@@ -554,3 +631,7 @@ def test_public_day_views_default_to_all_days_and_keep_broken_image_fallback(eve
     assert all("hidden" not in panel for panel in _elements(agenda, tag="section", role="tabpanel"))
     if b"data-avatar" in gallery.content:
         assert b"data-avatar-fallback" in gallery.content
+        widget_script = Path(
+            "pretalx_speakerops/static/pretalx_speakerops/public_widgets.js"
+        ).read_text()
+        assert "avatar.complete && avatar.naturalWidth === 0" in widget_script

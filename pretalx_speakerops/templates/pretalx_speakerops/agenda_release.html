@@ -65,7 +65,7 @@
 
   <section class="speakerops-panel" id="unscheduled" aria-labelledby="unscheduled-title">
     <div><p class="speakerops__eyebrow">Accepted handoff</p><h2 id="unscheduled-title">Unscheduled sessions · {{ unscheduled|length }}</h2><p>Accepted sessions stay visible here until an organizer gives them a day, time, and room.</p></div>
-    <ul class="speakerops-list">{% for submission in unscheduled %}<li id="unscheduled-{{ submission.pk }}"><strong>{{ submission.title }}</strong><span>{{ submission.display_speaker_names }}{% if submission.track %} · {{ submission.track.name }}{% endif %}</span><a class="btn btn-outline-primary" href="{{ submission.orga_urls.quick_schedule }}">Place in agenda</a></li>{% empty %}<li>Every accepted session has a draft placement.</li>{% endfor %}</ul>
+    <ul class="speakerops-list">{% for submission in unscheduled %}<li id="unscheduled-{{ submission.pk }}"><strong>{{ submission.title }}</strong><span>{{ submission.display_speaker_names }}{% if submission.track %} · {{ submission.track.name }}{% endif %}</span><form method="post">{% csrf_token %}<input type="hidden" name="action" value="prepare_placement"><input type="hidden" name="submission_id" value="{{ submission.pk }}"><button class="btn btn-outline-primary" type="submit">Place in agenda</button></form></li>{% empty %}<li>Every accepted session has a draft placement.</li>{% endfor %}</ul>
   </section>
 
   <section class="speakerops-panel" aria-labelledby="agenda-assist-title">

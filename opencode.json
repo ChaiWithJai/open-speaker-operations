@@ -1,0 +1,39 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "speakerops-operator": {
+      "description": "Read-only SpeakerOps operator agent",
+      "mode": "primary",
+      "prompt": "{file:./tools/speakerops-operator.prompt.md}",
+      "tools": {"*": false, "speakerops-reads_*": true}
+    },
+    "speakerops-speaker": {
+      "description": "Read-only SpeakerOps speaker agent",
+      "mode": "primary",
+      "prompt": "{file:./tools/speakerops-speaker.prompt.md}",
+      "tools": {"*": false, "speakerops-reads_*": true}
+    },
+    "speakerops-reviewer": {
+      "description": "Read-only SpeakerOps reviewer agent",
+      "mode": "primary",
+      "prompt": "{file:./tools/speakerops-reviewer.prompt.md}",
+      "tools": {"*": false, "speakerops-reads_*": true}
+    }
+  },
+  "mcp": {
+    "speakerops-reads": {
+      "type": "local",
+      "command": ["python3", "{env:SPEAKEROPS_REPO_ROOT}/tools/run_speakerops_mcp_bridge.py"],
+      "enabled": true,
+      "environment": {
+        "SPEAKEROPS_REPO_ROOT": "{env:SPEAKEROPS_REPO_ROOT}",
+        "SPEAKEROPS_COMPOSE_PROJECT": "{env:SPEAKEROPS_COMPOSE_PROJECT}",
+        "SPEAKEROPS_BASE_URL": "{env:SPEAKEROPS_BASE_URL}",
+        "SPEAKEROPS_MCP_PRINCIPAL": "{env:SPEAKEROPS_MCP_PRINCIPAL}",
+        "SPEAKEROPS_MCP_ALLOWED_EVENTS": "{env:SPEAKEROPS_MCP_ALLOWED_EVENTS}",
+        "SPEAKEROPS_MCP_CAPABILITIES": "{env:SPEAKEROPS_MCP_CAPABILITIES}",
+        "SPEAKEROPS_MCP_SUBJECT_EMAIL": "{env:SPEAKEROPS_MCP_SUBJECT_EMAIL}"
+      }
+    }
+  }
+}

@@ -17,7 +17,8 @@ build
 backups
 tests
 docs
-tools
+tools/*
+!tools/mcp_speakerops_server.py
 deploy
 *.pyc
 *.egg-info

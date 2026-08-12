@@ -1,8 +1,17 @@
+from django.db.models import Q
 from django.http import Http404
 from django.urls import reverse
 
-REVIEW_PERMISSION = "submission.orga_list_submission"
 MANAGE_PERMISSIONS = ("event.update_event", "submission.orga_update_submission")
+REVIEWER_TEAM_NAME = "SpeakerOps reviewers"
+TEAM_PERMISSION_FIELDS = (
+    "can_create_events",
+    "can_change_teams",
+    "can_change_organiser_settings",
+    "can_change_event_settings",
+    "can_change_submissions",
+    "is_reviewer",
+)
 
 
 def require_event_permission(user, event, *permissions):
@@ -22,10 +31,45 @@ def can_review(user, event):
     authorized_events = getattr(user, "_speakerops_review_event_ids", set())
     if event.pk in authorized_events:
         return True
-    allowed = user.has_perm(REVIEW_PERMISSION, event)
+    # SpeakerOps review access is intentionally independent from pretalx's
+    # native ``is_reviewer`` team role. That native role also exposes the
+    # organiser speaker directory and profile pages, which defeats blind
+    # review. The named, event-limited team is an invitation/provisioning
+    # boundary for our custom queues and carries no native permissions.
+    # Resolve the two valid team boundaries in one query: a native event
+    # manager/chair, or the dedicated permission-free SpeakerOps reviewer
+    # team. Avoiding pretalx's broad ``is_reviewer`` role keeps native speaker
+    # identities closed while preserving the custom queue.
+    team_rows = list(
+        user.teams.filter(organiser=event.organiser)
+        .filter(Q(all_events=True) | Q(limit_events=event))
+        .values("name", *TEAM_PERMISSION_FIELDS)
+    )
+    native_permissions = {
+        permission for row in team_rows for permission in TEAM_PERMISSION_FIELDS if row[permission]
+    }
+    allowed = bool(
+        {"can_change_submissions", "can_change_event_settings"} & native_permissions
+    ) or any(row["name"] == REVIEWER_TEAM_NAME for row in team_rows)
+    if not allowed:
+        from .models import ReviewerPool, RoundReviewAssignment, RoundReviewer
+
+        allowed = (
+            ReviewerPool.objects.filter(event=event, reviewers=user).exists()
+            or RoundReviewer.objects.filter(event=event, reviewer=user).exists()
+            or RoundReviewAssignment.objects.filter(event=event, reviewer=user).exists()
+            or event.submissions.filter(assigned_reviewers=user).exists()
+        )
     if allowed:
         authorized_events.add(event.pk)
         user._speakerops_review_event_ids = authorized_events
+    # pretalx treats an empty event-permission set as a cache miss. A
+    # permission-free user would otherwise repeat the same team lookup
+    # throughout one request. Cache the complete native permission set, or a
+    # namespaced marker that no native rule recognizes.
+    native_cache = getattr(user, "event_permission_cache", None)
+    if native_cache is not None and not native_cache.get(event.pk):
+        native_cache[event.pk] = native_permissions or {"speakerops_reviewer"}
     return allowed
 
 

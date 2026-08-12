@@ -16,6 +16,7 @@ from .content_ops import (
     SpeakerEvidenceDownloadView,
 )
 from .crm import CRMDirectoryView
+from .go_resolver import GoResolveView
 from .public_widgets import (
     EmbedBuilderView,
     PublicSessionDetailView,
@@ -24,7 +25,7 @@ from .public_widgets import (
     SelectedScheduleIcsView,
 )
 from .speaker_operations import SpeakerImportView, SpeakerOperationsView
-from .speaker_profile import SpeakerPortalProfileView
+from .speaker_profile import SpeakerPortalProfileView, SpeakerSelfHeadshotView
 from .views import (
     AgendaReleaseView,
     CfpRoutingView,
@@ -276,6 +277,11 @@ urlpatterns = [
         name="speakerops_speaker_profile",
     ),
     path(
+        "<slug:event>/speaker-operations/profile/headshot/",
+        SpeakerSelfHeadshotView.as_view(),
+        name="speakerops_speaker_headshot",
+    ),
+    path(
         "<slug:event>/speaker-operations/checklist/<int:pk>/complete/",
         CompleteTaskView.as_view(),
         name="speakerops_complete_task",
@@ -304,5 +310,10 @@ urlpatterns = [
         "<slug:event>/speaker-operations/status.json",
         StatusView.as_view(),
         name="speakerops_status",
+    ),
+    path(
+        "go/<slug:resource>/<str:opaque_id>/",
+        GoResolveView.as_view(),
+        name="speakerops_go",
     ),
 ]

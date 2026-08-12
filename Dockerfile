@@ -27,6 +27,7 @@ RUN pip install --no-cache-dir --no-deps . \
     && python -m pretalx_speakerops.pretalx_compat \
     && chmod +x /app/docker/entrypoint.sh
 COPY docker/pretalx.cfg /app/docker/pretalx.cfg
+COPY tools/mcp_speakerops_server.py /app/tools/mcp_speakerops_server.py
 
 ENV PRETALX_CONFIG_FILE=/app/docker/pretalx.cfg
 ENV APP_VERSION=${APP_VERSION}

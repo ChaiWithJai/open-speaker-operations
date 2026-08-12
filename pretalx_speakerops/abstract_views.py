@@ -15,6 +15,7 @@ from pretalx.mail.models import QueuedMail
 from pretalx.person.models import User
 from pretalx.submission.models import Submission, SubmissionStates
 
+from .auth import REVIEWER_TEAM_NAME
 from .models import (
     EvaluationAnswer,
     EvaluationCriterion,
@@ -64,7 +65,7 @@ def _reviewers(event):
         User.objects.filter(
             Q(teams__all_events=True, teams__organiser=event.organiser)
             | Q(teams__limit_events=event),
-            teams__is_reviewer=True,
+            teams__name=REVIEWER_TEAM_NAME,
         )
         .distinct()
         .order_by("name", "email")

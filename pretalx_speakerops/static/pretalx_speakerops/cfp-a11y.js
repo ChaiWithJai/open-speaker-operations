@@ -72,6 +72,7 @@
         style.textContent = `
           .timezone-label { color: #5f5f5f !important; }
           .time-box .duration { color: #ffffff !important; }
+          .time-box .is-live { background-color: #b71c1c !important; color: #ffffff !important; }
         `;
         root.append(style);
       }

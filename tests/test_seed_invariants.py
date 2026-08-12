@@ -9,8 +9,13 @@ from pretalx.event.models import Event, Team
 from pretalx.person.models import SpeakerProfile, User
 from pretalx.submission.models import Answer
 
+from pretalx_speakerops.buzz_reads import content_readiness
 from pretalx_speakerops.cfp import AIE_TRACKS
 from pretalx_speakerops.demo_assets import DEMO_HEADSHOT_BY_EMAIL
+from pretalx_speakerops.integrations.buzz.review_reads import (
+    review_progress,
+    reviewer_next_assignment,
+)
 from pretalx_speakerops.management.commands.speakerops_seed import (
     CFP_DEADLINE,
     CFP_OPENING,
@@ -32,13 +37,20 @@ from pretalx_speakerops.management.commands.speakerops_seed import (
 from pretalx_speakerops.models import (
     CRMContact,
     CRMPipelineCard,
+    EvaluationAnswer,
+    EvaluationCriterion,
+    EvaluationRound,
     ExternalIdentity,
     OnboardingTask,
+    RoundReviewAssignment,
+    RoundReviewer,
+    SessionPublicationApproval,
     SubmissionPresenterRole,
     SyncAttempt,
     SyncItem,
     SyncPreview,
     SyncRun,
+    TaskEvidence,
 )
 from pretalx_speakerops.program.policy import classify_warnings
 
@@ -113,6 +125,86 @@ def _baseline(event):
             .values_list("submission__title", "speaker__email", "role")
             .order_by("submission__title", "speaker__email")
         ),
+        "buzz_review": {
+            "rounds": tuple(
+                EvaluationRound.objects.filter(event=event)
+                .values_list("name", "position", "opens_at", "closes_at", "blinded", "active")
+                .order_by("position", "pk")
+            ),
+            "criteria": tuple(
+                EvaluationCriterion.objects.filter(event=event)
+                .values_list(
+                    "round__name",
+                    "name",
+                    "field_type",
+                    "position",
+                    "required",
+                    "weight",
+                    "minimum",
+                    "maximum",
+                )
+                .order_by("round__position", "position", "pk")
+            ),
+            "memberships": tuple(
+                RoundReviewer.objects.filter(event=event)
+                .values_list("round__name", "reviewer__email", "assignment_limit")
+                .order_by("round__position", "reviewer__email")
+            ),
+            "assignments": tuple(
+                RoundReviewAssignment.objects.filter(event=event)
+                .values_list("round__name", "reviewer__email", "submission__title", "status")
+                .order_by("round__position", "reviewer__email", "submission__title")
+            ),
+            "answers": tuple(
+                EvaluationAnswer.objects.filter(event=event)
+                .values_list(
+                    "assignment__submission__title",
+                    "criterion__name",
+                    "numeric_value",
+                    "choice_value",
+                    "text_value",
+                )
+                .order_by("assignment__submission__title", "criterion__position")
+            ),
+        },
+        "buzz_content": {
+            "tasks": tuple(
+                OnboardingTask.objects.filter(
+                    event=event, definition__completion_evaluator="upload"
+                )
+                .values_list(
+                    "submission__title",
+                    "speaker__email",
+                    "definition__slug",
+                    "status",
+                    "due_date",
+                )
+                .order_by("submission__title", "definition__position", "pk")
+            ),
+            "evidence": tuple(
+                (
+                    evidence.task.submission.title,
+                    evidence.task.definition.slug,
+                    evidence.version,
+                    evidence.upload.name.rsplit("/", 1)[-1],
+                    evidence.review_status,
+                    evidence.review_note,
+                    evidence.reviewed_by.email if evidence.reviewed_by else None,
+                    evidence.created_at,
+                )
+                for evidence in TaskEvidence.objects.filter(
+                    event=event,
+                    task__definition__completion_evaluator="upload",
+                )
+                .select_related("task__submission", "task__definition", "reviewed_by")
+                .order_by("task__submission__title", "task__definition__position", "version")
+            ),
+            "approvals": tuple(
+                SessionPublicationApproval.objects.filter(event=event)
+                .values_list("submission__title", "status", "note", "reviewed_by__email")
+                .order_by("submission__title")
+            ),
+        },
         "crm_fixtures": tuple(
             CRMContact.objects.filter(
                 organiser=event.organiser,
@@ -166,6 +258,15 @@ def _baseline(event):
     }
 
 
+def _assert_sync_attempt_timeline(event):
+    with scope(event=event):
+        attempts = SyncAttempt.objects.filter(event=event).order_by("item_id", "number")
+        assert attempts.exists()
+        for attempt in attempts:
+            assert attempt.finished_at is not None
+            assert attempt.started_at <= attempt.finished_at
+
+
 @pytest.mark.django_db(transaction=True)
 def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monkeypatch, client):
     monkeypatch.setenv("SPEAKEROPS_DEMO_PASSWORD", "test-demo-password")
@@ -185,6 +286,7 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
     event = Event.objects.get(slug="speakerops-demo")
     with scope(event=event):
         first = _baseline(event)
+        _assert_sync_attempt_timeline(event)
 
         assert first["event"] == (
             DEMO_START,
@@ -254,6 +356,7 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             organiser=event.organiser,
             name="SpeakerOps reviewers",
         )
+        assert reviewer_team.is_reviewer is False
         assert (
             client.get(
                 reverse(
@@ -304,6 +407,99 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             ("speaker@example.org", SubmissionPresenterRole.PRIMARY_AUTHOR),
             ("speaker2@example.org", SubmissionPresenterRole.CO_AUTHOR),
         }
+        progress = review_progress(event.slug, base_url="http://speakerops.test")
+        assert progress["rollup"] == {
+            "rounds": 1,
+            "assignments": 2,
+            "complete": 1,
+            "incomplete": 1,
+            "recused": 0,
+            "overdue": 1,
+            "completion_percent": 50.0,
+        }
+        assert progress["rounds"][0]["blinded"] is True
+        assert progress["incomplete_assignments"][0]["rubric"]["required_answered"] == 1
+        assert progress["incomplete_assignments"][0]["rubric"]["required_total"] == 4
+        assert [
+            criterion["name"]
+            for criterion in progress["incomplete_assignments"][0]["rubric"]["criteria"]
+        ] == ["Originality", "Relevance", "Recommendation", "Comments"]
+
+        personal = reviewer_next_assignment(
+            event.slug,
+            "reviewer@example.org",
+            base_url="http://speakerops.test",
+        )
+        assert personal["rollup"] == {"remaining": 1, "overdue": 1}
+        assert personal["next_assignment"]["submission"]["title"] == (
+            "Review: Designing Trustworthy Systems"
+        )
+        assert personal["next_assignment"]["save_state"] == {
+            "has_saved_answers": True,
+            "saved_criteria": 1,
+            "required_criteria": 4,
+            "required_answered": 1,
+        }
+
+        primary_assignment = RoundReviewAssignment.objects.get(
+            event=event,
+            reviewer__email="reviewer@example.org",
+        )
+        systems_assignment = RoundReviewAssignment.objects.get(
+            event=event,
+            reviewer__email="reviewer-systems@democon.test",
+        )
+        assert systems_assignment.status == RoundReviewAssignment.COMPLETE
+        assert systems_assignment.answers.count() == 4
+
+        primary_reviewer = User.objects.get(email="reviewer@example.org")
+        systems_reviewer = User.objects.get(email="reviewer-systems@democon.test")
+        primary_url = reverse(
+            "plugins:speakerops:speakerops_round_review",
+            kwargs={"event": event.slug, "assignment": primary_assignment.pk},
+        )
+        systems_url = reverse(
+            "plugins:speakerops:speakerops_round_review",
+            kwargs={"event": event.slug, "assignment": systems_assignment.pk},
+        )
+        client.force_login(primary_reviewer)
+        assert client.get(primary_url).status_code == 200
+        assert client.get(systems_url).status_code == 404
+        client.force_login(systems_reviewer)
+        own_response = client.get(systems_url)
+        assert own_response.status_code == 200
+        assert b"Systems reviewer private comment" in own_response.content
+        assert b"Strong operational framing" not in own_response.content
+        denied = client.get(primary_url)
+        assert denied.status_code == 404
+        assert b"Strong operational framing" not in denied.content
+        assert b"Systems reviewer private comment" not in denied.content
+        client.logout()
+
+        content = content_readiness(event.slug, base_url="http://speakerops.test")
+        assert content["rollup"] == {
+            "upload_tasks": 4,
+            "sessions": 2,
+            "ready": 1,
+            "not_ready": 1,
+            "missing_file_requests": 0,
+            "pending_review": 0,
+            "changes_requested": 1,
+            "stale": 1,
+            "publication_approved": 2,
+            "publication_pending": 0,
+            "publication_changes": 0,
+        }
+        assert [row["submission"]["title"] for row in content["ready"]] == [
+            "Trustworthy AI Needs Operational Guardrails"
+        ]
+        assert [row["submission"]["title"] for row in content["not_ready"]] == [
+            "Accepted: Operations That Scale"
+        ]
+        blocked_items = {item["file_request"]: item for item in content["not_ready"][0]["items"]}
+        assert blocked_items["Upload slides"]["state"] == "stale"
+        assert blocked_items["Upload slides"]["latest_evidence"]["version"] == 2
+        assert blocked_items["Upload supporting document"]["state"] == "changes_requested"
         crm_pair = CRMContact.objects.filter(
             organiser=event.organiser,
             email=CRM_DUPLICATE_EMAIL,
@@ -365,6 +561,20 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
         password="throwaway-password",
     )
     with scope(event=event):
+        reviewer = User.objects.get(email="reviewer@example.org")
+        contaminated_round = EvaluationRound.objects.create(
+            event=event,
+            name="Browser Blind Round contamination",
+            opens_at="2026-08-01",
+            closes_at="2026-10-15",
+            blinded=True,
+        )
+        RoundReviewAssignment.objects.create(
+            event=event,
+            round=contaminated_round,
+            reviewer=reviewer,
+            submission=event.submissions.filter(assigned_reviewers=reviewer).get(),
+        )
         ActivityLog.objects.create(
             event=event,
             person=evaluator,
@@ -376,4 +586,9 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
     assert not User.objects.filter(email=EVALUATOR_SIGNUP_EMAIL).exists()
     event.refresh_from_db()
     with scope(event=event):
+        assert list(EvaluationRound.objects.filter(event=event).values_list("name", flat=True)) == [
+            "DemoCon blinded review"
+        ]
+        assert RoundReviewAssignment.objects.filter(event=event).count() == 2
+        _assert_sync_attempt_timeline(event)
         assert _baseline(event) == first

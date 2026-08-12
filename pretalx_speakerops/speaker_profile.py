@@ -1,12 +1,14 @@
-from pathlib import Path
+import mimetypes
+from pathlib import Path, PurePath
 
 from django import forms
 from django.contrib import messages
 from django.db import transaction
+from django.http import FileResponse, Http404
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from pretalx.person.models import SpeakerProfile
 
 from .models import SpeakerOperationsProfile
@@ -148,4 +150,18 @@ class SpeakerPortalProfileView(EventContextMixin, TemplateView):
                 "plugins:speakerops:speakerops_speaker_profile",
                 kwargs={"event": self.event.slug},
             )
+        )
+
+
+class SpeakerSelfHeadshotView(EventContextMixin, View):
+    """Serve the signed-in speaker's own avatar without exposing all media."""
+
+    def get(self, request, event):
+        if not request.user.avatar:
+            raise Http404
+        request.user.avatar.open("rb")
+        return FileResponse(
+            request.user.avatar.file,
+            filename=PurePath(request.user.avatar.name).name,
+            content_type=mimetypes.guess_type(request.user.avatar.name)[0] or "image/jpeg",
         )

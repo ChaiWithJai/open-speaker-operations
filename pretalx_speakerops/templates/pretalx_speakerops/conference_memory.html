@@ -16,6 +16,18 @@
     <span class="speakerops-status"><strong>{{ historical_talk_count }}</strong> sourced talks</span>
   </header>
 
+  <section class="speakerops-panel speakerops-panel--stack" aria-labelledby="memory-inventory-title">
+    <p class="speakerops__eyebrow">Full source-backed inventory</p>
+    <h2 id="memory-inventory-title">The program corpus in this system of record</h2>
+    <p>These are source records, not inferred contacts. Edition-scoped identities preserve the evidence boundary; provisional people remain candidates until an operator verifies a merge.</p>
+    <div class="speakerops__grid" aria-label="Conference memory inventory">
+      <article><h3>Conference families</h3><p><strong>{{ inventory.series }}</strong> series · <strong>{{ inventory.editions }}</strong> editions</p></article>
+      <article><h3>Published program</h3><p><strong>{{ inventory.talks }}</strong> talks · <strong>{{ inventory.credits }}</strong> speaker credits</p></article>
+      <article><h3>Identity evidence</h3><p><strong>{{ inventory.source_identities }}</strong> active source identities · <strong>{{ inventory.people }}</strong> provisional people</p></article>
+      <article><h3>Visible source limits</h3><p><strong>{{ inventory.declared_gaps }}</strong> declared gaps · <strong>{{ inventory.empty_editions }}</strong> empty editions · <strong>{{ inventory.missing_formats }}</strong> missing formats · <strong>{{ inventory.missing_tracks }}</strong> missing tracks</p></article>
+    </div>
+  </section>
+
   <form method="get" role="search" class="speakerops-memory__search">
     <label for="memory-query">Talk, speaker, topic, format, track, or edition</label>
     <input class="form-control" id="memory-query" name="q" value="{{ query }}">

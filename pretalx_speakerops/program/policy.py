@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -113,13 +114,26 @@ def assert_release_allowed(schedule):
         raise ValidationError("Schedule release blocked by unresolved conflicts.")
 
 
+@transaction.atomic
 def release_schedule(schedule, name, user=None, **kwargs):
     """Release the current WIP schedule through pretalx's event-level API."""
     with scope(event=schedule.event):
         if schedule.pk != schedule.event.wip_schedule.pk:
             raise ValidationError("Only the current working schedule can be released.")
         assert_release_allowed(schedule)
-        return schedule.event.release_schedule(name, user=user, **kwargs)
+        result = schedule.event.release_schedule(name, user=user, **kwargs)
+        # Native pretalx only marks confirmed submissions visible on freeze. SpeakerOps
+        # also has an explicit, audited publication approval gate: honor that operator
+        # decision for accepted sessions without rewriting their native acceptance state.
+        from ..models import SessionPublicationApproval
+
+        approved_accepted_ids = SessionPublicationApproval.objects.filter(
+            event=schedule.event,
+            status=SessionPublicationApproval.APPROVED,
+            submission__state=SubmissionStates.ACCEPTED,
+        ).values_list("submission_id", flat=True)
+        schedule.talks.filter(submission_id__in=approved_accepted_ids).update(is_visible=True)
+        return result
 
 
 @receiver(pre_save, sender=Schedule)
