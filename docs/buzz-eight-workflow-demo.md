@@ -71,6 +71,15 @@ python3 tools/run_speakerops_mcp_bridge.py --check
 opencode mcp list
 ```
 
+For Codex-backed managed agents, install the same reviewed MCP definition in the Codex
+project config for Buzz's working directory (`~/.buzz/.codex/config.toml`). Do not rely only
+on the agent's `CODEX_CONFIG` environment value: Buzz may resume an existing per-channel
+Codex session whose tool inventory predates that override. Restart the managed agent, wait
+until the harness log confirms channel subscriptions, and send a capability preflight in
+the actual destination DM. The active session must list the expected
+`mcp__speakerops_reads__...` tool and complete one typed read. A green presence dot by
+itself proves only relay connectivity.
+
 For tonight's zero-paid rehearsal, the same checks and all eight prompts are
 automated serially without exposing any credential:
 
