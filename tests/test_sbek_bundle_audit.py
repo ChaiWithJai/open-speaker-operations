@@ -199,6 +199,9 @@ def test_post_stage_scan_rejects_unredacted_access_token(tmp_path):
         "api_key=also-unknown",
         "Bearer token-value",
         "magic_token=unknown-magic",
+        '"password":"unknown-secret"',
+        '"api_key": "unknown-secret"',
+        "Bearer x",
     ],
 )
 def test_post_stage_scan_rejects_unknown_text_secrets(tmp_path, leak):

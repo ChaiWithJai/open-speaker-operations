@@ -25,11 +25,14 @@ SECRET_KEY_PATTERN = re.compile(
 )
 LEAK_PATTERN = re.compile(
     r"sk-ant-|(?i:authorization)\s*[:=]|(?i:set-cookie)\s*:|"
-    r"(?i:password|passphrase|api[_-]?key|sessionid|csrftoken|access[_-]?token|"
-    r"refresh[_-]?token|client[_-]?secret|magic[_-]?(?:link|token)|"
-    r"reset[_-]?(?:link|token))\s*[:=]\s*(?!\[REDACTED_)|"
-    r"(?i:bearer)\s+(?!\[REDACTED_)[A-Za-z0-9._~+/-]{8,}|"
+    r"(?i:bearer)\s+(?!\[REDACTED_)[A-Za-z0-9._~+/-]+|"
     r"/invitation/[A-Za-z0-9_-]+/[A-Za-z0-9_-]{24,}"
+)
+SENSITIVE_ASSIGNMENT = re.compile(
+    r"[\"']?(?P<key>(?i:password|passphrase|api[_-]?key|sessionid|csrftoken|"
+    r"access[_-]?token|refresh[_-]?token|client[_-]?secret|"
+    r"magic[_-]?(?:link|token)|reset[_-]?(?:link|token)))[\"']?\s*[:=]\s*"
+    r"[\"']?(?P<value>[^\s,\"'}<]+)"
 )
 CORE_FILES = ("report.json", "report.html", "manual-checklist.md")
 DELIVERY_FILES = (
@@ -121,7 +124,15 @@ def scan_staged(root: Path, secrets: set[str]):
         if not path.is_file() or path.name == "SHA256SUMS":
             continue
         text = path.read_text(errors="ignore")
-        if any(secret in text for secret in secrets) or LEAK_PATTERN.search(text):
+        assignment_leak = any(
+            not match.group("value").startswith("[REDACTED_")
+            for match in SENSITIVE_ASSIGNMENT.finditer(text)
+        )
+        if (
+            any(secret in text for secret in secrets)
+            or LEAK_PATTERN.search(text)
+            or assignment_leak
+        ):
             leaks.append(path.relative_to(root).as_posix())
     if leaks:
         raise ValueError(f"post-stage security scan failed for {len(leaks)} file(s)")
