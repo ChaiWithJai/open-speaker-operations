@@ -35,7 +35,7 @@ from tools import mcp_speakerops_server as bridge
 ALL_BUZZ_READS = (
     "release_readiness,speaker_nudges,review_progress,content_readiness,"
     "sync_recovery,speaker_next_actions,reviewer_next_assignment,"
-    "executive_readiness,conference_memory"
+    "executive_readiness,conference_memory,cfp_surface"
     ",workflow_action_receipts"
 )
 
@@ -408,7 +408,7 @@ def test_build_server_registers_tools():
 def test_list_tools_exposes_release_readiness_schema(monkeypatch):
     _scope_bridge(monkeypatch, "speakerops-demo")
     result = asyncio.run(bridge._handle_list_tools(None, RequestParams()))
-    assert len(result.tools) == 10
+    assert len(result.tools) == 11
     assert {tool.name for tool in result.tools} == set(ALL_BUZZ_READS.split(","))
     tool = next(t for t in result.tools if t.name == "release_readiness")
     assert tool.input_schema["required"] == ["event_slug"]
@@ -464,6 +464,29 @@ def test_call_tool_returns_release_readiness_message(event, monkeypatch):
     assert "## Trace of inference" in text
     assert f"https://example.test/go/operations-dashboard/{event.slug}/" in text
     assert "Generated " in text
+
+
+@pytest.mark.django_db(transaction=True)
+def test_call_tool_routes_the_exact_cfp_surface_question(event, monkeypatch):
+    _scope_bridge(monkeypatch, event.slug)
+    description = bridge.CFP_SURFACE_TOOL.description
+    assert description is not None
+    assert "surface area for submitting and reviewing CFPs" in description
+    assert "canonical permission-aware URLs" in description
+    assert "user type" in description
+    params = CallToolRequestParams(name="cfp_surface", arguments={"event_slug": event.slug})
+
+    result = asyncio.run(bridge._handle_call_tool(None, params))
+
+    assert result.is_error is not True
+    text = result.content[0].text
+    assert text.startswith("# CFP submission and review surface")
+    assert f"https://example.test/go/cfp-public-guide/{event.slug}/" in text
+    assert f"https://example.test/go/review-queue/{event.slug}/" in text
+    assert f"https://example.test/go/cfp-routing-console/{event.slug}/" in text
+    assert "submitter or speaker" in text
+    assert "reviewer" in text
+    assert "chair or organiser" in text
 
 
 @pytest.mark.django_db(transaction=True)
@@ -630,7 +653,7 @@ def test_call_tool_in_process_protocol_roundtrip(monkeypatch):
             async with ClientSession(read_stream=client_read, write_stream=client_write) as session:
                 await session.initialize()
                 tools = await session.list_tools()
-                assert len(tools.tools) == 10
+                assert len(tools.tools) == 11
                 assert {t.name for t in tools.tools} == set(ALL_BUZZ_READS.split(","))
                 from mcp.shared.exceptions import MCPError
 

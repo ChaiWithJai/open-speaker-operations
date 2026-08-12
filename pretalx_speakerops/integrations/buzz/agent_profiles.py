@@ -30,6 +30,7 @@ AGENT_PROFILES = (
                 "executive_readiness",
                 "conference_memory",
                 "workflow_action_receipts",
+                "cfp_surface",
             }
         ),
         subject_required=False,

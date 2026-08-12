@@ -44,7 +44,7 @@ Then set one profile per process:
 ```text
 # Operator
 SPEAKEROPS_MCP_PRINCIPAL=buzz-demo-operator-reader
-SPEAKEROPS_MCP_CAPABILITIES=release_readiness,speaker_nudges,review_progress,content_readiness,sync_recovery,executive_readiness,conference_memory,workflow_action_receipts
+SPEAKEROPS_MCP_CAPABILITIES=release_readiness,speaker_nudges,review_progress,content_readiness,sync_recovery,executive_readiness,conference_memory,workflow_action_receipts,cfp_surface
 SPEAKEROPS_MCP_SUBJECT_EMAIL=
 
 # Speaker

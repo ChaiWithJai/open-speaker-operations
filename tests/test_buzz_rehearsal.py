@@ -59,7 +59,7 @@ def test_rehearsal_names_exactly_eight_workflows_in_demo_order():
         (
             "operator",
             "buzz-demo-operator-reader",
-            "conference_memory,content_readiness,executive_readiness,release_readiness,review_progress,speaker_nudges,sync_recovery,workflow_action_receipts",
+            "cfp_surface,conference_memory,content_readiness,executive_readiness,release_readiness,review_progress,speaker_nudges,sync_recovery,workflow_action_receipts",
             "",
         ),
         (

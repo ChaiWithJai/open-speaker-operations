@@ -70,6 +70,7 @@ PROFILES = {
             "executive_readiness",
             "conference_memory",
             "workflow_action_receipts",
+            "cfp_surface",
         ),
         subject_email="",
         snapshot="tools/speakerops-operator.agent.json",
