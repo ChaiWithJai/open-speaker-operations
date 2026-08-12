@@ -157,6 +157,7 @@ def test_speaker_nudge_confirmation_locks_only_task_row(event, users, client):
             WorkflowActionReceipt.SUCCEEDED
         )
 
+
 def _sync_items(event):
     preview = SyncPreview.objects.create(
         event=event,
