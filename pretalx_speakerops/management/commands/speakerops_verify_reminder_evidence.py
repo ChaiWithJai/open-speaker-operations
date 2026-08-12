@@ -43,6 +43,8 @@ class Command(BaseCommand):
                 run
                 for run in runs
                 if run.status == ScheduledReminderRun.COMPLETED
+                and run.dispatch_origin == ScheduledReminderRun.ORIGIN_BEAT
+                and run.schedule_name == "speakerops-due-speaker-reminders-daily"
                 and run.completed_at
                 and run.scheduled_for <= run.started_at <= run.scheduled_for + timedelta(hours=1)
             ]

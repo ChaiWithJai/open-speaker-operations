@@ -10,7 +10,15 @@ from django.utils import timezone
 from django_scopes import scope
 
 from pretalx_speakerops.models import OnboardingTask, SpeakerCommunicationLog
-from pretalx_speakerops.tasks import send_due_speaker_reminders
+from pretalx_speakerops.tasks import (
+    REMINDER_SCHEDULE_NAME,
+    send_due_speaker_reminders,
+)
+
+SCHEDULED = {
+    "dispatch_origin": "beat",
+    "schedule_name": REMINDER_SCHEDULE_NAME,
+}
 
 
 @pytest.mark.django_db(transaction=True)
@@ -34,6 +42,7 @@ def test_reminder_evidence_command_proves_sanitized_correlated_history(event, us
             as_of=today,
             celery_task_id="scheduled-test-task",
             started_at=datetime.combine(today, time(hour=9, minute=1), tzinfo=UTC),
+            **SCHEDULED,
         ) == {event.slug: 1}
 
     output = io.StringIO()
@@ -111,6 +120,7 @@ def test_reminder_evidence_command_requires_system_authored_history(event, users
             as_of=today,
             celery_task_id="scheduled-test-task",
             started_at=datetime.combine(today, time(hour=9, minute=1), tzinfo=UTC),
+            **SCHEDULED,
         )
     with scope(event=event):
         SpeakerCommunicationLog.objects.filter(
@@ -175,6 +185,7 @@ def test_reminder_evidence_command_rejects_partial_correlation(event, users):
             as_of=today,
             celery_task_id="scheduled-two-task-run",
             started_at=datetime.combine(today, time(hour=9, minute=1), tzinfo=UTC),
+            **SCHEDULED,
         )
     with scope(event=event):
         SpeakerCommunicationLog.objects.filter(
@@ -209,6 +220,7 @@ def test_reminder_evidence_command_rejects_ineligible_due_date_snapshot(event, u
             as_of=today,
             celery_task_id="scheduled-ineligible-test",
             started_at=datetime.combine(today, time(hour=9, minute=1), tzinfo=UTC),
+            **SCHEDULED,
         )
     with scope(event=event):
         receipt = event.reminderreceipt_set.get()

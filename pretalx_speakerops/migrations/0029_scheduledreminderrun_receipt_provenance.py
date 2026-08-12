@@ -21,6 +21,8 @@ class Migration(migrations.Migration):
                 ("schedule_date", models.DateField()),
                 ("scheduled_for", models.DateTimeField()),
                 ("celery_task_id", models.CharField(max_length=64)),
+                ("dispatch_origin", models.CharField(max_length=20)),
+                ("schedule_name", models.CharField(max_length=120)),
                 (
                     "status",
                     models.CharField(

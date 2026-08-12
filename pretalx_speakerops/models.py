@@ -364,6 +364,7 @@ class ContentRevision(EventOwnedModel):
 
 
 class ScheduledReminderRun(EventOwnedModel):
+    ORIGIN_BEAT = "beat"
     STARTED = "started"
     COMPLETED = "completed"
     FAILED = "failed"
@@ -378,6 +379,8 @@ class ScheduledReminderRun(EventOwnedModel):
     schedule_date = models.DateField()
     scheduled_for = models.DateTimeField()
     celery_task_id = models.CharField(max_length=64)
+    dispatch_origin = models.CharField(max_length=20)
+    schedule_name = models.CharField(max_length=120)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STARTED)
     started_at = models.DateTimeField(default=timezone.now)
     completed_at = models.DateTimeField(null=True, blank=True)
