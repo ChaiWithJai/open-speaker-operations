@@ -118,10 +118,22 @@ def test_delivery_ready_requires_complete_metadata_and_reviewed_screenshot(tmp_p
     make_source(source)
     delivery = tmp_path / "delivery"
     delivery.mkdir()
-    for name in ("README.md", "manual-results.json", "sanitized-run-config.json"):
-        (delivery / name).write_text("reviewed")
+    (delivery / "README.md").write_text("74.4% 90.0% tested deployed")
+    (delivery / "manual-results.json").write_text(json.dumps({"CFP-08": {"verdict": "pass"}}))
+    (delivery / "sanitized-run-config.json").write_text(
+        json.dumps(
+            {
+                "evaluatorRepositorySha": "a",
+                "testedApplicationSha": "b",
+                "currentProductionSha": "c",
+                "currentProductionImageDigest": "sha256:d",
+            }
+        )
+    )
     screenshot = tmp_path / "reviewed.png"
+    mobile = tmp_path / "mobile.png"
     screenshot.write_bytes(b"reviewed screenshot")
+    mobile.write_bytes(b"reviewed mobile")
     allowlist = tmp_path / "allowlist.json"
     from tools.sbek_bundle_audit import file_hash
 
@@ -131,9 +143,17 @@ def test_delivery_ready_requires_complete_metadata_and_reviewed_screenshot(tmp_p
                 {
                     "source": str(screenshot),
                     "destination": "desktop/reviewed.png",
+                    "viewport": "desktop",
                     "review_status": "approved",
                     "sha256": file_hash(screenshot),
-                }
+                },
+                {
+                    "source": str(mobile),
+                    "destination": "mobile/reviewed.png",
+                    "viewport": "mobile",
+                    "review_status": "approved",
+                    "sha256": file_hash(mobile),
+                },
             ]
         )
     )
@@ -145,7 +165,10 @@ def test_delivery_ready_requires_complete_metadata_and_reviewed_screenshot(tmp_p
         screenshot_allowlist=allowlist,
     )
     assert receipt["delivery_ready"] is True
-    assert receipt["selected_screenshots"] == ["screenshots/desktop/reviewed.png"]
+    assert receipt["selected_screenshots"] == [
+        "screenshots/desktop/reviewed.png",
+        "screenshots/mobile/reviewed.png",
+    ]
 
 
 def test_post_stage_scan_rejects_unredacted_access_token(tmp_path):
@@ -155,3 +178,76 @@ def test_post_stage_scan_rejects_unredacted_access_token(tmp_path):
     (source / "report.html").write_text("access_token=unreviewed")
     with pytest.raises(ValueError, match="security scan"):
         stage(source, tmp_path / "destination", {"different-secret"})
+    assert not (tmp_path / "destination").exists()
+    assert not list(tmp_path.glob(".destination.staging-*"))
+
+
+def test_validate_source_rejects_dotenv_environment_suffix(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    make_source(source)
+    (source / ".env.production").write_text("private")
+    with pytest.raises(ValueError, match="forbidden"):
+        validate_source(source)
+
+
+def test_delivery_json_is_structurally_sanitized(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    make_source(source)
+    delivery = tmp_path / "delivery"
+    delivery.mkdir()
+    (delivery / "README.md").write_text("74.4% 90.0% tested deployed")
+    (delivery / "manual-results.json").write_text(
+        json.dumps({"CFP-08": {"verdict": "pass", "password": "unknown-secret"}})
+    )
+    (delivery / "sanitized-run-config.json").write_text(
+        json.dumps(
+            {
+                "evaluatorRepositorySha": "a",
+                "testedApplicationSha": "b",
+                "currentProductionSha": "c",
+                "currentProductionImageDigest": "sha256:d",
+                "password": "unknown-secret",
+            }
+        )
+    )
+    desktop = tmp_path / "desktop.png"
+    mobile = tmp_path / "mobile.png"
+    desktop.write_bytes(b"desktop")
+    mobile.write_bytes(b"mobile")
+    from tools.sbek_bundle_audit import file_hash
+
+    allowlist = tmp_path / "allowlist.json"
+    allowlist.write_text(
+        json.dumps(
+            [
+                {
+                    "source": str(desktop),
+                    "destination": "desktop.png",
+                    "viewport": "desktop",
+                    "review_status": "approved",
+                    "sha256": file_hash(desktop),
+                },
+                {
+                    "source": str(mobile),
+                    "destination": "mobile.png",
+                    "viewport": "mobile",
+                    "review_status": "approved",
+                    "sha256": file_hash(mobile),
+                },
+            ]
+        )
+    )
+    destination = tmp_path / "destination"
+    receipt = stage(
+        source,
+        destination,
+        {"secret-value"},
+        delivery_source=delivery,
+        screenshot_allowlist=allowlist,
+    )
+    assert receipt["delivery_ready"] is True
+    assert receipt["omitted_source_file_count"] >= 0
+    assert "unknown-secret" not in (destination / "manual-results.json").read_text()
+    assert "unknown-secret" not in (destination / "sanitized-run-config.json").read_text()

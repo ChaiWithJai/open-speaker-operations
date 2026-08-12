@@ -7,6 +7,8 @@ import argparse
 import hashlib
 import json
 import re
+import shutil
+import tempfile
 from pathlib import Path
 
 SCENARIO_PATTERN = re.compile(r"^[A-Z]{3}-S\d+$")
@@ -92,6 +94,7 @@ def validate_source(root: Path) -> list[Path]:
             raise ValueError(f"symlinks are forbidden: {path.relative_to(root)}")
         if (
             path.name.lower() == ".env"
+            or path.name.lower().startswith(".env.")
             or path.name.lower().endswith(".env")
             or FORBIDDEN_NAME_PATTERN.search(path.name)
         ):
@@ -121,13 +124,14 @@ def scan_staged(root: Path, secrets: set[str]):
         raise ValueError(f"post-stage security scan failed for {len(leaks)} file(s)")
 
 
-def stage(
+def _stage(
     source: Path,
     destination: Path,
     secrets: set[str],
     *,
     delivery_source: Path | None = None,
     screenshot_allowlist: Path | None = None,
+    work: Path,
 ) -> dict:
     source_resolved = source.resolve()
     destination_resolved = destination.resolve()
@@ -137,32 +141,38 @@ def stage(
         raise ValueError("destination must not exist or must be empty")
     before = tree_manifest(source)
     scenarios = validate_source(source)
-    destination.mkdir(parents=True, exist_ok=True)
     replacements = 0
     staged = []
+    source_staged = []
     for source_path in [source / "report.json", *[p / "evidence.json" for p in scenarios]]:
         relative = source_path.relative_to(source)
-        target = destination / relative
+        target = work / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         data = json.loads(source_path.read_text())
         clean, count = sanitize_value(data, secrets)
         target.write_text(json.dumps(clean, indent=2, ensure_ascii=False) + "\n")
         replacements += count
         staged.append(relative.as_posix())
+        source_staged.append(relative.as_posix())
     for name in CORE_FILES[1:]:
         source_path = source / name
         clean, count = sanitize_string(source_path.read_text(), secrets)
-        (destination / name).write_text(clean)
+        (work / name).write_text(clean)
         replacements += count
         staged.append(name)
+        source_staged.append(name)
     screenshots = []
     if delivery_source:
         for name in DELIVERY_FILES:
             source_path = delivery_source / name
             if not source_path.is_file():
                 raise ValueError(f"missing delivery artifact: {name}")
-            clean, count = sanitize_string(source_path.read_text(), secrets)
-            (destination / name).write_text(clean)
+            if source_path.suffix == ".json":
+                clean_data, count = sanitize_value(json.loads(source_path.read_text()), secrets)
+                clean = json.dumps(clean_data, indent=2, ensure_ascii=False) + "\n"
+            else:
+                clean, count = sanitize_string(source_path.read_text(), secrets)
+            (work / name).write_text(clean)
             replacements += count
             staged.append(name)
         if not screenshot_allowlist or not screenshot_allowlist.is_file():
@@ -178,15 +188,37 @@ def stage(
             relative = Path("screenshots") / Path(entry["destination"])
             if relative.is_absolute() or ".." in relative.parts:
                 raise ValueError("screenshot destination must be relative and bounded")
-            target = destination / relative
+            target = work / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(source_path.read_bytes())
             screenshots.append(relative.as_posix())
             staged.append(relative.as_posix())
+        viewports = {entry.get("viewport") for entry in allowlist}
+        if not {"desktop", "mobile"}.issubset(viewports):
+            raise ValueError("delivery-ready staging requires desktop and mobile evidence")
+        manual_results = json.loads((work / "manual-results.json").read_text())
+        if not manual_results or any(
+            item.get("verdict") in {None, "", "pending", "not_found"}
+            for item in manual_results.values()
+        ):
+            raise ValueError("manual results are not finalized")
+        readme = (work / "README.md").read_text().lower()
+        for marker in ("74.4%", "90.0%", "tested", "deployed"):
+            if marker not in readme:
+                raise ValueError(f"README lacks required metadata marker: {marker}")
+        config = json.loads((work / "sanitized-run-config.json").read_text())
+        for field in (
+            "evaluatorRepositorySha",
+            "testedApplicationSha",
+            "currentProductionSha",
+            "currentProductionImageDigest",
+        ):
+            if not config.get(field):
+                raise ValueError(f"run config lacks required field: {field}")
     after = tree_manifest(source)
     if before != after:
         raise RuntimeError("source tree changed during staging")
-    scan_staged(destination, secrets)
+    scan_staged(work, secrets)
     receipt = {
         "schema": "speakerops.sbek-bundle-audit.v1",
         "source_file_count": len(before),
@@ -195,20 +227,45 @@ def stage(
         "staged_file_count": len(staged),
         "selected_screenshots": sorted(screenshots),
         "delivery_ready": bool(delivery_source),
-        "omitted_source_file_count": len(before) - len(staged),
+        "omitted_source_file_count": len(before) - len(source_staged),
         "redaction_count": replacements,
         "source_manifest_sha256": hashlib.sha256(
             json.dumps(before, sort_keys=True).encode()
         ).hexdigest(),
     }
-    (destination / "audit-receipt.json").write_text(
-        json.dumps(receipt, indent=2, sort_keys=True) + "\n"
-    )
-    manifest = tree_manifest(destination)
-    (destination / "SHA256SUMS").write_text(
+    (work / "audit-receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+    manifest = tree_manifest(work)
+    (work / "SHA256SUMS").write_text(
         "".join(f"{digest}  {name}\n" for name, digest in manifest.items())
     )
+    if destination.exists():
+        destination.rmdir()
+    work.replace(destination)
     return receipt
+
+
+def stage(
+    source: Path,
+    destination: Path,
+    secrets: set[str],
+    *,
+    delivery_source: Path | None = None,
+    screenshot_allowlist: Path | None = None,
+) -> dict:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix=f".{destination.name}.staging-", dir=destination.parent))
+    try:
+        return _stage(
+            source,
+            destination,
+            secrets,
+            delivery_source=delivery_source,
+            screenshot_allowlist=screenshot_allowlist,
+            work=work,
+        )
+    except Exception:
+        shutil.rmtree(work, ignore_errors=True)
+        raise
 
 
 def main() -> int:
