@@ -1164,17 +1164,18 @@ class Command(BaseCommand):
                         },
                     )
                     if status == SyncItem.SUCCEEDED:
-                        SyncAttempt.objects.get_or_create(
+                        SyncAttempt.objects.update_or_create(
                             event=event,
                             item=sync_item,
                             number=1,
                             defaults={
                                 "status": "failed",
                                 "error": "Destination rate limit reached; retry was safe.",
-                                "finished_at": timezone.now(),
+                                "started_at": DEMO_WALKTHROUGH_AT - timedelta(minutes=10),
+                                "finished_at": DEMO_WALKTHROUGH_AT - timedelta(minutes=9),
                             },
                         )
-                        SyncAttempt.objects.get_or_create(
+                        SyncAttempt.objects.update_or_create(
                             event=event,
                             item=sync_item,
                             number=2,
@@ -1182,18 +1183,20 @@ class Command(BaseCommand):
                                 "status": "succeeded",
                                 "request_id": "demo-retry-request",
                                 "response": {"external_id": sync_item.external_id},
-                                "finished_at": timezone.now(),
+                                "started_at": DEMO_WALKTHROUGH_AT - timedelta(minutes=9),
+                                "finished_at": DEMO_WALKTHROUGH_AT - timedelta(minutes=8),
                             },
                         )
                     elif status == SyncItem.FAILED:
-                        SyncAttempt.objects.get_or_create(
+                        SyncAttempt.objects.update_or_create(
                             event=event,
                             item=sync_item,
                             number=1,
                             defaults={
                                 "status": "failed",
                                 "error": sync_item.error,
-                                "finished_at": timezone.now(),
+                                "started_at": DEMO_WALKTHROUGH_AT - timedelta(minutes=7),
+                                "finished_at": DEMO_WALKTHROUGH_AT - timedelta(minutes=6),
                             },
                         )
                 connection.last_error = ""

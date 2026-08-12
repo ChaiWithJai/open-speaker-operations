@@ -226,6 +226,13 @@ def test_sync_recovery_orders_failures_sanitizes_details_and_never_retries(event
         assert result["failed_items"][0]["last_attempt"]["error"] == (
             "Destination request timed out."
         )
+        message = result["rendered_sync_recovery_message"]
+        assert (
+            f"Latest attempt: SyncItem {newer.pk} / attempt "
+            f"{latest_attempt.number} — {latest_attempt.status}"
+        ) in message
+        assert latest_attempt.started_at.isoformat() in message
+        assert latest_attempt.finished_at.isoformat() in message
         assert result["failed_items"][1]["last_error"] == "Destination rate limit reached."
         assert result["connection"]["last_error"] == "Connector authentication failed."
         assert result["latest_run"]["error"] == (

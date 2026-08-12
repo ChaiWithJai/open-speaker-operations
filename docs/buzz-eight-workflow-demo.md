@@ -114,15 +114,24 @@ database dump into the digest and do not retain its contents:
 ```sh
 docker compose --project-name speakerops-hci exec -T postgres sh -c \
   'pg_dump --data-only --no-owner --no-privileges --username="$POSTGRES_USER" "$POSTGRES_DB"' \
+  | awk '$1 != "\\restrict" && $1 != "\\unrestrict"' \
+  | LC_ALL=C sort \
   | shasum -a 256 > /tmp/speakerops-buzz-before.sha256
 
 # Run the nine typed reads and allowed GET-only link checks here.
 
 docker compose --project-name speakerops-hci exec -T postgres sh -c \
   'pg_dump --data-only --no-owner --no-privileges --username="$POSTGRES_USER" "$POSTGRES_DB"' \
+  | awk '$1 != "\\restrict" && $1 != "\\unrestrict"' \
+  | LC_ALL=C sort \
   | shasum -a 256 > /tmp/speakerops-buzz-after.sha256
 cmp /tmp/speakerops-buzz-before.sha256 /tmp/speakerops-buzz-after.sha256
 ```
+
+PostgreSQL emits fresh `\\restrict` and `\\unrestrict` safety tokens on each
+dump. They are transport metadata rather than database state, so the proof
+removes those lines. Sorting also canonicalizes unspecified row order before
+hashing; the rehearsal tool applies the same normalization internally.
 
 The digest must match. If it does not, stop and investigate; do not relabel the
 conversation read-only. Browser login must happen before the first digest so

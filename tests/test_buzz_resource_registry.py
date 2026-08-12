@@ -134,6 +134,7 @@ ORGANISER_CONSOLES = (
     "program-decisions",
     "agenda-release",
     "content-console",
+    "av-bundle",
     "sync-console",
     "speaker-import",
     "operations-dashboard",
@@ -354,6 +355,16 @@ def test_go_redirects_reviewer_to_reviewer_exact_record(enabled_event, users, cl
     )
     assert denied.status_code == 404
     assert denied.redirect_chain == [(denied_target, 302)]
+
+
+def test_go_redirects_reviewer_directly_to_round_review_queue(enabled_event, users, client):
+    link = by_resource("review-queue")
+    slug = enabled_event.slug
+    client.force_login(users["reviewer"])
+    target = url_for(link, event=slug)
+    response = client.get(_go_url("review-queue", slug), follow=True)
+    assert response.status_code == 200
+    assert response.redirect_chain == [(target, 302)]
 
 
 def test_go_redirects_speaker_to_their_own_portal_surface(enabled_event, users, client):

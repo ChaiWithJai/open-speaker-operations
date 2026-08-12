@@ -258,6 +258,15 @@ def _baseline(event):
     }
 
 
+def _assert_sync_attempt_timeline(event):
+    with scope(event=event):
+        attempts = SyncAttempt.objects.filter(event=event).order_by("item_id", "number")
+        assert attempts.exists()
+        for attempt in attempts:
+            assert attempt.finished_at is not None
+            assert attempt.started_at <= attempt.finished_at
+
+
 @pytest.mark.django_db(transaction=True)
 def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monkeypatch, client):
     monkeypatch.setenv("SPEAKEROPS_DEMO_PASSWORD", "test-demo-password")
@@ -277,6 +286,7 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
     event = Event.objects.get(slug="speakerops-demo")
     with scope(event=event):
         first = _baseline(event)
+        _assert_sync_attempt_timeline(event)
 
         assert first["event"] == (
             DEMO_START,
@@ -545,4 +555,5 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             "DemoCon blinded review"
         ]
         assert RoundReviewAssignment.objects.filter(event=event).count() == 1
+        _assert_sync_attempt_timeline(event)
         assert _baseline(event) == first

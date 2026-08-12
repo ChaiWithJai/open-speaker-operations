@@ -178,11 +178,12 @@ RESOURCES = (
     ResourceLink(
         resource="review-queue",
         judged_row="review-workflows",
-        route_name="speakerops_review_queue",
+        route_name="speakerops_round_review_queue",
         url_kwargs=("event",),
         audience="reviewer",
         object_kind="review-queue",
         exactness=FILTERED_COLLECTION,
+        note="Direct round-review queue; avoids the legacy reviewer landing redirect.",
     ),
     ResourceLink(
         resource="program-decisions",
@@ -275,12 +276,13 @@ RESOURCES = (
     ResourceLink(
         resource="av-bundle",
         judged_row="content-production",
-        route_name="speakerops_latest_evidence_zip",
+        route_name="speakerops_content_operations",
         url_kwargs=("event",),
         audience="organiser",
         object_kind="evidence-bundle",
         exactness=FILTERED_COLLECTION,
-        note="Approved latest-files ZIP for production/AV handoff.",
+        note="GET-safe bundle selection surface. The actual approved latest-files ZIP "
+        "download remains an explicit POST command on this console.",
     ),
     # 7. Embeds & web publishing
     ResourceLink(

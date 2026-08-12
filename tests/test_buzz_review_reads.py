@@ -337,6 +337,11 @@ def test_reviewer_next_assignment_is_strictly_self_scoped_and_ordered(event, use
     assert result["mutation_performed"] is False
     assert "Own urgent assignment" in result["rendered_reviewer_next_assignment_message"]
     assert result["generated_at"] in result["rendered_reviewer_next_assignment_message"]
+    rendered = result["rendered_reviewer_next_assignment_message"]
+    assert "\n## Trace of inference\n\n1. Resolved event" in rendered
+    for index, step in enumerate(result["trace"], 1):
+        assert f"{index}. {step}" in rendered
+    assert rendered.rfind("Generated ") > rendered.rfind("## Trace of inference")
 
     with scope(event=event):
         after = {
@@ -397,3 +402,4 @@ def test_message_variants_match_payload_rendering(event, users):
     )
     assert "\nGenerated " in progress_message
     assert "\nGenerated " in personal_message
+    assert "\n## Trace of inference\n" in personal_message

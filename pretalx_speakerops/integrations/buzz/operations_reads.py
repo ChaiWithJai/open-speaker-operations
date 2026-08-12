@@ -230,6 +230,18 @@ def render_sync_recovery(result):
             f"- `{item['record_type']}:{item['local_id']}` — {item['action']} — "
             f"{error} — [inspect item]({item['evidence_link']})"
         )
+        attempt = item["last_attempt"]
+        if attempt:
+            lines.append(
+                f"  - Latest attempt: SyncItem {item['sync_item_id']} / attempt "
+                f"{attempt['number']} — {attempt['status']} — started "
+                f"{attempt['started_at'] or 'unknown'}; finished "
+                f"{attempt['finished_at'] or 'not finished'}."
+            )
+        else:
+            lines.append(
+                f"  - Latest attempt: SyncItem {item['sync_item_id']} / no attempt record."
+            )
     preview = result["retry_preview"]
     lines.extend(
         [
