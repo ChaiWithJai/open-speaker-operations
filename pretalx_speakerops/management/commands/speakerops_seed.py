@@ -35,6 +35,7 @@ from ...models import (
     ReviewRecommendation,
     RoundReviewAssignment,
     RoundReviewer,
+    ScheduledReminderRun,
     SessionPublicationApproval,
     SubmissionPresenterRole,
     SyncAttempt,
@@ -1061,6 +1062,7 @@ class Command(BaseCommand):
                 },
             )
             ReminderReceipt.objects.filter(event=event).delete()
+            ScheduledReminderRun.objects.filter(event=event).delete()
             queue_reminders(event, reminder_key="seed-onboarding-reminder")
             connection, _ = AcceleventsConnection.objects.get_or_create(
                 event=event,

@@ -22,15 +22,21 @@ from pretalx_speakerops.models import (
 )
 from pretalx_speakerops.onboarding.reminders import ReminderOutcomeAmbiguous
 from pretalx_speakerops.tasks import (
+    REMINDER_BEAT_HEADER,
+    REMINDER_SCHEDULE_NAME,
     send_due_speaker_reminders,
     send_due_speaker_reminders_task,
 )
 
 
 def test_daily_reminder_schedule_is_registered_with_celery():
-    schedule = app.conf.beat_schedule["speakerops-due-speaker-reminders-daily"]
+    schedule = app.conf.beat_schedule[REMINDER_SCHEDULE_NAME]
     assert schedule["task"] == "speakerops.send_due_speaker_reminders"
     assert str(schedule["schedule"]) == "<crontab: 0 9 * * * (m/h/dM/MY/d)>"
+    assert schedule["options"]["headers"] == {
+        "speakerops_dispatch_origin": REMINDER_BEAT_HEADER,
+        "speakerops_schedule_name": REMINDER_SCHEDULE_NAME,
+    }
 
 
 @pytest.mark.django_db(transaction=True)
@@ -608,7 +614,7 @@ def test_scheduled_reminder_broker_failure_is_durably_ambiguous(event, users, cl
         "pretalx_speakerops.tasks.send_due_speaker_reminders",
         side_effect=ReminderOutcomeAmbiguous(receipt),
     ):
-        result = send_due_speaker_reminders_task.run()
+        result = send_due_speaker_reminders_task.apply(task_id="scheduled-test-task").get()
     assert result == {
         "status": "ambiguous",
         "task_id": task.pk,

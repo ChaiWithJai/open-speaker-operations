@@ -11,7 +11,7 @@ class ReminderOutcomeAmbiguous(RuntimeError):
         super().__init__(f"Reminder outcome is ambiguous for task {receipt.task_id}")
 
 
-def queue_reminder_task(event, task, reminder_key="onboarding-due"):
+def queue_reminder_task(event, task, reminder_key="onboarding-due", *, scheduled_run=None):
     """Persist the task/day claim and native outbox before broker handoff."""
     with scope(event=event):
         with transaction.atomic():
@@ -20,6 +20,10 @@ def queue_reminder_task(event, task, reminder_key="onboarding-due"):
                 task=task,
                 speaker=task.speaker,
                 reminder_key=reminder_key,
+                defaults={
+                    "scheduled_run": scheduled_run,
+                    "due_date_at_dispatch": task.due_date,
+                },
             )
             if not created:
                 if receipt.delivery_status == ReminderReceipt.ACCEPTED:
@@ -83,7 +87,7 @@ def queue_reminder_task(event, task, reminder_key="onboarding-due"):
         return "queued", receipt
 
 
-def queue_reminders(event, tasks=None, reminder_key="onboarding-due"):
+def queue_reminders(event, tasks=None, reminder_key="onboarding-due", *, scheduled_run=None):
     if tasks is None:
         tasks = OnboardingTask.objects.filter(
             event=event, status__in=(OnboardingTask.PENDING, OnboardingTask.REOPENED)
@@ -91,7 +95,9 @@ def queue_reminders(event, tasks=None, reminder_key="onboarding-due"):
     queued = 0
     with scope(event=event):
         for task in tasks:
-            outcome, _receipt = queue_reminder_task(event, task, reminder_key)
+            outcome, _receipt = queue_reminder_task(
+                event, task, reminder_key, scheduled_run=scheduled_run
+            )
             if outcome == "queued":
                 queued += 1
     return queued

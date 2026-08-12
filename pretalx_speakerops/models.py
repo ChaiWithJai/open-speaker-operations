@@ -363,6 +363,40 @@ class ContentRevision(EventOwnedModel):
         indexes = [models.Index(fields=("event", "content_type", "object_id"))]
 
 
+class ScheduledReminderRun(EventOwnedModel):
+    ORIGIN_BEAT = "beat"
+    STARTED = "started"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    AMBIGUOUS = "ambiguous"
+    STATUS_CHOICES = (
+        (STARTED, "Started"),
+        (COMPLETED, "Completed"),
+        (FAILED, "Failed"),
+        (AMBIGUOUS, "Ambiguous"),
+    )
+
+    schedule_date = models.DateField()
+    scheduled_for = models.DateTimeField()
+    celery_task_id = models.CharField(max_length=64)
+    dispatch_origin = models.CharField(max_length=20)
+    schedule_name = models.CharField(max_length=120)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STARTED)
+    started_at = models.DateTimeField(default=timezone.now)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    eligible_count = models.PositiveIntegerField(default=0)
+    accepted_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ("-started_at", "-pk")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "schedule_date", "celery_task_id"),
+                name="speakerops_scheduled_reminder_run",
+            )
+        ]
+
+
 class ReminderReceipt(EventOwnedModel):
     PENDING = "pending"
     ACCEPTED = "accepted"
@@ -377,6 +411,14 @@ class ReminderReceipt(EventOwnedModel):
     reminder_key = models.CharField(max_length=160)
     queued_mail_id = models.PositiveBigIntegerField(null=True, blank=True)
     delivery_status = models.CharField(max_length=20, choices=DELIVERY_CHOICES, default=PENDING)
+    scheduled_run = models.ForeignKey(
+        ScheduledReminderRun,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="receipts",
+    )
+    due_date_at_dispatch = models.DateField(null=True, blank=True)
 
     class Meta:
         constraints = [

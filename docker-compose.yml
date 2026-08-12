@@ -125,7 +125,7 @@ services:
       PRETALX_CELERY_BACKEND: redis://redis:6379/0
       RUN_MIGRATIONS: "false"
       SEED_DEMO: "false"
-    command: celery -A pretalx.celery_app:app beat --loglevel=INFO --schedule=/data/celerybeat-schedule --pidfile=/tmp/celerybeat.pid
+    command: celery -A pretalx.celery_app:app beat --loglevel=INFO --scheduler=pretalx_speakerops.celery_scheduler:EvidencePersistentScheduler --schedule=/data/celerybeat-schedule --pidfile=/tmp/celerybeat.pid
     volumes:
       - pretalx-data:/data
     depends_on:

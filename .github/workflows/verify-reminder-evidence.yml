@@ -1,0 +1,85 @@
+name: Verify Production Reminder Evidence
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployed_sha:
+        description: Exact 40-character application SHA expected in production
+        required: true
+        type: string
+      event_slug:
+        description: Event slug whose daily reminder evidence should be verified
+        required: true
+        default: speakerops-demo
+        type: string
+      as_of:
+        description: Scheduler date in YYYY-MM-DD format
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: speakerops-production-evidence
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      APP_DIR: ${{ vars.DIGITALOCEAN_APP_DIR || '/opt/open-speaker-operations' }}
+      PUBLIC_URL: ${{ vars.SPEAKEROPS_PUBLIC_URL || 'https://loop.dharmicdata.org' }}
+      DEPLOYED_SHA: ${{ inputs.deployed_sha }}
+      EVENT_SLUG: ${{ inputs.event_slug }}
+      AS_OF: ${{ inputs.as_of }}
+    steps:
+      - name: Validate bounded evidence request
+        run: |
+          test "$(printf '%s' "$DEPLOYED_SHA" | sed 's/[^0-9a-f]//g')" = "$DEPLOYED_SHA"
+          test "${#DEPLOYED_SHA}" -eq 40
+          test "$(printf '%s' "$EVENT_SLUG" | sed 's/[^a-z0-9-]//g')" = "$EVENT_SLUG"
+          test -n "$EVENT_SLUG"
+          test "$(printf '%s' "$AS_OF" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$//')" = ""
+
+      - name: Verify public release identity
+        run: |
+          actual_sha="$(curl --fail --silent --show-error "$PUBLIC_URL/speakerops-demo/speaker-operations/status.json" \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["app_version"])')"
+          test "$actual_sha" = "$DEPLOYED_SHA"
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DIGITALOCEAN_SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 0700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0600 ~/.ssh/known_hosts
+
+      - name: Verify sanitized correlated reminder evidence
+        env:
+          HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+          USER: ${{ secrets.DIGITALOCEAN_USER }}
+        run: |
+          ssh "$USER@$HOST" "cd '$APP_DIR' && DEPLOYED_SHA='$DEPLOYED_SHA' EVENT_SLUG='$EVENT_SLUG' AS_OF='$AS_OF' bash -se" <<'REMOTE'
+          set -euo pipefail
+          compose=(docker compose --project-name speakerops --file docker-compose.yml)
+          web_id="$("${compose[@]}" ps --quiet web)"
+          test -n "$web_id"
+          container_sha="$("${compose[@]}" exec -T web sh -c 'printf %s "$APP_VERSION"')"
+          test "$container_sha" = "$DEPLOYED_SHA"
+          web_image="$(docker inspect --format '{{.Image}}' "$web_id")"
+          test "$(printf '%s' "$web_image" | sed 's/^sha256:[0-9a-f]\{64\}$//')" = ""
+          beat_log="$("${compose[@]}" logs --since "${AS_OF}T08:55:00Z" --until "${AS_OF}T10:05:00Z" beat)"
+          worker_log="$("${compose[@]}" logs --since "${AS_OF}T08:55:00Z" --until "${AS_OF}T10:05:00Z" worker)"
+          evidence="$("${compose[@]}" exec -T web python -m pretalx speakerops_verify_reminder_evidence --event "$EVENT_SLUG" --as-of "$AS_OF")"
+          task_id="$(printf '%s' "$evidence" | python3 -c 'import json,sys; print(json.load(sys.stdin)["celery_task_ids"][0])')"
+          printf '%s' "$beat_log" | grep -F "speakerops_beat_dispatch schedule=speakerops-due-speaker-reminders-daily task_id=$task_id" >/dev/null
+          printf '%s' "$worker_log" | grep -F "$task_id" >/dev/null
+          printf 'container_revision=%s\ncontainer_image_id=%s\n' "$container_sha" "$web_image"
+          printf '%s\n' "$evidence"
+          REMOTE
