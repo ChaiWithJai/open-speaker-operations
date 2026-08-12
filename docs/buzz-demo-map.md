@@ -1,9 +1,12 @@
 # Buzz demo map: one demo per judged row
 
-**Status: design contract. Every flow below is `planned`; none is
-implemented.** This document specifies demonstrations — it is not evidence of
-AI capability, and nothing here may be presented to a buyer as a working
-feature until the walking skeleton (relay + model + one typed read) exists.
+**Status: implemented product contract; buyer demonstration incomplete.** The
+eight role-scoped typed reads, permission-aware `go/` resolver, and bounded
+speaker-nudge/sync-recovery preview-confirm-receipt paths are implemented and
+regression-covered. Historical signed Buzz relay sends exist for all eight
+reads, but retained same-journey link-open proof is still 0/8 and signed
+same-thread action receipts are still 0/2. Do not present the strict eight-flow
+buyer demonstration as complete until those retained journeys exist.
 
 This is the demo contract for issues #66/#67: every judged row of the
 SessionBoard benchmark gets a Buzz demonstration proving the same shape — the
@@ -19,19 +22,20 @@ never handed out as a link), and grades every anchor's exactness:
 exact-record, filtered-collection, aggregate-screen, or public-output.
 `tests/test_buzz_resource_registry.py` fails when a named route or judged row
 drifts, and exercises the seeded role matrix over HTTP for a defined subset:
-organiser consoles (chair 200; reviewer and speaker 404; anonymous redirected
-to login), reviewer and speaker surfaces, public surfaces, one valid
+organiser destination views (chair 200; reviewer and speaker 404; anonymous
+redirected to login), reviewer and speaker surfaces, public surfaces, one valid
 exact-record access per self-scoped and reviewer-scoped route, stale/deleted
 IDs failing safely with 404, every command endpoint refusing GET, and the
-`go/` resolver authorizing before it redirects (exactly one redirect, never
-to a command route). Not yet tested — deferred until the resolver grows
+`go/` resolver authorizing before it redirects (exactly one redirect for an
+authorized audience, non-disclosing 404 for an anonymous or unauthorized
+audience, never a command route). Not yet tested — deferred until the resolver grows
 record-level resources: cross-event identifier rejection, revoked users, and
 destination-content-matches-record assertions.
 
-Delivery order follows the walking skeleton, not this document's breadth:
-first `release_readiness` end-to-end (row 5), then content readiness (row 6),
-then the reminder preview/confirm/receipt write (row 8). The remaining rows
-extend a proven grammar; they are not built first.
+The walking skeleton was delivered in this order: `release_readiness` (row 5),
+content readiness (row 6), then reminder preview/confirm/receipt (row 8). The
+current delivery gate is retained end-to-end evidence across the eight buyer
+workflows, not additional read-tool scaffolding.
 
 ## The demo grammar
 

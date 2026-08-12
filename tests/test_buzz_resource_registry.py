@@ -117,6 +117,9 @@ def test_demo_map_documents_every_registered_route_and_the_demo_grammar():
     assert missing == [], f"docs/buzz-demo-map.md does not mention: {missing}"
     for beat in ("Signal", "Evidence", "Link", "Act", "Receipt"):
         assert beat in doc
+    assert "Every flow below is `planned`" not in doc
+    assert "same-journey link-open proof is still 0/8" in doc
+    assert "non-disclosing 404 for an anonymous or unauthorized audience" in doc
 
 
 # --- seeded role matrix over HTTP ------------------------------------------
