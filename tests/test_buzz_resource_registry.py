@@ -113,13 +113,14 @@ def test_speaker_audience_links_never_land_on_organiser_paths():
 
 def test_demo_map_documents_every_registered_route_and_the_demo_grammar():
     doc = (ROOT / "docs" / "buzz-demo-map.md").read_text()
+    normalized_doc = " ".join(doc.split())
     missing = [name for name in {link.route_name for link in RESOURCES} if name not in doc]
     assert missing == [], f"docs/buzz-demo-map.md does not mention: {missing}"
     for beat in ("Signal", "Evidence", "Link", "Act", "Receipt"):
         assert beat in doc
     assert "Every flow below is `planned`" not in doc
     assert "same-journey link-open proof is still 0/8" in doc
-    assert "non-disclosing 404 for an anonymous or unauthorized audience" in doc
+    assert "non-disclosing 404 for an anonymous or unauthorized audience" in normalized_doc
 
 
 # --- seeded role matrix over HTTP ------------------------------------------
