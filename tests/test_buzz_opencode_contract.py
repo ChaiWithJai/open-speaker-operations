@@ -63,6 +63,9 @@ def test_three_agent_profiles_partition_all_tools_and_keep_self_service_separate
     # Receipt lookup closes the two human-confirmed action loops. It is an
     # auxiliary read, not a ninth buyer question or an agent write capability.
     expected.add("workflow_action_receipts")
+    # Reference read used for the judged CFP surface-area question. It is not
+    # a ninth stateful buyer workflow, but it must be available to Fizz.
+    expected.add("cfp_surface")
     assert set().union(*(profile.capabilities for profile in AGENT_PROFILES)) == expected
     assert not profiles["operator"].capabilities & {
         "speaker_next_actions",

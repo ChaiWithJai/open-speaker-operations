@@ -74,6 +74,9 @@ from pretalx_speakerops.buzz_reads import (  # noqa: E402
     content_readiness_message,
     release_readiness_message,
 )
+from pretalx_speakerops.integrations.buzz.cfp_reads import (  # noqa: E402
+    cfp_surface_message,
+)
 from pretalx_speakerops.integrations.buzz.operations_reads import (  # noqa: E402
     executive_readiness_message,
     sync_recovery_message,
@@ -261,6 +264,16 @@ CONFERENCE_MEMORY_TOOL = Tool(
     },
 )
 
+CFP_SURFACE_TOOL = Tool(
+    name="cfp_surface",
+    description=(
+        "Answer questions about the surface area for submitting and reviewing CFPs. "
+        "Returns the CFP state, configured fields and questions, review rounds and pools, "
+        "canonical permission-aware URLs, and the user type to use for each surface."
+    ),
+    inputSchema=READ_SCHEMA,
+)
+
 SPEAKER_NUDGES_TOOL = Tool(
     name="speaker_nudges",
     description=(
@@ -336,6 +349,7 @@ READS = {
     "executive_readiness": executive_readiness_message,
     "workflow_action_receipts": workflow_action_receipts_message,
     "conference_memory": conference_memory_message,
+    "cfp_surface": cfp_surface_message,
 }
 
 TOOLS = [
@@ -349,6 +363,7 @@ TOOLS = [
     EXECUTIVE_READINESS_TOOL,
     WORKFLOW_ACTION_RECEIPTS_TOOL,
     CONFERENCE_MEMORY_TOOL,
+    CFP_SURFACE_TOOL,
 ]
 
 SELF_SCOPED_READS = {"speaker_next_actions", "reviewer_next_assignment"}
