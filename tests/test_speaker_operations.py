@@ -536,6 +536,19 @@ def test_scheduled_reminder_worker_handles_general_tasks_and_is_daily_idempotent
         assert task.definition.name in mail.subject
         assert task.definition.name in mail.text
         assert task.due_date.isoformat() in mail.text
+        communication = SpeakerCommunicationLog.objects.get(
+            event=event,
+            speaker=users["speaker"],
+            kind=SpeakerCommunicationLog.AUTOMATED_REMINDER,
+        )
+        assert communication.outcome == SpeakerCommunicationLog.SENT
+        assert communication.actor is None
+        assert communication.queued_mail_id == mail.pk
+        assert communication.subject == mail.subject
+        assert communication.rendered_body == mail.text
+        assert communication.outcome_detail == (
+            "Pretalx accepted the automated reminder for delivery."
+        )
 
 
 @pytest.mark.django_db(transaction=True)
@@ -565,11 +578,31 @@ def test_scheduled_reminder_broker_failure_is_durably_ambiguous(event, users, cl
         receipt = ReminderReceipt.objects.get(task=task)
         assert receipt.delivery_status == ReminderReceipt.AMBIGUOUS
         assert receipt.queued_mail_id
+        communication = SpeakerCommunicationLog.objects.get(
+            event=event,
+            speaker=users["speaker"],
+            kind=SpeakerCommunicationLog.AUTOMATED_REMINDER,
+        )
+        assert communication.outcome == SpeakerCommunicationLog.FAILED
+        assert communication.actor is None
+        assert communication.queued_mail_id == receipt.queued_mail_id
+        assert communication.outcome_detail == (
+            "Broker outcome is ambiguous; automatic retry suppressed."
+        )
 
     with patch("pretalx.common.mail.mail_send_task.apply_async") as dispatch:
         with pytest.raises(ReminderOutcomeAmbiguous):
             send_due_speaker_reminders(event.slug)
     dispatch.assert_not_called()
+    with scope(event=event):
+        assert (
+            SpeakerCommunicationLog.objects.filter(
+                event=event,
+                speaker=users["speaker"],
+                kind=SpeakerCommunicationLog.AUTOMATED_REMINDER,
+            ).count()
+            == 1
+        )
 
     with patch(
         "pretalx_speakerops.tasks.send_due_speaker_reminders",

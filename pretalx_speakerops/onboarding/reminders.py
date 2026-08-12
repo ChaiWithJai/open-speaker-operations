@@ -2,7 +2,7 @@ from django.db import transaction
 from django_scopes import scope
 from pretalx.mail.models import QueuedMail
 
-from ..models import OnboardingTask, ReminderReceipt
+from ..models import OnboardingTask, ReminderReceipt, SpeakerCommunicationLog
 
 
 class ReminderOutcomeAmbiguous(RuntimeError):
@@ -48,6 +48,17 @@ def queue_reminder_task(event, task, reminder_key="onboarding-due"):
                 mail.submissions.add(task.submission)
             receipt.queued_mail_id = mail.pk
             receipt.save(update_fields=["queued_mail_id", "updated"])
+            communication = SpeakerCommunicationLog.objects.create(
+                event=event,
+                speaker=task.speaker,
+                kind=SpeakerCommunicationLog.AUTOMATED_REMINDER,
+                subject=mail.subject,
+                rendered_body=mail.text,
+                outcome=SpeakerCommunicationLog.FAILED,
+                outcome_detail="Delivery was not attempted.",
+                queued_mail_id=mail.pk,
+                actor=None,
+            )
 
         try:
             mail.send(orga=False)
@@ -55,10 +66,18 @@ def queue_reminder_task(event, task, reminder_key="onboarding-due"):
             ReminderReceipt.objects.filter(pk=receipt.pk).update(
                 delivery_status=ReminderReceipt.AMBIGUOUS
             )
+            SpeakerCommunicationLog.objects.filter(pk=communication.pk).update(
+                outcome=SpeakerCommunicationLog.FAILED,
+                outcome_detail="Broker outcome is ambiguous; automatic retry suppressed.",
+            )
             receipt.delivery_status = ReminderReceipt.AMBIGUOUS
             raise ReminderOutcomeAmbiguous(receipt) from None
         ReminderReceipt.objects.filter(pk=receipt.pk).update(
             delivery_status=ReminderReceipt.ACCEPTED
+        )
+        SpeakerCommunicationLog.objects.filter(pk=communication.pk).update(
+            outcome=SpeakerCommunicationLog.SENT,
+            outcome_detail="Pretalx accepted the automated reminder for delivery.",
         )
         receipt.delivery_status = ReminderReceipt.ACCEPTED
         return "queued", receipt
