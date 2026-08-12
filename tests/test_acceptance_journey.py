@@ -69,12 +69,14 @@ def test_golden_path_crosses_plugin_boundaries(event, users, client):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_status_endpoint(event, users, client):
+def test_status_endpoint(event, users, client, monkeypatch):
+    monkeypatch.setenv("APP_VERSION", "a" * 40)
     url = reverse("plugins:speakerops:speakerops_status", kwargs={"event": event.slug})
     response = client.get(url)
     assert response.status_code == 200
     data = response.json()
     assert data["event"] == event.slug
+    assert data["app_version"] == "a" * 40
     assert "outbox_backlog" in data
     assert "sync_connection" in data
     assert "onboarding_total" in data
