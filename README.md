@@ -69,6 +69,9 @@ speaker@example.org
 speaker2@example.org
 ```
 
+These are public demo-only credentials. Rotate or disable the accounts when the
+judging window ends; never reuse this password for infrastructure or non-demo users.
+
 Follow this numbered journey:
 
 1. Open the seeded event `speakerops-demo` and the public CFP.

@@ -71,7 +71,17 @@ def assert_surface(surface, response, body, elapsed, expected_path, marker, *, a
 
 
 def authenticated_surface(
-    base_url, event, email, password, login_path, path, marker, timeout, *, alternatives=None
+    base_url,
+    event,
+    email,
+    password,
+    login_path,
+    path,
+    marker,
+    timeout,
+    *,
+    alternatives=None,
+    verify_after_login=False,
 ):
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(CookieJar()))
     login_url = urllib.parse.urljoin(base_url, login_path)
@@ -87,6 +97,12 @@ def authenticated_surface(
         headers={"Referer": login_url},
         timeout=timeout,
     )
+    if verify_after_login:
+        response, body, elapsed = request(
+            opener,
+            urllib.parse.urljoin(base_url, path),
+            timeout=timeout,
+        )
     return (
         assert_surface(
             email.split("@", 1)[0],
@@ -138,6 +154,19 @@ def main():
     orga_login = f"/orga/event/{event}/login/"
     results = []
 
+    admin, _ = authenticated_surface(
+        base_url,
+        event,
+        "admin@example.org",
+        password,
+        orga_login,
+        f"/orga/{event}/speaker-operations/",
+        "Program command center",
+        args.timeout,
+        verify_after_login=True,
+    )
+    results.append(admin)
+
     speaker, _ = authenticated_surface(
         base_url,
         event,
@@ -149,6 +178,17 @@ def main():
         args.timeout,
     )
     results.append(speaker)
+    speaker2, _ = authenticated_surface(
+        base_url,
+        event,
+        "speaker2@example.org",
+        password,
+        cfp_login,
+        f"/{event}/speaker-operations/checklist/",
+        "What do I need to do next?",
+        args.timeout,
+    )
+    results.append(speaker2)
     reviewer, _ = authenticated_surface(
         base_url,
         event,
