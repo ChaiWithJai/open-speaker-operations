@@ -1,5 +1,6 @@
 import csv
 import logging
+import os
 import re
 import uuid
 from urllib.parse import urlencode
@@ -2152,6 +2153,7 @@ class StatusView(View):
         return JsonResponse(
             {
                 "event": event.slug,
+                "app_version": os.environ.get("APP_VERSION", "unknown"),
                 "outbox_backlog": outbox_backlog,
                 "sync_connection": sync_connection or "not configured",
                 "last_sync_status": last_sync[0] if last_sync else None,
