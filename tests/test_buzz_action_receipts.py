@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import pytest
 from django.core.cache import cache
+from django.db import connection
 from django.test import override_settings
 from django.utils import timezone
 from django_scopes import scope
@@ -129,6 +130,32 @@ def test_speaker_nudge_preview_requires_chair_confirmation_and_receipts_once(eve
         f"{tampered_correlation}/{snapshot.nonce}/"
     )
     assert client.get(tampered_url).status_code == 404
+
+
+@pytest.mark.django_db(transaction=True)
+def test_speaker_nudge_confirmation_locks_only_task_row(event, users, client):
+    """PostgreSQL must not try to lock nullable select_related joins."""
+    if connection.vendor != "postgresql":
+        pytest.skip("PostgreSQL-specific row-lock regression")
+    task = _enable_and_make_overdue(event, users)
+    correlation = uuid.uuid4()
+    snapshot = _snapshot(event, WorkflowActionReceipt.SPEAKER_NUDGES, correlation, [task.pk])
+    confirm_url = (
+        f"/orga/{event.slug}/speaker-operations/actions/speaker-nudges/"
+        f"{correlation}/{snapshot.nonce}/confirm/"
+    )
+    client.force_login(users["chair"])
+
+    response = client.post(
+        confirm_url,
+        {"targets": [task.pk], "confirm_action": "yes"},
+    )
+
+    assert response.status_code == 302
+    with scope(event=event):
+        assert WorkflowActionReceipt.objects.get(correlation_id=correlation).status == (
+            WorkflowActionReceipt.SUCCEEDED
+        )
 
 
 def _sync_items(event):

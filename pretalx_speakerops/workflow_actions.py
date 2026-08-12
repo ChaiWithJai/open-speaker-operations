@@ -176,7 +176,11 @@ class SpeakerNudgeActionConfirmView(EventContextMixin, View):
                 if snapshot.expires_at <= timezone.now():
                     raise Http404
                 targets = list(
-                    OnboardingTask.objects.select_for_update()
+                    # Lock only the task row. The later select_related() includes
+                    # nullable relations, which PostgreSQL cannot lock through an
+                    # outer join ("FOR UPDATE cannot be applied to the nullable
+                    # side of an outer join").
+                    OnboardingTask.objects.select_for_update(of=("self",))
                     .filter(
                         event=self.event,
                         pk__in=requested_ids,
