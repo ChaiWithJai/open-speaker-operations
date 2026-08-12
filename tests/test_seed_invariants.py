@@ -50,6 +50,7 @@ from pretalx_speakerops.models import (
     SyncItem,
     SyncPreview,
     SyncRun,
+    SyncWriteClaim,
     TaskEvidence,
 )
 from pretalx_speakerops.program.policy import classify_warnings
@@ -581,11 +582,20 @@ def test_seed_is_deterministic_and_keeps_conflicts_out_of_released_program(monke
             content_object=event,
             action_type="speakerops.browser_evaluator_fixture",
         )
+        SyncWriteClaim.objects.create(
+            event=event,
+            local_type="seed-contamination",
+            local_id=1,
+            actor=reviewer,
+            item=SyncItem.objects.filter(event=event).first(),
+            status=SyncWriteClaim.AMBIGUOUS,
+        )
 
     call_command("speakerops_seed", verbosity=0)
     assert not User.objects.filter(email=EVALUATOR_SIGNUP_EMAIL).exists()
     event.refresh_from_db()
     with scope(event=event):
+        assert not SyncWriteClaim.objects.filter(event=event).exists()
         assert list(EvaluationRound.objects.filter(event=event).values_list("name", flat=True)) == [
             "DemoCon blinded review"
         ]

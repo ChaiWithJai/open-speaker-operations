@@ -41,6 +41,7 @@ from ...models import (
     SyncItem,
     SyncPreview,
     SyncRun,
+    SyncWriteClaim,
     TaskDefinition,
     TaskEvidence,
 )
@@ -1074,6 +1075,10 @@ class Command(BaseCommand):
             connection.save(update_fields=["credential_ref", "updated"])
             accepted = event.submissions.filter(state=SubmissionStates.ACCEPTED).first()
             if accepted:
+                # Recovery actions leave durable claims pointing at SyncItem rows.
+                # Remove the event-scoped claims before replacing the deterministic
+                # connector fixture, whose runs are otherwise protected from deletion.
+                SyncWriteClaim.objects.filter(event=event).delete()
                 SyncRun.objects.filter(event=event).delete()
                 SyncPreview.objects.filter(event=event).delete()
                 ExternalIdentity.objects.filter(event=event).delete()
