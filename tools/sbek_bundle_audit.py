@@ -45,6 +45,10 @@ SCREENSHOT_ATTRIBUTE = re.compile(
     r'(?P<attribute>href|src)="(?P<path>[^"<>]*screenshots/[^"<>]+\.(?:png|jpe?g|webp))"',
     re.I,
 )
+SCREENSHOT_PATH = re.compile(
+    r"(?<![A-Za-z0-9._/-])[A-Z]{3}-S\d+/screenshots/[^\s\"'<>]+\.(?:png|jpe?g|webp)",
+    re.I,
+)
 OMITTED_SCREENSHOT_DATA_URI = (
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
     "width='640' height='360' viewBox='0 0 640 360'%3E%3Crect width='640' "
@@ -92,6 +96,8 @@ def make_report_portable(value: str) -> tuple[str, int]:
         return f'src="{OMITTED_SCREENSHOT_DATA_URI}"'
 
     value = SCREENSHOT_ATTRIBUTE.sub(replace, value)
+    value, text_omitted = SCREENSHOT_PATH.subn("[private screenshot omitted]", value)
+    omitted += text_omitted
     notice = (
         '<section id="omitted-screenshot-notice"><h2>Private screenshots omitted</h2>'
         "<p>The raw official-run screenshots are intentionally excluded. See the "

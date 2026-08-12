@@ -11,7 +11,8 @@ def make_source(root: Path):
     (root / "report.html").write_text(
         "secret-value /invitation/demo/abcdefghijklmnopqrstuvwxyzABCDEF "
         '<a href="CFP-S1/screenshots/private.jpg"><img '
-        'src="CFP-S1/screenshots/private.jpg"></a>'
+        'src="CFP-S1/screenshots/private.jpg"></a> '
+        "Evidence CFP-S1/screenshots/private.jpg"
     )
     (root / "manual-checklist.md").write_text("manual")
     (root / "unselected-screenshot.png").write_bytes(b"not implicitly staged")
@@ -44,12 +45,13 @@ def test_stage_recursively_sanitizes_and_preserves_source(tmp_path):
     assert "session-value" not in staged_text
     assert "abcdefghijklmnopqrstuvwxyzABCDEF" not in staged_text
     assert "[REDACTED_SECRET]" in staged_text
-    assert receipt["omitted_screenshot_reference_count"] == 2
+    assert receipt["omitted_screenshot_reference_count"] == 3
     report = (destination / "report.html").read_text()
     assert "CFP-S1/screenshots/private.jpg" not in report
     assert 'href="#omitted-screenshot-notice"' in report
     assert 'id="omitted-screenshot-notice"' in report
     assert "Private screenshot omitted" in report
+    assert "[private screenshot omitted]" in report
     assert (destination / "SHA256SUMS").is_file()
 
 
