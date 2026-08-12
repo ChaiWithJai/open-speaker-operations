@@ -31,8 +31,11 @@ This was not a database outage. Two independent gaps produced the same fail-clos
    loss and isolated the second gap to Codex session configuration.
 4. At 23:12 UTC, after installing the MCP definition in the project-scoped Codex config
    and restarting Fizz, the same prompt discovered
-   `mcp__speakerops_reads__cfp_surface`, invoked it once, and published the complete typed
-   answer into the originating DM.
+   `mcp__speakerops_reads__cfp_surface`, invoked it once, and produced the complete typed
+   ACP answer. The ACP harness did not publish that answer to the relay.
+5. At 23:17 UTC, the same typed result was published through the signed Buzz CLI. Relay
+   event `df8e52e0de8e91c6f8a38d5cec61a93b4d3992996048766451d26c3ea349a439`
+   and the visible Fizz DM both contain the clean role-specific answer.
 
 Repository evidence:
 
@@ -64,6 +67,12 @@ environment and relay health were green while the session's tool inventory remai
 The supported project-scoped Codex configuration is therefore the durable installation
 surface; online presence alone is not a capability preflight.
 
+A third boundary remained outside SpeakerOps: Codex emitted a complete `agent_message` and
+`task_complete`, but `buzz-acp` did not create a relay event. Therefore neither an ACP trace
+nor a typing/reaction indicator is a delivery receipt. Until the harness publication defect
+is fixed upstream, the supported fallback is an explicitly signed `buzz messages send`
+followed by a relay read-back.
+
 ## RIOA
 
 | Type | Action | Status |
@@ -76,6 +85,7 @@ surface; online presence alone is not a capability preflight.
 | Omit | Do not add Buzz-side mutations or pretend the public guide is the native submit action. | Enforced in output |
 | Automate | Reconcile the MCP catalog, agent profiles, rehearsal profiles, and exact-prompt expectations in regression tests. | Implemented for CFP; inventory consolidation remains follow-up work |
 | Automate | Gate buyer rehearsal on an in-session tool inventory check and one exact typed read, not agent presence. | Runbook requirement added; native Buzz automation remains follow-up work |
+| Reinforce | Require a relay event ID and visible same-channel message before calling a workflow delivered. | Implemented in runbook and incident evidence |
 
 ## Preventive principles
 
@@ -87,6 +97,8 @@ surface; online presence alone is not a capability preflight.
    roles, evidence, and read-only behavior.
 4. Treat an agent as ready only after the active channel session can list the required MCP
    tool and complete a typed read. “Online” proves relay presence, not capability delivery.
+5. Treat delivery as complete only when the signed answer can be read back from the relay;
+   `agent_message`, `task_complete`, reactions, and typing state are insufficient.
 
 ## Capability inventory checklist
 
@@ -101,13 +113,16 @@ surface; online presence alone is not a capability preflight.
 - [x] Project-scoped Codex MCP config installed for Buzz's `~/.buzz` working directory.
 - [x] Managed Fizz restarted after relay subscriptions were confirmed.
 - [x] Exact request retained in Buzz with the typed answer, three role-specific `/go/`
-  links, timestamp, inference trace, and no-mutation statement.
+  links, timestamp, inference trace, and no-mutation statement, using the signed CLI
+  fallback after ACP publication failed.
 - [ ] Retain a successful browser-open artifact for each role-specific link.
 
 ## Verification
 
 - Focused regression suite: 55 tests passed.
 - Ruff: all changed Python files passed.
-- Native Buzz replay: exact prompt passed at 23:12 UTC through
-  `mcp__speakerops_reads__cfp_surface` and returned the complete result in the originating
-  Fizz DM.
+- Native Codex/Buzz replay: exact prompt passed at 23:12 UTC through
+  `mcp__speakerops_reads__cfp_surface`; the ACP publication step failed.
+- Signed Buzz fallback: relay event
+  `df8e52e0de8e91c6f8a38d5cec61a93b4d3992996048766451d26c3ea349a439`
+  was read back from the originating Fizz DM with the complete typed result.

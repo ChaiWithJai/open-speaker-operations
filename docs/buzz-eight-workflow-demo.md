@@ -78,7 +78,11 @@ Codex session whose tool inventory predates that override. Restart the managed a
 until the harness log confirms channel subscriptions, and send a capability preflight in
 the actual destination DM. The active session must list the expected
 `mcp__speakerops_reads__...` tool and complete one typed read. A green presence dot by
-itself proves only relay connectivity.
+itself proves only relay connectivity. Likewise, an ACP `agent_message`, completion event,
+typing indicator, or reaction is not a delivery receipt. Read the destination channel back
+with `buzz messages get --channel <UUID>` and retain the signed answer event ID. If native
+ACP publication does not create that event, publish the already-authoritative typed result
+with `buzz messages send --channel <UUID> --content -`, then read it back before continuing.
 
 For tonight's zero-paid rehearsal, the same checks and all eight prompts are
 automated serially without exposing any credential:
