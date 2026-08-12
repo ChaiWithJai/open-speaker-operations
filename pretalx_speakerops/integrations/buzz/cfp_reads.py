@@ -156,8 +156,7 @@ def cfp_surface_message(event_slug, base_url=DEFAULT_BASE_URL):
             "## Review surface",
             "- Active rounds: "
             + (", ".join(str(item["name"]) for item in report["review"]["rounds"]) or "none"),
-            "- Reviewer pools: "
-            + (", ".join(report["review"]["reviewer_pools"]) or "none"),
+            "- Reviewer pools: " + (", ".join(report["review"]["reviewer_pools"]) or "none"),
             "",
             "## Authoritative sources",
         ]

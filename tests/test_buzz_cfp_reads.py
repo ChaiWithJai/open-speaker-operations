@@ -40,13 +40,10 @@ def test_exact_cfp_surface_prompt_has_typed_evidence_roles_and_canonical_links(e
     assert {source["resource"]: source["url"] for source in report["sources"]} == {
         "cfp-public-guide": f"https://speakerops.example/go/cfp-public-guide/{event.slug}/",
         "review-queue": f"https://speakerops.example/go/review-queue/{event.slug}/",
-        "cfp-routing-console": (
-            f"https://speakerops.example/go/cfp-routing-console/{event.slug}/"
-        ),
+        "cfp-routing-console": (f"https://speakerops.example/go/cfp-routing-console/{event.slug}/"),
     }
     assert all(
-        source["url"].startswith("https://speakerops.example/go/")
-        for source in report["sources"]
+        source["url"].startswith("https://speakerops.example/go/") for source in report["sources"]
     )
     assert report["mutation_performed"] is False
     assert report["generated_at"]
