@@ -608,7 +608,7 @@ def test_scheduled_reminder_broker_failure_is_durably_ambiguous(event, users, cl
         "pretalx_speakerops.tasks.send_due_speaker_reminders",
         side_effect=ReminderOutcomeAmbiguous(receipt),
     ):
-        result = send_due_speaker_reminders_task.run()
+        result = send_due_speaker_reminders_task.apply(task_id="scheduled-test-task").get()
     assert result == {
         "status": "ambiguous",
         "task_id": task.pk,
